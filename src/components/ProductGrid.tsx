@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { Product } from '@/lib/products';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { translations } from '@/lib/translations';
+import { ShoppingCart, Eye } from 'lucide-react';
+import { Product } from '@/lib/products';
 
 interface ProductGridProps {
   products: Product[];
@@ -12,68 +11,73 @@ interface ProductGridProps {
   onViewDetails: (product: Product) => void;
 }
 
-const ProductGrid: React.FC<ProductGridProps> = ({
-  products,
-  language,
-  onAddToCart,
-  onViewDetails
-}) => {
-  const t = translations[language];
-
+const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: ProductGridProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product) => (
-        <Card key={product.id} className="bg-white border border-[#ddd] hover:shadow-lg transition-shadow">
-          <CardHeader>
-            <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover rounded-lg"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = '/placeholder.svg';
-                }}
-              />
-            </div>
-            <CardTitle className="text-[#333] text-lg">{product.name}</CardTitle>
-          </CardHeader>
+        <div key={product.id} className="bg-white border border-[#ddd] rounded-lg p-4 hover:shadow-lg transition-shadow">
+          <div className="relative mb-4">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-48 object-cover rounded-lg"
+            />
+            {product.featured && (
+              <span className="absolute top-2 left-2 bg-[#2e7d32] text-white text-xs px-2 py-1 rounded">
+                Featured
+              </span>
+            )}
+            {!product.inStock && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                <span className="text-white font-bold">Out of Stock</span>
+              </div>
+            )}
+          </div>
           
-          <CardContent>
-            <p className="text-[#333] text-sm mb-3 line-clamp-3">{product.description}</p>
-            <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <h3 className="font-semibold text-[#333] text-lg">{product.name}</h3>
+            
+            <p className="text-[#666] text-sm line-clamp-2">{product.description}</p>
+            
+            <div className="flex flex-wrap gap-1">
+              {product.categories.map((category) => (
+                <span
+                  key={category}
+                  className="bg-[#e8f5e9] text-[#2e7d32] text-xs px-2 py-1 rounded"
+                >
+                  {category}
+                </span>
+              ))}
+            </div>
+            
+            <div className="flex items-center justify-between pt-2">
               <span className="text-2xl font-bold text-[#2e7d32]">
                 ${product.price.toFixed(2)}
               </span>
-              <span className={`text-sm px-2 py-1 rounded ${
-                product.inStock 
-                  ? 'bg-[#e8f5e9] text-[#2e7d32]' 
-                  : 'bg-[#ffebee] text-[#d32f2f]'
-              }`}>
-                {product.inStock ? 'In Stock' : 'Out of Stock'}
-              </span>
+              
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onViewDetails(product)}
+                  className="text-[#2196f3] border-[#2196f3] hover:bg-[#2196f3] hover:text-white"
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                
+                <Button
+                  size="sm"
+                  onClick={() => onAddToCart(product)}
+                  disabled={!product.inStock}
+                  className="bg-[#2e7d32] hover:bg-[#1b5e20] disabled:bg-gray-400"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-1" />
+                  {language === 'en' ? 'Add to Cart' : 'Agregar'}
+                </Button>
+              </div>
             </div>
-          </CardContent>
-          
-          <CardFooter className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onViewDetails(product)}
-              className="flex-1 border-[#2196f3] text-[#2196f3] hover:bg-[#2196f3] hover:text-white"
-            >
-              {t.viewDetails}
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => onAddToCart(product)}
-              disabled={!product.inStock}
-              className="flex-1 bg-[#2e7d32] hover:bg-[#1b5e20] disabled:opacity-50"
-            >
-              {t.addToCart}
-            </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </div>
       ))}
     </div>
   );

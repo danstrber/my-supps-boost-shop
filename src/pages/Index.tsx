@@ -1,51 +1,111 @@
 
 import React, { useState, useEffect } from 'react';
-import { auth } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 import { products, Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
+import { getCurrentUser, getUserDiscount, signOut, UserProfile } from '@/lib/auth';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ProductGrid from '@/components/ProductGrid';
+import AuthModal from '@/components/AuthModal';
+import CartModal from '@/components/CartModal';
+import ReferralSection from '@/components/ReferralSection';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 
-interface CartItem extends Product {
-  quantity: number;
-}
-
 const Index = () => {
   const [language, setLanguage] = useState<'en' | 'es'>('en');
   const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userDiscount, setUserDiscount] = useState<number>(0);
+  const [referralCount, setReferralCount] = useState<number>(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name-asc');
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [filteredProducts, setFilteredProducts] = useState(products);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
+  const [cartModalOpen, setCartModalOpen] = useState(false);
   const { toast } = useToast();
 
   const t = translations[language];
 
+  // Load cart from localStorage
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    return () => unsubscribe();
+    const savedCart = localStorage.getItem('mysupps_cart');
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (error) {
+        console.error('Error loading cart:', error);
+      }
+    }
   }, []);
 
+  // Save cart to localStorage
+  useEffect(() => {
+    localStorage.setItem('mysupps_cart', JSON.stringify(cart));
+  }, [cart]);
+
+  // Auth state listener
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session?.user) {
+        const { user: currentUser, profile } = await getCurrentUser();
+        setUser(currentUser);
+        setUserProfile(profile);
+        
+        if (currentUser) {
+          const discount = await getUserDiscount(currentUser.id);
+          setUserDiscount(discount);
+          
+          // Get referral count
+          const { data: referrals } = await supabase
+            .from('referrals')
+            .select('id')
+            .eq('referrer_id', profile?.id);
+          setReferralCount(referrals?.length || 0);
+        }
+      } else {
+        setUser(null);
+        setUserProfile(null);
+        setUserDiscount(0);
+        setReferralCount(0);
+      }
+    });
+
+    // Check for existing session
+    getCurrentUser().then(({ user: currentUser, profile }) => {
+      setUser(currentUser);
+      setUserProfile(profile);
+      
+      if (currentUser) {
+        getUserDiscount(currentUser.id).then(setUserDiscount);
+        
+        supabase
+          .from('referrals')
+          .select('id')
+          .eq('referrer_id', profile?.id)
+          .then(({ data }) => setReferralCount(data?.length || 0));
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Filter and sort products
   useEffect(() => {
     let filtered = products;
 
-    // Filter by category
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => 
         product.categories.includes(selectedCategory)
       );
     }
 
-    // Sort products
     filtered = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case 'price-asc':
@@ -54,7 +114,7 @@ const Index = () => {
           return b.price - a.price;
         case 'name-desc':
           return b.name.localeCompare(a.name);
-        default: // name-asc
+        default:
           return a.name.localeCompare(b.name);
       }
     });
@@ -63,18 +123,10 @@ const Index = () => {
   }, [selectedCategory, sortBy]);
 
   const handleAddToCart = (product: Product) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === product.id);
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      } else {
-        return [...prevCart, { ...product, quantity: 1 }];
-      }
-    });
+    setCart(prevCart => ({
+      ...prevCart,
+      [product.id]: (prevCart[product.id] || 0) + 1
+    }));
 
     toast({
       title: "Added to cart",
@@ -82,17 +134,46 @@ const Index = () => {
     });
   };
 
+  const handleUpdateCart = (productId: string, quantity: number) => {
+    setCart(prevCart => {
+      const newCart = { ...prevCart };
+      if (quantity <= 0) {
+        delete newCart[productId];
+      } else {
+        newCart[productId] = quantity;
+      }
+      return newCart;
+    });
+  };
+
   const handleViewDetails = (product: Product) => {
-    // This would open a product detail modal
     console.log('View details for:', product);
   };
 
   const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
-    // This would handle authentication actions
-    console.log('Auth action:', action);
+    if (action === 'logout') {
+      signOut().then(() => {
+        toast({
+          title: "Signed out",
+          description: "You have been successfully signed out.",
+        });
+      });
+    } else {
+      setAuthModalMode(action);
+      setAuthModalOpen(true);
+    }
   };
 
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const handleCartOpen = () => {
+    if (!user) {
+      setAuthModalMode('login');
+      setAuthModalOpen(true);
+      return;
+    }
+    setCartModalOpen(true);
+  };
+
+  const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
 
   return (
     <div className="min-h-screen bg-[#f0f0f0]">
@@ -102,7 +183,7 @@ const Index = () => {
         cartItemCount={cartItemCount}
         isAuthenticated={!!user}
         onAuthAction={handleAuthAction}
-        onCartOpen={() => console.log('Open cart')}
+        onCartOpen={handleCartOpen}
         onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
       />
 
@@ -112,6 +193,8 @@ const Index = () => {
           isOpen={sidebarOpen}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
+          userProfile={userProfile}
+          referralCount={referralCount}
         />
 
         <main className="flex-1 p-6">
@@ -183,6 +266,25 @@ const Index = () => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* Modals */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        initialMode={authModalMode}
+      />
+
+      <CartModal
+        isOpen={cartModalOpen}
+        onClose={() => setCartModalOpen(false)}
+        cart={cart}
+        products={products}
+        onUpdateCart={handleUpdateCart}
+        userDiscount={userDiscount}
+        language={language}
+        isAuthenticated={!!user}
+        userProfile={userProfile}
+      />
     </div>
   );
 };
