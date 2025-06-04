@@ -15,43 +15,52 @@ const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: Product
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product) => (
-        <div key={product.id} className="bg-white border border-[#ddd] rounded-lg p-4 hover:shadow-lg transition-shadow">
+        <div key={product.id} className="bg-white border-2 border-[#E0E0E0] hover:border-[#4CAF50] rounded-xl p-4 hover:shadow-xl transition-all duration-300 group">
           <div className="relative mb-4">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-48 object-cover rounded-lg"
+              className="w-full h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
             />
             {product.featured && (
-              <span className="absolute top-2 left-2 bg-[#2e7d32] text-white text-xs px-2 py-1 rounded">
+              <span className="absolute top-2 left-2 bg-gradient-to-r from-[#FF5722] to-[#FF7043] text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
                 Featured
               </span>
             )}
+            {product.labTestFile && (
+              <span className="absolute top-2 right-2 bg-[#4CAF50] text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
+                Lab Tested
+              </span>
+            )}
             {!product.inStock && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                <span className="text-white font-bold">Out of Stock</span>
+              <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center rounded-lg">
+                <span className="text-white font-bold text-lg">Out of Stock</span>
               </div>
             )}
           </div>
           
-          <div className="space-y-2">
-            <h3 className="font-semibold text-[#333] text-lg">{product.name}</h3>
+          <div className="space-y-3">
+            <h3 className="font-bold text-[#333] text-lg group-hover:text-[#4CAF50] transition-colors">
+              {product.name}
+            </h3>
             
-            <p className="text-[#666] text-sm line-clamp-2">{product.description}</p>
+            <p className="text-[#666] text-sm line-clamp-2 leading-relaxed">
+              {product.description}
+            </p>
             
             <div className="flex flex-wrap gap-1">
               {product.categories.map((category) => (
                 <span
                   key={category}
-                  className="bg-[#e8f5e9] text-[#2e7d32] text-xs px-2 py-1 rounded"
+                  className="bg-[#E8F5E9] text-[#2E7D32] text-xs px-2 py-1 rounded-full font-medium"
                 >
                   {category}
                 </span>
               ))}
             </div>
             
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-2xl font-bold text-[#2e7d32]">
+            <div className="flex items-center justify-between pt-2 border-t border-[#F0F0F0]">
+              <span className="text-2xl font-bold text-[#4CAF50]">
                 ${product.price.toFixed(2)}
               </span>
               
@@ -60,7 +69,7 @@ const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: Product
                   variant="outline"
                   size="sm"
                   onClick={() => onViewDetails(product)}
-                  className="text-[#2196f3] border-[#2196f3] hover:bg-[#2196f3] hover:text-white"
+                  className="text-[#2196F3] border-[#2196F3] hover:bg-[#2196F3] hover:text-white"
                 >
                   <Eye className="h-4 w-4" />
                 </Button>
@@ -69,7 +78,7 @@ const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: Product
                   size="sm"
                   onClick={() => onAddToCart(product)}
                   disabled={!product.inStock}
-                  className="bg-[#2e7d32] hover:bg-[#1b5e20] disabled:bg-gray-400"
+                  className="bg-[#4CAF50] hover:bg-[#388E3C] disabled:bg-gray-400 text-white font-medium"
                 >
                   <ShoppingCart className="h-4 w-4 mr-1" />
                   {language === 'en' ? 'Add to Cart' : 'Agregar'}

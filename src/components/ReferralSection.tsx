@@ -1,9 +1,10 @@
 
-import React from 'react';
-import { Copy, Users, DollarSign } from 'lucide-react';
+import React, { useState } from 'react';
+import { Copy, Users, DollarSign, TrendingUp, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { UserProfile } from '@/lib/auth';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReferralSectionProps {
   userProfile: UserProfile;
@@ -13,6 +14,7 @@ interface ReferralSectionProps {
 
 const ReferralSection = ({ userProfile, language, referralCount }: ReferralSectionProps) => {
   const { toast } = useToast();
+  const [showStats, setShowStats] = useState(false);
   
   const inviteLink = `${window.location.origin}?ref=${userProfile.referral_code}`;
   
@@ -32,55 +34,112 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
+  // Calculate current discount percentage
+  const calculateDiscount = () => {
+    let referralDiscount = 0;
+    let spendingDiscount = 0;
+    
+    if (referralCount > 0) {
+      referralDiscount = 10 + (referralCount - 1) * 4;
+      referralDiscount = Math.min(referralDiscount, 25); // Cap at 25%
+    }
+    
+    if (userProfile.referred_by) {
+      // Referred user gets 6% per $50 spent
+      spendingDiscount = Math.floor(userProfile.total_spending / 50) * 6;
+    } else {
+      // Referrer gets 2% per $50 of referred spending
+      spendingDiscount = Math.floor(userProfile.referred_spending / 50) * 2;
+    }
+    
+    return Math.min(referralDiscount + spendingDiscount, 30); // Total cap at 30%
+  };
+
+  const currentDiscount = calculateDiscount();
+
   return (
-    <div className="bg-[#f9f9f9] border border-[#ddd] rounded-lg p-4 mt-4">
-      <h3 className="font-semibold text-[#2e7d32] mb-3">
-        {language === 'en' ? 'Referral Program' : 'Programa de Referidos'}
-      </h3>
+    <div className="bg-gradient-to-br from-[#E8F5E9] to-[#C8E6C9] border-2 border-[#4CAF50] rounded-xl p-4 mt-6 shadow-lg">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="font-bold text-[#2E7D32] flex items-center">
+          <Gift className="h-5 w-5 mr-2" />
+          {language === 'en' ? 'Referral Program' : 'Programa de Referidos'}
+        </h3>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowStats(!showStats)}
+          className="text-[#2E7D32] hover:bg-[#C8E6C9]"
+        >
+          <TrendingUp className="h-4 w-4" />
+        </Button>
+      </div>
       
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-[#666]">
-            {language === 'en' ? 'Your Code:' : 'Tu Código:'}
-          </span>
-          <span className="font-mono bg-white px-2 py-1 rounded border">
-            {userProfile.referral_code}
-          </span>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-3">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-1">
-              <Users className="h-4 w-4 text-[#2e7d32] mr-1" />
-              <span className="text-lg font-semibold text-[#2e7d32]">{referralCount}</span>
-            </div>
-            <span className="text-xs text-[#666]">
-              {language === 'en' ? 'Referrals' : 'Referidos'}
+        <div className="bg-white rounded-lg p-3 border border-[#A5D6A7]">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-[#2E7D32]">
+              {language === 'en' ? 'Your Code:' : 'Tu Código:'}
+            </span>
+            <span className="font-mono bg-[#4CAF50] text-white px-3 py-1 rounded-full text-sm font-bold">
+              {userProfile.referral_code}
             </span>
           </div>
           
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-1">
-              <DollarSign className="h-4 w-4 text-[#2e7d32] mr-1" />
-              <span className="text-lg font-semibold text-[#2e7d32]">
-                ${userProfile.referred_spending.toFixed(2)}
-              </span>
-            </div>
-            <span className="text-xs text-[#666]">
-              {language === 'en' ? 'Referred Spending' : 'Gasto Referido'}
-            </span>
-          </div>
+          <Button
+            onClick={copyInviteLink}
+            variant="outline"
+            size="sm"
+            className="w-full border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
+          >
+            <Copy className="h-4 w-4 mr-2" />
+            {language === 'en' ? 'Copy Invite Link' : 'Copiar Enlace de Invitación'}
+          </Button>
         </div>
         
-        <Button
-          onClick={copyInviteLink}
-          variant="outline"
-          size="sm"
-          className="w-full"
-        >
-          <Copy className="h-4 w-4 mr-2" />
-          {language === 'en' ? 'Copy Invite Link' : 'Copiar Enlace de Invitación'}
-        </Button>
+        {showStats && (
+          <div className="bg-white rounded-lg p-3 border border-[#A5D6A7] space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center bg-[#E8F5E9] rounded-lg p-3">
+                <div className="flex items-center justify-center mb-1">
+                  <Users className="h-4 w-4 text-[#2E7D32] mr-1" />
+                  <span className="text-xl font-bold text-[#2E7D32]">{referralCount}</span>
+                </div>
+                <span className="text-xs text-[#2E7D32] font-medium">
+                  {language === 'en' ? 'Referrals' : 'Referidos'}
+                </span>
+              </div>
+              
+              <div className="text-center bg-[#E8F5E9] rounded-lg p-3">
+                <div className="flex items-center justify-center mb-1">
+                  <DollarSign className="h-4 w-4 text-[#2E7D32] mr-1" />
+                  <span className="text-xl font-bold text-[#2E7D32]">
+                    ${userProfile.referred_spending.toFixed(0)}
+                  </span>
+                </div>
+                <span className="text-xs text-[#2E7D32] font-medium">
+                  {language === 'en' ? 'Referred Spending' : 'Gasto Referido'}
+                </span>
+              </div>
+            </div>
+            
+            <div className="text-center bg-gradient-to-r from-[#4CAF50] to-[#8BC34A] text-white rounded-lg p-3">
+              <div className="text-2xl font-bold">{currentDiscount}%</div>
+              <div className="text-sm opacity-90">
+                {language === 'en' ? 'Current Discount' : 'Descuento Actual'}
+              </div>
+            </div>
+            
+            <div className="text-xs text-[#666] bg-[#F1F8E9] p-2 rounded">
+              <strong>{language === 'en' ? 'How it works:' : 'Cómo funciona:'}</strong>
+              <ul className="mt-1 space-y-1">
+                <li>• {language === 'en' ? '10% for 1st referral, +4% each additional (max 25%)' : '10% por 1er referido, +4% cada adicional (máx 25%)'}</li>
+                <li>• {language === 'en' ? '+6% per $50 you spend (if referred)' : '+6% por cada $50 gastados (si fuiste referido)'}</li>
+                <li>• {language === 'en' ? '+2% per $50 your referrals spend' : '+2% por cada $50 que gasten tus referidos'}</li>
+                <li>• {language === 'en' ? 'Maximum total discount: 30%' : 'Descuento máximo total: 30%'}</li>
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

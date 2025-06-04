@@ -176,7 +176,7 @@ const Index = () => {
   const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
 
   return (
-    <div className="min-h-screen bg-[#f0f0f0]">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8f9fa] to-[#e9ecef]">
       <Header
         language={language}
         onLanguageChange={setLanguage}
@@ -187,7 +187,7 @@ const Index = () => {
         onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
       />
 
-      <div className="flex">
+      <div className="flex pt-16">
         <Sidebar
           language={language}
           isOpen={sidebarOpen}
@@ -198,34 +198,68 @@ const Index = () => {
         />
 
         <main className="flex-1 p-6">
-          {/* Promo Section */}
-          <div className="bg-[#e8f5e9] border border-[#2e7d32] rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-bold text-[#2e7d32] mb-2">
-              Premium Research Chemicals
-            </h2>
-            <p className="text-[#333] mb-4">
-              {language === 'en' 
-                ? 'Discover our high-quality research chemicals for laboratory use. All products are third-party tested for purity and potency.'
-                : 'Descubre nuestros químicos de investigación de alta calidad para uso en laboratorio. Todos los productos están probados por terceros para pureza y potencia.'
-              }
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-[#4CAF50] to-[#8BC34A] text-white rounded-xl p-8 mb-8 shadow-lg">
+            <h1 className="text-4xl font-bold mb-4">
+              Unlock Your Potential with Science-Backed Performance Enhancers
+            </h1>
+            <p className="text-lg mb-6 opacity-90">
+              Are you striving for more — in the gym, in the mirror, or in life?
             </p>
-            <div className="flex gap-4 text-sm">
-              <span className="bg-white px-3 py-1 rounded-full text-[#2e7d32] font-medium">
-                🚚 Free shipping over $100
-              </span>
-              <span className="bg-white px-3 py-1 rounded-full text-[#2e7d32] font-medium">
-                🔬 Lab tested
-              </span>
-              <span className="bg-white px-3 py-1 rounded-full text-[#2e7d32] font-medium">
-                💎 Premium quality
-              </span>
+            <p className="text-base mb-6 opacity-85">
+              Whether you're chasing peak performance, accelerated recovery, or a sculpted physique, 
+              advanced peptides and medically-guided anabolic support may offer the edge you've been looking for.
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Why Choose Our Products?</h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center"><span className="mr-2">💪</span> Build Lean Muscle Faster</li>
+                  <li className="flex items-center"><span className="mr-2">⚡</span> Enhance Strength and Boost Endurance</li>
+                  <li className="flex items-center"><span className="mr-2">🔄</span> Accelerate Recovery Between Workouts</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="text-xl font-semibold mb-3">Additional Benefits</h3>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center"><span className="mr-2">🧬</span> Support Healthy Aging with hormone-optimizing solutions</li>
+                  <li className="flex items-center"><span className="mr-2">✨</span> Fight Fatigue & Elevate Confidence</li>
+                  <li className="flex items-center"><span className="mr-2">🏆</span> Trusted by athletes, professionals, and wellness enthusiasts</li>
+                </ul>
+              </div>
+            </div>
+            
+            <p className="text-lg font-medium">
+              Science meets performance. Results meet confidence.
+            </p>
+          </div>
+
+          {/* Features Section */}
+          <div className="bg-white border border-[#4CAF50] rounded-lg p-6 mb-8 shadow-sm">
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div className="p-4">
+                <div className="text-3xl mb-2">🚚</div>
+                <h3 className="font-semibold text-[#4CAF50] mb-2">Free Shipping Over $100</h3>
+                <p className="text-sm text-gray-600">Orders under $100 have a $7 shipping fee</p>
+              </div>
+              <div className="p-4">
+                <div className="text-3xl mb-2">🔬</div>
+                <h3 className="font-semibold text-[#4CAF50] mb-2">Lab Tested</h3>
+                <p className="text-sm text-gray-600">Third-party tested for purity and potency</p>
+              </div>
+              <div className="p-4">
+                <div className="text-3xl mb-2">💎</div>
+                <h3 className="font-semibold text-[#4CAF50] mb-2">Premium Quality</h3>
+                <p className="text-sm text-gray-600">Research-grade compounds for optimal results</p>
+              </div>
             </div>
           </div>
 
           {/* Filters and Sort */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-[#333] mb-2">
+              <h3 className="text-xl font-semibold text-[#333] mb-2">
                 {selectedCategory === 'all' ? t.allProducts : t[selectedCategory as keyof typeof t]}
               </h3>
               <p className="text-sm text-[#666]">

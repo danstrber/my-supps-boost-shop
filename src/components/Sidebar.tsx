@@ -29,10 +29,10 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
   return (
     <aside className={`
       ${isOpen ? 'block' : 'hidden'} 
-      md:block w-64 bg-white border-r border-[#ddd] p-4 
+      md:block w-64 bg-white border-r-2 border-[#4CAF50] p-4 
       fixed md:relative z-40 h-full md:h-auto overflow-y-auto
     `}>
-      <h3 className="text-lg font-semibold text-[#333] mb-4">
+      <h3 className="text-lg font-semibold text-[#4CAF50] mb-4 border-b border-[#E8F5E9] pb-2">
         {t.categories}
       </h3>
       
@@ -42,10 +42,10 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
             <button
               onClick={() => onCategoryChange(category.id)}
               className={`
-                w-full text-left px-3 py-2 rounded transition-colors
+                w-full text-left px-3 py-2 rounded-lg transition-all duration-200
                 ${selectedCategory === category.id
-                  ? 'bg-[#2e7d32] text-white'
-                  : 'text-[#333] hover:bg-[#f5f5f5]'
+                  ? 'bg-[#4CAF50] text-white shadow-md'
+                  : 'text-[#333] hover:bg-[#E8F5E9] hover:text-[#4CAF50]'
                 }
               `}
             >

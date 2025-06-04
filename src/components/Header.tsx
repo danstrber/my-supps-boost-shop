@@ -27,7 +27,7 @@ const Header = ({
   const t = translations[language];
 
   return (
-    <header className="bg-white border-b border-[#2e7d32] px-4 py-3 fixed top-0 w-full z-50">
+    <header className="bg-white border-b-2 border-[#4CAF50] px-4 py-3 fixed top-0 w-full z-50 shadow-sm">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <div className="flex items-center space-x-4">
           <Button
@@ -39,31 +39,31 @@ const Header = ({
             <Menu className="h-5 w-5" />
           </Button>
           
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-3">
             <img 
-              src="/placeholder.svg" 
+              src="photos/logo.png" 
               alt="MySupps Logo" 
-              className="h-8 w-8"
+              className="h-10 w-10"
             />
-            <h1 className="text-xl font-bold text-[#2e7d32]">MySupps</h1>
+            <h1 className="text-2xl font-bold text-[#4CAF50]">MySupps</h1>
           </div>
         </div>
 
-        <nav className="hidden md:flex items-center space-x-6">
-          <a href="/" className="text-[#333] hover:text-[#2e7d32] transition-colors">
+        <nav className="hidden md:flex items-center space-x-8">
+          <a href="/" className="text-[#333] hover:text-[#4CAF50] transition-colors font-medium">
             {t.home}
           </a>
-          <a href="#" className="text-[#333] hover:text-[#2e7d32] transition-colors">
-            Payment & Lab Test
+          <a href="#" className="text-[#333] hover:text-[#4CAF50] transition-colors font-medium">
+            {t.payment}
           </a>
-          <a href="#" className="text-[#333] hover:text-[#2e7d32] transition-colors">
-            Delivery
+          <a href="#" className="text-[#333] hover:text-[#4CAF50] transition-colors font-medium">
+            {t.delivery}
           </a>
-          <a href="#" className="text-[#333] hover:text-[#2e7d32] transition-colors">
-            About Us
+          <a href="#" className="text-[#333] hover:text-[#4CAF50] transition-colors font-medium">
+            {t.about}
           </a>
-          <a href="#" className="text-[#333] hover:text-[#2e7d32] transition-colors">
-            Contact Us
+          <a href="#" className="text-[#333] hover:text-[#4CAF50] transition-colors font-medium">
+            {t.contact}
           </a>
         </nav>
 
@@ -82,11 +82,11 @@ const Header = ({
             variant="outline"
             size="sm"
             onClick={onCartOpen}
-            className="relative"
+            className="relative border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
           >
             <ShoppingCart className="h-4 w-4 mr-1" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-[#d32f2f] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-[#FF5722] text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {cartItemCount}
               </span>
             )}
@@ -97,7 +97,7 @@ const Header = ({
               variant="outline"
               size="sm"
               onClick={() => onAuthAction('logout')}
-              className="text-[#d32f2f] border-[#d32f2f] hover:bg-[#d32f2f] hover:text-white"
+              className="text-[#FF5722] border-[#FF5722] hover:bg-[#FF5722] hover:text-white"
             >
               <LogOut className="h-4 w-4 mr-1" />
               {t.signOut}
@@ -108,6 +108,7 @@ const Header = ({
                 variant="outline"
                 size="sm"
                 onClick={() => onAuthAction('login')}
+                className="border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
               >
                 <User className="h-4 w-4 mr-1" />
                 {t.signIn}
@@ -115,7 +116,7 @@ const Header = ({
               <Button
                 size="sm"
                 onClick={() => onAuthAction('signup')}
-                className="bg-[#2e7d32] hover:bg-[#1b5e20]"
+                className="bg-[#4CAF50] hover:bg-[#388E3C] text-white"
               >
                 {t.signUp}
               </Button>
