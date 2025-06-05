@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -183,7 +182,7 @@ const Index = () => {
   const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
 
   const renderAboutPage = () => (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">About MySupps</h1>
       <div className="space-y-6 text-gray-600 leading-relaxed">
         <p className="text-lg">
@@ -216,7 +215,7 @@ const Index = () => {
   );
 
   const renderContactPage = () => (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">Contact Us</h1>
       <div className="space-y-6">
         <p className="text-gray-600 text-lg">
@@ -261,7 +260,7 @@ const Index = () => {
   );
 
   const renderDeliveryPage = () => (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">Delivery Information</h1>
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
@@ -304,7 +303,7 @@ const Index = () => {
   );
 
   const renderPaymentPage = () => (
-    <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">Payment & Lab Testing</h1>
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
@@ -342,7 +341,7 @@ const Index = () => {
   );
 
   const renderHomePage = () => (
-    <>
+    <div className="max-w-7xl mx-auto">
       {/* Features Section */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-8 mb-8 shadow-lg">
         <div className="grid md:grid-cols-3 gap-8 text-center">
@@ -433,7 +432,7 @@ const Index = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 
   return (

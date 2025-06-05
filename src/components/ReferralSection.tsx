@@ -31,7 +31,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   // Calculate current discount
   const referralDiscount = referralCount > 0 ? Math.min(10 + (referralCount - 1) * 4, 25) : 0;
   const spendingDiscount = userProfile.referred_by 
-    ? Math.floor(userProfile.total_spending / 50) * 8  // Increased from 6% to 8% per $50
+    ? Math.floor(userProfile.total_spending / 50) * 6.5  // Updated to 6.5% per $50
     : Math.floor(userProfile.referred_spending / 50) * 2;
   const totalDiscount = Math.min(referralDiscount + spendingDiscount, 30);
 
@@ -103,7 +103,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
               <li>• First referral: <strong>10% discount</strong></li>
               <li>• Each additional referral: <strong>+4% discount</strong></li>
               <li>• Referral discount cap: <strong>25%</strong></li>
-              <li>• If you were referred: <strong>8% per $50 spent</strong></li>
+              <li>• If you were referred: <strong>6.5% per $50 spent</strong></li>
               <li>• If you refer others: <strong>2% per $50 they spend</strong></li>
               <li>• Maximum total discount: <strong>30%</strong></li>
             </ul>
