@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, FileText, Star } from 'lucide-react';
 import { Product } from '@/lib/products';
+import { translations } from '@/lib/translations';
 
 interface ProductDetailModalProps {
   product: Product | null;
@@ -15,6 +16,8 @@ interface ProductDetailModalProps {
 }
 
 const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, language }: ProductDetailModalProps) => {
+  const t = translations[language];
+  
   if (!product) return null;
 
   const renderStars = (rating: number) => {
@@ -28,127 +31,145 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, language }:
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-slate-50 to-gray-100">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-gray-800">{product.name}</DialogTitle>
+          <DialogTitle className="text-3xl font-bold text-gray-800 bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent">
+            {product.name}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Product Image */}
-          <div className="space-y-4">
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Product Images */}
+          <div className="space-y-6">
             <div className="relative">
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-80 object-cover rounded-lg border-2 border-gray-200"
+                className="w-full h-80 object-cover rounded-xl border-4 border-gray-200 shadow-xl"
               />
               {product.featured && (
-                <Badge className="absolute top-2 left-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+                <Badge className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 text-sm">
                   Featured
                 </Badge>
               )}
               {product.labTestFile && (
-                <Badge className="absolute top-2 right-2 bg-green-600 text-white">
+                <Badge className="absolute top-3 right-3 bg-green-600 text-white px-3 py-1 text-sm">
                   Lab Tested
                 </Badge>
               )}
             </div>
             
+            {/* Lab Test Section */}
             {product.labTestFile && (
-              <Button
-                variant="outline"
-                onClick={() => window.open(product.labTestFile, '_blank')}
-                className="w-full border-blue-500 text-blue-600 hover:bg-blue-50"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                View Lab Test
-              </Button>
+              <div className="bg-white p-6 rounded-xl border-2 border-green-200 shadow-lg">
+                <h4 className="font-bold text-green-700 mb-4 text-lg">🔬 Lab Test Results</h4>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <img
+                    src={product.image}
+                    alt={`${product.name} bottle`}
+                    className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                  />
+                  <img
+                    src={product.labTestFile}
+                    alt={`${product.name} lab test`}
+                    className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(product.labTestFile, '_blank')}
+                  className="w-full border-green-500 text-green-600 hover:bg-green-50 font-semibold"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  View Full Lab Test Report
+                </Button>
+              </div>
             )}
           </div>
 
           {/* Product Details */}
           <div className="space-y-6">
-            <div>
-              <p className="text-gray-600 mb-4">{product.description}</p>
+            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">{product.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-3xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
+                <span className="text-4xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
                 <Button
                   onClick={() => onAddToCart(product)}
                   disabled={!product.inStock}
-                  className="bg-gray-700 hover:bg-gray-800 text-white"
+                  className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 text-lg font-semibold"
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {language === 'en' ? 'Add to Cart' : 'Agregar'}
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  {language === 'en' ? 'Add to Cart' : 'Agregar al Carrito'}
                 </Button>
               </div>
             </div>
 
             {/* Categories */}
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-2">Categories</h3>
+            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+              <h3 className="font-semibold text-gray-800 mb-3 text-lg">Categories</h3>
               <div className="flex flex-wrap gap-2">
                 {product.categories.map((category) => (
-                  <Badge key={category} variant="secondary" className="bg-gray-100 text-gray-700">
+                  <Badge key={category} variant="secondary" className="bg-gray-100 text-gray-700 px-3 py-1">
                     {category}
                   </Badge>
                 ))}
               </div>
             </div>
 
-            {/* Research Information */}
-            <div className="space-y-4">
+            {/* Detailed Information */}
+            <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200 space-y-6">
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Research Purpose</h4>
-                <p className="text-sm text-gray-600">{product.details.research}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.research}</h4>
+                <p className="text-gray-600">{product.details.research}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Effects on Women</h4>
-                <p className="text-sm text-gray-600">{product.details.effectsOnWomen}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.effectsOnWomen}</h4>
+                <p className="text-gray-600">{product.details.effectsOnWomen}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Benefits</h4>
-                <p className="text-sm text-gray-600">{product.details.benefits}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.benefits}</h4>
+                <p className="text-gray-600">{product.details.benefits}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Side Effects</h4>
-                <p className="text-sm text-red-600">{product.details.sideEffects}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.sideEffects}</h4>
+                <p className="text-red-600 font-medium">{product.details.sideEffects}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">History</h4>
-                <p className="text-sm text-gray-600">{product.details.history}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.history}</h4>
+                <p className="text-gray-600">{product.details.history}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">How It Works</h4>
-                <p className="text-sm text-gray-600">{product.details.howItWorks}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.howItWorks}</h4>
+                <p className="text-gray-600">{product.details.howItWorks}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Safety</h4>
-                <p className="text-sm text-orange-600">{product.details.safety}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.safety}</h4>
+                <p className="text-orange-600 font-medium">{product.details.safety}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Cycle</h4>
-                <p className="text-sm text-gray-600">{product.details.cycle}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.cycle}</h4>
+                <p className="text-gray-600">{product.details.cycle}</p>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-800 mb-1">Expectations</h4>
-                <p className="text-sm text-gray-600">{product.details.expectations}</p>
+                <h4 className="font-semibold text-gray-800 mb-2 text-lg">{t.expectations}</h4>
+                <p className="text-gray-600">{product.details.expectations}</p>
               </div>
 
               {/* Ratings */}
               <div>
-                <h4 className="font-semibold text-gray-800 mb-2">Ratings</h4>
-                <div className="space-y-2">
+                <h4 className="font-semibold text-gray-800 mb-3 text-lg">{t.ratings}</h4>
+                <div className="space-y-3">
                   {Object.entries(product.details.ratings).map(([category, rating]) => (
-                    <div key={category} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">{category}</span>
+                    <div key={category} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                      <span className="text-gray-700 font-medium">{category}</span>
                       <div className="flex items-center space-x-1">
                         {renderStars(rating)}
                       </div>

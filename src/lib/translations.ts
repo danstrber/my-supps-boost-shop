@@ -1,95 +1,105 @@
 
 export const translations = {
   en: {
+    // Navigation
     home: "Home",
     payment: "Payment & Lab Test",
     delivery: "Delivery",
     about: "About Us",
     contact: "Contact Us",
-    account: "Account",
-    referrals: "Referrals",
-    login: "Login",
-    signup: "Sign Up",
-    signIn: "Sign In",
-    signUp: "Sign Up",
-    signOut: "Sign Out",
-    signout: "Sign Out",
-    cart: "Cart",
+    
+    // Categories
     categories: "Categories",
     allProducts: "All Products",
+    sarms: "SARMs",
     muscleGrowth: "Muscle Growth",
     fatLoss: "Fat Loss",
     recovery: "Recovery",
     testosteroneSupport: "Testosterone Support",
-    sarms: "SARMs",
-    pctAi: "PCT & AI",
+    pctAi: "PCT/AI",
+    
+    // Products
     sortBy: "Sort by:",
-    priceAsc: "Price: Low to High",
-    priceDesc: "Price: High to Low",
-    nameAsc: "Name: A to Z",
-    nameDesc: "Name: Z to A",
-    addToCart: "Add to Cart",
+    nameAsc: "Name (A-Z)",
+    nameDesc: "Name (Z-A)",
+    priceAsc: "Price (Low to High)",
+    priceDesc: "Price (High to Low)",
+    
+    // Auth
+    signIn: "Sign In",
+    signUp: "Sign Up",
+    signOut: "Sign Out",
+    
+    // Product Details
     viewDetails: "View Details",
-    total: "Total",
+    research: "Research Purpose",
+    effectsOnWomen: "Effects on Women",
+    benefits: "Benefits",
+    sideEffects: "Side Effects",
+    history: "History",
+    howItWorks: "How It Works",
+    safety: "Safety",
+    cycle: "Cycle",
+    expectations: "Expectations",
+    ratings: "Ratings",
+    
+    // Cart
+    originalTotal: "Original Total",
+    discount: "Discount",
     shipping: "Shipping",
-    checkout: "Checkout",
-    paymentMethod: "Payment Method",
-    bitcoin: "Bitcoin",
-    paypal: "PayPal",
-    telegram: "Telegram",
-    placeOrder: "Place Order",
-    referralCode: "Referral Code",
-    generateCode: "Generate Referral Code",
-    yourCode: "Your Referral Code",
-    referralStats: "Referral Stats",
-    totalReferrals: "Total Referrals",
-    totalSpent: "Total Spent",
-    currentDiscount: "Current Discount"
+    finalTotal: "Final Total",
+    freeShippingOver: "Free shipping over $100",
+    shippingFee: "Orders under $100 have a $10 shipping fee"
   },
   es: {
+    // Navigation
     home: "Inicio",
-    payment: "Pago y Prueba de Laboratorio",
+    payment: "Pago y Pruebas de Lab",
     delivery: "Entrega",
-    about: "Nosotros",
+    about: "Acerca de",
     contact: "Contacto",
-    account: "Cuenta",
-    referrals: "Referencias",
-    login: "Iniciar Sesión",
-    signup: "Registrarse",
-    signIn: "Iniciar Sesión",
-    signUp: "Registrarse",
-    signOut: "Cerrar Sesión",
-    signout: "Cerrar Sesión",
-    cart: "Carrito",
+    
+    // Categories
     categories: "Categorías",
     allProducts: "Todos los Productos",
+    sarms: "SARMs",
     muscleGrowth: "Crecimiento Muscular",
     fatLoss: "Pérdida de Grasa",
     recovery: "Recuperación",
-    testosteroneSupport: "Soporte de Testosterona",
-    sarms: "SARMs",
-    pctAi: "PCT & IA",
+    testosteroneSupport: "Apoyo de Testosterona",
+    pctAi: "PCT/AI",
+    
+    // Products
     sortBy: "Ordenar por:",
-    priceAsc: "Precio: Menor a Mayor",
-    priceDesc: "Precio: Mayor a Menor",
-    nameAsc: "Nombre: A a Z",
-    nameDesc: "Nombre: Z a A",
-    addToCart: "Agregar al Carrito",
+    nameAsc: "Nombre (A-Z)",
+    nameDesc: "Nombre (Z-A)",
+    priceAsc: "Precio (Bajo a Alto)",
+    priceDesc: "Precio (Alto a Bajo)",
+    
+    // Auth
+    signIn: "Iniciar Sesión",
+    signUp: "Registrarse",
+    signOut: "Cerrar Sesión",
+    
+    // Product Details
     viewDetails: "Ver Detalles",
-    total: "Total",
+    research: "Propósito de Investigación",
+    effectsOnWomen: "Efectos en Mujeres",
+    benefits: "Beneficios",
+    sideEffects: "Efectos Secundarios",
+    history: "Historia",
+    howItWorks: "Cómo Funciona",
+    safety: "Seguridad",
+    cycle: "Ciclo",
+    expectations: "Expectativas",
+    ratings: "Calificaciones",
+    
+    // Cart
+    originalTotal: "Total Original",
+    discount: "Descuento",
     shipping: "Envío",
-    checkout: "Finalizar Compra",
-    paymentMethod: "Método de Pago",
-    bitcoin: "Bitcoin",
-    paypal: "PayPal",
-    telegram: "Telegram",
-    placeOrder: "Realizar Pedido",
-    referralCode: "Código de Referencia",
-    generateCode: "Generar Código",
-    yourCode: "Tu Código de Referencia",
-    referralStats: "Estadísticas de Referencias",
-    totalReferrals: "Total de Referencias",
-    totalSpent: "Total Gastado",
-    currentDiscount: "Descuento Actual"
+    finalTotal: "Total Final",
+    freeShippingOver: "Envío gratis por encima de $100",
+    shippingFee: "Pedidos menores a $100 tienen tarifa de envío de $10"
   }
 };
