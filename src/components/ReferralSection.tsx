@@ -34,7 +34,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // Calculate current discount percentage
+  // Calculate current discount percentage (capped at 30%)
   const calculateDiscount = () => {
     let referralDiscount = 0;
     let spendingDiscount = 0;
@@ -58,9 +58,9 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   const currentDiscount = calculateDiscount();
 
   return (
-    <div className="bg-gradient-to-br from-[#E8F5E9] to-[#C8E6C9] border-2 border-[#4CAF50] rounded-xl p-4 mt-6 shadow-lg">
+    <div className="bg-gradient-to-br from-gray-100 to-gray-200 border-2 border-gray-400 rounded-xl p-4 mt-6 shadow-lg">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-[#2E7D32] flex items-center">
+        <h3 className="font-bold text-gray-800 flex items-center">
           <Gift className="h-5 w-5 mr-2" />
           {language === 'en' ? 'Referral Program' : 'Programa de Referidos'}
         </h3>
@@ -68,19 +68,19 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
           variant="ghost"
           size="sm"
           onClick={() => setShowStats(!showStats)}
-          className="text-[#2E7D32] hover:bg-[#C8E6C9]"
+          className="text-gray-700 hover:bg-gray-200"
         >
           <TrendingUp className="h-4 w-4" />
         </Button>
       </div>
       
       <div className="space-y-3">
-        <div className="bg-white rounded-lg p-3 border border-[#A5D6A7]">
+        <div className="bg-white rounded-lg p-3 border border-gray-300">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-[#2E7D32]">
+            <span className="text-sm font-medium text-gray-700">
               {language === 'en' ? 'Your Code:' : 'Tu Código:'}
             </span>
-            <span className="font-mono bg-[#4CAF50] text-white px-3 py-1 rounded-full text-sm font-bold">
+            <span className="font-mono bg-gray-700 text-white px-3 py-1 rounded-full text-sm font-bold">
               {userProfile.referral_code}
             </span>
           </div>
@@ -89,7 +89,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
             onClick={copyInviteLink}
             variant="outline"
             size="sm"
-            className="w-full border-[#4CAF50] text-[#4CAF50] hover:bg-[#4CAF50] hover:text-white"
+            className="w-full border-gray-600 text-gray-700 hover:bg-gray-100 hover:text-gray-900"
           >
             <Copy className="h-4 w-4 mr-2" />
             {language === 'en' ? 'Copy Invite Link' : 'Copiar Enlace de Invitación'}
@@ -97,39 +97,39 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         </div>
         
         {showStats && (
-          <div className="bg-white rounded-lg p-3 border border-[#A5D6A7] space-y-3">
+          <div className="bg-white rounded-lg p-3 border border-gray-300 space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div className="text-center bg-[#E8F5E9] rounded-lg p-3">
+              <div className="text-center bg-gray-100 rounded-lg p-3">
                 <div className="flex items-center justify-center mb-1">
-                  <Users className="h-4 w-4 text-[#2E7D32] mr-1" />
-                  <span className="text-xl font-bold text-[#2E7D32]">{referralCount}</span>
+                  <Users className="h-4 w-4 text-gray-700 mr-1" />
+                  <span className="text-xl font-bold text-gray-800">{referralCount}</span>
                 </div>
-                <span className="text-xs text-[#2E7D32] font-medium">
+                <span className="text-xs text-gray-700 font-medium">
                   {language === 'en' ? 'Referrals' : 'Referidos'}
                 </span>
               </div>
               
-              <div className="text-center bg-[#E8F5E9] rounded-lg p-3">
+              <div className="text-center bg-gray-100 rounded-lg p-3">
                 <div className="flex items-center justify-center mb-1">
-                  <DollarSign className="h-4 w-4 text-[#2E7D32] mr-1" />
-                  <span className="text-xl font-bold text-[#2E7D32]">
+                  <DollarSign className="h-4 w-4 text-gray-700 mr-1" />
+                  <span className="text-xl font-bold text-gray-800">
                     ${userProfile.referred_spending.toFixed(0)}
                   </span>
                 </div>
-                <span className="text-xs text-[#2E7D32] font-medium">
+                <span className="text-xs text-gray-700 font-medium">
                   {language === 'en' ? 'Referred Spending' : 'Gasto Referido'}
                 </span>
               </div>
             </div>
             
-            <div className="text-center bg-gradient-to-r from-[#4CAF50] to-[#8BC34A] text-white rounded-lg p-3">
+            <div className="text-center bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg p-3">
               <div className="text-2xl font-bold">{currentDiscount}%</div>
               <div className="text-sm opacity-90">
-                {language === 'en' ? 'Current Discount' : 'Descuento Actual'}
+                {language === 'en' ? 'Current Discount (Max 30%)' : 'Descuento Actual (Máx 30%)'}
               </div>
             </div>
             
-            <div className="text-xs text-[#666] bg-[#F1F8E9] p-2 rounded">
+            <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
               <strong>{language === 'en' ? 'How it works:' : 'Cómo funciona:'}</strong>
               <ul className="mt-1 space-y-1">
                 <li>• {language === 'en' ? '10% for 1st referral, +4% each additional (max 25%)' : '10% por 1er referido, +4% cada adicional (máx 25%)'}</li>
