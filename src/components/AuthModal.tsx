@@ -104,13 +104,13 @@ const AuthModal = ({ isOpen, onClose, initialMode = 'login' }: AuthModalProps) =
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'signup' && (
             <div>
-              <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
+              <Label htmlFor="name" className="text-sm font-medium text-gray-700">Username</Label>
               <Input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your full name"
+                placeholder="Enter your username"
                 required
                 className="mt-1"
               />

@@ -44,6 +44,7 @@ export const translations = {
     ratings: "Ratings",
     
     // Cart
+    cart: "Cart",
     originalTotal: "Original Total",
     discount: "Discount",
     shipping: "Shipping",
@@ -95,6 +96,7 @@ export const translations = {
     ratings: "Calificaciones",
     
     // Cart
+    cart: "Carrito",
     originalTotal: "Total Original",
     discount: "Descuento",
     shipping: "Envío",

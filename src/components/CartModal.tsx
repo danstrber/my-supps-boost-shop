@@ -114,11 +114,9 @@ const CartModal = ({
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900">{product.name}</h4>
                     <p className="text-sm text-gray-600">${product.price.toFixed(2)} each</p>
-                    {product.labTested && (
-                      <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                        🔬 Lab Tested
-                      </span>
-                    )}
+                    <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                      🔬 Lab Tested
+                    </span>
                   </div>
                   
                   <div className="flex items-center space-x-2">
@@ -234,6 +232,7 @@ const CartModal = ({
         finalTotal={finalTotal}
         cart={cart}
         userProfile={userProfile}
+        cartItems={cartItems}
       />
     </>
   );

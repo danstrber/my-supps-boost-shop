@@ -19,6 +19,16 @@ interface PaymentModalProps {
   finalTotal: number;
   cart: Record<string, number>;
   userProfile: UserProfile | null;
+  cartItems: Array<{
+    product: {
+      id: string;
+      name: string;
+      price: number;
+      image: string;
+      category: string;
+    };
+    quantity: number;
+  }>;
 }
 
 const PaymentModal = ({ 
@@ -29,7 +39,8 @@ const PaymentModal = ({
   shippingFee, 
   finalTotal, 
   cart,
-  userProfile 
+  userProfile,
+  cartItems
 }: PaymentModalProps) => {
   const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'bitcoin' | 'telegram'>('paypal');
   const [customerInfo, setCustomerInfo] = useState({
@@ -106,7 +117,16 @@ const PaymentModal = ({
     try {
       const orderData = {
         user_id: userProfile?.id,
-        items: cart,
+        items: {
+          cart: cart,
+          products: cartItems.map(item => ({
+            id: item.product.id,
+            name: item.product.name,
+            price: item.product.price,
+            quantity: item.quantity,
+            total: item.product.price * item.quantity
+          }))
+        },
         original_total: orderTotal,
         discount_amount: discount,
         shipping_fee: shippingFee,
@@ -138,7 +158,9 @@ const PaymentModal = ({
       setOrderId(data.id);
       setOrderCreated(true);
 
-      // Send notification email (would be implemented with Resend)
+      // Send order confirmation email and Telegram notification
+      await sendOrderNotifications(data.id, orderData);
+
       console.log('Order created successfully:', data.id);
       
       toast({
@@ -155,6 +177,22 @@ const PaymentModal = ({
       });
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const sendOrderNotifications = async (orderId: string, orderData: any) => {
+    try {
+      // Send email notification
+      await supabase.functions.invoke('send-order-email', {
+        body: { orderId, orderData }
+      });
+
+      // Send Telegram notification
+      await supabase.functions.invoke('send-telegram-notification', {
+        body: { orderId, orderData }
+      });
+    } catch (error) {
+      console.error('Error sending notifications:', error);
     }
   };
 
@@ -255,6 +293,18 @@ const PaymentModal = ({
                 <div className="flex justify-between">
                   <span>Payment Method:</span>
                   <span className="capitalize">{paymentMethod}</span>
+                </div>
+              </div>
+              
+              <div className="mt-3 pt-3 border-t">
+                <h5 className="font-medium mb-2">Items Ordered:</h5>
+                <div className="space-y-1 text-xs">
+                  {cartItems.map((item, index) => (
+                    <div key={index} className="flex justify-between">
+                      <span>{item.product.name} x{item.quantity}</span>
+                      <span>${(item.product.price * item.quantity).toFixed(2)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
