@@ -3,16 +3,11 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Minus, Plus, Trash2 } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
 import { Product } from '@/lib/products';
-import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
-
-interface CartItem extends Product {
-  quantity: number;
-}
+import { translations } from '@/lib/translations';
+import { UserProfile } from '@/lib/auth';
+import PaymentModal from './PaymentModal';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -23,162 +18,71 @@ interface CartModalProps {
   userDiscount: number;
   language: 'en' | 'es';
   isAuthenticated: boolean;
-  userProfile: any;
+  userProfile: UserProfile | null;
 }
 
-const CartModal = ({ 
-  isOpen, 
-  onClose, 
-  cart, 
-  products, 
-  onUpdateCart, 
-  userDiscount, 
+const CartModal = ({
+  isOpen,
+  onClose,
+  cart,
+  products,
+  onUpdateCart,
+  userDiscount,
   language,
   isAuthenticated,
   userProfile
 }: CartModalProps) => {
-  const [showCheckout, setShowCheckout] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [paymentDetails, setPaymentDetails] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const t = translations[language];
 
-  const cartItems: CartItem[] = Object.entries(cart)
-    .map(([productId, quantity]) => {
-      const product = products.find(p => p.id === productId);
-      return product ? { ...product, quantity } : null;
-    })
-    .filter(Boolean) as CartItem[];
+  const cartItems = Object.entries(cart).map(([productId, quantity]) => {
+    const product = products.find(p => p.id === productId);
+    return product ? { product, quantity } : null;
+  }).filter(Boolean) as { product: Product; quantity: number }[];
 
-  const originalTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const discountAmount = (originalTotal * userDiscount) / 100;
-  const shippingFee = 10;
-  const finalTotal = originalTotal - discountAmount + shippingFee;
+  const subtotal = cartItems.reduce((total, item) => {
+    return total + (item.product.price * item.quantity);
+  }, 0);
 
-  const updateQuantity = (productId: string, change: number) => {
-    const currentQuantity = cart[productId] || 0;
-    const newQuantity = Math.max(0, currentQuantity + change);
-    onUpdateCart(productId, newQuantity);
+  const discountAmount = (subtotal * userDiscount) / 100;
+  const subtotalAfterDiscount = subtotal - discountAmount;
+  const shippingFee = subtotalAfterDiscount >= 100 ? 0 : 10;
+  const finalTotal = subtotalAfterDiscount + shippingFee;
+
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      onUpdateCart(productId, 0);
+    } else {
+      onUpdateCart(productId, newQuantity);
+    }
   };
 
-  const removeItem = (productId: string) => {
-    onUpdateCart(productId, 0);
-  };
-
-  const handleCheckout = async () => {
-    if (!isAuthenticated || !userProfile) {
-      toast({
-        title: "Please sign in",
-        description: "You need to be signed in to place an order",
-        variant: "destructive"
-      });
+  const handleProceedToCheckout = () => {
+    if (!isAuthenticated) {
+      // This should trigger auth modal in parent component
       return;
     }
-
-    if (!paymentMethod) {
-      toast({
-        title: "Select payment method",
-        description: "Please select a payment method to continue",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if ((paymentMethod === 'paypal' || paymentMethod === 'telegram') && !paymentDetails.trim()) {
-      toast({
-        title: "Payment details required",
-        description: `Please enter your ${paymentMethod === 'paypal' ? 'PayPal name' : 'Telegram handle'}`,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const orderData = {
-        user_id: userProfile.id,
-        items: cart,
-        original_total: originalTotal,
-        discount_amount: discountAmount,
-        shipping_fee: shippingFee,
-        final_total: finalTotal,
-        payment_method: paymentMethod,
-        payment_details: paymentMethod === 'bitcoin' ? null : { [paymentMethod]: paymentDetails },
-        status: 'pending'
-      };
-
-      const { data, error } = await supabase
-        .from('orders')
-        .insert([orderData])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Create email body
-      const itemsList = cartItems.map(item => 
-        `${item.name} x${item.quantity} = $${(item.price * item.quantity).toFixed(2)}`
-      ).join('\n');
-
-      const emailBody = `
-New Order #${data.id}
-
-Customer: ${userProfile.name}
-Email: ${userProfile.email}
-
-Items:
-${itemsList}
-
-Original Total: $${originalTotal.toFixed(2)}
-Discount (${userDiscount}%): -$${discountAmount.toFixed(2)}
-Shipping: $${shippingFee.toFixed(2)}
-Final Total: $${finalTotal.toFixed(2)}
-
-Payment Method: ${paymentMethod.toUpperCase()}
-${paymentMethod === 'paypal' ? `PayPal Name: ${paymentDetails}` : 
-  paymentMethod === 'telegram' ? `Telegram Handle: ${paymentDetails}` :
-  paymentMethod === 'bitcoin' ? 'Bitcoin Address: 3Arg9L1pN7P3fN7fNqSYw42SpendingL5q' : ''}
-
-Order placed at: ${new Date().toLocaleString()}
-      `.trim();
-
-      // Open email client
-      const mailtoUrl = `mailto:christhomaso083@proton.me?subject=New Order #${data.id}&body=${encodeURIComponent(emailBody)}`;
-      window.open(mailtoUrl);
-
-      // Clear cart
-      Object.keys(cart).forEach(productId => onUpdateCart(productId, 0));
-
-      toast({
-        title: "Order placed!",
-        description: "Your order has been submitted. An email has been prepared for the seller.",
-      });
-
-      setShowCheckout(false);
-      onClose();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
+    setPaymentModalOpen(true);
   };
 
   if (cartItems.length === 0) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{language === 'en' ? 'Shopping Cart' : 'Carrito de Compras'}</DialogTitle>
+            <DialogTitle className="flex items-center">
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              {t.cart}
+            </DialogTitle>
           </DialogHeader>
+          
           <div className="text-center py-8">
-            <p className="text-gray-500">
-              {language === 'en' ? 'Your cart is empty' : 'Tu carrito está vacío'}
-            </p>
+            <ShoppingCart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+            <p className="text-gray-500 mb-4">Add some products to get started!</p>
+            <Button onClick={onClose} className="bg-green-600 hover:bg-green-700">
+              Continue Shopping
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -186,172 +90,152 @@ Order placed at: ${new Date().toLocaleString()}
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{language === 'en' ? 'Shopping Cart' : 'Carrito de Compras'}</DialogTitle>
-        </DialogHeader>
-
-        {!showCheckout ? (
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center">
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              {t.cart} ({cartItems.length} items)
+            </DialogTitle>
+          </DialogHeader>
+          
           <div className="space-y-4">
-            {cartItems.map((item) => (
-              <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="flex-1">
-                  <h4 className="font-medium">{item.name}</h4>
-                  <p className="text-sm text-gray-600">${item.price.toFixed(2)} each</p>
+            {/* Cart Items */}
+            <div className="space-y-3">
+              {cartItems.map(({ product, quantity }) => (
+                <div key={product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-16 h-16 object-cover rounded-lg"
+                  />
+                  
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">{product.name}</h4>
+                    <p className="text-sm text-gray-600">${product.price.toFixed(2)} each</p>
+                    {product.labTested && (
+                      <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                        🔬 Lab Tested
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuantityChange(product.id, quantity - 1)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    
+                    <Input
+                      type="number"
+                      min="1"
+                      value={quantity}
+                      onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
+                      className="w-16 text-center h-8"
+                    />
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleQuantityChange(product.id, quantity + 1)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => onUpdateCart(product.id, 0)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="text-right">
+                    <p className="font-medium">${(product.price * quantity).toFixed(2)}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Order Summary */}
+            <div className="border-t pt-4">
+              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+                <h4 className="font-semibold text-gray-900">Order Summary</h4>
+                
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal:</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
                 
-                <div className="flex items-center space-x-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateQuantity(item.id, -1)}
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  
-                  <span className="w-8 text-center">{item.quantity}</span>
-                  
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateQuantity(item.id, 1)}
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                  
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+                {userDiscount > 0 && (
+                  <div className="flex justify-between text-sm text-green-600">
+                    <span>Discount ({userDiscount}%):</span>
+                    <span>-${discountAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                
+                <div className="flex justify-between text-sm">
+                  <span>Shipping:</span>
+                  <span>
+                    {shippingFee === 0 ? (
+                      <span className="text-green-600">FREE</span>
+                    ) : (
+                      `$${shippingFee.toFixed(2)}`
+                    )}
+                  </span>
                 </div>
-              </div>
-            ))}
-
-            <div className="border-t pt-4 space-y-2">
-              <div className="flex justify-between">
-                <span>{language === 'en' ? 'Subtotal:' : 'Subtotal:'}</span>
-                <span>${originalTotal.toFixed(2)}</span>
-              </div>
-              
-              {userDiscount > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>{language === 'en' ? 'Discount:' : 'Descuento:'} ({userDiscount}%)</span>
-                  <span>-${discountAmount.toFixed(2)}</span>
+                
+                {subtotalAfterDiscount < 100 && (
+                  <p className="text-xs text-gray-600">
+                    Add ${(100 - subtotalAfterDiscount).toFixed(2)} more for free shipping!
+                  </p>
+                )}
+                
+                <div className="border-t pt-2 flex justify-between font-semibold text-lg">
+                  <span>Total:</span>
+                  <span className="text-green-600">${finalTotal.toFixed(2)}</span>
                 </div>
-              )}
-              
-              <div className="flex justify-between">
-                <span>{language === 'en' ? 'Shipping:' : 'Envío:'}</span>
-                <span>${shippingFee.toFixed(2)}</span>
-              </div>
-              
-              <div className="flex justify-between font-bold text-lg border-t pt-2">
-                <span>{language === 'en' ? 'Total:' : 'Total:'}</span>
-                <span>${finalTotal.toFixed(2)}</span>
               </div>
             </div>
 
-            <Button
-              onClick={() => setShowCheckout(true)}
-              className="w-full bg-[#2e7d32] hover:bg-[#1b5e20]"
-              disabled={!isAuthenticated}
-            >
-              {!isAuthenticated 
-                ? (language === 'en' ? 'Sign in to checkout' : 'Inicia sesión para comprar')
-                : (language === 'en' ? 'Proceed to Checkout' : 'Proceder al Pago')
-              }
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">
-              {language === 'en' ? 'Payment Method' : 'Método de Pago'}
-            </h3>
-            
-            <div>
-              <Label>{language === 'en' ? 'Select Payment Method' : 'Selecciona Método de Pago'}</Label>
-              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger>
-                  <SelectValue placeholder={language === 'en' ? 'Choose payment method' : 'Elige método de pago'} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="bitcoin">Bitcoin</SelectItem>
-                  <SelectItem value="paypal">PayPal</SelectItem>
-                  <SelectItem value="telegram">Telegram</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {paymentMethod === 'paypal' && (
-              <div>
-                <Label htmlFor="paypal-name">PayPal Name</Label>
-                <Input
-                  id="paypal-name"
-                  value={paymentDetails}
-                  onChange={(e) => setPaymentDetails(e.target.value)}
-                  placeholder="Enter your PayPal name"
-                />
-              </div>
-            )}
-
-            {paymentMethod === 'telegram' && (
-              <div>
-                <Label htmlFor="telegram-handle">Telegram Handle</Label>
-                <Input
-                  id="telegram-handle"
-                  value={paymentDetails}
-                  onChange={(e) => setPaymentDetails(e.target.value)}
-                  placeholder="@yourusername"
-                />
-              </div>
-            )}
-
-            {paymentMethod === 'bitcoin' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-medium mb-2">Bitcoin Payment Instructions</h4>
-                <p className="text-sm mb-2">Send payment to:</p>
-                <code className="bg-white px-2 py-1 rounded border block">
-                  3Arg9L1pN7P3fN7fNqSYw42SpendingL5q
-                </code>
-                <p className="text-sm mt-2 text-gray-600">
-                  Amount: ${finalTotal.toFixed(2)} USD equivalent in Bitcoin
+            {/* Checkout Button */}
+            <div className="space-y-2">
+              <Button 
+                onClick={handleProceedToCheckout}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
+              >
+                {isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
+              </Button>
+              
+              {!isAuthenticated && (
+                <p className="text-xs text-center text-gray-600">
+                  You need to sign in to complete your purchase
                 </p>
-              </div>
-            )}
-
-            <div className="border-t pt-4">
-              <div className="flex justify-between font-bold text-lg">
-                <span>{language === 'en' ? 'Total:' : 'Total:'}</span>
-                <span>${finalTotal.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowCheckout(false)}
-                className="flex-1"
-              >
-                {language === 'en' ? 'Back' : 'Atrás'}
-              </Button>
-              
-              <Button
-                onClick={handleCheckout}
-                disabled={loading}
-                className="flex-1 bg-[#2e7d32] hover:bg-[#1b5e20]"
-              >
-                {loading ? 'Processing...' : (language === 'en' ? 'Place Order' : 'Realizar Pedido')}
-              </Button>
+              )}
             </div>
           </div>
-        )}
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <PaymentModal
+        isOpen={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        orderTotal={subtotal}
+        discount={discountAmount}
+        shippingFee={shippingFee}
+        finalTotal={finalTotal}
+        cart={cart}
+        userProfile={userProfile}
+      />
+    </>
   );
 };
 

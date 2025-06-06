@@ -53,26 +53,43 @@ const Index = () => {
     localStorage.setItem('mysupps_cart', JSON.stringify(cart));
   }, [cart]);
 
-  // Auth state listener
+  // Auth state listener with improved error handling
   useEffect(() => {
+    console.log('Setting up auth state listener...');
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session?.user?.id);
+      
       if (session?.user) {
-        const { user: currentUser, profile } = await getCurrentUser();
-        setUser(currentUser);
-        setUserProfile(profile);
-        
-        if (currentUser) {
-          const discount = await getUserDiscount(currentUser.id);
-          setUserDiscount(discount);
+        try {
+          const { user: currentUser, profile } = await getCurrentUser();
+          setUser(currentUser);
+          setUserProfile(profile);
           
-          // Get referral count
-          const { data: referrals } = await supabase
-            .from('referrals')
-            .select('id')
-            .eq('referrer_id', profile?.id);
-          setReferralCount(referrals?.length || 0);
+          if (currentUser && profile) {
+            console.log('Loading user data for:', currentUser.id);
+            
+            const discount = await getUserDiscount(currentUser.id);
+            setUserDiscount(discount);
+            
+            // Get referral count
+            const { data: referrals, error: referralError } = await supabase
+              .from('referrals')
+              .select('id')
+              .eq('referrer_id', profile.id);
+              
+            if (referralError) {
+              console.error('Error fetching referrals:', referralError);
+            } else {
+              setReferralCount(referrals?.length || 0);
+              console.log('Referral count:', referrals?.length || 0);
+            }
+          }
+        } catch (error) {
+          console.error('Error in auth state change handler:', error);
         }
       } else {
+        console.log('User signed out or no session');
         setUser(null);
         setUserProfile(null);
         setUserDiscount(0);
@@ -82,21 +99,31 @@ const Index = () => {
 
     // Check for existing session
     getCurrentUser().then(({ user: currentUser, profile }) => {
+      console.log('Initial session check:', currentUser?.id);
       setUser(currentUser);
       setUserProfile(profile);
       
-      if (currentUser) {
+      if (currentUser && profile) {
         getUserDiscount(currentUser.id).then(setUserDiscount);
         
         supabase
           .from('referrals')
           .select('id')
-          .eq('referrer_id', profile?.id)
-          .then(({ data }) => setReferralCount(data?.length || 0));
+          .eq('referrer_id', profile.id)
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('Error fetching initial referrals:', error);
+            } else {
+              setReferralCount(data?.length || 0);
+            }
+          });
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('Cleaning up auth subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Filter and sort products
@@ -172,10 +199,12 @@ const Index = () => {
 
   const handleCartOpen = () => {
     if (!user) {
+      console.log('User not authenticated, showing auth modal');
       setAuthModalMode('login');
       setAuthModalOpen(true);
       return;
     }
+    console.log('Opening cart for authenticated user');
     setCartModalOpen(true);
   };
 
@@ -342,6 +371,15 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
+      {/* User Referral Section - Show if user is logged in */}
+      {user && userProfile && (
+        <ReferralSection
+          userProfile={userProfile}
+          language={language}
+          referralCount={referralCount}
+        />
+      )}
+
       {/* Features Section */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-8 mb-8 shadow-lg">
         <div className="grid md:grid-cols-3 gap-8 text-center">
@@ -362,6 +400,33 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Authentication CTA for non-logged in users */}
+      {!user && (
+        <div className="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-8 mb-8 shadow-lg text-center">
+          <h3 className="text-2xl font-bold text-green-800 mb-4">
+            Join MySupps Today!
+          </h3>
+          <p className="text-green-700 mb-6 text-lg">
+            Sign up now to access exclusive discounts, referral rewards, and track your orders.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button 
+              onClick={() => handleAuthAction('signup')}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
+            >
+              Create Account
+            </Button>
+            <Button 
+              onClick={() => handleAuthAction('login')}
+              variant="outline"
+              className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3"
+            >
+              Sign In
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Filters and Sort */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
