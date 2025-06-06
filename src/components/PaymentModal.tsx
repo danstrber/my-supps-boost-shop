@@ -6,9 +6,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Bitcoin, CreditCard, MessageCircle, Copy, Check, Banknote } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
+
+interface CartItem {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    category: string;
+  };
+  quantity: number;
+}
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -19,128 +29,86 @@ interface PaymentModalProps {
   finalTotal: number;
   cart: Record<string, number>;
   userProfile: UserProfile | null;
-  cartItems: Array<{
-    product: {
-      id: string;
-      name: string;
-      price: number;
-      image: string;
-      category: string;
-    };
-    quantity: number;
-  }>;
+  cartItems: CartItem[];
 }
 
-const PaymentModal = ({ 
-  isOpen, 
-  onClose, 
-  orderTotal, 
-  discount, 
-  shippingFee, 
-  finalTotal, 
+const PaymentModal = ({
+  isOpen,
+  onClose,
+  orderTotal,
+  discount,
+  shippingFee,
+  finalTotal,
   cart,
   userProfile,
   cartItems
 }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'bitcoin' | 'solana' | 'telegram'>('telegram');
+  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'paypal' | 'bitcoin' | 'solana'>('telegram');
   const [customerInfo, setCustomerInfo] = useState({
-    fullName: userProfile?.name || '',
+    fullName: '',
     email: userProfile?.email || '',
     address: '',
     city: '',
-    postalCode: '',
     country: '',
-    phone: '',
     paypalName: '',
     txid: ''
   });
-  const [processing, setProcessing] = useState(false);
-  const [orderCreated, setOrderCreated] = useState(false);
-  const [orderId, setOrderId] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const bitcoinAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
-  const solanaAddress = "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM";
-  const paypalLink = "https://www.paypal.me/mkbooster";
-  const telegramServer = "https://t.me/+fDDZObF0zjI2M2Y0";
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const handleInputChange = (field: string, value: string) => {
-    setCustomerInfo(prev => ({ ...prev, [field]: value }));
-  };
-
-  const copyToClipboard = async (text: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      toast({
-        title: "Copied!",
-        description: "Address copied to clipboard",
-      });
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast({
-        title: "Copy failed",
-        description: "Please copy the address manually",
-        variant: "destructive"
-      });
-    }
-  };
+      if (paymentMethod === 'telegram') {
+        // For Telegram, just redirect to the group
+        window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+        
+        toast({
+          title: "Redirected to Telegram",
+          description: "Complete your order in our Telegram group for easy tracking and anonymous ordering.",
+        });
+        
+        onClose();
+        return;
+      }
 
-  const validateForm = () => {
-    const required = ['fullName', 'email', 'address', 'city', 'postalCode', 'country'];
-    for (const field of required) {
-      if (!customerInfo[field as keyof typeof customerInfo]) {
+      // Validate required fields for other payment methods
+      if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country) {
         toast({
           title: "Missing Information",
-          description: `Please fill in your ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`,
+          description: "Please fill in all shipping information fields.",
           variant: "destructive"
         });
-        return false;
+        setLoading(false);
+        return;
       }
-    }
-    
-    if (!/\S+@\S+\.\S+/.test(customerInfo.email)) {
-      toast({
-        title: "Invalid Email",
-        description: "Please enter a valid email address",
-        variant: "destructive"
-      });
-      return false;
-    }
 
-    // Validate payment-specific fields
-    if ((paymentMethod === 'paypal') && !customerInfo.paypalName) {
-      toast({
-        title: "Missing PayPal Name",
-        description: "Please enter your PayPal account name",
-        variant: "destructive"
-      });
-      return false;
-    }
+      if (paymentMethod === 'paypal' && !customerInfo.paypalName) {
+        toast({
+          title: "Missing PayPal Name",
+          description: "Please enter your PayPal name for verification.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
 
-    if ((paymentMethod === 'bitcoin' || paymentMethod === 'solana') && !customerInfo.txid) {
-      toast({
-        title: "Missing Transaction ID",
-        description: "Please enter your transaction ID (TXID)",
-        variant: "destructive"
-      });
-      return false;
-    }
-    
-    return true;
-  };
+      if ((paymentMethod === 'bitcoin' || paymentMethod === 'solana') && !customerInfo.txid) {
+        toast({
+          title: "Missing Transaction ID",
+          description: "Please enter the transaction ID (TXID) for verification.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
 
-  const createOrder = async () => {
-    if (!validateForm()) return;
-    
-    setProcessing(true);
-    
-    try {
+      // Create order in database
       const orderData = {
-        user_id: userProfile?.id,
+        user_id: userProfile?.auth_id,
         items: {
-          cart: cart,
           products: cartItems.map(item => ({
             id: item.product.id,
             name: item.product.name,
@@ -156,445 +124,294 @@ const PaymentModal = ({
         payment_method: paymentMethod,
         payment_details: {
           customer_info: customerInfo,
-          payment_method: paymentMethod,
-          ...(paymentMethod === 'bitcoin' && { 
-            bitcoin_address: bitcoinAddress,
-            txid: customerInfo.txid 
-          }),
-          ...(paymentMethod === 'solana' && { 
-            solana_address: solanaAddress,
-            txid: customerInfo.txid 
-          }),
-          ...(paymentMethod === 'paypal' && { 
-            paypal_link: paypalLink,
-            paypal_name: customerInfo.paypalName 
-          }),
-          ...(paymentMethod === 'telegram' && { telegram_server: telegramServer })
+          ...(paymentMethod === 'paypal' && { paypal_name: customerInfo.paypalName }),
+          ...((['bitcoin', 'solana'].includes(paymentMethod)) && { txid: customerInfo.txid })
         },
         status: 'pending'
       };
 
-      console.log('Creating order:', orderData);
-
-      const { data, error } = await supabase
+      const { data: order, error } = await supabase
         .from('orders')
         .insert([orderData])
-        .select('id')
+        .select()
         .single();
 
-      if (error) {
-        console.error('Order creation error:', error);
-        throw error;
+      if (error) throw error;
+
+      console.log('Order created:', order);
+
+      // Send order confirmation email
+      try {
+        const { error: emailError } = await supabase.functions.invoke('send-order-email', {
+          body: {
+            orderId: order.id,
+            orderData,
+            customerEmail: customerInfo.email
+          }
+        });
+
+        if (emailError) {
+          console.error('Email sending failed:', emailError);
+        } else {
+          console.log('Order confirmation email sent');
+        }
+      } catch (emailErr) {
+        console.error('Email function error:', emailErr);
       }
 
-      setOrderId(data.id);
-      setOrderCreated(true);
-
-      // Send notifications only for non-telegram orders
-      if (paymentMethod !== 'telegram') {
-        await sendOrderNotifications(data.id, orderData);
-      }
-
-      console.log('Order created successfully:', data.id);
-      
       toast({
-        title: "Order Created!",
-        description: `Order #${data.id.slice(0, 8)} has been created successfully.`,
+        title: "Order Placed Successfully!",
+        description: `Your order has been placed. You'll receive a confirmation email shortly.`,
       });
 
+      onClose();
+      
     } catch (error: any) {
-      console.error('Error creating order:', error);
+      console.error('Order creation error:', error);
       toast({
         title: "Order Failed",
-        description: error.message || "Failed to create order. Please try again.",
+        description: error.message || "There was an error processing your order. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setProcessing(false);
+      setLoading(false);
     }
   };
 
-  const sendOrderNotifications = async (orderId: string, orderData: any) => {
-    try {
-      await supabase.functions.invoke('send-order-email', {
-        body: { orderId, orderData }
-      });
-
-      await supabase.functions.invoke('send-telegram-notification', {
-        body: { orderId, orderData }
-      });
-    } catch (error) {
-      console.error('Error sending notifications:', error);
-    }
-  };
-
-  const renderPaymentSpecificFields = () => {
-    if (orderCreated) return null;
-
-    switch (paymentMethod) {
-      case 'paypal':
-        return (
-          <div>
-            <Label htmlFor="paypalName">PayPal Account Name *</Label>
-            <Input
-              id="paypalName"
-              value={customerInfo.paypalName}
-              onChange={(e) => handleInputChange('paypalName', e.target.value)}
-              placeholder="Enter your PayPal account name"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              This helps us confirm your payment
-            </p>
-          </div>
-        );
-
-      case 'bitcoin':
-      case 'solana':
-        return (
-          <div>
-            <Label htmlFor="txid">Transaction ID (TXID) *</Label>
-            <Input
-              id="txid"
-              value={customerInfo.txid}
-              onChange={(e) => handleInputChange('txid', e.target.value)}
-              placeholder="Enter your transaction ID"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Required to verify your {paymentMethod} payment
-            </p>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  const renderPaymentInstructions = () => {
-    if (!orderCreated) return null;
-
+  const renderPaymentMethodInfo = () => {
     switch (paymentMethod) {
       case 'telegram':
         return (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <h4 className="font-semibold text-green-800 mb-4">🚀 Telegram Payment Instructions</h4>
-            
-            <div className="space-y-4">
-              <div className="bg-white p-4 rounded-lg border border-green-100">
-                <h5 className="font-medium text-green-700 mb-2">Why Choose Telegram?</h5>
-                <ul className="text-sm text-green-600 space-y-1">
-                  <li>✅ Faster order processing</li>
-                  <li>✅ Real-time order tracking</li>
-                  <li>✅ Anonymous and secure</li>
-                  <li>✅ Direct communication with our team</li>
-                  <li>✅ Instant support and updates</li>
-                </ul>
-              </div>
-              
-              <p className="text-green-700 font-medium">
-                Amount to pay: ${finalTotal.toFixed(2)}
-              </p>
-              
-              <Button 
-                onClick={() => window.open(telegramServer, '_blank')} 
-                className="w-full bg-green-600 hover:bg-green-700 text-lg py-4"
-              >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Join Our Telegram Server
-              </Button>
-              
-              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
-                <p className="text-yellow-800 text-sm">
-                  <strong>Next Steps:</strong> Join our server and mention order #{orderId?.slice(0, 8)} 
-                  to complete your purchase. Our team will guide you through the payment process.
-                </p>
-              </div>
-            </div>
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+            <h4 className="font-semibold text-blue-800 mb-2">💬 Telegram Ordering</h4>
+            <p className="text-blue-700 text-sm mb-3">
+              Order through our Telegram group for the easiest experience:
+            </p>
+            <ul className="text-blue-700 text-sm space-y-1 mb-3">
+              <li>✅ Easy order tracking</li>
+              <li>✅ Anonymous ordering</li>
+              <li>✅ Direct communication</li>
+              <li>✅ Fast support</li>
+            </ul>
+            <p className="text-blue-600 text-xs">
+              Click "Complete Order" to join our Telegram group and place your order there.
+            </p>
           </div>
         );
-
       case 'paypal':
         return (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-800 mb-2">PayPal Payment Instructions</h4>
-            <p className="text-blue-700 mb-3">
-              Send ${finalTotal.toFixed(2)} to our PayPal account:
+          <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+            <h4 className="font-semibold text-green-800 mb-2">💳 PayPal Payment</h4>
+            <p className="text-green-700 text-sm mb-2">
+              We'll send you PayPal payment instructions via email after you submit your order.
             </p>
-            <div className="flex items-center gap-2 mb-3">
-              <Input value={paypalLink} readOnly className="flex-1" />
-              <Button onClick={() => copyToClipboard(paypalLink)} size="sm">
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            <Button 
-              onClick={() => window.open(paypalLink, '_blank')} 
-              className="w-full bg-blue-600 hover:bg-blue-700"
-            >
-              <CreditCard className="mr-2 h-4 w-4" />
-              Pay with PayPal
-            </Button>
-            <p className="text-xs text-blue-600 mt-2">
-              Your PayPal name "{customerInfo.paypalName}" and order #{orderId?.slice(0, 8)} have been recorded.
+            <p className="text-green-600 text-xs">
+              Please provide your PayPal name for verification purposes.
             </p>
           </div>
         );
-
       case 'bitcoin':
         return (
-          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-            <h4 className="font-semibold text-orange-800 mb-2">Bitcoin Payment Instructions</h4>
-            <p className="text-orange-700 mb-3">
-              Send the equivalent of ${finalTotal.toFixed(2)} in Bitcoin to:
+          <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+            <h4 className="font-semibold text-orange-800 mb-2">₿ Bitcoin Payment</h4>
+            <p className="text-orange-700 text-sm mb-2">
+              We'll send you Bitcoin wallet address and payment instructions via email.
             </p>
-            <div className="flex items-center gap-2 mb-3">
-              <Input value={bitcoinAddress} readOnly className="flex-1 font-mono text-sm" />
-              <Button onClick={() => copyToClipboard(bitcoinAddress)} size="sm">
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            <p className="text-xs text-orange-600">
-              Your TXID "{customerInfo.txid}" and order #{orderId?.slice(0, 8)} have been recorded for verification.
+            <p className="text-orange-600 text-xs">
+              After payment, please provide the transaction ID (TXID) for verification.
             </p>
           </div>
         );
-
       case 'solana':
         return (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-            <h4 className="font-semibold text-purple-800 mb-2">Solana Payment Instructions</h4>
-            <p className="text-purple-700 mb-3">
-              Send the equivalent of ${finalTotal.toFixed(2)} in SOL to:
+          <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+            <h4 className="font-semibold text-purple-800 mb-2">◎ Solana Payment</h4>
+            <p className="text-purple-700 text-sm mb-2">
+              We'll send you Solana wallet address and payment instructions via email.
             </p>
-            <div className="flex items-center gap-2 mb-3">
-              <Input value={solanaAddress} readOnly className="flex-1 font-mono text-sm" />
-              <Button onClick={() => copyToClipboard(solanaAddress)} size="sm">
-                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-              </Button>
-            </div>
-            <p className="text-xs text-purple-600">
-              Your TXID "{customerInfo.txid}" and order #{orderId?.slice(0, 8)} have been recorded for verification.
+            <p className="text-purple-600 text-xs">
+              After payment, please provide the transaction ID (TXID) for verification.
             </p>
           </div>
         );
-
       default:
         return null;
     }
   };
 
-  if (orderCreated) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-green-600">Order Created Successfully!</DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h4 className="font-semibold mb-2">Order Summary</h4>
-              <div className="text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span>Order ID:</span>
-                  <span className="font-mono">#{orderId?.slice(0, 8)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Total Amount:</span>
-                  <span className="font-semibold">${finalTotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Payment Method:</span>
-                  <span className="capitalize">{paymentMethod}</span>
-                </div>
-              </div>
-              
-              <div className="mt-3 pt-3 border-t">
-                <h5 className="font-medium mb-2">Items Ordered:</h5>
-                <div className="space-y-1 text-xs">
-                  {cartItems.map((item, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span>{item.product.name} x{item.quantity}</span>
-                      <span>${(item.product.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {renderPaymentInstructions()}
-
-            <Button onClick={onClose} className="w-full">
-              Close
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Complete Your Order</DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-6">
-          {/* Order Summary */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="font-semibold mb-2">Order Summary</h4>
-            <div className="text-sm space-y-1">
-              <div className="flex justify-between">
-                <span>Subtotal:</span>
-                <span>${orderTotal.toFixed(2)}</span>
+
+        {/* Order Summary */}
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <h4 className="font-semibold text-gray-900 mb-3">Order Summary</h4>
+          
+          {/* Items */}
+          <div className="space-y-2 mb-4">
+            {cartItems.map(item => (
+              <div key={item.product.id} className="flex justify-between text-sm">
+                <span>{item.product.name} x{item.quantity}</span>
+                <span>${(item.product.price * item.quantity).toFixed(2)}</span>
               </div>
-              {discount > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>Discount:</span>
-                  <span>-${discount.toFixed(2)}</span>
-                </div>
-              )}
-              <div className="flex justify-between">
-                <span>Shipping:</span>
-                <span>${shippingFee.toFixed(2)}</span>
+            ))}
+          </div>
+          
+          <div className="border-t pt-2 space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span>Subtotal:</span>
+              <span>${orderTotal.toFixed(2)}</span>
+            </div>
+            {discount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount:</span>
+                <span>-${discount.toFixed(2)}</span>
               </div>
-              <div className="border-t pt-1 flex justify-between font-semibold">
-                <span>Total:</span>
-                <span>${finalTotal.toFixed(2)}</span>
-              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Shipping:</span>
+              <span>{shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`}</span>
+            </div>
+            <div className="flex justify-between font-semibold text-lg border-t pt-1">
+              <span>Total:</span>
+              <span className="text-green-600">${finalTotal.toFixed(2)}</span>
             </div>
           </div>
+        </div>
 
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Payment Method Selection */}
           <div>
-            <Label className="text-sm font-medium">Payment Method</Label>
+            <Label htmlFor="paymentMethod">Payment Method</Label>
             <Select value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="telegram">
-                  <div className="flex items-center">
-                    <MessageCircle className="mr-2 h-4 w-4 text-green-600" />
-                    <div>
-                      <div className="font-medium">Telegram</div>
-                      <div className="text-xs text-gray-500">Recommended - Fast & Anonymous</div>
-                    </div>
-                  </div>
-                </SelectItem>
-                <SelectItem value="paypal">
-                  <div className="flex items-center">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    PayPal
-                  </div>
-                </SelectItem>
-                <SelectItem value="bitcoin">
-                  <div className="flex items-center">
-                    <Bitcoin className="mr-2 h-4 w-4" />
-                    Bitcoin (BTC)
-                  </div>
-                </SelectItem>
-                <SelectItem value="solana">
-                  <div className="flex items-center">
-                    <Banknote className="mr-2 h-4 w-4" />
-                    Solana (SOL)
-                  </div>
-                </SelectItem>
+                <SelectItem value="telegram">💬 Telegram (Recommended)</SelectItem>
+                <SelectItem value="paypal">💳 PayPal</SelectItem>
+                <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
+                <SelectItem value="solana">◎ Solana</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          {/* Customer Information Form */}
-          <div className="space-y-4">
-            <h4 className="font-semibold">Shipping Information</h4>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="fullName">Full Name *</Label>
-                <Input
-                  id="fullName"
-                  value={customerInfo.fullName}
-                  onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={customerInfo.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
+          {/* Payment Method Information */}
+          {renderPaymentMethodInfo()}
 
-            <div>
-              <Label htmlFor="address">Address *</Label>
-              <Input
-                id="address"
-                value={customerInfo.address}
-                onChange={(e) => handleInputChange('address', e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="city">City *</Label>
-                <Input
-                  id="city"
-                  value={customerInfo.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  required
-                />
+          {/* Shipping Information - Only for non-Telegram payments */}
+          {paymentMethod !== 'telegram' && (
+            <>
+              <div className="border-t pt-4">
+                <h4 className="font-semibold text-gray-900 mb-4">Shipping Information</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fullName">Full Name *</Label>
+                    <Input
+                      id="fullName"
+                      value={customerInfo.fullName}
+                      onChange={(e) => setCustomerInfo({...customerInfo, fullName: e.target.value})}
+                      required
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={customerInfo.email}
+                      onChange={(e) => setCustomerInfo({...customerInfo, email: e.target.value})}
+                      required
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                  
+                  <div className="md:col-span-2">
+                    <Label htmlFor="address">Address *</Label>
+                    <Input
+                      id="address"
+                      value={customerInfo.address}
+                      onChange={(e) => setCustomerInfo({...customerInfo, address: e.target.value})}
+                      required
+                      placeholder="Street address"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="city">City *</Label>
+                    <Input
+                      id="city"
+                      value={customerInfo.city}
+                      onChange={(e) => setCustomerInfo({...customerInfo, city: e.target.value})}
+                      required
+                      placeholder="City"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="country">Country *</Label>
+                    <Input
+                      id="country"
+                      value={customerInfo.country}
+                      onChange={(e) => setCustomerInfo({...customerInfo, country: e.target.value})}
+                      required
+                      placeholder="Country"
+                    />
+                  </div>
+                </div>
               </div>
-              <div>
-                <Label htmlFor="postalCode">Postal Code *</Label>
-                <Input
-                  id="postalCode"
-                  value={customerInfo.postalCode}
-                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="country">Country *</Label>
-                <Input
-                  id="country"
-                  value={customerInfo.country}
-                  onChange={(e) => handleInputChange('country', e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone (Optional)</Label>
-                <Input
-                  id="phone"
-                  value={customerInfo.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                />
-              </div>
-            </div>
+              {/* Payment-specific fields */}
+              {paymentMethod === 'paypal' && (
+                <div>
+                  <Label htmlFor="paypalName">PayPal Name *</Label>
+                  <Input
+                    id="paypalName"
+                    value={customerInfo.paypalName}
+                    onChange={(e) => setCustomerInfo({...customerInfo, paypalName: e.target.value})}
+                    required
+                    placeholder="Your PayPal account name"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    This helps us verify your payment
+                  </p>
+                </div>
+              )}
 
-            {/* Payment-specific fields */}
-            {renderPaymentSpecificFields()}
-          </div>
+              {(paymentMethod === 'bitcoin' || paymentMethod === 'solana') && (
+                <div>
+                  <Label htmlFor="txid">Transaction ID (TXID) *</Label>
+                  <Input
+                    id="txid"
+                    value={customerInfo.txid}
+                    onChange={(e) => setCustomerInfo({...customerInfo, txid: e.target.value})}
+                    required
+                    placeholder="Enter transaction ID after payment"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    You can submit this after receiving payment instructions
+                  </p>
+                </div>
+              )}
+            </>
+          )}
 
-          <Button 
-            onClick={createOrder} 
-            className="w-full bg-green-600 hover:bg-green-700"
-            disabled={processing}
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
+            disabled={loading}
           >
-            {processing ? 'Creating Order...' : `Create Order - $${finalTotal.toFixed(2)}`}
+            {loading ? 'Processing...' : 
+             paymentMethod === 'telegram' ? 'Join Telegram Group' : 'Complete Order'}
           </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
   );
