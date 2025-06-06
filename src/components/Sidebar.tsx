@@ -28,24 +28,27 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
 
   return (
     <aside className={`
-      ${isOpen ? 'block' : 'hidden'} 
-      md:block w-64 bg-white border-r-2 border-gray-300 p-4 
+      ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
+      md:translate-x-0 w-64 bg-white border-r border-gray-200 p-4 
       fixed md:relative z-40 h-full md:h-auto overflow-y-auto
+      transition-transform duration-300 ease-in-out shadow-lg md:shadow-none
     `}>
-      <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b border-gray-200 pb-2">
-        {t.categories}
-      </h3>
+      <div className="sticky top-0 bg-white pb-4">
+        <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">
+          {t.categories}
+        </h3>
+      </div>
       
-      <ul className="space-y-2">
+      <ul className="space-y-1 mb-6">
         {categories.map((category) => (
           <li key={category.id}>
             <button
               onClick={() => onCategoryChange(category.id)}
               className={`
-                w-full text-left px-3 py-2 rounded-lg transition-all duration-200
+                w-full text-left px-4 py-3 rounded-lg transition-all duration-200 font-medium
                 ${selectedCategory === category.id
-                  ? 'bg-gray-700 text-white shadow-md'
-                  : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                  ? 'bg-green-600 text-white shadow-md'
+                  : 'text-gray-700 hover:bg-green-50 hover:text-green-700 hover:shadow-sm'
                 }
               `}
             >
@@ -56,11 +59,13 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
       </ul>
 
       {userProfile && (
-        <ReferralSection
-          userProfile={userProfile}
-          language={language}
-          referralCount={referralCount}
-        />
+        <div className="border-t border-gray-200 pt-4">
+          <ReferralSection
+            userProfile={userProfile}
+            language={language}
+            referralCount={referralCount}
+          />
+        </div>
       )}
     </aside>
   );

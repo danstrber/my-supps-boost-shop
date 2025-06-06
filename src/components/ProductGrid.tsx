@@ -16,55 +16,62 @@ const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: Product
   const t = translations[language];
   
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
       {products.map((product) => (
-        <div key={product.id} className="bg-white border-2 border-gray-200 hover:border-gray-400 rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 group transform hover:-translate-y-1">
-          <div className="relative mb-6">
+        <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
+          <div className="relative mb-4">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full h-52 object-cover rounded-xl group-hover:scale-105 transition-transform duration-300 shadow-lg"
+              className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
             />
-            {product.featured && (
-              <span className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm px-3 py-1 rounded-full font-semibold shadow-lg">
-                Featured
-              </span>
-            )}
-            {product.labTestFile && (
-              <span className="absolute top-3 right-3 bg-green-600 text-white text-sm px-3 py-1 rounded-full font-semibold shadow-lg">
-                Lab Tested
-              </span>
-            )}
+            <div className="absolute top-2 left-2 flex flex-col gap-1">
+              {product.featured && (
+                <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
+                  Featured
+                </span>
+              )}
+              {product.labTestFile && (
+                <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
+                  Lab Tested
+                </span>
+              )}
+            </div>
             {!product.inStock && (
-              <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-xl">
-                <span className="text-white font-bold text-xl">Out of Stock</span>
+              <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
+                <span className="text-white font-bold text-lg">Out of Stock</span>
               </div>
             )}
           </div>
           
-          <div className="space-y-4">
-            <h3 className="font-bold text-gray-800 text-xl group-hover:text-gray-600 transition-colors leading-tight">
+          <div className="space-y-3">
+            <h3 className="font-bold text-gray-800 text-lg md:text-xl group-hover:text-green-600 transition-colors leading-tight line-clamp-2">
               {product.name}
             </h3>
             
-            <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+            <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
               {product.description}
             </p>
             
-            <div className="flex flex-wrap gap-2">
-              {product.categories.map((category) => (
+            <div className="flex flex-wrap gap-1">
+              {product.categories.slice(0, 2).map((category) => (
                 <span
                   key={category}
-                  className="bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-medium border border-gray-300"
+                  className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium"
                 >
                   {category}
                 </span>
               ))}
+              {product.categories.length > 2 && (
+                <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
+                  +{product.categories.length - 2}
+                </span>
+              )}
             </div>
             
-            <div className="pt-4 border-t border-gray-200">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-3xl font-bold text-gray-800">
+            <div className="pt-3 border-t border-gray-100">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-2xl md:text-3xl font-bold text-green-600">
                   ${product.price.toFixed(2)}
                 </span>
               </div>
@@ -73,7 +80,7 @@ const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: Product
                 <Button
                   variant="outline"
                   onClick={() => onViewDetails(product)}
-                  className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-semibold py-2"
+                  className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg"
                 >
                   <Eye className="h-4 w-4 mr-2" />
                   {t.viewDetails}
@@ -82,7 +89,7 @@ const ProductGrid = ({ products, language, onAddToCart, onViewDetails }: Product
                 <Button
                   onClick={() => onAddToCart(product)}
                   disabled={!product.inStock}
-                  className="w-full bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 text-white font-semibold py-2"
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm"
                 >
                   <ShoppingCart className="h-4 w-4 mr-1" />
                   {language === 'en' ? 'Add to Cart' : 'Agregar'}

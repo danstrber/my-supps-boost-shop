@@ -28,15 +28,15 @@ const Header = ({
   onPageChange
 }: HeaderProps) => {
   return (
-    <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b-2 border-gray-200">
+    <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 md:h-20">
           {/* Mobile menu button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={onMenuToggle}
-            className="md:hidden"
+            className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
           >
             <Menu className="h-6 w-6" />
           </Button>
@@ -47,56 +47,56 @@ const Header = ({
             onClick={() => onPageChange('home')}
           >
             <img 
-              src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
+              src="/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png" 
               alt="MySupps Logo" 
-              className="h-12 w-auto"
+              className="h-10 md:h-14 w-auto"
             />
           </div>
 
           {/* Navigation - Desktop */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden lg:flex space-x-1">
             <Button
               variant={currentPage === 'home' ? 'default' : 'ghost'}
               onClick={() => onPageChange('home')}
-              className="text-gray-700 hover:text-green-600"
+              className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
               Home
             </Button>
             <Button
               variant={currentPage === 'about' ? 'default' : 'ghost'}
               onClick={() => onPageChange('about')}
-              className="text-gray-700 hover:text-green-600"
+              className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
               About
             </Button>
             <Button
               variant={currentPage === 'contact' ? 'default' : 'ghost'}
               onClick={() => onPageChange('contact')}
-              className="text-gray-700 hover:text-green-600"
+              className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
               Contact
             </Button>
             <Button
               variant={currentPage === 'delivery' ? 'default' : 'ghost'}
               onClick={() => onPageChange('delivery')}
-              className="text-gray-700 hover:text-green-600"
+              className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
               Delivery
             </Button>
             <Button
               variant={currentPage === 'payment' ? 'default' : 'ghost'}
               onClick={() => onPageChange('payment')}
-              className="text-gray-700 hover:text-green-600"
+              className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
-              Payment & Lab Testing
+              Lab Testing
             </Button>
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-3">
             {/* Language Selector */}
             <Select value={language} onValueChange={onLanguageChange}>
-              <SelectTrigger className="w-20 border-2 border-gray-300">
+              <SelectTrigger className="w-16 md:w-20 border border-gray-300 rounded-lg">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -110,26 +110,27 @@ const Header = ({
               <Button
                 variant="outline"
                 onClick={() => onAuthAction('logout')}
-                className="flex items-center border-2 border-gray-300 hover:border-red-500 hover:text-red-600"
+                className="hidden sm:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-3 py-2"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
+                <LogOut className="h-4 w-4 mr-1" />
+                <span className="hidden md:inline">Sign Out</span>
               </Button>
             ) : (
-              <div className="flex space-x-2">
+              <div className="flex space-x-1 md:space-x-2">
                 <Button
                   variant="outline"
                   onClick={() => onAuthAction('login')}
-                  className="border-2 border-gray-300 hover:border-green-500 hover:text-green-600"
+                  className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-3 py-2"
                 >
-                  <User className="h-4 w-4 mr-2" />
-                  Sign In
+                  <User className="h-4 w-4 md:mr-1" />
+                  <span className="hidden md:inline">Sign In</span>
                 </Button>
                 <Button
                   onClick={() => onAuthAction('signup')}
-                  className="bg-green-600 hover:bg-green-700 text-white border-2 border-green-600"
+                  className="bg-green-600 hover:bg-green-700 text-white border border-green-600 rounded-lg px-3 py-2 font-medium"
                 >
-                  Sign Up
+                  <span className="hidden sm:inline">Sign Up</span>
+                  <span className="sm:hidden">Join</span>
                 </Button>
               </div>
             )}
@@ -138,11 +139,11 @@ const Header = ({
             <Button
               variant="outline"
               onClick={onCartOpen}
-              className="relative border-2 border-gray-300 hover:border-green-500 hover:text-green-600"
+              className="relative border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg p-2 md:px-3 md:py-2"
             >
               <ShoppingCart className="h-5 w-5" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-600 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                   {cartItemCount}
                 </span>
               )}
