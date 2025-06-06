@@ -40,6 +40,18 @@ const CartModal = ({
     return product ? { product, quantity } : null;
   }).filter(Boolean) as { product: Product; quantity: number }[];
 
+  // Transform cart items to match PaymentModal interface
+  const cartItemsForPayment = cartItems.map(item => ({
+    product: {
+      id: item.product.id,
+      name: item.product.name,
+      price: item.product.price,
+      image: item.product.image,
+      category: item.product.categories[0] || 'supplements' // Use first category or default
+    },
+    quantity: item.quantity
+  }));
+
   const subtotal = cartItems.reduce((total, item) => {
     return total + (item.product.price * item.quantity);
   }, 0);
@@ -59,7 +71,6 @@ const CartModal = ({
 
   const handleProceedToCheckout = () => {
     if (!isAuthenticated) {
-      // This should trigger auth modal in parent component
       return;
     }
     setPaymentModalOpen(true);
@@ -232,7 +243,7 @@ const CartModal = ({
         finalTotal={finalTotal}
         cart={cart}
         userProfile={userProfile}
-        cartItems={cartItems}
+        cartItems={cartItemsForPayment}
       />
     </>
   );

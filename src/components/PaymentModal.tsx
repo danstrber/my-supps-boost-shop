@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Bitcoin, CreditCard, MessageCircle, Copy, Check } from 'lucide-react';
+import { Bitcoin, CreditCard, MessageCircle, Copy, Check, Banknote } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
 
@@ -42,7 +42,7 @@ const PaymentModal = ({
   userProfile,
   cartItems
 }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'bitcoin' | 'telegram'>('paypal');
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'bitcoin' | 'solana' | 'telegram'>('telegram');
   const [customerInfo, setCustomerInfo] = useState({
     fullName: userProfile?.name || '',
     email: userProfile?.email || '',
@@ -50,7 +50,9 @@ const PaymentModal = ({
     city: '',
     postalCode: '',
     country: '',
-    phone: ''
+    phone: '',
+    paypalName: '',
+    txid: ''
   });
   const [processing, setProcessing] = useState(false);
   const [orderCreated, setOrderCreated] = useState(false);
@@ -59,8 +61,9 @@ const PaymentModal = ({
   const { toast } = useToast();
 
   const bitcoinAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+  const solanaAddress = "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM";
   const paypalLink = "https://www.paypal.me/mkbooster";
-  const telegramContact = "@DANSTRBER";
+  const telegramServer = "https://t.me/+fDDZObF0zjI2M2Y0";
 
   const handleInputChange = (field: string, value: string) => {
     setCustomerInfo(prev => ({ ...prev, [field]: value }));
@@ -105,6 +108,25 @@ const PaymentModal = ({
       });
       return false;
     }
+
+    // Validate payment-specific fields
+    if ((paymentMethod === 'paypal') && !customerInfo.paypalName) {
+      toast({
+        title: "Missing PayPal Name",
+        description: "Please enter your PayPal account name",
+        variant: "destructive"
+      });
+      return false;
+    }
+
+    if ((paymentMethod === 'bitcoin' || paymentMethod === 'solana') && !customerInfo.txid) {
+      toast({
+        title: "Missing Transaction ID",
+        description: "Please enter your transaction ID (TXID)",
+        variant: "destructive"
+      });
+      return false;
+    }
     
     return true;
   };
@@ -135,9 +157,19 @@ const PaymentModal = ({
         payment_details: {
           customer_info: customerInfo,
           payment_method: paymentMethod,
-          ...(paymentMethod === 'bitcoin' && { bitcoin_address: bitcoinAddress }),
-          ...(paymentMethod === 'paypal' && { paypal_link: paypalLink }),
-          ...(paymentMethod === 'telegram' && { telegram_contact: telegramContact })
+          ...(paymentMethod === 'bitcoin' && { 
+            bitcoin_address: bitcoinAddress,
+            txid: customerInfo.txid 
+          }),
+          ...(paymentMethod === 'solana' && { 
+            solana_address: solanaAddress,
+            txid: customerInfo.txid 
+          }),
+          ...(paymentMethod === 'paypal' && { 
+            paypal_link: paypalLink,
+            paypal_name: customerInfo.paypalName 
+          }),
+          ...(paymentMethod === 'telegram' && { telegram_server: telegramServer })
         },
         status: 'pending'
       };
@@ -158,8 +190,10 @@ const PaymentModal = ({
       setOrderId(data.id);
       setOrderCreated(true);
 
-      // Send order confirmation email and Telegram notification
-      await sendOrderNotifications(data.id, orderData);
+      // Send notifications only for non-telegram orders
+      if (paymentMethod !== 'telegram') {
+        await sendOrderNotifications(data.id, orderData);
+      }
 
       console.log('Order created successfully:', data.id);
       
@@ -182,12 +216,10 @@ const PaymentModal = ({
 
   const sendOrderNotifications = async (orderId: string, orderData: any) => {
     try {
-      // Send email notification
       await supabase.functions.invoke('send-order-email', {
         body: { orderId, orderData }
       });
 
-      // Send Telegram notification
       await supabase.functions.invoke('send-telegram-notification', {
         body: { orderId, orderData }
       });
@@ -196,10 +228,93 @@ const PaymentModal = ({
     }
   };
 
+  const renderPaymentSpecificFields = () => {
+    if (orderCreated) return null;
+
+    switch (paymentMethod) {
+      case 'paypal':
+        return (
+          <div>
+            <Label htmlFor="paypalName">PayPal Account Name *</Label>
+            <Input
+              id="paypalName"
+              value={customerInfo.paypalName}
+              onChange={(e) => handleInputChange('paypalName', e.target.value)}
+              placeholder="Enter your PayPal account name"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              This helps us confirm your payment
+            </p>
+          </div>
+        );
+
+      case 'bitcoin':
+      case 'solana':
+        return (
+          <div>
+            <Label htmlFor="txid">Transaction ID (TXID) *</Label>
+            <Input
+              id="txid"
+              value={customerInfo.txid}
+              onChange={(e) => handleInputChange('txid', e.target.value)}
+              placeholder="Enter your transaction ID"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Required to verify your {paymentMethod} payment
+            </p>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const renderPaymentInstructions = () => {
     if (!orderCreated) return null;
 
     switch (paymentMethod) {
+      case 'telegram':
+        return (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h4 className="font-semibold text-green-800 mb-4">🚀 Telegram Payment Instructions</h4>
+            
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-lg border border-green-100">
+                <h5 className="font-medium text-green-700 mb-2">Why Choose Telegram?</h5>
+                <ul className="text-sm text-green-600 space-y-1">
+                  <li>✅ Faster order processing</li>
+                  <li>✅ Real-time order tracking</li>
+                  <li>✅ Anonymous and secure</li>
+                  <li>✅ Direct communication with our team</li>
+                  <li>✅ Instant support and updates</li>
+                </ul>
+              </div>
+              
+              <p className="text-green-700 font-medium">
+                Amount to pay: ${finalTotal.toFixed(2)}
+              </p>
+              
+              <Button 
+                onClick={() => window.open(telegramServer, '_blank')} 
+                className="w-full bg-green-600 hover:bg-green-700 text-lg py-4"
+              >
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Join Our Telegram Server
+              </Button>
+              
+              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Next Steps:</strong> Join our server and mention order #{orderId?.slice(0, 8)} 
+                  to complete your purchase. Our team will guide you through the payment process.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'paypal':
         return (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -221,7 +336,7 @@ const PaymentModal = ({
               Pay with PayPal
             </Button>
             <p className="text-xs text-blue-600 mt-2">
-              Please include order #{orderId?.slice(0, 8)} in the payment note.
+              Your PayPal name "{customerInfo.paypalName}" and order #{orderId?.slice(0, 8)} have been recorded.
             </p>
           </div>
         );
@@ -240,27 +355,26 @@ const PaymentModal = ({
               </Button>
             </div>
             <p className="text-xs text-orange-600">
-              After sending, please contact us via Telegram with your transaction ID and order #{orderId?.slice(0, 8)}.
+              Your TXID "{customerInfo.txid}" and order #{orderId?.slice(0, 8)} have been recorded for verification.
             </p>
           </div>
         );
 
-      case 'telegram':
+      case 'solana':
         return (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h4 className="font-semibold text-green-800 mb-2">Telegram Payment Instructions</h4>
-            <p className="text-green-700 mb-3">
-              Contact us on Telegram to arrange payment for ${finalTotal.toFixed(2)}:
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h4 className="font-semibold text-purple-800 mb-2">Solana Payment Instructions</h4>
+            <p className="text-purple-700 mb-3">
+              Send the equivalent of ${finalTotal.toFixed(2)} in SOL to:
             </p>
-            <Button 
-              onClick={() => window.open(`https://t.me/DANSTRBER`, '_blank')} 
-              className="w-full bg-green-600 hover:bg-green-700"
-            >
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Contact on Telegram
-            </Button>
-            <p className="text-xs text-green-600 mt-2">
-              Please mention order #{orderId?.slice(0, 8)} when contacting us.
+            <div className="flex items-center gap-2 mb-3">
+              <Input value={solanaAddress} readOnly className="flex-1 font-mono text-sm" />
+              <Button onClick={() => copyToClipboard(solanaAddress)} size="sm">
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </div>
+            <p className="text-xs text-purple-600">
+              Your TXID "{customerInfo.txid}" and order #{orderId?.slice(0, 8)} have been recorded for verification.
             </p>
           </div>
         );
@@ -361,6 +475,15 @@ const PaymentModal = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="telegram">
+                  <div className="flex items-center">
+                    <MessageCircle className="mr-2 h-4 w-4 text-green-600" />
+                    <div>
+                      <div className="font-medium">Telegram</div>
+                      <div className="text-xs text-gray-500">Recommended - Fast & Anonymous</div>
+                    </div>
+                  </div>
+                </SelectItem>
                 <SelectItem value="paypal">
                   <div className="flex items-center">
                     <CreditCard className="mr-2 h-4 w-4" />
@@ -373,10 +496,10 @@ const PaymentModal = ({
                     Bitcoin (BTC)
                   </div>
                 </SelectItem>
-                <SelectItem value="telegram">
+                <SelectItem value="solana">
                   <div className="flex items-center">
-                    <MessageCircle className="mr-2 h-4 w-4" />
-                    Telegram Pay
+                    <Banknote className="mr-2 h-4 w-4" />
+                    Solana (SOL)
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -459,6 +582,9 @@ const PaymentModal = ({
                 />
               </div>
             </div>
+
+            {/* Payment-specific fields */}
+            {renderPaymentSpecificFields()}
           </div>
 
           <Button 
