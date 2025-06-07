@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { products, Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 import { getCurrentUser, getUserDiscount, signOut, UserProfile } from '@/lib/auth';
+import { getReferralCodeFromUrl, clearReferralFromUrl } from '@/lib/referral';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ProductGrid from '@/components/ProductGrid';
@@ -32,9 +33,19 @@ const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productDetailModalOpen, setProductDetailModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment'>('home');
+  const [pendingReferralCode, setPendingReferralCode] = useState<string | null>(null);
   const { toast } = useToast();
 
   const t = translations[language];
+
+  // Check for referral code in URL
+  useEffect(() => {
+    const referralCode = getReferralCodeFromUrl();
+    if (referralCode) {
+      setPendingReferralCode(referralCode);
+      clearReferralFromUrl();
+    }
+  }, []);
 
   // Load cart from localStorage
   useEffect(() => {
@@ -212,22 +223,27 @@ const Index = () => {
 
   const renderAboutPage = () => (
     <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">About MySupps</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">
+        {language === 'en' ? 'About MySupps' : 'Acerca de MySupps'}
+      </h1>
       <div className="space-y-6 text-gray-600 leading-relaxed">
         <p className="text-lg">
-          Welcome to MySupps, your trusted source for premium research chemicals and performance enhancement compounds. 
-          We specialize in providing laboratory-grade substances for research purposes, catering to fitness enthusiasts, 
-          researchers, and professionals seeking cutting-edge performance solutions.
+          {language === 'en' 
+            ? 'Welcome to MySupps, your trusted source for premium research chemicals and performance enhancement compounds. We specialize in providing laboratory-grade substances for research purposes, catering to fitness enthusiasts, researchers, and professionals seeking cutting-edge performance solutions.'
+            : 'Bienvenido a MySupps, tu fuente confiable de químicos de investigación premium y compuestos de mejora del rendimiento. Nos especializamos en proporcionar sustancias de grado laboratorio para propósitos de investigación, atendiendo a entusiastas del fitness, investigadores y profesionales que buscan soluciones de rendimiento de vanguardia.'
+          }
         </p>
         <p>
-          Our mission is to bridge the gap between scientific innovation and practical application, offering products 
-          that meet the highest standards of purity and potency. Every product in our catalog undergoes rigorous 
-          third-party testing to ensure you receive exactly what you expect.
+          {language === 'en' 
+            ? 'Our mission is to bridge the gap between scientific innovation and practical application, offering products that meet the highest standards of purity and potency. Every product in our catalog undergoes rigorous third-party testing to ensure you receive exactly what you expect.'
+            : 'Nuestra misión es cerrar la brecha entre la innovación científica y la aplicación práctica, ofreciendo productos que cumplan con los estándares más altos de pureza y potencia. Cada producto en nuestro catálogo está sometido a un rigoroso testing de terceros para asegurarte de que recibas exactamente lo que esperas.'
+          }
         </p>
         <p>
-          Founded by researchers and fitness professionals, MySupps understands the unique needs of our community. 
-          We're committed to providing not just products, but education and support to help you make informed decisions 
-          about your research goals.
+          {language === 'en' 
+            ? 'Founded by researchers and fitness professionals, MySupps understands the unique needs of our community. We're committed to providing not just products, but education and support to help you make informed decisions about your research goals.'
+            : 'Fundado por investigadores y profesionales del fitness, MySupps entiende las necesidades únicas de nuestra comunidad. Nos comprometemos a no solo ofrecer productos, sino a proporcionar educación y apoyo para ayudarte a tomar decisiones informadas sobre tus metas de investigación.'
+          }
         </p>
         <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">Our Commitment</h3>
@@ -245,43 +261,46 @@ const Index = () => {
 
   const renderContactPage = () => (
     <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Contact Us</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">
+        {language === 'en' ? 'Contact Us' : 'Contáctanos'}
+      </h1>
       <div className="space-y-6">
         <p className="text-gray-600 text-lg">
-          We're here to help with any questions about our products, orders, or research guidance. 
-          Reach out to us through any of the following channels:
+          {language === 'en' 
+            ? 'We're here to help with any questions about our products, orders, or research guidance. Reach out to us through any of the following channels:'
+            : 'Nosotros estamos aquí para ayudarte con cualquier pregunta sobre nuestros productos, órdenes o guía de investigación. Contáctanos a través de cualquiera de los siguientes canales:'
+          }
         </p>
         
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
             <h3 className="text-xl font-semibold text-gray-800 mb-3">📧 Email Support</h3>
-            <p className="text-gray-600 mb-2">For general inquiries and support:</p>
+            <p className="text-gray-600 mb-2">Para preguntas generales y asistencia:</p>
             <a href="mailto:christhomaso083@proton.me" className="text-blue-600 font-semibold hover:underline">
               christhomaso083@proton.me
             </a>
-            <p className="text-sm text-gray-500 mt-2">Response time: 24-48 hours</p>
+            <p className="text-sm text-gray-500 mt-2">Tiempo de respuesta: 24-48 horas</p>
           </div>
           
           <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
             <h3 className="text-xl font-semibold text-gray-800 mb-3">📱 Telegram</h3>
-            <p className="text-gray-600 mb-2">For quick questions and order updates:</p>
+            <p className="text-gray-600 mb-2">Para preguntas rápidas y actualizaciones de órdenes:</p>
             <a href="https://t.me/DANSTRBER" className="text-green-600 font-semibold hover:underline">
               @DANSTRBER
             </a>
-            <p className="text-sm text-gray-500 mt-2">Response time: 1-6 hours</p>
+            <p className="text-sm text-gray-500 mt-2">Tiempo de respuesta: 1-6 horas</p>
           </div>
         </div>
         
         <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🕒 Support Hours</h3>
-          <p className="text-gray-600">Monday - Friday: 9:00 AM - 6:00 PM (EST)</p>
-          <p className="text-gray-600">Saturday - Sunday: 10:00 AM - 4:00 PM (EST)</p>
+          <p className="text-gray-600">Lunes - Viernes: 9:00 AM - 6:00 PM (EST)</p>
+          <p className="text-gray-600">Sábado - Domingo: 10:00 AM - 4:00 PM (EST)</p>
         </div>
         
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
           <p className="text-yellow-800">
-            <strong>Note:</strong> All products are sold for research purposes only. We do not provide medical advice. 
-            Please consult with a healthcare professional before starting any research protocol.
+            <strong>Note:</strong> All products are sold for research purposes only. We do not provide medical advice. Please consult with a healthcare professional before starting any research protocol.
           </p>
         </div>
       </div>
@@ -290,12 +309,17 @@ const Index = () => {
 
   const renderDeliveryPage = () => (
     <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Delivery Information</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">
+        {language === 'en' ? 'Delivery Information' : 'Información de Entrega'}
+      </h1>
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🚚 Shipping Policy</h3>
           <p className="text-gray-600 text-lg mb-4">
-            We ship as soon as possible! Orders are typically processed and shipped within 2-3 business days.
+            {language === 'en' 
+              ? 'We ship as soon as possible! Orders are typically processed and shipped within 2-3 business days.'
+              : 'Enviamos lo más pronto posible! Las órdenes se procesan y envían a menudo en 2-3 días hábiles.'
+            }
           </p>
           <ul className="space-y-2 text-gray-600">
             <li>✅ Free shipping on orders over $100</li>
@@ -323,8 +347,7 @@ const Index = () => {
         
         <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
           <p className="text-red-800">
-            <strong>Important:</strong> Delivery times may vary due to customs processing for international orders. 
-            We are not responsible for customs delays or fees.
+            <strong>Important:</strong> Delivery times may vary due to customs processing for international orders. We are not responsible for customs delays or fees.
           </p>
         </div>
       </div>
@@ -333,7 +356,9 @@ const Index = () => {
 
   const renderPaymentPage = () => (
     <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Payment & Lab Testing</h1>
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">
+        {language === 'en' ? 'Lab Testing & Payment' : 'Pruebas de Laboratorio y Pago'}
+      </h1>
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">💳 Payment Methods</h3>
@@ -348,8 +373,10 @@ const Index = () => {
         <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🔬 Lab Testing</h3>
           <p className="text-gray-600 mb-4">
-            All our products undergo rigorous third-party testing to ensure purity and potency. 
-            Lab reports are available for products marked with the "Lab Tested" badge.
+            {language === 'en' 
+              ? 'All our products undergo rigorous third-party testing to ensure purity and potency. Lab reports are available for products marked with the "Lab Tested" badge.'
+              : 'Todos nuestros productos están sometidos a un rigoroso testing de terceros para asegurar pureza y potencia. Los informes de laboratorio están disponibles para productos marcados con el "Lab Tested".'
+            }
           </p>
           <ul className="space-y-2 text-gray-600">
             <li>✅ HPLC testing for purity verification</li>
@@ -361,8 +388,7 @@ const Index = () => {
         
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
           <p className="text-yellow-800">
-            <strong>Security Notice:</strong> All payments are processed securely. We never store payment information 
-            and use encrypted channels for all transactions.
+            <strong>Security Notice:</strong> All payments are processed securely. We never store payment information and use encrypted channels for all transactions.
           </p>
         </div>
       </div>
@@ -371,6 +397,41 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
+      {/* Lab Testing & Features Section - RESTORED */}
+      <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
+        <div className="grid md:grid-cols-3 gap-6 md:gap-8 text-center">
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
+            <div className="text-3xl md:text-4xl mb-4">🚚</div>
+            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">{t.freeShippingOver}</h3>
+            <p className="text-gray-600 text-sm md:text-base">{t.shippingFee}</p>
+          </div>
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
+            <div className="text-3xl md:text-4xl mb-4">🔬</div>
+            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+              {language === 'en' ? 'Lab Tested' : 'Probado en Laboratorio'}
+            </h3>
+            <p className="text-gray-600 text-sm md:text-base">
+              {language === 'en' 
+                ? 'Third-party tested for purity and potency'
+                : 'Probado por terceros para pureza y potencia'
+              }
+            </p>
+          </div>
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
+            <div className="text-3xl md:text-4xl mb-4">💎</div>
+            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+              {language === 'en' ? 'Premium Quality' : 'Calidad Premium'}
+            </h3>
+            <p className="text-gray-600 text-sm md:text-base">
+              {language === 'en' 
+                ? 'Research-grade compounds for optimal results'
+                : 'Compuestos de grado de investigación para resultados óptimos'
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* User Referral Section - Show if user is logged in */}
       {user && userProfile && (
         <ReferralSection
@@ -380,49 +441,41 @@ const Index = () => {
         />
       )}
 
-      {/* Features Section */}
-      <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-8 mb-8 shadow-lg">
-        <div className="grid md:grid-cols-3 gap-8 text-center">
-          <div className="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-            <div className="text-4xl mb-4">🚚</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-lg">{t.freeShippingOver}</h3>
-            <p className="text-gray-600">{t.shippingFee}</p>
-          </div>
-          <div className="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-            <div className="text-4xl mb-4">🔬</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-lg">Lab Tested</h3>
-            <p className="text-gray-600">Third-party tested for purity and potency</p>
-          </div>
-          <div className="p-6 bg-white rounded-xl shadow-md border border-gray-100">
-            <div className="text-4xl mb-4">💎</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-lg">Premium Quality</h3>
-            <p className="text-gray-600">Research-grade compounds for optimal results</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Authentication CTA for non-logged in users */}
+      {/* Authentication CTA for non-logged in users with referral code detection */}
       {!user && (
-        <div className="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-8 mb-8 shadow-lg text-center">
-          <h3 className="text-2xl font-bold text-green-800 mb-4">
-            Join MySupps Today!
+        <div className="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg text-center">
+          {pendingReferralCode && (
+            <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-3 mb-4">
+              <p className="text-yellow-800 font-semibold">
+                🎉 {language === 'en' 
+                  ? `You've been invited! Referral code: ${pendingReferralCode}`
+                  : `¡Has sido invitado! Código de referido: ${pendingReferralCode}`
+                }
+              </p>
+            </div>
+          )}
+          <h3 className="text-xl md:text-2xl font-bold text-green-800 mb-4">
+            {language === 'en' ? 'Join MySupps Today!' : '¡Únete a MySupps Hoy!'}
           </h3>
-          <p className="text-green-700 mb-6 text-lg">
-            Sign up now to access exclusive discounts, referral rewards, and track your orders.
+          <p className="text-green-700 mb-6 text-base md:text-lg">
+            {language === 'en' 
+              ? 'Sign up now to access exclusive discounts, referral rewards, and track your orders.'
+              : 'Regístrate ahora para acceder a descuentos exclusivos, recompensas de referidos y rastrear tus pedidos.'
+            }
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button 
               onClick={() => handleAuthAction('signup')}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3"
+              className="bg-green-600 hover:bg-green-700 text-white px-6 md:px-8 py-3"
             >
-              Create Account
+              {language === 'en' ? 'Create Account' : 'Crear Cuenta'}
             </Button>
             <Button 
               onClick={() => handleAuthAction('login')}
               variant="outline"
-              className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-3"
+              className="border-green-600 text-green-600 hover:bg-green-50 px-6 md:px-8 py-3"
             >
-              Sign In
+              {language === 'en' ? 'Sign In' : 'Iniciar Sesión'}
             </Button>
           </div>
         </div>
@@ -431,18 +484,21 @@ const Index = () => {
       {/* Filters and Sort */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="flex-1">
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">
+          <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
             {selectedCategory === 'all' ? t.allProducts : t[selectedCategory as keyof typeof t]}
           </h3>
-          <p className="text-gray-600">
-            {filteredProducts.length} products found
+          <p className="text-gray-600 text-sm md:text-base">
+            {language === 'en' 
+              ? `${filteredProducts.length} products found`
+              : `${filteredProducts.length} productos encontrados`
+            }
           </p>
         </div>
         
         <div className="flex items-center gap-3">
-          <span className="text-gray-700 font-medium">{t.sortBy}</span>
+          <span className="text-gray-700 font-medium text-sm md:text-base">{t.sortBy}</span>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-52 border-2 border-gray-300">
+            <SelectTrigger className="w-48 md:w-52 border-2 border-gray-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -464,16 +520,26 @@ const Index = () => {
       />
 
       {/* Hero Section - Moved to bottom */}
-      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-2xl p-10 mt-16 shadow-2xl border border-gray-600">
-        <h1 className="text-5xl font-bold mb-6 text-center leading-tight">
-          Unlock Your Potential with Science-Backed Performance Enhancers
+      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-2xl p-8 md:p-10 mt-16 shadow-2xl border border-gray-600">
+        <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center leading-tight">
+          {language === 'en' 
+            ? 'Unlock Your Potential with Science-Backed Performance Enhancers'
+            : 'Desbloquea Tu Potencial con Potenciadores de Rendimiento Respaldados por la Ciencia'
+          }
         </h1>
         <p className="text-xl mb-8 opacity-90 text-center leading-relaxed">
-          Are you striving for more — in the gym, in the mirror, or in life?
+          {language === 'en' 
+            ? 'Are you striving for more — in the gym, in the mirror, or in life?'
+            : '¿Estás buscando más — en el gimnasio, en el espejo o en la vida?'
+          }
         </p>
         <p className="text-lg mb-8 opacity-85 text-center max-w-5xl mx-auto leading-relaxed">
-          Whether you're chasing peak performance, accelerated recovery, or a sculpted physique, 
-          advanced peptides and medically-guided anabolic support may offer the edge you've been looking for.
+          {language === 'en' 
+            ? 'Whether you\'re chasing peak performance, accelerated recovery, or a sculpted physique, 
+              advanced peptides and medically-guided anabolic support may offer the edge you\'ve been looking for.'
+            : 'Si estás buscando rendimiento máximo, recuperación acelerada o un cuerpo esculpido, 
+              los peptidos avanzados y la apoyo anabólico guiado por la medicina pueden ofrecerte la ventaja que buscas.'
+          }
         </p>
         
         <div className="grid md:grid-cols-2 gap-10 mb-8 max-w-6xl mx-auto">
@@ -524,7 +590,7 @@ const Index = () => {
           referralCount={referralCount}
         />
 
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-4 md:p-8">
           {currentPage === 'home' && renderHomePage()}
           {currentPage === 'about' && renderAboutPage()}
           {currentPage === 'contact' && renderContactPage()}
@@ -546,6 +612,8 @@ const Index = () => {
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
         initialMode={authModalMode}
+        referralCode={pendingReferralCode}
+        onSignupSuccess={() => setPendingReferralCode(null)}
       />
 
       <CartModal

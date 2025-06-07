@@ -31,7 +31,7 @@ const Header = ({
     <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 md:h-20">
-          {/* Mobile menu button */}
+          {/* Mobile menu button (hamburger) */}
           <Button
             variant="ghost"
             size="sm"
@@ -47,7 +47,7 @@ const Header = ({
             onClick={() => onPageChange('home')}
           >
             <img 
-              src="/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png" 
+              src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
               alt="MySupps Logo" 
               className="h-10 md:h-14 w-auto"
             />
@@ -60,35 +60,35 @@ const Header = ({
               onClick={() => onPageChange('home')}
               className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
-              Home
+              {language === 'en' ? 'Home' : 'Inicio'}
             </Button>
             <Button
               variant={currentPage === 'about' ? 'default' : 'ghost'}
               onClick={() => onPageChange('about')}
               className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
-              About
+              {language === 'en' ? 'About' : 'Acerca de'}
             </Button>
             <Button
               variant={currentPage === 'contact' ? 'default' : 'ghost'}
               onClick={() => onPageChange('contact')}
               className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
-              Contact
+              {language === 'en' ? 'Contact' : 'Contacto'}
             </Button>
             <Button
               variant={currentPage === 'delivery' ? 'default' : 'ghost'}
               onClick={() => onPageChange('delivery')}
               className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
-              Delivery
+              {language === 'en' ? 'Delivery' : 'Entrega'}
             </Button>
             <Button
               variant={currentPage === 'payment' ? 'default' : 'ghost'}
               onClick={() => onPageChange('payment')}
               className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
             >
-              Lab Testing
+              {language === 'en' ? 'Lab Testing' : 'Pruebas de Laboratorio'}
             </Button>
           </nav>
 
@@ -113,7 +113,7 @@ const Header = ({
                 className="hidden sm:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-3 py-2"
               >
                 <LogOut className="h-4 w-4 mr-1" />
-                <span className="hidden md:inline">Sign Out</span>
+                <span className="hidden md:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>
               </Button>
             ) : (
               <div className="flex space-x-1 md:space-x-2">
@@ -123,14 +123,14 @@ const Header = ({
                   className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-3 py-2"
                 >
                   <User className="h-4 w-4 md:mr-1" />
-                  <span className="hidden md:inline">Sign In</span>
+                  <span className="hidden md:inline">{language === 'en' ? 'Sign In' : 'Iniciar Sesión'}</span>
                 </Button>
                 <Button
                   onClick={() => onAuthAction('signup')}
                   className="bg-green-600 hover:bg-green-700 text-white border border-green-600 rounded-lg px-3 py-2 font-medium"
                 >
-                  <span className="hidden sm:inline">Sign Up</span>
-                  <span className="sm:hidden">Join</span>
+                  <span className="hidden sm:inline">{language === 'en' ? 'Sign Up' : 'Registrarse'}</span>
+                  <span className="sm:hidden">{language === 'en' ? 'Join' : 'Unirse'}</span>
                 </Button>
               </div>
             )}

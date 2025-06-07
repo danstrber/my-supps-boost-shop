@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Copy, Users, DollarSign, Gift, TrendingUp } from 'lucide-react';
+import { Copy, Users, DollarSign, Gift, TrendingUp, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { UserProfile } from '@/lib/auth';
 import { translations } from '@/lib/translations';
+import { generateReferralLink } from '@/lib/referral';
 
 interface ReferralSectionProps {
   userProfile: UserProfile;
@@ -18,7 +19,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   const { toast } = useToast();
   const t = translations[language];
 
-  const referralLink = `${window.location.origin}?ref=${userProfile.referral_code}`;
+  const referralLink = generateReferralLink(userProfile.referral_code);
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -28,25 +29,45 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     });
   };
 
+  const copyReferralCode = () => {
+    navigator.clipboard.writeText(userProfile.referral_code);
+    toast({
+      title: "Copied!",
+      description: "Referral code copied to clipboard",
+    });
+  };
+
+  const shareReferralLink = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Join MySupps',
+        text: 'Get exclusive discounts on premium supplements!',
+        url: referralLink,
+      });
+    } else {
+      copyReferralLink();
+    }
+  };
+
   // Calculate current discount
   const referralDiscount = referralCount > 0 ? Math.min(10 + (referralCount - 1) * 4, 25) : 0;
   const spendingDiscount = userProfile.referred_by 
-    ? Math.floor(userProfile.total_spending / 50) * 6.5  // Updated to 6.5% per $50
+    ? Math.floor(userProfile.total_spending / 50) * 6.5  
     : Math.floor(userProfile.referred_spending / 50) * 2;
   const totalDiscount = Math.min(referralDiscount + spendingDiscount, 30);
 
   return (
-    <div className="mt-8 bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-6 shadow-lg">
+    <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold text-green-800 flex items-center">
-          <Gift className="h-6 w-6 mr-2" />
-          Referral Program
+        <h3 className="text-lg md:text-xl font-bold text-green-800 flex items-center">
+          <Gift className="h-5 w-5 md:h-6 md:w-6 mr-2" />
+          {language === 'en' ? 'Referral Program' : 'Programa de Referidos'}
         </h3>
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setShowDetails(!showDetails)}
-          className="text-green-700 hover:text-green-900"
+          className="text-green-700 hover:text-green-900 text-sm"
         >
           {showDetails ? 'Hide' : 'Show'} Details
         </Button>
@@ -55,42 +76,76 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
       {/* Current Discount Display */}
       <div className="bg-white rounded-lg p-4 mb-4 border border-green-200">
         <div className="text-center">
-          <div className="text-3xl font-bold text-green-600 mb-1">{totalDiscount}%</div>
-          <div className="text-sm text-gray-600">Current Total Discount</div>
+          <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount}%</div>
+          <div className="text-xs md:text-sm text-gray-600">
+            {language === 'en' ? 'Current Total Discount' : 'Descuento Total Actual'}
+          </div>
         </div>
       </div>
 
       {/* Referral Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="bg-white rounded-lg p-3 border border-green-200 text-center">
-          <Users className="h-5 w-5 mx-auto mb-1 text-green-600" />
-          <div className="text-lg font-semibold text-gray-800">{referralCount}</div>
-          <div className="text-xs text-gray-600">Referrals</div>
+          <Users className="h-4 w-4 md:h-5 md:w-5 mx-auto mb-1 text-green-600" />
+          <div className="text-base md:text-lg font-semibold text-gray-800">{referralCount}</div>
+          <div className="text-xs text-gray-600">
+            {language === 'en' ? 'Referrals' : 'Referidos'}
+          </div>
         </div>
         <div className="bg-white rounded-lg p-3 border border-green-200 text-center">
-          <TrendingUp className="h-5 w-5 mx-auto mb-1 text-green-600" />
-          <div className="text-lg font-semibold text-gray-800">{referralDiscount}%</div>
-          <div className="text-xs text-gray-600">Referral Bonus</div>
+          <TrendingUp className="h-4 w-4 md:h-5 md:w-5 mx-auto mb-1 text-green-600" />
+          <div className="text-base md:text-lg font-semibold text-gray-800">{referralDiscount}%</div>
+          <div className="text-xs text-gray-600">
+            {language === 'en' ? 'Referral Bonus' : 'Bono de Referido'}
+          </div>
+        </div>
+      </div>
+
+      {/* Referral Code */}
+      <div className="mb-4">
+        <label className="block text-sm font-semibold text-green-800 mb-2">
+          {t.referralCode}:
+        </label>
+        <div className="flex gap-2">
+          <Input
+            value={userProfile.referral_code}
+            readOnly
+            className="flex-1 bg-white border-green-300 text-sm font-mono"
+          />
+          <Button
+            onClick={copyReferralCode}
+            size="sm"
+            className="bg-green-600 hover:bg-green-700 text-white px-3"
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
       {/* Referral Link */}
       <div className="mb-4">
         <label className="block text-sm font-semibold text-green-800 mb-2">
-          Your Referral Link:
+          {t.referralLink}:
         </label>
         <div className="flex gap-2">
           <Input
             value={referralLink}
             readOnly
-            className="flex-1 bg-white border-green-300 text-sm"
+            className="flex-1 bg-white border-green-300 text-xs"
           />
           <Button
             onClick={copyReferralLink}
             size="sm"
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-green-600 hover:bg-green-700 text-white px-3"
           >
             <Copy className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={shareReferralLink}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3"
+          >
+            <Share2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
@@ -98,24 +153,24 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
       {showDetails && (
         <div className="space-y-3 text-sm">
           <div className="bg-white rounded-lg p-4 border border-green-200">
-            <h4 className="font-semibold text-green-800 mb-2">💰 How It Works:</h4>
+            <h4 className="font-semibold text-green-800 mb-2">💰 {language === 'en' ? 'How It Works' : 'Cómo Funciona'}:</h4>
             <ul className="space-y-1 text-gray-700">
-              <li>• First referral: <strong>10% discount</strong></li>
-              <li>• Each additional referral: <strong>+4% discount</strong></li>
-              <li>• Referral discount cap: <strong>25%</strong></li>
-              <li>• If you were referred: <strong>6.5% per $50 spent</strong></li>
-              <li>• If you refer others: <strong>2% per $50 they spend</strong></li>
-              <li>• Maximum total discount: <strong>30%</strong></li>
+              <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
+              <li>• {language === 'en' ? 'Each additional referral: +4% discount' : 'Cada referido adicional: +4% descuento'}</li>
+              <li>• {language === 'en' ? 'Referral discount cap: 25%' : 'Límite descuento referidos: 25%'}</li>
+              <li>• {language === 'en' ? 'If you were referred: 6.5% per $50 spent' : 'Si fuiste referido: 6.5% por cada $50 gastados'}</li>
+              <li>• {language === 'en' ? 'If you refer others: 2% per $50 they spend' : 'Si refiere a otros: 2% por cada $50 que gasten'}</li>
+              <li>• {language === 'en' ? 'Maximum total discount: 30%' : 'Descuento total máximo: 30%'}</li>
             </ul>
           </div>
           
           <div className="bg-white rounded-lg p-4 border border-green-200">
-            <h4 className="font-semibold text-green-800 mb-2">📊 Your Stats:</h4>
+            <h4 className="font-semibold text-green-800 mb-2">📊 {language === 'en' ? 'Your Stats' : 'Tus Estadísticas'}:</h4>
             <div className="space-y-1 text-gray-700">
-              <div>Referral Code: <strong>{userProfile.referral_code}</strong></div>
-              <div>Total Spending: <strong>${userProfile.total_spending.toFixed(2)}</strong></div>
-              <div>Referred Spending: <strong>${userProfile.referred_spending.toFixed(2)}</strong></div>
-              <div>Spending Discount: <strong>{spendingDiscount}%</strong></div>
+              <div>{language === 'en' ? 'Referral Code' : 'Código de Referido'}: <strong>{userProfile.referral_code}</strong></div>
+              <div>{language === 'en' ? 'Total Spending' : 'Gasto Total'}: <strong>${userProfile.total_spending.toFixed(2)}</strong></div>
+              <div>{language === 'en' ? 'Referred Spending' : 'Gasto de Referidos'}: <strong>${userProfile.referred_spending.toFixed(2)}</strong></div>
+              <div>{language === 'en' ? 'Spending Discount' : 'Descuento por Gasto'}: <strong>{spendingDiscount}%</strong></div>
             </div>
           </div>
         </div>

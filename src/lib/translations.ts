@@ -3,7 +3,7 @@ export const translations = {
   en: {
     // Navigation
     home: "Home",
-    payment: "Payment & Lab Test",
+    payment: "Lab Testing",
     delivery: "Delivery",
     about: "About Us",
     contact: "Contact Us",
@@ -50,15 +50,20 @@ export const translations = {
     shipping: "Shipping",
     finalTotal: "Final Total",
     freeShippingOver: "Free shipping over $100",
-    shippingFee: "Orders under $100 have a $10 shipping fee"
+    shippingFee: "Orders under $100 have a $10 shipping fee",
+    
+    // Referral
+    referralLink: "Referral Link",
+    referralCode: "Referral Code",
+    shareInvite: "Share Invite"
   },
   es: {
     // Navigation
     home: "Inicio",
-    payment: "Pago y Pruebas de Lab",
+    payment: "Pruebas de Laboratorio",
     delivery: "Entrega",
-    about: "Acerca de",
-    contact: "Contacto",
+    about: "Acerca de Nosotros",
+    contact: "Contáctanos",
     
     // Categories
     categories: "Categorías",
@@ -102,6 +107,11 @@ export const translations = {
     shipping: "Envío",
     finalTotal: "Total Final",
     freeShippingOver: "Envío gratis por encima de $100",
-    shippingFee: "Pedidos menores a $100 tienen tarifa de envío de $10"
+    shippingFee: "Pedidos menores a $100 tienen tarifa de envío de $10",
+    
+    // Referral
+    referralLink: "Enlace de Referido",
+    referralCode: "Código de Referido",
+    shareInvite: "Compartir Invitación"
   }
 };
