@@ -12,14 +12,16 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode: 'login' | 'signup';
+  referralCode?: string | null;
+  onSignupSuccess?: () => void;
 }
 
-const AuthModal = ({ isOpen, onClose, initialMode }: AuthModalProps) => {
+const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCode, onSignupSuccess }: AuthModalProps) => {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [referralCode, setReferralCode] = useState('');
+  const [referralCode, setReferralCode] = useState(propReferralCode || '');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -37,7 +39,8 @@ const AuthModal = ({ isOpen, onClose, initialMode }: AuthModalProps) => {
             data: {
               name: username,
               ...(referralCode && { referred_by: referralCode })
-            }
+            },
+            emailRedirectTo: `${window.location.origin}/`
           }
         });
 
@@ -48,6 +51,7 @@ const AuthModal = ({ isOpen, onClose, initialMode }: AuthModalProps) => {
           description: "Please check your email to verify your account.",
         });
         
+        onSignupSuccess?.();
         onClose();
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -82,12 +86,12 @@ const AuthModal = ({ isOpen, onClose, initialMode }: AuthModalProps) => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
-          ...(mode === 'signup' && referralCode && {
-            queryParams: {
+          redirectTo: `${window.location.origin}/`,
+          queryParams: {
+            ...(mode === 'signup' && referralCode && {
               referred_by: referralCode
-            }
-          })
+            })
+          }
         }
       });
 
@@ -113,7 +117,7 @@ const AuthModal = ({ isOpen, onClose, initialMode }: AuthModalProps) => {
     setEmail('');
     setPassword('');
     setUsername('');
-    setReferralCode('');
+    setReferralCode(propReferralCode || '');
     setShowPassword(false);
   };
 
