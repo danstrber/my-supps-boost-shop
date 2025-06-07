@@ -241,7 +241,7 @@ const Index = () => {
         </p>
         <p>
           {language === 'en' 
-            ? 'Founded by researchers and fitness professionals, MySupps understands the unique needs of our community. We're committed to providing not just products, but education and support to help you make informed decisions about your research goals.'
+            ? 'Founded by researchers and fitness professionals, MySupps understands the unique needs of our community. We are committed to providing not just products, but education and support to help you make informed decisions about your research goals.'
             : 'Fundado por investigadores y profesionales del fitness, MySupps entiende las necesidades únicas de nuestra comunidad. Nos comprometemos a no solo ofrecer productos, sino a proporcionar educación y apoyo para ayudarte a tomar decisiones informadas sobre tus metas de investigación.'
           }
         </p>
@@ -267,7 +267,7 @@ const Index = () => {
       <div className="space-y-6">
         <p className="text-gray-600 text-lg">
           {language === 'en' 
-            ? 'We're here to help with any questions about our products, orders, or research guidance. Reach out to us through any of the following channels:'
+            ? 'We are here to help with any questions about our products, orders, or research guidance. Reach out to us through any of the following channels:'
             : 'Nosotros estamos aquí para ayudarte con cualquier pregunta sobre nuestros productos, órdenes o guía de investigación. Contáctanos a través de cualquiera de los siguientes canales:'
           }
         </p>
@@ -397,7 +397,7 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
-      {/* Lab Testing & Features Section - RESTORED */}
+      {/* Lab Testing & Features Section */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
         <div className="grid md:grid-cols-3 gap-6 md:gap-8 text-center">
           <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
@@ -432,7 +432,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* User Referral Section - Show if user is logged in */}
+      {/* User Referral Section */}
       {user && userProfile && (
         <ReferralSection
           userProfile={userProfile}
@@ -441,7 +441,7 @@ const Index = () => {
         />
       )}
 
-      {/* Authentication CTA for non-logged in users with referral code detection */}
+      {/* Authentication CTA for non-logged in users */}
       {!user && (
         <div className="bg-gradient-to-r from-green-50 to-emerald-100 border-2 border-green-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg text-center">
           {pendingReferralCode && (
@@ -519,7 +519,7 @@ const Index = () => {
         onViewDetails={handleViewDetails}
       />
 
-      {/* Hero Section - Moved to bottom */}
+      {/* Hero Section */}
       <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-2xl p-8 md:p-10 mt-16 shadow-2xl border border-gray-600">
         <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center leading-tight">
           {language === 'en' 
@@ -535,10 +535,8 @@ const Index = () => {
         </p>
         <p className="text-lg mb-8 opacity-85 text-center max-w-5xl mx-auto leading-relaxed">
           {language === 'en' 
-            ? 'Whether you\'re chasing peak performance, accelerated recovery, or a sculpted physique, 
-              advanced peptides and medically-guided anabolic support may offer the edge you\'ve been looking for.'
-            : 'Si estás buscando rendimiento máximo, recuperación acelerada o un cuerpo esculpido, 
-              los peptidos avanzados y la apoyo anabólico guiado por la medicina pueden ofrecerte la ventaja que buscas.'
+            ? 'Whether you are chasing peak performance, accelerated recovery, or a sculpted physique, advanced peptides and medically-guided anabolic support may offer the edge you have been looking for.'
+            : 'Si estás buscando rendimiento máximo, recuperación acelerada o un cuerpo esculpido, los peptidos avanzados y la apoyo anabólico guiado por la medicina pueden ofrecerte la ventaja que buscas.'
           }
         </p>
         
@@ -599,7 +597,6 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
@@ -607,7 +604,6 @@ const Index = () => {
         />
       )}
 
-      {/* Modals */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
