@@ -13,8 +13,8 @@ interface HeaderProps {
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
   onCartOpen: () => void;
   onMenuToggle: () => void;
-  currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment';
-  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment') => void;
+  currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting';
+  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting') => void;
   sidebarOpen?: boolean;
 }
 
@@ -35,7 +35,7 @@ const Header = ({
   const handleMenuClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Hamburger menu button clicked! Current sidebar state:', sidebarOpen);
+    console.log('Hamburger clicked! Current state:', sidebarOpen);
     onMenuToggle();
   };
 
@@ -44,14 +44,16 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* HAMBURGER MENU BUTTON */}
+            {/* HAMBURGER MENU BUTTON - Fixed functionality */}
             <button
               onClick={handleMenuClick}
-              className={`p-3 hover:bg-gray-100 rounded-lg flex items-center justify-center z-[9999] border-2 transition-all ${
-                sidebarOpen ? 'border-green-500 bg-green-50' : 'border-gray-300'
-              } hover:border-green-500 md:hidden`}
+              className={`md:hidden p-2 rounded-lg border-2 transition-all duration-200 ${
+                sidebarOpen 
+                  ? 'border-green-500 bg-green-50' 
+                  : 'border-gray-300 hover:border-green-500'
+              }`}
               aria-label="Toggle menu"
-              style={{ minWidth: '44px', minHeight: '44px' }}
+              style={{ minWidth: '40px', minHeight: '40px' }}
             >
               <Menu className="h-6 w-6 text-gray-700" />
             </button>
@@ -99,11 +101,18 @@ const Header = ({
                 {language === 'en' ? 'Delivery' : 'Entrega'}
               </Button>
               <Button
+                variant={currentPage === 'labtesting' ? 'default' : 'ghost'}
+                onClick={() => onPageChange('labtesting')}
+                className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
+              >
+                {language === 'en' ? 'Lab Testing' : 'Pruebas de Laboratorio'}
+              </Button>
+              <Button
                 variant={currentPage === 'payment' ? 'default' : 'ghost'}
                 onClick={() => onPageChange('payment')}
                 className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
               >
-                {language === 'en' ? 'Lab Testing' : 'Pruebas de Laboratorio'}
+                {language === 'en' ? 'Payment' : 'Pago'}
               </Button>
             </nav>
 
@@ -177,12 +186,12 @@ const Header = ({
           </div>
         </div>
 
-        {/* LAB TEST & DELIVERY SECTION */}
+        {/* GREEN SECTION WITH PROPER NAVIGATION */}
         <div className="bg-green-600 text-white py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center space-x-6 md:space-x-12 text-sm md:text-base font-medium">
               <button 
-                onClick={() => onPageChange('payment')}
+                onClick={() => onPageChange('labtesting')}
                 className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>🔬</span>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,7 +32,7 @@ const Index = () => {
   const [cartModalOpen, setCartModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productDetailModalOpen, setProductDetailModalOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting'>('home');
   const [pendingReferralCode, setPendingReferralCode] = useState<string | null>(null);
   const { toast } = useToast();
 
@@ -221,15 +220,103 @@ const Index = () => {
   };
 
   const handleMenuToggle = () => {
-    console.log('Menu toggle called, current sidebarOpen:', sidebarOpen);
-    setSidebarOpen(prev => {
-      const newState = !prev;
+    console.log('Menu toggle function called. Current state:', sidebarOpen);
+    setSidebarOpen(prevState => {
+      const newState = !prevState;
       console.log('Setting sidebar to:', newState);
       return newState;
     });
   };
 
   const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
+
+  // SEPARATE LAB TESTING PAGE
+  const renderLabTestingPage = () => (
+    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">
+        🔬 {language === 'en' ? 'Lab Testing' : 'Pruebas de Laboratorio'}
+      </h1>
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
+          <p className="text-gray-600 text-lg mb-4">
+            {language === 'en' 
+              ? 'All our products undergo rigorous third-party testing to ensure purity and potency. Lab reports are available for products marked with the "Lab Tested" badge.'
+              : 'Todos nuestros productos están sometidos a un rigoroso testing de terceros para asegurar pureza y potencia. Los informes de laboratorio están disponibles para productos marcados con el "Lab Tested".'
+            }
+          </p>
+          <ul className="space-y-3 text-gray-600">
+            <li className="flex items-center">
+              <span className="mr-3 text-green-600">✅</span>
+              HPLC testing for purity verification
+            </li>
+            <li className="flex items-center">
+              <span className="mr-3 text-green-600">✅</span>
+              Heavy metals screening
+            </li>
+            <li className="flex items-center">
+              <span className="mr-3 text-green-600">✅</span>
+              Microbial contamination testing
+            </li>
+            <li className="flex items-center">
+              <span className="mr-3 text-green-600">✅</span>
+              Certificate of Analysis (COA) available
+            </li>
+          </ul>
+        </div>
+        
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+          <p className="text-blue-800">
+            <strong>{language === 'en' ? 'Note:' : 'Nota:'}</strong> {language === 'en' 
+              ? 'All testing is performed by accredited third-party laboratories to ensure complete transparency and accuracy.'
+              : 'Todas las pruebas son realizadas por laboratorios acreditados de terceros para asegurar completa transparencia y precisión.'
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // SEPARATE PAYMENT PAGE
+  const renderPaymentPage = () => (
+    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">
+        💳 {language === 'en' ? 'Payment Methods' : 'Métodos de Pago'}
+      </h1>
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+          <p className="text-gray-600 mb-4">
+            {language === 'en' 
+              ? 'We accept the following secure payment methods:'
+              : 'Aceptamos los siguientes métodos de pago seguros:'
+            }
+          </p>
+          <ul className="space-y-3 text-gray-600">
+            <li className="flex items-center">
+              <span className="mr-3 text-2xl">₿</span>
+              Bitcoin (BTC) - Preferred method
+            </li>
+            <li className="flex items-center">
+              <span className="mr-3 text-2xl">📱</span>
+              Telegram Pay - Quick checkout
+            </li>
+            <li className="flex items-center">
+              <span className="mr-3 text-2xl">💰</span>
+              Other methods available upon request
+            </li>
+          </ul>
+          <p className="text-sm text-gray-500 mt-4">
+            Order information is automatically saved in our database and sent to our team for processing.
+          </p>
+        </div>
+        
+        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+          <p className="text-yellow-800">
+            <strong>Security Notice:</strong> All payments are processed securely. We never store payment information and use encrypted channels for all transactions.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 
   const renderAboutPage = () => (
     <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
@@ -335,14 +422,14 @@ const Index = () => {
   const renderDeliveryPage = () => (
     <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
       <h1 className="text-4xl font-bold text-gray-800 mb-6">
-        {language === 'en' ? 'Delivery Information' : 'Información de Entrega'}
+        🚚 {language === 'en' ? 'Delivery Information' : 'Información de Entrega'}
       </h1>
       <div className="space-y-6">
         <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">🚚 Shipping Policy</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-3">Shipping Policy</h3>
           <p className="text-gray-600 text-lg mb-4">
             {language === 'en' 
-              ? 'We ship everyday! Orders are typically processed and shipped within 2-3 business days. We only ship within the USA unless you contact us on Telegram.'
+              ? 'We ship every day! Orders are typically processed and shipped within 2-3 business days. We only ship within the USA unless you contact us on Telegram.'
               : '¡Enviamos todos los días! Las órdenes se procesan y envían típicamente en 2-3 días hábiles. Solo enviamos dentro de EE.UU. a menos que nos contactes por Telegram.'
             }
           </p>
@@ -351,6 +438,7 @@ const Index = () => {
             <li>✅ $10 shipping fee for orders under $100</li>
             <li>✅ Secure and discreet packaging</li>
             <li>✅ Tracking provided for all orders</li>
+            <li>✅ We ship every day too!</li>
           </ul>
         </div>
         
@@ -373,60 +461,16 @@ const Index = () => {
     </div>
   );
 
-  const renderPaymentPage = () => (
-    <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">
-        {language === 'en' ? 'Lab Testing & Payment' : 'Pruebas de Laboratorio y Pago'}
-      </h1>
-      <div className="space-y-6">
-        <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">🔬 Lab Testing</h3>
-          <p className="text-gray-600 mb-4">
-            {language === 'en' 
-              ? 'All our products undergo rigorous third-party testing to ensure purity and potency. Lab reports are available for products marked with the "Lab Tested" badge.'
-              : 'Todos nuestros productos están sometidos a un rigoroso testing de terceros para asegurar pureza y potencia. Los informes de laboratorio están disponibles para productos marcados con el "Lab Tested".'
-            }
-          </p>
-          <ul className="space-y-2 text-gray-600">
-            <li>✅ HPLC testing for purity verification</li>
-            <li>✅ Heavy metals screening</li>
-            <li>✅ Microbial contamination testing</li>
-            <li>✅ Certificate of Analysis (COA) available</li>
-          </ul>
-        </div>
-        
-        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">💳 Payment Methods</h3>
-          <p className="text-gray-600 mb-4">We accept the following secure payment methods:</p>
-          <ul className="space-y-2 text-gray-600">
-            <li>₿ Bitcoin (BTC) - Preferred method</li>
-            <li>📱 Telegram Pay - Quick checkout</li>
-            <li>💰 Other methods available upon request</li>
-          </ul>
-          <p className="text-sm text-gray-500 mt-4">
-            Order information is automatically saved in our database and sent to our team for processing.
-          </p>
-        </div>
-        
-        <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
-          <p className="text-yellow-800">
-            <strong>Security Notice:</strong> All payments are processed securely. We never store payment information and use encrypted channels for all transactions.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
-      {/* Why Choose Us Section - AT TOP AND SMALLER */}
-      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-4 mb-8 shadow-xl border border-gray-600">
-        <h2 className="text-xl font-bold mb-3 text-center">
+      {/* Why Choose Us Section - SMALLER AND AT TOP */}
+      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-4 mb-6 shadow-xl border border-gray-600">
+        <h2 className="text-lg font-bold mb-2 text-center">
           {language === 'en' ? 'Why Choose MySupps?' : '¿Por qué elegir MySupps?'}
         </h2>
-        <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-3 max-w-3xl mx-auto">
           <div>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-1 text-xs">
               <li className="flex items-center"><span className="mr-2">💪</span> Build Lean Muscle Faster</li>
               <li className="flex items-center"><span className="mr-2">⚡</span> Enhance Strength and Endurance</li>
               <li className="flex items-center"><span className="mr-2">🔄</span> Accelerate Recovery</li>
@@ -434,7 +478,7 @@ const Index = () => {
             </ul>
           </div>
           <div>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-1 text-xs">
               <li className="flex items-center"><span className="mr-2">✨</span> Fight Fatigue & Elevate Confidence</li>
               <li className="flex items-center"><span className="mr-2">🏆</span> Trusted by Athletes</li>
               <li className="flex items-center"><span className="mr-2">🔬</span> Science-Backed Formulas</li>
@@ -566,11 +610,12 @@ const Index = () => {
           {currentPage === 'about' && renderAboutPage()}
           {currentPage === 'contact' && renderContactPage()}
           {currentPage === 'delivery' && renderDeliveryPage()}
+          {currentPage === 'labtesting' && renderLabTestingPage()}
           {currentPage === 'payment' && renderPaymentPage()}
         </main>
       </div>
 
-      {/* Mobile sidebar overlay */}
+      {/* FIXED MOBILE SIDEBAR OVERLAY */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
