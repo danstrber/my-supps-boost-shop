@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -398,47 +397,69 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
-      {/* Lab Testing & Features Section - AT THE TOP AS REQUESTED */}
+      {/* Lab Testing & Features Section - PROMINENTLY AT THE TOP */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            {language === 'en' ? 'Why Choose MySupps?' : '¿Por Qué Elegir MySupps?'}
+          </h2>
+          <p className="text-gray-600 text-lg">
+            {language === 'en' 
+              ? 'Premium research chemicals with unmatched quality and service'
+              : 'Químicos de investigación premium con calidad y servicio inigualables'
+            }
+          </p>
+        </div>
+        
         <div className="grid md:grid-cols-4 gap-4 md:gap-6 text-center">
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
-            <div className="text-3xl md:text-4xl mb-4">🚚</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">{t.freeShippingOver}</h3>
-            <p className="text-gray-600 text-sm md:text-base">{t.shippingFee}</p>
-          </div>
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="text-3xl md:text-4xl mb-4">🔬</div>
             <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
               {language === 'en' ? 'Lab Tested' : 'Probado en Laboratorio'}
             </h3>
             <p className="text-gray-600 text-sm md:text-base">
               {language === 'en' 
-                ? 'Third-party tested for purity and potency'
-                : 'Probado por terceros para pureza y potencia'
+                ? 'Third-party HPLC tested for 99%+ purity and potency verification'
+                : 'Probado por terceros con HPLC para 99%+ de pureza y verificación de potencia'
               }
             </p>
           </div>
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
+          
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="text-3xl md:text-4xl mb-4">🚚</div>
+            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+              {language === 'en' ? 'Fast Delivery' : 'Entrega Rápida'}
+            </h3>
+            <p className="text-gray-600 text-sm md:text-base">
+              {language === 'en' 
+                ? 'Orders shipped within 2-3 business days. Free shipping over $100'
+                : 'Órdenes enviadas en 2-3 días hábiles. Envío gratis sobre $100'
+              }
+            </p>
+          </div>
+          
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="text-3xl md:text-4xl mb-4">💎</div>
             <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
               {language === 'en' ? 'Premium Quality' : 'Calidad Premium'}
             </h3>
             <p className="text-gray-600 text-sm md:text-base">
               {language === 'en' 
-                ? 'Research-grade compounds for optimal results'
-                : 'Compuestos de grado de investigación para resultados óptimos'
+                ? 'Research-grade compounds manufactured in certified facilities'
+                : 'Compuestos de grado de investigación fabricados en instalaciones certificadas'
               }
             </p>
           </div>
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
-            <div className="text-3xl md:text-4xl mb-4">⚡</div>
+          
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="text-3xl md:text-4xl mb-4">🔒</div>
             <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
-              {language === 'en' ? 'Fast Delivery' : 'Entrega Rápida'}
+              {language === 'en' ? 'Secure & Discreet' : 'Seguro y Discreto'}
             </h3>
             <p className="text-gray-600 text-sm md:text-base">
               {language === 'en' 
-                ? 'Orders shipped within 2-3 business days'
-                : 'Órdenes enviadas en 2-3 días hábiles'
+                ? 'Confidential packaging and secure payment processing'
+                : 'Empaque confidencial y procesamiento de pagos seguro'
               }
             </p>
           </div>
@@ -596,7 +617,10 @@ const Index = () => {
           language={language}
           isOpen={sidebarOpen}
           selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
+          onCategoryChange={(category) => {
+            setSelectedCategory(category);
+            setSidebarOpen(false); // Close sidebar after selection on mobile
+          }}
           userProfile={userProfile}
           referralCount={referralCount}
         />
@@ -610,6 +634,7 @@ const Index = () => {
         </main>
       </div>
 
+      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
