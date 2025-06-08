@@ -57,13 +57,16 @@ export const signIn = async (email: string, password: string) => {
   return { data, error };
 };
 
-export const signInWithGoogle = async () => {
-  console.log('Starting Google signin...');
+export const signInWithGoogle = async (referralCode?: string) => {
+  console.log('Starting Google signin...', { referralCode });
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/`
+      redirectTo: `${window.location.origin}/`,
+      queryParams: {
+        ...(referralCode && { referred_by: referralCode })
+      }
     }
   });
 
@@ -101,11 +104,14 @@ export const getCurrentUser = async (): Promise<{ user: User | null; profile: Us
 
     console.log('Found authenticated user:', user.id);
 
+    // Wait a bit for the trigger to complete if this is a new user
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     const { data: profile, error } = await supabase
       .from('users')
       .select('*')
       .eq('auth_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching user profile:', error);

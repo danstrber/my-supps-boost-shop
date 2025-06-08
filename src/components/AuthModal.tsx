@@ -32,6 +32,8 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
 
     try {
       if (mode === 'signup') {
+        console.log('Starting signup process...', { email, username, referralCode });
+        
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -44,8 +46,12 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
           }
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Signup error:', error);
+          throw error;
+        }
 
+        console.log('Signup successful:', data);
         toast({
           title: "Account created!",
           description: "Please check your email to verify your account.",
@@ -54,13 +60,19 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
         onSignupSuccess?.();
         onClose();
       } else {
+        console.log('Starting login process...', { email });
+        
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Login error:', error);
+          throw error;
+        }
 
+        console.log('Login successful:', data);
         toast({
           title: "Welcome back!",
           description: "You have been successfully signed in.",
@@ -83,6 +95,8 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
+      console.log('Starting Google signin...', { mode, referralCode });
+      
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -95,8 +109,12 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
         }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Google auth error:', error);
+        throw error;
+      }
 
+      console.log('Google signin initiated:', data);
       toast({
         title: "Redirecting...",
         description: "You will be redirected to Google to complete sign in.",
@@ -122,7 +140,9 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   };
 
   const switchMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
+    const newMode = mode === 'login' ? 'signup' : 'login';
+    console.log('Switching auth mode from', mode, 'to', newMode);
+    setMode(newMode);
     resetForm();
   };
 
@@ -240,6 +260,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
                 variant="link"
                 className="p-0 ml-1 h-auto font-normal text-blue-600"
                 onClick={switchMode}
+                type="button"
               >
                 {mode === 'login' ? 'Sign up' : 'Sign in'}
               </Button>
