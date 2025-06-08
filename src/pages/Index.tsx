@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -397,9 +398,9 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
-      {/* Lab Testing & Features Section */}
+      {/* Lab Testing & Features Section - AT THE TOP AS REQUESTED */}
       <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
-        <div className="grid md:grid-cols-3 gap-6 md:gap-8 text-center">
+        <div className="grid md:grid-cols-4 gap-4 md:gap-6 text-center">
           <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
             <div className="text-3xl md:text-4xl mb-4">🚚</div>
             <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">{t.freeShippingOver}</h3>
@@ -426,6 +427,18 @@ const Index = () => {
               {language === 'en' 
                 ? 'Research-grade compounds for optimal results'
                 : 'Compuestos de grado de investigación para resultados óptimos'
+              }
+            </p>
+          </div>
+          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100">
+            <div className="text-3xl md:text-4xl mb-4">⚡</div>
+            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+              {language === 'en' ? 'Fast Delivery' : 'Entrega Rápida'}
+            </h3>
+            <p className="text-gray-600 text-sm md:text-base">
+              {language === 'en' 
+                ? 'Orders shipped within 2-3 business days'
+                : 'Órdenes enviadas en 2-3 días hábiles'
               }
             </p>
           </div>

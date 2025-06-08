@@ -177,9 +177,18 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   };
 
   const switchMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
+    if (mode === 'login') {
+      setMode('signup');
+    } else {
+      setMode('login');
+    }
     resetForm();
   };
+
+  React.useEffect(() => {
+    setMode(initialMode);
+    resetForm();
+  }, [initialMode]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -290,7 +299,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
                   <Checkbox
                     id="tos"
                     checked={acceptedTos}
-                    onCheckedChange={setAcceptedTos}
+                    onCheckedChange={(checked) => setAcceptedTos(checked === true)}
                   />
                   <Label htmlFor="tos" className="text-sm leading-relaxed">
                     I accept the Terms of Service and Privacy Policy. I understand these products are for research purposes only.
@@ -301,7 +310,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
                   <Checkbox
                     id="age"
                     checked={confirmedAge}
-                    onCheckedChange={setConfirmedAge}
+                    onCheckedChange={(checked) => setConfirmedAge(checked === true)}
                   />
                   <Label htmlFor="age" className="text-sm leading-relaxed">
                     I confirm that I am over 18 years of age.
@@ -312,7 +321,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
                   <Checkbox
                     id="notHuman"
                     checked={confirmedNotHuman}
-                    onCheckedChange={setConfirmedNotHuman}
+                    onCheckedChange={(checked) => setConfirmedNotHuman(checked === true)}
                   />
                   <Label htmlFor="notHuman" className="text-sm leading-relaxed">
                     I confirm these products are NOT for human consumption and are for research purposes only.

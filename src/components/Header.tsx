@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, Menu, User, LogOut, GraduationCap } from 'lucide-react';
+import { ShoppingCart, Menu, User, LogOut, MessageCircle } from 'lucide-react';
 import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
@@ -94,25 +94,18 @@ const Header = ({
               >
                 {language === 'en' ? 'Lab Testing' : 'Pruebas de Laboratorio'}
               </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setCoachingModalOpen(true)}
-                className="text-blue-700 hover:text-blue-800 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium border border-blue-200"
-              >
-                <GraduationCap className="h-4 w-4 mr-1" />
-                {language === 'en' ? 'Coaching' : 'Coaching'}
-              </Button>
             </nav>
 
             {/* Right side */}
             <div className="flex items-center space-x-2 md:space-x-3">
-              {/* Coaching Button - Mobile */}
+              {/* Premium Coaching Button - MUCH MORE OBVIOUS */}
               <Button
-                variant="ghost"
                 onClick={() => setCoachingModalOpen(true)}
-                className="lg:hidden text-blue-700 hover:text-blue-800 hover:bg-blue-50 p-2 rounded-lg border border-blue-200"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-4 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-blue-400 transform hover:scale-105 transition-all duration-200"
               >
-                <GraduationCap className="h-5 w-5" />
+                <MessageCircle className="h-5 w-5 mr-2" />
+                <span className="hidden sm:inline text-sm md:text-base">🏆 PREMIUM COACHING</span>
+                <span className="sm:hidden">🏆 COACH</span>
               </Button>
 
               {/* Language Selector */}
