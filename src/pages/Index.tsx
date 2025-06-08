@@ -18,7 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 const Index = () => {
   const [language, setLanguage] = useState<'en' | 'es'>('en');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -110,11 +110,32 @@ const Index = () => {
   };
 
   const handleAddToCart = (product: Product) => {
-    setCartItems(prev => [...prev, product]);
+    setCart(prev => ({
+      ...prev,
+      [product.id]: (prev[product.id] || 0) + 1
+    }));
+    
     toast({
-      title: translations[language].addedToCart,
-      description: `${product.name[language]} ${translations[language].addedToCart}`,
+      title: language === 'en' ? 'Added to Cart' : 'Agregado al Carrito',
+      description: `${product.name} ${language === 'en' ? 'has been added to cart' : 'ha sido agregado al carrito'}`,
     });
+  };
+
+  const handleUpdateCart = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      const newCart = { ...cart };
+      delete newCart[productId];
+      setCart(newCart);
+    } else {
+      setCart(prev => ({
+        ...prev,
+        [productId]: quantity
+      }));
+    }
+  };
+
+  const getTotalCartItems = () => {
+    return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
   };
 
   const handleAuthAction = async (action: 'login' | 'signup' | 'logout') => {
@@ -126,8 +147,8 @@ const Index = () => {
         setUserDiscount(0);
         setReferralCount(0);
         toast({
-          title: translations[language].signedOut || "Signed out successfully",
-          description: translations[language].signedOutDesc || "You have been signed out.",
+          title: "Signed out successfully",
+          description: "You have been signed out.",
         });
       } catch (error) {
         console.error('Logout error:', error);
@@ -467,7 +488,7 @@ const Index = () => {
       <Header
         language={language}
         onLanguageChange={handleLanguageChange}
-        cartItemCount={cartItems.length}
+        cartItemCount={getTotalCartItems()}
         isAuthenticated={isAuthenticated}
         onAuthAction={handleAuthAction}
         onCartOpen={() => setIsCartOpen(true)}
@@ -503,20 +524,13 @@ const Index = () => {
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
-        onRemoveItem={(index) => setCartItems(prev => prev.filter((_, i) => i !== index))}
-        onCheckout={() => {
-          setIsCartOpen(false);
-          setIsPaymentModalOpen(true);
-        }}
-        language={language}
+        cart={cart}
+        products={products}
+        onUpdateCart={handleUpdateCart}
         userDiscount={userDiscount}
+        language={language}
         isAuthenticated={isAuthenticated}
-        onAuthPrompt={() => {
-          setIsCartOpen(false);
-          setAuthMode('signup');
-          setIsAuthModalOpen(true);
-        }}
+        userProfile={userProfile}
       />
 
       <AuthModal
@@ -529,14 +543,13 @@ const Index = () => {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        cartItems={cartItems}
-        language={language}
+        orderTotal={0}
+        discount={0}
+        shippingFee={0}
+        finalTotal={0}
+        cart={cart}
         userProfile={userProfile}
-        userDiscount={userDiscount}
-        onPaymentComplete={() => {
-          setCartItems([]);
-          setIsPaymentModalOpen(false);
-        }}
+        cartItems={[]}
       />
 
       {selectedProduct && (

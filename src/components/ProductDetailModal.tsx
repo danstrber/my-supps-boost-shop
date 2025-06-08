@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,12 +12,15 @@ interface ProductDetailModalProps {
   onClose: () => void;
   onAddToCart: (product: Product) => void;
   language: 'en' | 'es';
+  userDiscount: number;
 }
 
-const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, language }: ProductDetailModalProps) => {
+const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, language, userDiscount }: ProductDetailModalProps) => {
   const t = translations[language];
   
   if (!product) return null;
+
+  const discountedPrice = product.price * (1 - userDiscount / 100);
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -92,7 +94,23 @@ const ProductDetailModal = ({ product, isOpen, onClose, onAddToCart, language }:
             <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
               <p className="text-gray-600 mb-6 text-lg leading-relaxed">{product.description}</p>
               <div className="flex items-center justify-between">
-                <span className="text-4xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
+                <div className="flex flex-col">
+                  {userDiscount > 0 ? (
+                    <>
+                      <span className="text-2xl text-gray-500 line-through">
+                        ${product.price.toFixed(2)}
+                      </span>
+                      <span className="text-4xl font-bold text-gray-800">
+                        ${discountedPrice.toFixed(2)}
+                      </span>
+                      <span className="text-sm text-green-600 font-medium">
+                        {userDiscount}% discount applied
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-4xl font-bold text-gray-800">${product.price.toFixed(2)}</span>
+                  )}
+                </div>
                 <Button
                   onClick={() => onAddToCart(product)}
                   disabled={!product.inStock}
