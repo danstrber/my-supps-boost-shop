@@ -23,7 +23,7 @@ const Index = () => {
   const [referralCount, setReferralCount] = useState(0);
 
   // Custom hooks
-  const { userProfile, isAuthenticated, userDiscount, handleAuthAction } = useAuth();
+  const { userProfile, isAuthenticated, userDiscount, loading, handleAuthAction } = useAuth();
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart } = useCart();
   const { sidebarOpen, handleMenuToggle, handleSidebarClose } = useSidebar();
 
@@ -39,6 +39,15 @@ const Index = () => {
       setIsAuthModalOpen(true);
     }
   };
+
+  // Show loading state while auth is initializing
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   // Render static pages
   if (currentPage !== 'home') {

@@ -8,6 +8,7 @@ export const useAuth = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userDiscount, setUserDiscount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -19,14 +20,21 @@ export const useAuth = () => {
       if (session?.user) {
         setIsAuthenticated(true);
         try {
+          // Wait a moment for trigger to complete if this is a new user
+          if (event === 'SIGNED_IN') {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+          
           const profile = await getUserProfile(session.user.id);
           setUserProfile(profile);
           console.log('User profile loaded:', profile);
           
-          // Get user discount
-          const discount = await getUserDiscount(session.user.id);
-          setUserDiscount(discount);
-          console.log('User discount:', discount);
+          if (profile) {
+            // Get user discount
+            const discount = await getUserDiscount(session.user.id);
+            setUserDiscount(discount);
+            console.log('User discount:', discount);
+          }
         } catch (error) {
           console.error('Error loading user profile:', error);
         }
@@ -36,6 +44,8 @@ export const useAuth = () => {
         setUserDiscount(0);
         console.log('User signed out or no session');
       }
+      
+      setLoading(false);
     });
 
     // Check for existing session
@@ -48,7 +58,10 @@ export const useAuth = () => {
           if (profile) {
             getUserDiscount(session.user.id).then(setUserDiscount).catch(console.error);
           }
-        }).catch(console.error);
+          setLoading(false);
+        }).catch(() => setLoading(false));
+      } else {
+        setLoading(false);
       }
     });
 
@@ -69,6 +82,7 @@ export const useAuth = () => {
     userProfile,
     isAuthenticated,
     userDiscount,
+    loading,
     handleAuthAction
   };
 };
