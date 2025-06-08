@@ -34,17 +34,23 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
       if (mode === 'signup') {
         console.log('Starting signup process...', { email, username, referralCode });
         
-        const { data, error } = await supabase.auth.signUp({
+        const signupData: any = {
           email,
           password,
           options: {
+            emailRedirectTo: `${window.location.origin}/`,
             data: {
-              name: username,
-              ...(referralCode && { referred_by: referralCode })
-            },
-            emailRedirectTo: `${window.location.origin}/`
+              name: username
+            }
           }
-        });
+        };
+
+        // Add referral code to metadata if provided
+        if (referralCode) {
+          signupData.options.data.referred_by = referralCode;
+        }
+
+        const { data, error } = await supabase.auth.signUp(signupData);
 
         if (error) {
           console.error('Signup error:', error);
@@ -97,16 +103,20 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
     try {
       console.log('Starting Google signin...', { mode, referralCode });
       
+      const oauthOptions: any = {
+        redirectTo: `${window.location.origin}/`
+      };
+
+      // Add referral code for signup mode
+      if (mode === 'signup' && referralCode) {
+        oauthOptions.queryParams = {
+          referred_by: referralCode
+        };
+      }
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/`,
-          queryParams: {
-            ...(mode === 'signup' && referralCode && {
-              referred_by: referralCode
-            })
-          }
-        }
+        options: oauthOptions
       });
 
       if (error) {
