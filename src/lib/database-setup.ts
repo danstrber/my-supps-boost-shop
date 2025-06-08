@@ -3,16 +3,18 @@ import { supabase } from '@/integrations/supabase/client';
 
 export const setupDatabase = async () => {
   try {
-    console.log('Setting up database functions...');
+    console.log('Checking database setup...');
     
-    // Create the generate_referral_code function
-    const { error: functionError } = await supabase.rpc('create_referral_function');
+    // Test if the generate_referral_code function exists by trying to call it
+    const { data, error } = await supabase.rpc('generate_referral_code');
     
-    if (functionError && !functionError.message.includes('already exists')) {
-      console.error('Error creating function:', functionError);
+    if (error) {
+      console.error('Database function error:', error);
+      console.log('You may need to run the migration to create the generate_referral_code function');
+    } else {
+      console.log('Database functions are working correctly');
     }
     
-    console.log('Database setup complete');
   } catch (error) {
     console.error('Database setup error:', error);
   }
