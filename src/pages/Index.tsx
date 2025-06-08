@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
@@ -155,7 +154,7 @@ const Index = () => {
         <Header
           language={language}
           onLanguageChange={setLanguage}
-          cartItemCount={cartItems.length}
+          cartItemCount={cartItemCount}
           isAuthenticated={isAuthenticated}
           onAuthAction={handleAuthAction}
           onCartOpen={() => setIsCartOpen(true)}
