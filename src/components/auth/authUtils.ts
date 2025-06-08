@@ -21,18 +21,16 @@ export const handleEmailAuth = async (
   });
 
   if (mode === 'signup') {
-    // Create auth user with minimal data to avoid trigger issues
-    console.log('Attempting auth signup with minimal data...');
+    // Step 1: Create auth user with absolutely minimal data
+    console.log('Attempting auth signup with no metadata...');
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          // Send minimal data to avoid any trigger complications
-          temp_signup: true
-        }
+        // Send NO metadata to avoid any trigger issues
+        data: {}
       }
     });
     
@@ -44,87 +42,63 @@ export const handleEmailAuth = async (
     if (authData.user) {
       console.log('Auth user created successfully:', authData.user.id);
 
-      // Wait a moment for auth to settle
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Step 2: Wait longer for auth to settle
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Now manually create the user profile
+      // Step 3: Manually create user profile with error handling
       try {
         const userReferralCode = generateReferralCode();
         
-        console.log('Creating user profile with referral code:', userReferralCode);
+        console.log('Creating user profile manually with referral code:', userReferralCode);
         
-        const { error: profileError } = await supabase
+        // Check if user profile already exists (in case trigger partially worked)
+        const { data: existingProfile } = await supabase
           .from('users')
-          .insert({
-            auth_id: authData.user.id,
-            email: authData.user.email,
-            name: username?.trim() || authData.user.email,
-            referral_code: userReferralCode,
-            referred_by: referralCode?.trim() || null
-          });
+          .select('id')
+          .eq('auth_id', authData.user.id)
+          .maybeSingle();
 
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          // Don't fail the whole signup for this, but log it
-          console.log('Profile error details:', JSON.stringify(profileError, null, 2));
-        } else {
-          console.log('User profile created successfully with referral code:', userReferralCode);
-          
-          // Handle referral relationship if there's a referral code
-          if (referralCode?.trim()) {
-            try {
-              console.log('Processing referral relationship for code:', referralCode.trim());
-              
-              // Find referrer
-              const { data: referrer, error: referrerError } = await supabase
-                .from('users')
-                .select('id')
-                .eq('referral_code', referralCode.trim())
-                .single();
+        if (!existingProfile) {
+          // Create the user profile
+          const { data: newProfile, error: profileError } = await supabase
+            .from('users')
+            .insert({
+              auth_id: authData.user.id,
+              email: authData.user.email,
+              name: username?.trim() || authData.user.email,
+              referral_code: userReferralCode,
+              referred_by: referralCode?.trim() || null
+            })
+            .select()
+            .single();
 
-              if (referrerError) {
-                console.error('Error finding referrer:', referrerError);
-              } else if (referrer) {
-                // Get the new user's ID
-                const { data: newUser, error: newUserError } = await supabase
-                  .from('users')
-                  .select('id')
-                  .eq('auth_id', authData.user.id)
-                  .single();
-
-                if (newUserError) {
-                  console.error('Error finding new user:', newUserError);
-                } else if (newUser) {
-                  // Create referral relationship
-                  const { error: referralError } = await supabase
-                    .from('referrals')
-                    .insert({
-                      referrer_id: referrer.id,
-                      referred_id: newUser.id
-                    });
-
-                  if (referralError) {
-                    console.error('Referral relationship error:', referralError);
-                  } else {
-                    console.log('Referral relationship created successfully');
-                  }
-                }
-              } else {
-                console.log('No referrer found with code:', referralCode.trim());
-              }
-            } catch (referralError) {
-              console.error('Referral processing error:', referralError);
+          if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // Log detailed error info
+            console.log('Profile error details:', JSON.stringify(profileError, null, 2));
+            
+            // Don't fail the whole signup for this
+            return { data: authData, error: null };
+          } else {
+            console.log('User profile created successfully:', newProfile);
+            
+            // Step 4: Handle referral relationship if there's a referral code
+            if (referralCode?.trim()) {
+              await handleReferralRelationship(referralCode.trim(), newProfile.id);
             }
           }
+        } else {
+          console.log('User profile already exists, skipping creation');
         }
       } catch (error) {
         console.error('Manual profile creation failed:', error);
-        console.log('Profile creation error details:', JSON.stringify(error, null, 2));
+        // Don't fail signup for profile creation issues
       }
     }
     
     return { data: authData, error: authError };
   } else {
+    // Login mode
     console.log('Attempting login for email:', email);
     
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -136,10 +110,44 @@ export const handleEmailAuth = async (
       console.error('Login error:', error);
     } else {
       console.log('Login successful:', data);
-      console.log('User logged in with ID:', data.user?.id);
     }
     
     return { data, error };
+  }
+};
+
+const handleReferralRelationship = async (referralCode: string, newUserId: string) => {
+  try {
+    console.log('Processing referral relationship for code:', referralCode);
+    
+    // Find referrer
+    const { data: referrer, error: referrerError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('referral_code', referralCode)
+      .maybeSingle();
+
+    if (referrerError) {
+      console.error('Error finding referrer:', referrerError);
+    } else if (referrer) {
+      // Create referral relationship
+      const { error: referralError } = await supabase
+        .from('referrals')
+        .insert({
+          referrer_id: referrer.id,
+          referred_id: newUserId
+        });
+
+      if (referralError) {
+        console.error('Referral relationship error:', referralError);
+      } else {
+        console.log('Referral relationship created successfully');
+      }
+    } else {
+      console.log('No referrer found with code:', referralCode);
+    }
+  } catch (referralError) {
+    console.error('Referral processing error:', referralError);
   }
 };
 
