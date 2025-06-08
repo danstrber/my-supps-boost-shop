@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -341,8 +342,8 @@ const Index = () => {
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🚚 Shipping Policy</h3>
           <p className="text-gray-600 text-lg mb-4">
             {language === 'en' 
-              ? 'We ship as soon as possible! Orders are typically processed and shipped within 2-3 business days. We only ship within the USA unless you contact us on Telegram.'
-              : 'Enviamos lo más pronto posible! Las órdenes se procesan y envían a menudo en 2-3 días hábiles. Solo enviamos dentro de EE.UU. a menos que nos contactes por Telegram.'
+              ? 'We ship everyday! Orders are typically processed and shipped within 2-3 business days. We only ship within the USA unless you contact us on Telegram.'
+              : '¡Enviamos todos los días! Las órdenes se procesan y envían típicamente en 2-3 días hábiles. Solo enviamos dentro de EE.UU. a menos que nos contactes por Telegram.'
             }
           </p>
           <ul className="space-y-2 text-gray-600">
@@ -418,7 +419,7 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
-      {/* Why Choose Us Section - MOVED TO TOP AND MADE SMALLER */}
+      {/* Why Choose Us Section - AT TOP AND SMALLER */}
       <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-4 mb-8 shadow-xl border border-gray-600">
         <h2 className="text-xl font-bold mb-3 text-center">
           {language === 'en' ? 'Why Choose MySupps?' : '¿Por qué elegir MySupps?'}

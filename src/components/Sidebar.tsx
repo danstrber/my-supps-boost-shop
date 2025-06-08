@@ -27,47 +27,48 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
   ];
 
   return (
-    <aside className={`
-      ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-      md:translate-x-0 w-64 bg-white border-r border-gray-200 p-4 
-      fixed md:relative z-40 h-full md:h-auto overflow-y-auto
-      transition-transform duration-300 ease-in-out shadow-lg md:shadow-none
-      top-0 left-0 md:top-auto md:left-auto
-    `}>
-      <div className="sticky top-0 bg-white pb-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">
-          {t.categories}
-        </h3>
-      </div>
-      
-      <ul className="space-y-1 mb-6">
-        {categories.map((category) => (
-          <li key={category.id}>
-            <button
-              onClick={() => onCategoryChange(category.id)}
-              className={`
-                w-full text-left px-4 py-3 rounded-lg transition-all duration-200 font-medium
-                ${selectedCategory === category.id
-                  ? 'bg-green-600 text-white shadow-md'
-                  : 'text-gray-700 hover:bg-green-50 hover:text-green-700 hover:shadow-sm'
-                }
-              `}
-            >
-              {category.label}
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {userProfile && (
-        <div className="border-t border-gray-200 pt-4">
-          <ReferralSection
-            userProfile={userProfile}
-            language={language}
-            referralCount={referralCount}
-          />
+    <aside 
+      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl transform ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } transition-transform duration-300 ease-in-out z-40 md:relative md:translate-x-0 md:shadow-none overflow-y-auto`}
+      style={{ paddingTop: '120px' }}
+    >
+      <div className="p-4">
+        <div className="sticky top-0 bg-white pb-4">
+          <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">
+            {t.categories}
+          </h3>
         </div>
-      )}
+        
+        <ul className="space-y-1 mb-6">
+          {categories.map((category) => (
+            <li key={category.id}>
+              <button
+                onClick={() => onCategoryChange(category.id)}
+                className={`
+                  w-full text-left px-4 py-3 rounded-lg transition-all duration-200 font-medium
+                  ${selectedCategory === category.id
+                    ? 'bg-green-600 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-green-50 hover:text-green-700 hover:shadow-sm'
+                  }
+                `}
+              >
+                {category.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {userProfile && (
+          <div className="border-t border-gray-200 pt-4">
+            <ReferralSection
+              userProfile={userProfile}
+              language={language}
+              referralCount={referralCount}
+            />
+          </div>
+        )}
+      </div>
     </aside>
   );
 };

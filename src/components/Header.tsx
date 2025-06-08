@@ -44,7 +44,7 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* HAMBURGER MENU BUTTON - FIXED */}
+            {/* HAMBURGER MENU BUTTON */}
             <button
               onClick={handleMenuClick}
               className={`p-3 hover:bg-gray-100 rounded-lg flex items-center justify-center z-[9999] border-2 transition-all ${
@@ -177,7 +177,7 @@ const Header = ({
           </div>
         </div>
 
-        {/* LAB TEST & DELIVERY SECTION - Changed to green */}
+        {/* LAB TEST & DELIVERY SECTION */}
         <div className="bg-green-600 text-white py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center space-x-6 md:space-x-12 text-sm md:text-base font-medium">
