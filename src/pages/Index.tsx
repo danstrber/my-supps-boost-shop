@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -219,6 +220,11 @@ const Index = () => {
     setCartModalOpen(true);
   };
 
+  const handleMenuToggle = () => {
+    console.log('Hamburger menu clicked, current state:', sidebarOpen);
+    setSidebarOpen(!sidebarOpen);
+  };
+
   const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
 
   const renderAboutPage = () => (
@@ -397,75 +403,6 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
-      {/* Lab Testing & Features Section - PROMINENTLY AT THE TOP */}
-      <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-4 md:p-6 mb-6 shadow-lg">
-        <div className="text-center mb-4">
-          <h2 className="text-lg md:text-2xl font-bold text-gray-800 mb-2">
-            {language === 'en' ? 'Why Choose MySupps?' : '¿Por Qué Elegir MySupps?'}
-          </h2>
-          <p className="text-gray-600 text-sm md:text-base">
-            {language === 'en' 
-              ? 'Premium research chemicals with unmatched quality and service'
-              : 'Químicos de investigación premium con calidad y servicio inigualables'
-            }
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-center">
-          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-2xl md:text-3xl mb-2">🔬</div>
-            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
-              {language === 'en' ? 'Lab Tested' : 'Probado en Laboratorio'}
-            </h3>
-            <p className="text-gray-600 text-xs md:text-sm">
-              {language === 'en' 
-                ? 'Third-party HPLC tested for 99%+ purity'
-                : 'Probado por terceros con HPLC para 99%+ de pureza'
-              }
-            </p>
-          </div>
-          
-          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-2xl md:text-3xl mb-2">🚚</div>
-            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
-              {language === 'en' ? 'Fast Delivery' : 'Entrega Rápida'}
-            </h3>
-            <p className="text-gray-600 text-xs md:text-sm">
-              {language === 'en' 
-                ? 'Shipped within 2-3 days. Free over $100'
-                : 'Enviado en 2-3 días. Gratis sobre $100'
-              }
-            </p>
-          </div>
-          
-          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-2xl md:text-3xl mb-2">💎</div>
-            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
-              {language === 'en' ? 'Premium Quality' : 'Calidad Premium'}
-            </h3>
-            <p className="text-gray-600 text-xs md:text-sm">
-              {language === 'en' 
-                ? 'Research-grade compounds from certified facilities'
-                : 'Compuestos de grado de investigación certificados'
-              }
-            </p>
-          </div>
-          
-          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-2xl md:text-3xl mb-2">🔒</div>
-            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
-              {language === 'en' ? 'Secure & Discreet' : 'Seguro y Discreto'}
-            </h3>
-            <p className="text-gray-600 text-xs md:text-sm">
-              {language === 'en' 
-                ? 'Confidential packaging and secure payments'
-                : 'Empaque confidencial y pagos seguros'
-              }
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* User Referral Section */}
       {user && userProfile && (
         <ReferralSection
@@ -553,7 +490,7 @@ const Index = () => {
         onViewDetails={handleViewDetails}
       />
 
-      {/* Hero Section - SMALLER NOW */}
+      {/* Hero Section */}
       <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-2xl p-6 md:p-8 mt-16 shadow-2xl border border-gray-600">
         <h1 className="text-2xl md:text-4xl font-bold mb-4 text-center leading-tight">
           {language === 'en' 
@@ -601,12 +538,12 @@ const Index = () => {
         isAuthenticated={!!user}
         onAuthAction={handleAuthAction}
         onCartOpen={handleCartOpen}
-        onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
+        onMenuToggle={handleMenuToggle}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
       />
 
-      <div className="flex pt-16">
+      <div className="flex pt-28">
         <Sidebar
           language={language}
           isOpen={sidebarOpen}

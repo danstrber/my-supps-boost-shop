@@ -35,12 +35,13 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE */}
+            {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE AND FUNCTIONAL */}
             <Button
               variant="ghost"
               size="sm"
               onClick={onMenuToggle}
-              className="p-2 hover:bg-gray-100 rounded-lg flex items-center justify-center"
+              className="p-2 hover:bg-gray-100 rounded-lg flex items-center justify-center z-50"
+              aria-label="Toggle menu"
             >
               <Menu className="h-6 w-6 text-gray-700" />
             </Button>
@@ -162,6 +163,30 @@ const Header = ({
                   </span>
                 )}
               </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* LAB TEST & DELIVERY SECTION - Like Fulmen Pharma reference */}
+        <div className="bg-red-600 text-white py-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center items-center space-x-6 md:space-x-12 text-sm md:text-base font-medium">
+              <div className="flex items-center space-x-2">
+                <span>🔬</span>
+                <span>{language === 'en' ? 'LAB TEST' : 'PRUEBA DE LAB'}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>🚚</span>
+                <span>{language === 'en' ? 'DELIVERY' : 'ENTREGA'}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>💳</span>
+                <span>{language === 'en' ? 'PAYMENT' : 'PAGO'}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>📞</span>
+                <span>{language === 'en' ? 'CONTACT US' : 'CONTÁCTANOS'}</span>
+              </div>
             </div>
           </div>
         </div>
