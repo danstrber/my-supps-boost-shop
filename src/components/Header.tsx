@@ -44,31 +44,33 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* HAMBURGER MENU BUTTON - Enhanced with better styling and feedback */}
-            <button
-              type="button"
-              onClick={handleMenuClick}
-              className={`md:hidden p-2 rounded-lg border-2 transition-all duration-200 relative z-[100] ${
-                sidebarOpen 
-                  ? 'border-green-500 bg-green-50 text-green-700' 
-                  : 'border-gray-300 hover:border-green-500 text-gray-700'
-              }`}
-              aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
-              style={{ minWidth: '44px', minHeight: '44px' }}
-            >
-              <Menu className="h-6 w-6 mx-auto" />
-            </button>
+            {/* HAMBURGER MENU BUTTON - Made more prominent and always visible */}
+            <div className="flex items-center space-x-4">
+              <button
+                type="button"
+                onClick={handleMenuClick}
+                className={`p-3 rounded-lg border-2 transition-all duration-200 relative z-[100] bg-white shadow-md ${
+                  sidebarOpen 
+                    ? 'border-green-500 bg-green-50 text-green-700' 
+                    : 'border-gray-300 hover:border-green-500 text-gray-700 hover:bg-gray-50'
+                }`}
+                aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+                style={{ minWidth: '48px', minHeight: '48px' }}
+              >
+                <Menu className="h-6 w-6 mx-auto" />
+              </button>
 
-            {/* Logo */}
-            <div 
-              className="flex items-center cursor-pointer" 
-              onClick={() => onPageChange('home')}
-            >
-              <img 
-                src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
-                alt="MySupps Logo" 
-                className="h-10 md:h-14 w-auto"
-              />
+              {/* Logo */}
+              <div 
+                className="flex items-center cursor-pointer" 
+                onClick={() => onPageChange('home')}
+              >
+                <img 
+                  src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
+                  alt="MySupps Logo" 
+                  className="h-10 md:h-14 w-auto"
+                />
+              </div>
             </div>
 
             {/* Navigation - Desktop */}
