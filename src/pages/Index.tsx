@@ -493,38 +493,30 @@ const Index = () => {
         onViewDetails={handleViewDetails}
       />
 
-      {/* Hero Section - MADE SMALLER */}
-      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-4 md:p-6 mt-12 shadow-xl border border-gray-600">
-        <h1 className="text-xl md:text-2xl font-bold mb-3 text-center leading-tight">
+      {/* Why Choose Us Section - MADE SMALLER */}
+      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-3 md:p-4 mt-12 shadow-xl border border-gray-600">
+        <h1 className="text-lg md:text-xl font-bold mb-2 text-center leading-tight">
           {language === 'en' 
-            ? 'Unlock Your Potential with Science-Backed Performance Enhancers'
-            : 'Desbloquea Tu Potencial con Potenciadores de Rendimiento Respaldados por la Ciencia'
+            ? 'Why Choose MySupps?'
+            : '¿Por qué elegir MySupps?'
           }
         </h1>
-        <p className="text-base mb-4 opacity-90 text-center leading-relaxed">
-          {language === 'en' 
-            ? 'Are you striving for more — in the gym, in the mirror, or in life?'
-            : '¿Estás buscando más — en el gimnasio, en el espejo o en la vida?'
-          }
-        </p>
         
-        <div className="grid md:grid-cols-2 gap-4 mb-4 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-3 max-w-4xl mx-auto">
           <div className="text-center">
-            <h3 className="text-lg font-bold mb-3">Why Choose Our Products?</h3>
-            <ul className="space-y-2 text-left text-sm">
-              <li className="flex items-center"><span className="mr-2 text-lg">💪</span> Build Lean Muscle Faster</li>
-              <li className="flex items-center"><span className="mr-2 text-lg">⚡</span> Enhance Strength and Boost Endurance</li>
-              <li className="flex items-center"><span className="mr-2 text-lg">🔄</span> Accelerate Recovery Between Workouts</li>
-              <li className="flex items-center"><span className="mr-2 text-lg">🧬</span> Support Healthy Aging</li>
+            <ul className="space-y-1 text-left text-sm">
+              <li className="flex items-center"><span className="mr-2">💪</span> Build Lean Muscle Faster</li>
+              <li className="flex items-center"><span className="mr-2">⚡</span> Enhance Strength and Endurance</li>
+              <li className="flex items-center"><span className="mr-2">🔄</span> Accelerate Recovery</li>
+              <li className="flex items-center"><span className="mr-2">🧬</span> Support Healthy Aging</li>
             </ul>
           </div>
           <div className="text-center">
-            <h3 className="text-lg font-bold mb-3">Additional Benefits</h3>
-            <ul className="space-y-2 text-left text-sm">
-              <li className="flex items-center"><span className="mr-2 text-lg">✨</span> Fight Fatigue & Elevate Confidence</li>
-              <li className="flex items-center"><span className="mr-2 text-lg">🏆</span> Trusted by athletes and professionals</li>
-              <li className="flex items-center"><span className="mr-2 text-lg">🔬</span> Tailored, safe, and goal-oriented</li>
-              <li className="flex items-center"><span className="mr-2 text-lg">📊</span> Science meets performance</li>
+            <ul className="space-y-1 text-left text-sm">
+              <li className="flex items-center"><span className="mr-2">✨</span> Fight Fatigue & Elevate Confidence</li>
+              <li className="flex items-center"><span className="mr-2">🏆</span> Trusted by Athletes</li>
+              <li className="flex items-center"><span className="mr-2">🔬</span> Science-Backed Formulas</li>
+              <li className="flex items-center"><span className="mr-2">📊</span> Lab Tested Quality</li>
             </ul>
           </div>
         </div>
