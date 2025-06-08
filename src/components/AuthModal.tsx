@@ -25,9 +25,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   const [referralCode, setReferralCode] = useState(propReferralCode || '');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [acceptedTos, setAcceptedTos] = useState(false);
-  const [confirmedAge, setConfirmedAge] = useState(false);
-  const [confirmedNotHuman, setConfirmedNotHuman] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,11 +34,11 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
 
     try {
       if (mode === 'signup') {
-        // Validate TOS and confirmations for signup
-        if (!acceptedTos || !confirmedAge || !confirmedNotHuman) {
+        // Validate terms for signup
+        if (!acceptedTerms) {
           toast({
-            title: "Please confirm all requirements",
-            description: "You must accept the terms and confirm all statements to create an account.",
+            title: "Please accept the terms",
+            description: "You must accept all terms and conditions to create an account.",
             variant: "destructive"
           });
           setLoading(false);
@@ -114,10 +112,10 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   };
 
   const handleGoogleSignIn = async () => {
-    if (mode === 'signup' && (!acceptedTos || !confirmedAge || !confirmedNotHuman)) {
+    if (mode === 'signup' && !acceptedTerms) {
       toast({
-        title: "Please confirm all requirements",
-        description: "You must accept the terms and confirm all statements to sign up with Google.",
+        title: "Please accept the terms",
+        description: "You must accept all terms and conditions to sign up with Google.",
         variant: "destructive"
       });
       return;
@@ -171,9 +169,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
     setUsername('');
     setReferralCode(propReferralCode || '');
     setShowPassword(false);
-    setAcceptedTos(false);
-    setConfirmedAge(false);
-    setConfirmedNotHuman(false);
+    setAcceptedTerms(false);
   };
 
   const switchMode = () => {
@@ -292,39 +288,17 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
               </div>
             </div>
 
-            {/* Terms and Conditions for Signup */}
+            {/* Combined Terms Checkbox for Signup */}
             {mode === 'signup' && (
-              <div className="space-y-3 border-t pt-4">
+              <div className="border-t pt-4">
                 <div className="flex items-start space-x-2">
                   <Checkbox
-                    id="tos"
-                    checked={acceptedTos}
-                    onCheckedChange={(checked) => setAcceptedTos(checked === true)}
+                    id="terms"
+                    checked={acceptedTerms}
+                    onCheckedChange={(checked) => setAcceptedTerms(checked === true)}
                   />
-                  <Label htmlFor="tos" className="text-sm leading-relaxed">
-                    I accept the Terms of Service and Privacy Policy. I understand these products are for research purposes only.
-                  </Label>
-                </div>
-
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="age"
-                    checked={confirmedAge}
-                    onCheckedChange={(checked) => setConfirmedAge(checked === true)}
-                  />
-                  <Label htmlFor="age" className="text-sm leading-relaxed">
-                    I confirm that I am over 18 years of age.
-                  </Label>
-                </div>
-
-                <div className="flex items-start space-x-2">
-                  <Checkbox
-                    id="notHuman"
-                    checked={confirmedNotHuman}
-                    onCheckedChange={(checked) => setConfirmedNotHuman(checked === true)}
-                  />
-                  <Label htmlFor="notHuman" className="text-sm leading-relaxed">
-                    I confirm these products are NOT for human consumption and are for research purposes only.
+                  <Label htmlFor="terms" className="text-sm leading-relaxed">
+                    I accept the Terms of Service and Privacy Policy. I confirm that I am over 18 years of age and understand these products are NOT for human consumption and are for research purposes only.
                   </Label>
                 </div>
               </div>
