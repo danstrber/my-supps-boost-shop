@@ -17,49 +17,47 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
   const t = translations[language];
   
   const categories = [
-    { id: 'all', label: t.allProducts, emoji: '🏠' },
-    { id: 'sarms', label: t.sarms, emoji: '💊' },
-    { id: 'muscleGrowth', label: t.muscleGrowth, emoji: '💪' },
-    { id: 'fatLoss', label: t.fatLoss, emoji: '🔥' },
-    { id: 'recovery', label: t.recovery, emoji: '⚡' },
-    { id: 'testosteroneSupport', label: t.testosteroneSupport, emoji: '🚀' },
-    { id: 'pctAi', label: t.pctAi, emoji: '🛡️' }
+    { id: 'all', label: t.allProducts },
+    { id: 'sarms', label: t.sarms },
+    { id: 'muscleGrowth', label: t.muscleGrowth },
+    { id: 'fatLoss', label: t.fatLoss },
+    { id: 'recovery', label: t.recovery },
+    { id: 'testosteroneSupport', label: t.testosteroneSupport },
+    { id: 'pctAi', label: t.pctAi }
   ];
 
   return (
     <nav 
-      className={`fixed top-0 left-0 w-64 h-full bg-gray-900 text-white pt-16 px-4 pb-5 box-border transition-transform duration-300 ease-in-out overflow-y-auto z-[1000] transform ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
+      className={`fixed top-0 w-64 h-full bg-gray-900 text-white pt-16 px-5 pb-5 box-border transition-all duration-300 ease-in-out overflow-y-auto z-[1000] ${
+        isOpen ? 'left-0' : '-left-64'
       }`}
     >
-      <div className="mt-6 mb-5">
-        <h2 className="text-xl font-bold text-white mb-6 border-b border-gray-700 pb-3 flex items-center">
-          <span className="mr-2">📂</span>
+      <div className="mt-10 mb-5">
+        <h2 className="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-3">
           {t.categories}
         </h2>
         
-        <ul className="list-none p-0 space-y-2">
+        <ul className="list-none p-0">
           {categories.map((category) => (
             <li key={category.id}>
               <button
                 onClick={() => onCategoryChange(category.id)}
                 className={`
-                  w-full text-left py-3 px-4 rounded-lg cursor-pointer transition-all duration-200 flex items-center space-x-3 text-sm font-medium
+                  w-full text-left py-3 px-3 border-b border-gray-700 cursor-pointer transition-colors
                   ${selectedCategory === category.id
-                    ? 'bg-green-600 text-white shadow-lg transform scale-105'
-                    : 'hover:bg-gray-700 hover:transform hover:scale-102'
+                    ? 'bg-green-600 text-white'
+                    : 'hover:bg-gray-700'
                   }
                 `}
               >
-                <span className="text-lg">{category.emoji}</span>
-                <span>{category.label}</span>
+                {category.label}
               </button>
             </li>
           ))}
         </ul>
 
         {userProfile && (
-          <div className="border-t border-gray-700 pt-6 mt-8">
+          <div className="border-t border-gray-700 pt-4 mt-6">
             <ReferralSection
               userProfile={userProfile}
               language={language}

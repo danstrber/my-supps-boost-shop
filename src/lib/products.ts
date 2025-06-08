@@ -1,29 +1,25 @@
-
 export interface Product {
   id: string;
   name: string;
   price: number;
-  originalPrice?: number;
-  image: string;
-  description: string;
   categories: string[];
+  description: string;
+  image: string;
+  inStock: boolean;
   featured?: boolean;
   labTestFile?: string;
-  inStock?: boolean;
   details: {
     research: string;
     effectsOnWomen: string;
-    benefits: string[];
-    sideEffects: string[];
+    benefits: string;
+    sideEffects: string;
     history: string;
     howItWorks: string;
     safety: string;
     cycle: string;
     expectations: string;
     ratings: {
-      effectiveness: number;
-      sideEffects: number;
-      value: number;
+      [key: string]: number;
     };
   };
 }
@@ -33,307 +29,153 @@ export const products: Product[] = [
     id: "mk677",
     name: "MK-677 (Ibutamoren)",
     price: 49.99,
-    originalPrice: 79.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Growth hormone secretagogue for enhanced recovery and muscle growth",
-    categories: ["sarms", "muscleGrowth", "recovery"],
-    featured: true,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
+    categories: ["muscle growth", "recovery"],
+    description: "Growth hormone secretagogue for enhanced muscle growth and recovery. 50 pills @ 10mg.",
+    image: "photos/mk677bottle.png",
     inStock: true,
+    featured: true,
     details: {
-      research: "MK-677 is a potent, orally bioavailable growth hormone secretagogue that stimulates the release of growth hormone and IGF-1.",
-      effectsOnWomen: "Women may experience enhanced recovery, improved skin quality, and potential water retention. Lower doses recommended.",
-      benefits: [
-        "Increased growth hormone levels",
-        "Enhanced muscle growth and recovery", 
-        "Improved sleep quality",
-        "Better skin and hair health",
-        "Increased bone density"
-      ],
-      sideEffects: [
-        "Water retention",
-        "Increased appetite",
-        "Fatigue in some users",
-        "Possible blood sugar elevation"
-      ],
-      history: "Developed by Reverse Pharmacology for treating growth hormone deficiency and muscle wasting conditions.",
+      research: "MK-677 is researched for its growth hormone releasing properties.",
+      effectsOnWomen: "Effective for muscle growth and recovery, possible water retention.",
+      benefits: "Increases IGF-1 levels, improves sleep quality, enhances recovery.",
+      sideEffects: "Water retention, increased appetite, possible joint pain.",
+      history: "Developed by Reverse Pharmacology for treating growth hormone deficiency.",
       howItWorks: "Mimics ghrelin to stimulate growth hormone release from the pituitary gland.",
-      safety: "Generally well-tolerated with proper dosing. Monitor blood glucose levels during use.",
-      cycle: "8-12 weeks, 10-25mg daily. Can be run longer than traditional SARMs.",
-      expectations: "Users typically see improved recovery within 1-2 weeks, with muscle growth effects becoming apparent after 4-6 weeks.",
+      safety: "Research compound only; long-term effects unknown.",
+      cycle: "8-16 weeks at 10-25mg daily, preferably before bed.",
+      expectations: "Improved recovery and sleep within 1-2 weeks, muscle gains over 8+ weeks.",
       ratings: {
-        effectiveness: 4.5,
-        sideEffects: 4.0,
-        value: 4.8
-      }
-    }
-  },
-  {
-    id: "ostarine",
-    name: "Ostarine (MK-2866)",
-    price: 59.99,
-    originalPrice: 89.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Selective androgen receptor modulator for lean muscle gains",
-    categories: ["sarms", "muscleGrowth", "fatLoss"],
-    featured: false,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    inStock: true,
-    details: {
-      research: "Ostarine is one of the most researched SARMs, originally developed for treating muscle wasting and osteoporosis.",
-      effectsOnWomen: "Well-tolerated by women at lower doses. Minimal virilization risk with proper dosing.",
-      benefits: [
-        "Lean muscle growth",
-        "Fat loss while preserving muscle",
-        "Improved bone density",
-        "Enhanced recovery",
-        "Minimal side effects"
-      ],
-      sideEffects: [
-        "Mild testosterone suppression",
-        "Possible hair thinning",
-        "Slight mood changes"
-      ],
-      history: "Developed by GTx Inc. for treating muscle wasting diseases and has undergone multiple clinical trials.",
-      howItWorks: "Selectively binds to androgen receptors in muscle and bone tissue.",
-      safety: "One of the safest SARMs available. PCT may be needed for cycles over 6 weeks.",
-      cycle: "6-8 weeks, 10-25mg daily for men, 5-10mg for women.",
-      expectations: "Noticeable strength gains within 2 weeks, visible muscle growth by week 4-6.",
-      ratings: {
-        effectiveness: 4.3,
-        sideEffects: 4.7,
-        value: 4.5
-      }
-    }
-  },
-  {
-    id: "cardarine",
-    name: "Cardarine (GW-501516)",
-    price: 69.99,
-    originalPrice: 99.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "PPAR delta agonist for enhanced endurance and fat burning",
-    categories: ["fatLoss", "recovery"],
-    featured: true,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    inStock: true,
-    details: {
-      research: "Cardarine is a PPAR delta receptor agonist that was initially developed for treating metabolic disorders.",
-      effectsOnWomen: "Excellent choice for women due to no androgenic effects. Safe and effective for fat loss.",
-      benefits: [
-        "Dramatic endurance increase",
-        "Accelerated fat burning",
-        "Improved recovery",
-        "Better lipid profile",
-        "No androgenic side effects"
-      ],
-      sideEffects: [
-        "Very minimal side effects",
-        "Possible slight nausea initially"
-      ],
-      history: "Originally developed by Ligand Pharmaceuticals and GlaxoSmithKline for metabolic diseases.",
-      howItWorks: "Activates PPAR delta receptors to increase fat oxidation and improve endurance.",
-      safety: "Very safe with no suppression. Can be used by both men and women.",
-      cycle: "8-12 weeks, 10-20mg daily. Can be stacked with other compounds.",
-      expectations: "Endurance improvements within days, fat loss effects noticeable within 2-3 weeks.",
-      ratings: {
-        effectiveness: 4.6,
-        sideEffects: 4.9,
-        value: 4.4
-      }
-    }
-  },
-  {
-    id: "ligandrol",
-    name: "Ligandrol (LGD-4033)",
-    price: 64.99,
-    originalPrice: 94.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Powerful SARM for serious muscle and strength gains",
-    categories: ["sarms", "muscleGrowth"],
-    featured: false,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    inStock: true,
-    details: {
-      research: "LGD-4033 is one of the most potent SARMs for muscle growth, developed by Ligand Pharmaceuticals.",
-      effectsOnWomen: "Potent compound - women should use very low doses (2.5-5mg) due to strong effects.",
-      benefits: [
-        "Rapid muscle growth",
-        "Significant strength gains",
-        "Improved bone density",
-        "Enhanced recovery",
-        "Dry, lean gains"
-      ],
-      sideEffects: [
-        "Testosterone suppression",
-        "Possible hair thinning",
-        "Mild water retention",
-        "Mood changes"
-      ],
-      history: "Developed for treating muscle wasting and osteoporosis. Highly researched compound.",
-      howItWorks: "Highly selective binding to androgen receptors in muscle and bone tissue.",
-      safety: "Requires PCT for cycles over 6 weeks. Monitor liver values.",
-      cycle: "6-8 weeks, 5-10mg daily for men, 2.5-5mg for women.",
-      expectations: "Strength gains within 1 week, visible muscle growth by week 3-4.",
-      ratings: {
-        effectiveness: 4.7,
-        sideEffects: 3.8,
-        value: 4.3
+        "Muscle Growth": 4,
+        "Recovery": 5,
+        "Safety": 3
       }
     }
   },
   {
     id: "rad140",
     name: "RAD-140 (Testolone)",
-    price: 74.99,
-    originalPrice: 109.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Most potent SARM for extreme muscle growth and strength",
-    categories: ["sarms", "muscleGrowth", "testosteroneSupport"],
-    featured: true,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    inStock: true,
-    details: {
-      research: "RAD-140 is considered the most anabolic SARM available, developed by Radius Health.",
-      effectsOnWomen: "Not recommended for women due to high potency and virilization risk.",
-      benefits: [
-        "Extreme muscle growth",
-        "Massive strength gains",
-        "Enhanced aggression/drive",
-        "Improved bone density",
-        "Neuroprotective effects"
-      ],
-      sideEffects: [
-        "Significant testosterone suppression",
-        "Possible hair loss",
-        "Aggression increase",
-        "Liver stress"
-      ],
-      history: "Developed as a testosterone replacement therapy alternative with fewer side effects.",
-      howItWorks: "Highly selective androgen receptor modulator with strong anabolic effects.",
-      safety: "PCT required. Regular blood work recommended. Not for beginners.",
-      cycle: "8 weeks maximum, 10-20mg daily. Advanced users only.",
-      expectations: "Rapid strength gains within days, significant muscle growth by week 2-3.",
-      ratings: {
-        effectiveness: 4.9,
-        sideEffects: 3.2,
-        value: 4.1
-      }
-    }
-  },
-  {
-    id: "sr9009",
-    name: "SR-9009 (Stenabolic)",
-    price: 54.99,
-    originalPrice: 84.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Rev-erb agonist for enhanced metabolism and endurance",
-    categories: ["fatLoss", "recovery"],
-    featured: false,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    inStock: true,
-    details: {
-      research: "SR-9009 is a Rev-erb agonist that regulates circadian rhythms and metabolism.",
-      effectsOnWomen: "Excellent for women with no androgenic effects. Great for fat loss and endurance.",
-      benefits: [
-        "Increased metabolism",
-        "Enhanced fat burning",
-        "Improved endurance",
-        "Better sleep quality",
-        "Reduced inflammation"
-      ],
-      sideEffects: [
-        "Minimal side effects",
-        "Possible initial insomnia",
-        "Rare digestive issues"
-      ],
-      history: "Developed by Professor Thomas Burris at Scripps Research Institute.",
-      howItWorks: "Activates Rev-erb proteins to enhance metabolism and fat oxidation.",
-      safety: "Very safe with no hormonal suppression. Suitable for both men and women.",
-      cycle: "8-12 weeks, 20-30mg daily split into multiple doses.",
-      expectations: "Immediate endurance boost, fat loss visible within 2-3 weeks.",
-      ratings: {
-        effectiveness: 4.2,
-        sideEffects: 4.8,
-        value: 4.0
-      }
-    }
-  },
-  {
-    id: "yk11",
-    name: "YK-11",
-    price: 79.99,
-    originalPrice: 114.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Myostatin inhibitor for breakthrough muscle growth",
-    categories: ["sarms", "muscleGrowth"],
-    featured: false,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    inStock: true,
-    details: {
-      research: "YK-11 is a unique compound that acts as both a SARM and myostatin inhibitor.",
-      effectsOnWomen: "Not recommended for women due to DHT-like properties and virilization risk.",
-      benefits: [
-        "Myostatin inhibition",
-        "Extreme muscle growth",
-        "Increased follistatin",
-        "Enhanced strength",
-        "Improved muscle hardness"
-      ],
-      sideEffects: [
-        "Testosterone suppression",
-        "Possible liver stress",
-        "Hair loss risk",
-        "Aggressive behavior"
-      ],
-      history: "Discovered in 2011, unique mechanism makes it different from traditional SARMs.",
-      howItWorks: "Inhibits myostatin while activating androgen receptors, allowing for greater muscle growth.",
-      safety: "Requires PCT and liver support. Advanced users only.",
-      cycle: "6-8 weeks, 5-10mg daily. Should not exceed 8 weeks.",
-      expectations: "Rapid muscle hardening within 1-2 weeks, significant growth by week 4.",
-      ratings: {
-        effectiveness: 4.8,
-        sideEffects: 3.0,
-        value: 3.8
-      }
-    }
-  },
-  {
-    id: "s4",
-    name: "S-4 (Andarine)",
     price: 49.99,
-    originalPrice: 79.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Versatile SARM for cutting and lean muscle gains",
-    categories: ["sarms", "fatLoss", "muscleGrowth"],
-    featured: false,
-    labTestFile: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
+    categories: ["sarms", "muscle growth"],
+    description: "Selective androgen receptor modulator for lean muscle gains. 50 caps @ 10mg.",
+    image: "photos/rad140bottle.png",
+    inStock: true,
+    featured: true,
+    details: {
+      research: "RAD-140 is researched for its selective androgen receptor modulation.",
+      effectsOnWomen: "Effective for lean muscle gains, risk of virilization at higher doses.",
+      benefits: "Promotes lean muscle mass, increases strength, minimal water retention.",
+      sideEffects: "Testosterone suppression, possible hair loss, liver strain.",
+      history: "Developed by Radius Health for treating muscle wasting and breast cancer.",
+      howItWorks: "Selectively binds to androgen receptors in muscle and bone tissue.",
+      safety: "Research compound only; requires PCT after cycle.",
+      cycle: "8-12 weeks at 10-20mg daily with proper PCT.",
+      expectations: "Strength gains within 2-3 weeks, lean muscle gains over 6-8 weeks.",
+      ratings: {
+        "Muscle Growth": 5,
+        "Strength": 5,
+        "Safety": 2
+      }
+    }
+  },
+  {
+    id: "superdrol",
+    name: "Superdrol",
+    price: 35.00,
+    categories: ["muscle growth", "testosterone support"],
+    description: "Powerful prohormone for significant muscle and strength gains. 20 caps @ 10mg.",
+    image: "photos/superdrolbottle.png",
+    inStock: true,
+    labTestFile: "photos/Test_Report_43554.png",
+    details: {
+      research: "Superdrol is researched for its potent anabolic properties.",
+      effectsOnWomen: "Not recommended for women due to high virilization risk.",
+      benefits: "Rapid muscle and strength gains, increased protein synthesis.",
+      sideEffects: "Liver toxicity, blood pressure elevation, cholesterol issues.",
+      history: "Originally marketed as a dietary supplement before being banned.",
+      howItWorks: "Acts as a potent androgen receptor agonist without aromatization.",
+      safety: "Hepatotoxic compound; liver support and monitoring essential.",
+      cycle: "4-6 weeks at 10-20mg daily with extensive liver support.",
+      expectations: "Significant strength gains within 1 week, muscle gains throughout cycle.",
+      ratings: {
+        "Muscle Growth": 5,
+        "Strength": 5,
+        "Safety": 1
+      }
+    }
+  },
+  {
+    id: "enclomiphene",
+    name: "Enclomiphene Citrate",
+    price: 25.00,
+    categories: ["pct ai", "testosterone support"],
+    description: "SERM for post cycle therapy and testosterone support. 50 caps @ 12.5mg.",
+    image: "photos/enclobox.png",
     inStock: true,
     details: {
-      research: "S-4 was developed by GTx Inc. for treating muscle wasting and osteoporosis.",
-      effectsOnWomen: "Suitable for women at lower doses (12.5-25mg). Monitor for virilization.",
-      benefits: [
-        "Lean muscle gains",
-        "Fat loss while preserving muscle",
-        "Increased vascularity",
-        "Enhanced strength",
-        "Improved bone density"
-      ],
-      sideEffects: [
-        "Vision changes (yellow tint)",
-        "Night vision issues",
-        "Mild suppression",
-        "Possible hair thinning"
-      ],
-      history: "One of the earlier SARMs developed, extensively studied for muscle wasting conditions.",
-      howItWorks: "Selective androgen receptor binding with strong affinity for muscle and bone.",
-      safety: "Monitor vision changes. PCT recommended for longer cycles.",
-      cycle: "6-8 weeks, 25-50mg daily. 5 days on, 2 days off protocol recommended.",
-      expectations: "Muscle hardening within 2 weeks, fat loss and strength gains by week 4.",
+      research: "Enclomiphene is researched for its selective estrogen receptor modulation.",
+      effectsOnWomen: "May affect estrogen levels; consultation recommended.",
+      benefits: "Restores natural testosterone, blocks estrogen receptors, minimal side effects.",
+      sideEffects: "Possible mood changes, visual disturbances (rare), hot flashes.",
+      history: "Developed as the active isomer of clomiphene for male hypogonadism.",
+      howItWorks: "Blocks estrogen receptors in hypothalamus, stimulating LH and FSH release.",
+      safety: "Generally well-tolerated; regular blood work recommended.",
+      cycle: "4-6 weeks at 12.5-25mg daily for PCT or TRT alternative.",
+      expectations: "Testosterone recovery within 2-4 weeks of consistent use.",
       ratings: {
-        effectiveness: 4.1,
-        sideEffects: 3.5,
-        value: 4.2
+        "Testosterone Support": 4,
+        "PCT": 5,
+        "Safety": 4
+      }
+    }
+  },
+  {
+    id: "clenbuterol",
+    name: "Clenbuterol",
+    price: 35.00,
+    categories: ["fat loss"],
+    description: "Beta-2 agonist for enhanced fat loss and metabolism. 50 tabs @ 40mcg.",
+    image: "photos/clenbottle.png",
+    inStock: true,
+    labTestFile: "photos/test_report_41538.png",
+    details: {
+      research: "Clenbuterol is researched for its thermogenic properties.",
+      effectsOnWomen: "Effective for fat loss, possible tremors.",
+      benefits: "Promotes fat loss, preserves lean muscle.",
+      sideEffects: "Tremors, increased heart rate.",
+      history: "Developed for asthma treatment, later studied for fat loss.",
+      howItWorks: "Stimulates beta-2 receptors to increase metabolism.",
+      safety: "Not approved for human use; cardiac risks.",
+      cycle: "2 weeks on, 2 weeks off at 20-80mcg daily.",
+      expectations: "Fat loss visible within 1-2 weeks.",
+      ratings: {
+        "Fat Loss": 4,
+        "Energy": 3,
+        "Safety": 2
+      }
+    }
+  },
+  {
+    id: "aromasin",
+    name: "Aromasin (Exemestane)",
+    price: 25.00,
+    categories: ["pct ai"],
+    description: "Aromatase inhibitor for estrogen control. 10 pills @ 25mg.",
+    image: "photos/aromasinbox.png",
+    inStock: true,
+    details: {
+      research: "Aromasin is researched for its aromatase inhibition properties.",
+      effectsOnWomen: "Not recommended; can severely reduce estrogen levels.",
+      benefits: "Controls estrogen levels, prevents gynecomastia, reduces water retention.",
+      sideEffects: "Joint pain, reduced bone density, mood changes.",
+      history: "Originally developed for breast cancer treatment in postmenopausal women.",
+      howItWorks: "Irreversibly binds to aromatase enzyme, preventing estrogen synthesis.",
+      safety: "Requires careful dosing; can crash estrogen levels if overused.",
+      cycle: "12.5-25mg every other day during aromatizing compound cycles.",
+      expectations: "Estrogen control within 3-5 days, reduced water retention.",
+      ratings: {
+        "Estrogen Control": 5,
+        "PCT": 4,
+        "Safety": 3
       }
     }
   }

@@ -37,31 +37,29 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Hamburger Menu - More prominent */}
+            {/* Simple Hamburger Menu */}
             <div 
-              className="flex items-center justify-center w-10 h-10 cursor-pointer z-[1001] rounded-lg hover:bg-gray-100 transition-colors"
+              className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-between"
               onClick={onMenuToggle}
             >
-              <div className="w-6 h-5 flex flex-col justify-between">
-                <div className={`w-full h-0.5 bg-gray-800 rounded transition-all duration-300 ${sidebarOpen ? 'transform rotate-45 translate-y-2' : ''}`}></div>
-                <div className={`w-full h-0.5 bg-gray-800 rounded transition-all duration-300 ${sidebarOpen ? 'opacity-0' : ''}`}></div>
-                <div className={`w-full h-0.5 bg-gray-800 rounded transition-all duration-300 ${sidebarOpen ? 'transform -rotate-45 -translate-y-2' : ''}`}></div>
-              </div>
+              <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
+              <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
+              <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
             </div>
 
-            {/* Logo - centered on mobile */}
+            {/* Logo - moved right to avoid hamburger */}
             <div 
-              className="flex items-center cursor-pointer flex-1 justify-center md:justify-start md:ml-4" 
+              className="flex items-center cursor-pointer ml-16" 
               onClick={() => onPageChange('home')}
             >
               <img 
                 src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
                 alt="MySupps Logo" 
-                className="h-8 md:h-12 w-auto"
+                className="h-10 md:h-14 w-auto"
               />
             </div>
 
-            {/* Navigation - Desktop only */}
+            {/* Navigation - Desktop */}
             <nav className="hidden lg:flex space-x-1">
               <Button
                 variant={currentPage === 'home' ? 'default' : 'ghost'}
@@ -107,21 +105,21 @@ const Header = ({
               </Button>
             </nav>
 
-            {/* Right side - Compact on mobile */}
-            <div className="flex items-center space-x-1 md:space-x-3">
-              {/* Premium Coaching Button - Smaller on mobile */}
+            {/* Right side */}
+            <div className="flex items-center space-x-2 md:space-x-3">
+              {/* Premium Coaching Button */}
               <Button
                 onClick={() => setCoachingModalOpen(true)}
-                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold px-2 md:px-4 py-1 md:py-2 rounded-lg shadow-lg border-2 border-orange-400 transform hover:scale-105 transition-all duration-200 text-xs md:text-sm"
+                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-orange-400 transform hover:scale-105 transition-all duration-200 text-xs md:text-base"
               >
-                <MessageCircle className="h-3 w-3 md:h-4 md:w-4 mr-1" />
-                <span className="hidden sm:inline">🏆 COACH</span>
-                <span className="sm:hidden">🏆</span>
+                <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">🏆 PREMIUM COACHING</span>
+                <span className="sm:hidden">🏆 COACH</span>
               </Button>
 
-              {/* Language Selector - Smaller */}
+              {/* Language Selector */}
               <Select value={language} onValueChange={onLanguageChange}>
-                <SelectTrigger className="w-12 md:w-16 h-8 md:h-10 border border-gray-300 rounded-lg text-xs">
+                <SelectTrigger className="w-16 md:w-20 border border-gray-300 rounded-lg">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -130,31 +128,32 @@ const Header = ({
                 </SelectContent>
               </Select>
 
-              {/* Auth Buttons - Compact */}
+              {/* Auth Buttons */}
               {isAuthenticated ? (
                 <Button
                   variant="outline"
                   onClick={() => onAuthAction('logout')}
-                  className="hidden sm:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-2 py-1 text-xs"
+                  className="hidden sm:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-3 py-2"
                 >
-                  <LogOut className="h-3 w-3 mr-1" />
-                  <span className="hidden md:inline">{language === 'en' ? 'Out' : 'Salir'}</span>
+                  <LogOut className="h-4 w-4 mr-1" />
+                  <span className="hidden md:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>
                 </Button>
               ) : (
-                <div className="flex space-x-1">
+                <div className="flex space-x-1 md:space-x-2">
                   <Button
                     variant="outline"
                     onClick={() => onAuthAction('login')}
-                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-2 py-1 text-xs"
+                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-3 py-2"
                   >
-                    <User className="h-3 w-3 md:mr-1" />
-                    <span className="hidden md:inline">{language === 'en' ? 'In' : 'Entrar'}</span>
+                    <User className="h-4 w-4 md:mr-1" />
+                    <span className="hidden md:inline">{language === 'en' ? 'Sign In' : 'Iniciar Sesión'}</span>
                   </Button>
                   <Button
                     onClick={() => onAuthAction('signup')}
-                    className="bg-green-600 hover:bg-green-700 text-white border border-green-600 rounded-lg px-2 py-1 font-medium text-xs"
+                    className="bg-green-600 hover:bg-green-700 text-white border border-green-600 rounded-lg px-3 py-2 font-medium"
                   >
-                    <span>{language === 'en' ? 'Join' : 'Unirse'}</span>
+                    <span className="hidden sm:inline">{language === 'en' ? 'Sign Up' : 'Registrarse'}</span>
+                    <span className="sm:hidden">{language === 'en' ? 'Join' : 'Unirse'}</span>
                   </Button>
                 </div>
               )}
@@ -163,12 +162,12 @@ const Header = ({
               <Button
                 variant="outline"
                 onClick={onCartOpen}
-                className="relative border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg p-2"
+                className="relative border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg p-2 md:px-3 md:py-2"
               >
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
-                    {cartItemCount > 9 ? '9+' : cartItemCount}
+                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                    {cartItemCount}
                   </span>
                 )}
               </Button>
@@ -176,41 +175,37 @@ const Header = ({
           </div>
         </div>
 
-        {/* GREEN SECTION - More compact on mobile */}
+        {/* GREEN SECTION WITH PROPER NAVIGATION */}
         <div className="bg-green-600 text-white py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-center items-center space-x-4 md:space-x-8 text-xs md:text-sm font-medium">
+            <div className="flex justify-center items-center space-x-6 md:space-x-12 text-sm md:text-base font-medium">
               <button 
                 onClick={() => onPageChange('labtesting')}
-                className="flex items-center space-x-1 hover:bg-green-700 px-2 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>🔬</span>
-                <span className="hidden sm:inline">{language === 'en' ? 'LAB TESTING' : 'PRUEBAS DE LAB'}</span>
-                <span className="sm:hidden">{language === 'en' ? 'LAB' : 'LAB'}</span>
+                <span>{language === 'en' ? 'LAB TESTING' : 'PRUEBAS DE LAB'}</span>
               </button>
               <button 
                 onClick={() => onPageChange('delivery')}
-                className="flex items-center space-x-1 hover:bg-green-700 px-2 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>🚚</span>
-                <span className="hidden sm:inline">{language === 'en' ? 'DELIVERY' : 'ENTREGA'}</span>
-                <span className="sm:hidden">{language === 'en' ? 'SHIP' : 'ENVÍO'}</span>
+                <span>{language === 'en' ? 'DELIVERY' : 'ENTREGA'}</span>
               </button>
               <button 
                 onClick={() => onPageChange('payment')}
-                className="flex items-center space-x-1 hover:bg-green-700 px-2 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>💳</span>
-                <span className="hidden sm:inline">{language === 'en' ? 'PAYMENT' : 'PAGO'}</span>
-                <span className="sm:hidden">{language === 'en' ? 'PAY' : 'PAGO'}</span>
+                <span>{language === 'en' ? 'PAYMENT' : 'PAGO'}</span>
               </button>
               <button 
                 onClick={() => onPageChange('contact')}
-                className="flex items-center space-x-1 hover:bg-green-700 px-2 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>📞</span>
-                <span className="hidden sm:inline">{language === 'en' ? 'CONTACT' : 'CONTACTO'}</span>
-                <span className="sm:hidden">{language === 'en' ? 'HELP' : 'AYUDA'}</span>
+                <span>{language === 'en' ? 'CONTACT US' : 'CONTÁCTANOS'}</span>
               </button>
             </div>
           </div>
