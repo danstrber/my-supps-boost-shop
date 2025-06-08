@@ -30,21 +30,27 @@ const Header = ({
 }: HeaderProps) => {
   const [coachingModalOpen, setCoachingModalOpen] = useState(false);
 
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Hamburger menu button clicked!');
+    onMenuToggle();
+  };
+
   return (
     <>
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE AND FUNCTIONAL */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onMenuToggle}
-              className="p-2 hover:bg-gray-100 rounded-lg flex items-center justify-center z-50"
+            <button
+              onClick={handleMenuClick}
+              className="p-3 hover:bg-gray-100 rounded-lg flex items-center justify-center z-[9999] border-2 border-gray-300 hover:border-green-500"
               aria-label="Toggle menu"
+              style={{ minWidth: '44px', minHeight: '44px' }}
             >
               <Menu className="h-6 w-6 text-gray-700" />
-            </Button>
+            </button>
 
             {/* Logo */}
             <div 
@@ -171,22 +177,34 @@ const Header = ({
         <div className="bg-red-600 text-white py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center space-x-6 md:space-x-12 text-sm md:text-base font-medium">
-              <div className="flex items-center space-x-2">
+              <button 
+                onClick={() => onPageChange('payment')}
+                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+              >
                 <span>🔬</span>
                 <span>{language === 'en' ? 'LAB TEST' : 'PRUEBA DE LAB'}</span>
-              </div>
-              <div className="flex items-center space-x-2">
+              </button>
+              <button 
+                onClick={() => onPageChange('delivery')}
+                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+              >
                 <span>🚚</span>
                 <span>{language === 'en' ? 'DELIVERY' : 'ENTREGA'}</span>
-              </div>
-              <div className="flex items-center space-x-2">
+              </button>
+              <button 
+                onClick={() => onPageChange('payment')}
+                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+              >
                 <span>💳</span>
                 <span>{language === 'en' ? 'PAYMENT' : 'PAGO'}</span>
-              </div>
-              <div className="flex items-center space-x-2">
+              </button>
+              <button 
+                onClick={() => onPageChange('contact')}
+                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+              >
                 <span>📞</span>
                 <span>{language === 'en' ? 'CONTACT US' : 'CONTÁCTANOS'}</span>
-              </div>
+              </button>
             </div>
           </div>
         </div>
