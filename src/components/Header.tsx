@@ -35,14 +35,14 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Mobile menu button (hamburger) */}
+            {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE */}
             <Button
               variant="ghost"
               size="sm"
               onClick={onMenuToggle}
-              className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+              className="p-2 hover:bg-gray-100 rounded-lg flex items-center justify-center"
             >
-              <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6 text-gray-700" />
             </Button>
 
             {/* Logo */}
@@ -98,13 +98,13 @@ const Header = ({
 
             {/* Right side */}
             <div className="flex items-center space-x-2 md:space-x-3">
-              {/* Premium Coaching Button - MUCH MORE OBVIOUS */}
+              {/* Premium Coaching Button - SUPER OBVIOUS */}
               <Button
                 onClick={() => setCoachingModalOpen(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold px-4 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-blue-400 transform hover:scale-105 transition-all duration-200"
+                className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-orange-400 transform hover:scale-105 transition-all duration-200 text-xs md:text-base"
               >
-                <MessageCircle className="h-5 w-5 mr-2" />
-                <span className="hidden sm:inline text-sm md:text-base">🏆 PREMIUM COACHING</span>
+                <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                <span className="hidden sm:inline">🏆 PREMIUM COACHING</span>
                 <span className="sm:hidden">🏆 COACH</span>
               </Button>
 

@@ -398,12 +398,12 @@ const Index = () => {
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
       {/* Lab Testing & Features Section - PROMINENTLY AT THE TOP */}
-      <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-6 md:p-8 mb-8 shadow-lg">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+      <div className="bg-gradient-to-r from-white to-gray-50 border-2 border-gray-200 rounded-2xl p-4 md:p-6 mb-6 shadow-lg">
+        <div className="text-center mb-4">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-800 mb-2">
             {language === 'en' ? 'Why Choose MySupps?' : '¿Por Qué Elegir MySupps?'}
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 text-sm md:text-base">
             {language === 'en' 
               ? 'Premium research chemicals with unmatched quality and service'
               : 'Químicos de investigación premium con calidad y servicio inigualables'
@@ -411,55 +411,55 @@ const Index = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-4 gap-4 md:gap-6 text-center">
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-3xl md:text-4xl mb-4">🔬</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 text-center">
+          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="text-2xl md:text-3xl mb-2">🔬</div>
+            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
               {language === 'en' ? 'Lab Tested' : 'Probado en Laboratorio'}
             </h3>
-            <p className="text-gray-600 text-sm md:text-base">
+            <p className="text-gray-600 text-xs md:text-sm">
               {language === 'en' 
-                ? 'Third-party HPLC tested for 99%+ purity and potency verification'
-                : 'Probado por terceros con HPLC para 99%+ de pureza y verificación de potencia'
+                ? 'Third-party HPLC tested for 99%+ purity'
+                : 'Probado por terceros con HPLC para 99%+ de pureza'
               }
             </p>
           </div>
           
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-3xl md:text-4xl mb-4">🚚</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="text-2xl md:text-3xl mb-2">🚚</div>
+            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
               {language === 'en' ? 'Fast Delivery' : 'Entrega Rápida'}
             </h3>
-            <p className="text-gray-600 text-sm md:text-base">
+            <p className="text-gray-600 text-xs md:text-sm">
               {language === 'en' 
-                ? 'Orders shipped within 2-3 business days. Free shipping over $100'
-                : 'Órdenes enviadas en 2-3 días hábiles. Envío gratis sobre $100'
+                ? 'Shipped within 2-3 days. Free over $100'
+                : 'Enviado en 2-3 días. Gratis sobre $100'
               }
             </p>
           </div>
           
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-3xl md:text-4xl mb-4">💎</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="text-2xl md:text-3xl mb-2">💎</div>
+            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
               {language === 'en' ? 'Premium Quality' : 'Calidad Premium'}
             </h3>
-            <p className="text-gray-600 text-sm md:text-base">
+            <p className="text-gray-600 text-xs md:text-sm">
               {language === 'en' 
-                ? 'Research-grade compounds manufactured in certified facilities'
-                : 'Compuestos de grado de investigación fabricados en instalaciones certificadas'
+                ? 'Research-grade compounds from certified facilities'
+                : 'Compuestos de grado de investigación certificados'
               }
             </p>
           </div>
           
-          <div className="p-4 md:p-6 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-            <div className="text-3xl md:text-4xl mb-4">🔒</div>
-            <h3 className="font-bold text-gray-700 mb-3 text-base md:text-lg">
+          <div className="p-3 md:p-4 bg-white rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="text-2xl md:text-3xl mb-2">🔒</div>
+            <h3 className="font-bold text-gray-700 mb-2 text-xs md:text-sm">
               {language === 'en' ? 'Secure & Discreet' : 'Seguro y Discreto'}
             </h3>
-            <p className="text-gray-600 text-sm md:text-base">
+            <p className="text-gray-600 text-xs md:text-sm">
               {language === 'en' 
-                ? 'Confidential packaging and secure payment processing'
-                : 'Empaque confidencial y procesamiento de pagos seguro'
+                ? 'Confidential packaging and secure payments'
+                : 'Empaque confidencial y pagos seguros'
               }
             </p>
           </div>
@@ -553,44 +553,38 @@ const Index = () => {
         onViewDetails={handleViewDetails}
       />
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-2xl p-8 md:p-10 mt-16 shadow-2xl border border-gray-600">
-        <h1 className="text-3xl md:text-5xl font-bold mb-6 text-center leading-tight">
+      {/* Hero Section - SMALLER NOW */}
+      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-2xl p-6 md:p-8 mt-16 shadow-2xl border border-gray-600">
+        <h1 className="text-2xl md:text-4xl font-bold mb-4 text-center leading-tight">
           {language === 'en' 
             ? 'Unlock Your Potential with Science-Backed Performance Enhancers'
             : 'Desbloquea Tu Potencial con Potenciadores de Rendimiento Respaldados por la Ciencia'
           }
         </h1>
-        <p className="text-xl mb-8 opacity-90 text-center leading-relaxed">
+        <p className="text-lg mb-6 opacity-90 text-center leading-relaxed">
           {language === 'en' 
             ? 'Are you striving for more — in the gym, in the mirror, or in life?'
             : '¿Estás buscando más — en el gimnasio, en el espejo o en la vida?'
           }
         </p>
-        <p className="text-lg mb-8 opacity-85 text-center max-w-5xl mx-auto leading-relaxed">
-          {language === 'en' 
-            ? 'Whether you are chasing peak performance, accelerated recovery, or a sculpted physique, advanced peptides and medically-guided anabolic support may offer the edge you have been looking for.'
-            : 'Si estás buscando rendimiento máximo, recuperación acelerada o un cuerpo esculpido, los peptidos avanzados y la apoyo anabólico guiado por la medicina pueden ofrecerte la ventaja que buscas.'
-          }
-        </p>
         
-        <div className="grid md:grid-cols-2 gap-10 mb-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-8 mb-6 max-w-5xl mx-auto">
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-6">Why Choose Our Products?</h3>
-            <ul className="space-y-4 text-left">
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">💪</span> Build Lean Muscle Faster</li>
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">⚡</span> Enhance Strength and Boost Endurance</li>
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">🔄</span> Accelerate Recovery Between Workouts</li>
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">🧬</span> Support Healthy Aging with hormone-optimizing solutions</li>
+            <h3 className="text-xl font-bold mb-4">Why Choose Our Products?</h3>
+            <ul className="space-y-3 text-left">
+              <li className="flex items-center"><span className="mr-3 text-xl">💪</span> Build Lean Muscle Faster</li>
+              <li className="flex items-center"><span className="mr-3 text-xl">⚡</span> Enhance Strength and Boost Endurance</li>
+              <li className="flex items-center"><span className="mr-3 text-xl">🔄</span> Accelerate Recovery Between Workouts</li>
+              <li className="flex items-center"><span className="mr-3 text-xl">🧬</span> Support Healthy Aging</li>
             </ul>
           </div>
           <div className="text-center">
-            <h3 className="text-2xl font-bold mb-6">Additional Benefits</h3>
-            <ul className="space-y-4 text-left">
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">✨</span> Fight Fatigue & Elevate Confidence</li>
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">🏆</span> Trusted by athletes, professionals, and wellness enthusiasts</li>
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">🔬</span> Today's treatments are tailored, safe, and built around your goals</li>
-              <li className="flex items-center text-lg"><span className="mr-4 text-2xl">📊</span> Science meets performance. Results meet confidence.</li>
+            <h3 className="text-xl font-bold mb-4">Additional Benefits</h3>
+            <ul className="space-y-3 text-left">
+              <li className="flex items-center"><span className="mr-3 text-xl">✨</span> Fight Fatigue & Elevate Confidence</li>
+              <li className="flex items-center"><span className="mr-3 text-xl">🏆</span> Trusted by athletes and professionals</li>
+              <li className="flex items-center"><span className="mr-3 text-xl">🔬</span> Tailored, safe, and goal-oriented</li>
+              <li className="flex items-center"><span className="mr-3 text-xl">📊</span> Science meets performance</li>
             </ul>
           </div>
         </div>
