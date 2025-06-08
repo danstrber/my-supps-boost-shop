@@ -27,29 +27,26 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
   ];
 
   return (
-    <aside 
-      className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto ${
-        isOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:relative md:translate-x-0 md:shadow-none md:z-auto`}
-      style={{ paddingTop: '140px' }}
+    <nav 
+      className={`fixed top-0 w-64 h-full bg-gray-900 text-white pt-16 px-5 pb-5 box-border transition-all duration-300 ease-in-out overflow-y-auto z-[1000] ${
+        isOpen ? 'left-0' : '-left-64'
+      }`}
     >
-      <div className="p-4">
-        <div className="sticky top-0 bg-white pb-4">
-          <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">
-            {t.categories}
-          </h3>
-        </div>
+      <div className="mt-10 mb-5">
+        <h2 className="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-3">
+          {t.categories}
+        </h2>
         
-        <ul className="space-y-1 mb-6">
+        <ul className="list-none p-0">
           {categories.map((category) => (
             <li key={category.id}>
               <button
                 onClick={() => onCategoryChange(category.id)}
                 className={`
-                  w-full text-left px-4 py-3 rounded-lg transition-all duration-200 font-medium
+                  w-full text-left py-3 px-3 border-b border-gray-700 cursor-pointer transition-colors
                   ${selectedCategory === category.id
-                    ? 'bg-green-600 text-white shadow-md'
-                    : 'text-gray-700 hover:bg-green-50 hover:text-green-700 hover:shadow-sm'
+                    ? 'bg-green-600 text-white'
+                    : 'hover:bg-gray-700'
                   }
                 `}
               >
@@ -60,7 +57,7 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
         </ul>
 
         {userProfile && (
-          <div className="border-t border-gray-200 pt-4">
+          <div className="border-t border-gray-700 pt-4 mt-6">
             <ReferralSection
               userProfile={userProfile}
               language={language}
@@ -69,7 +66,7 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
           </div>
         )}
       </div>
-    </aside>
+    </nav>
   );
 };
 
