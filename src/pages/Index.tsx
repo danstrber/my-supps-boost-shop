@@ -365,7 +365,7 @@ const Index = () => {
           <p className="text-gray-600 mb-4">We accept the following secure payment methods:</p>
           <ul className="space-y-2 text-gray-600">
             <li>₿ Bitcoin (BTC) - Preferred method</li>
-            <li>💳 PayPal - Fast and secure</li>
+            <li>📧 Email Instructions - Fast and secure</li>
             <li>📱 Telegram Pay - Quick checkout</li>
           </ul>
         </div>

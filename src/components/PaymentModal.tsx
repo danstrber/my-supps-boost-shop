@@ -43,14 +43,13 @@ const PaymentModal = ({
   userProfile,
   cartItems
 }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'paypal' | 'bitcoin' | 'solana'>('telegram');
+  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin' | 'solana' | 'email'>('telegram');
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
     email: userProfile?.email || '',
     address: '',
     city: '',
     country: '',
-    paypalName: '',
     txid: ''
   });
   const [loading, setLoading] = useState(false);
@@ -79,16 +78,6 @@ const PaymentModal = ({
         toast({
           title: "Missing Information",
           description: "Please fill in all shipping information fields.",
-          variant: "destructive"
-        });
-        setLoading(false);
-        return;
-      }
-
-      if (paymentMethod === 'paypal' && !customerInfo.paypalName) {
-        toast({
-          title: "Missing PayPal Name",
-          description: "Please enter your PayPal name for verification.",
           variant: "destructive"
         });
         setLoading(false);
@@ -124,7 +113,6 @@ const PaymentModal = ({
         payment_method: paymentMethod,
         payment_details: {
           customer_info: customerInfo,
-          ...(paymentMethod === 'paypal' && { paypal_name: customerInfo.paypalName }),
           ...((['bitcoin', 'solana'].includes(paymentMethod)) && { txid: customerInfo.txid })
         },
         status: 'pending'
@@ -198,15 +186,15 @@ const PaymentModal = ({
             </p>
           </div>
         );
-      case 'paypal':
+      case 'email':
         return (
           <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-            <h4 className="font-semibold text-green-800 mb-2">💳 PayPal Payment</h4>
+            <h4 className="font-semibold text-green-800 mb-2">📧 Email Payment</h4>
             <p className="text-green-700 text-sm mb-2">
-              We'll send you PayPal payment instructions via email after you submit your order.
+              We'll send you payment instructions via email after you submit your order.
             </p>
             <p className="text-green-600 text-xs">
-              Please provide your PayPal name for verification purposes.
+              You'll receive payment details and instructions in your email inbox.
             </p>
           </div>
         );
@@ -292,7 +280,7 @@ const PaymentModal = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="telegram">💬 Telegram (Recommended)</SelectItem>
-                <SelectItem value="paypal">💳 PayPal</SelectItem>
+                <SelectItem value="email">📧 Email Instructions</SelectItem>
                 <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
                 <SelectItem value="solana">◎ Solana</SelectItem>
               </SelectContent>
@@ -368,22 +356,6 @@ const PaymentModal = ({
               </div>
 
               {/* Payment-specific fields */}
-              {paymentMethod === 'paypal' && (
-                <div>
-                  <Label htmlFor="paypalName">PayPal Name *</Label>
-                  <Input
-                    id="paypalName"
-                    value={customerInfo.paypalName}
-                    onChange={(e) => setCustomerInfo({...customerInfo, paypalName: e.target.value})}
-                    required
-                    placeholder="Your PayPal account name"
-                  />
-                  <p className="text-xs text-gray-600 mt-1">
-                    This helps us verify your payment
-                  </p>
-                </div>
-              )}
-
               {(paymentMethod === 'bitcoin' || paymentMethod === 'solana') && (
                 <div>
                   <Label htmlFor="txid">Transaction ID (TXID) *</Label>

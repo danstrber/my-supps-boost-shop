@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Eye, EyeOff, Mail } from 'lucide-react';
@@ -24,6 +25,9 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   const [referralCode, setReferralCode] = useState(propReferralCode || '');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [acceptedTos, setAcceptedTos] = useState(false);
+  const [confirmedAge, setConfirmedAge] = useState(false);
+  const [confirmedNotHuman, setConfirmedNotHuman] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -32,6 +36,17 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
 
     try {
       if (mode === 'signup') {
+        // Validate TOS and confirmations for signup
+        if (!acceptedTos || !confirmedAge || !confirmedNotHuman) {
+          toast({
+            title: "Please confirm all requirements",
+            description: "You must accept the terms and confirm all statements to create an account.",
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+
         console.log('Starting signup process...', { email, username, referralCode });
         
         const signupData: any = {
@@ -99,6 +114,15 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   };
 
   const handleGoogleSignIn = async () => {
+    if (mode === 'signup' && (!acceptedTos || !confirmedAge || !confirmedNotHuman)) {
+      toast({
+        title: "Please confirm all requirements",
+        description: "You must accept the terms and confirm all statements to sign up with Google.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       console.log('Starting Google signin...', { mode, referralCode });
@@ -147,20 +171,19 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
     setUsername('');
     setReferralCode(propReferralCode || '');
     setShowPassword(false);
+    setAcceptedTos(false);
+    setConfirmedAge(false);
+    setConfirmedNotHuman(false);
   };
 
   const switchMode = () => {
-    if (mode === 'login') {
-      setMode('signup');
-    } else {
-      setMode('login');
-    }
+    setMode(mode === 'login' ? 'signup' : 'login');
     resetForm();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {mode === 'login' ? 'Sign In' : 'Create Account'}
@@ -259,6 +282,44 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
                 </Button>
               </div>
             </div>
+
+            {/* Terms and Conditions for Signup */}
+            {mode === 'signup' && (
+              <div className="space-y-3 border-t pt-4">
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="tos"
+                    checked={acceptedTos}
+                    onCheckedChange={setAcceptedTos}
+                  />
+                  <Label htmlFor="tos" className="text-sm leading-relaxed">
+                    I accept the Terms of Service and Privacy Policy. I understand these products are for research purposes only.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="age"
+                    checked={confirmedAge}
+                    onCheckedChange={setConfirmedAge}
+                  />
+                  <Label htmlFor="age" className="text-sm leading-relaxed">
+                    I confirm that I am over 18 years of age.
+                  </Label>
+                </div>
+
+                <div className="flex items-start space-x-2">
+                  <Checkbox
+                    id="notHuman"
+                    checked={confirmedNotHuman}
+                    onCheckedChange={setConfirmedNotHuman}
+                  />
+                  <Label htmlFor="notHuman" className="text-sm leading-relaxed">
+                    I confirm these products are NOT for human consumption and are for research purposes only.
+                  </Label>
+                </div>
+              </div>
+            )}
 
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Processing...' : (mode === 'login' ? 'Sign In' : 'Create Account')}
