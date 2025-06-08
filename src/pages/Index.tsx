@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ProductGrid from '@/components/ProductGrid';
@@ -11,6 +11,7 @@ import { products, Product } from '@/lib/products';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useSidebar } from '@/hooks/useSidebar';
+import { getReferralCodeFromUrl } from '@/lib/referral';
 
 const Index = () => {
   const [language, setLanguage] = useState<'en' | 'es'>('en');
@@ -21,11 +22,26 @@ const Index = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting'>('home');
   const [referralCount, setReferralCount] = useState(0);
+  const [detectedReferralCode, setDetectedReferralCode] = useState<string | null>(null);
 
   // Custom hooks
   const { userProfile, isAuthenticated, userDiscount, loading, handleAuthAction } = useAuth();
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart } = useCart();
   const { sidebarOpen, handleMenuToggle, handleSidebarClose } = useSidebar();
+
+  // Check for referral code in URL on mount
+  useEffect(() => {
+    const referralCode = getReferralCodeFromUrl();
+    if (referralCode) {
+      console.log('Detected referral code from URL:', referralCode);
+      setDetectedReferralCode(referralCode);
+      // Auto-open signup modal if user is not authenticated
+      if (!isAuthenticated) {
+        setAuthMode('signup');
+        setIsAuthModalOpen(true);
+      }
+    }
+  }, [isAuthenticated]);
 
   const filteredProducts = selectedCategory === 'all' 
     ? products 
@@ -118,7 +134,11 @@ const Index = () => {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authMode}
+        referralCode={detectedReferralCode}
         language={language}
+        onSignupSuccess={() => {
+          console.log('Signup successful, user should be created in database');
+        }}
       />
 
       {selectedProduct && (

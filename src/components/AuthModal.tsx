@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -7,6 +7,7 @@ import GoogleSignInButton from './auth/GoogleSignInButton';
 import AuthForm from './auth/AuthForm';
 import TermsOfService from './TermsOfService';
 import { handleEmailAuth, handleGoogleAuth } from './auth/authUtils';
+import { getReferralCodeFromUrl, clearReferralFromUrl } from '@/lib/referral';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -22,12 +23,25 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [referralCode, setReferralCode] = useState(propReferralCode || '');
+  const [referralCode, setReferralCode] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
   const { toast } = useToast();
+
+  // Auto-detect referral code from URL on component mount
+  useEffect(() => {
+    const urlReferralCode = getReferralCodeFromUrl();
+    if (urlReferralCode) {
+      setReferralCode(urlReferralCode);
+      console.log('Auto-detected referral code from URL:', urlReferralCode);
+      // Clear it from URL after detecting
+      clearReferralFromUrl();
+    } else if (propReferralCode) {
+      setReferralCode(propReferralCode);
+    }
+  }, [propReferralCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,12 +59,22 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
           return;
         }
 
+        if (!username.trim()) {
+          toast({
+            title: "Username required",
+            description: "Please enter a username to create your account.",
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+
         console.log('Starting signup process...', { email, username, referralCode });
       } else {
         console.log('Starting login process...', { email });
       }
       
-      const { data, error } = await handleEmailAuth(mode, email, password, username, referralCode);
+      const { data, error } = await handleEmailAuth(mode, email, password, username.trim(), referralCode.trim() || undefined);
 
       if (error) {
         console.error(`${mode} error:`, error);
@@ -73,6 +97,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
       }
       
       onClose();
+      resetForm();
     } catch (error: any) {
       console.error('Auth error:', error);
       toast({
@@ -99,7 +124,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
     try {
       console.log('Starting Google signin...', { mode, referralCode });
       
-      const { data, error } = await handleGoogleAuth(mode, referralCode);
+      const { data, error } = await handleGoogleAuth(mode, referralCode.trim() || undefined);
 
       if (error) {
         console.error('Google auth error:', error);
@@ -127,9 +152,9 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
     setEmail('');
     setPassword('');
     setUsername('');
-    setReferralCode(propReferralCode || '');
     setShowPassword(false);
     setAcceptedTerms(false);
+    // Don't reset referral code as it might come from URL
   };
 
   const switchMode = () => {
