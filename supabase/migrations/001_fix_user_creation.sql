@@ -1,5 +1,10 @@
 
--- Create the missing generate_referral_code function
+-- Drop existing objects first to ensure clean creation
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS public.handle_new_user();
+DROP FUNCTION IF EXISTS public.generate_referral_code();
+
+-- Create the generate_referral_code function
 CREATE OR REPLACE FUNCTION public.generate_referral_code()
 RETURNS text
 LANGUAGE plpgsql
@@ -23,7 +28,7 @@ BEGIN
 END;
 $$;
 
--- Recreate the user creation trigger function
+-- Create the user creation trigger function
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -65,9 +70,6 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
--- Drop existing trigger if it exists and recreate it
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 
 -- Create trigger for new user creation
 CREATE TRIGGER on_auth_user_created

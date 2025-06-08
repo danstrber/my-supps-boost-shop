@@ -140,9 +140,11 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   };
 
   const switchMode = () => {
-    const newMode = mode === 'login' ? 'signup' : 'login';
-    console.log('Switching auth mode from', mode, 'to', newMode);
-    setMode(newMode);
+    if (mode === 'login') {
+      setMode('signup');
+    } else {
+      setMode('login');
+    }
     resetForm();
   };
 
