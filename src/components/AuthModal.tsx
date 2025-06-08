@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useToast } from '@/hooks/use-toast';
 import GoogleSignInButton from './auth/GoogleSignInButton';
 import AuthForm from './auth/AuthForm';
+import TermsOfService from './TermsOfService';
 import { handleEmailAuth, handleGoogleAuth } from './auth/authUtils';
 
 interface AuthModalProps {
@@ -13,9 +14,10 @@ interface AuthModalProps {
   initialMode: 'login' | 'signup';
   referralCode?: string | null;
   onSignupSuccess?: () => void;
+  language?: 'en' | 'es';
 }
 
-const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCode, onSignupSuccess }: AuthModalProps) => {
+const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCode, onSignupSuccess, language = 'en' }: AuthModalProps) => {
   const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +26,7 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -144,60 +147,69 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
   }, [initialMode]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>
-            {mode === 'login' ? 'Sign In' : 'Create Account'}
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          <GoogleSignInButton onClick={handleGoogleSignIn} loading={loading} />
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {mode === 'login' ? 'Sign In' : 'Create Account'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <GoogleSignInButton onClick={handleGoogleSignIn} loading={loading} />
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
+
+            <AuthForm
+              mode={mode}
+              email={email}
+              setEmail={setEmail}
+              password={password}
+              setPassword={setPassword}
+              username={username}
+              setUsername={setUsername}
+              referralCode={referralCode}
+              setReferralCode={setReferralCode}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+              acceptedTerms={acceptedTerms}
+              setAcceptedTerms={setAcceptedTerms}
+              loading={loading}
+              onSubmit={handleSubmit}
+              onTermsClick={() => setShowTerms(true)}
+            />
+
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
+                <Button
+                  variant="link"
+                  className="p-0 ml-1 h-auto font-normal text-blue-600"
+                  onClick={switchMode}
+                  type="button"
+                >
+                  {mode === 'login' ? 'Sign up' : 'Sign in'}
+                </Button>
+              </p>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
 
-          <AuthForm
-            mode={mode}
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            username={username}
-            setUsername={setUsername}
-            referralCode={referralCode}
-            setReferralCode={setReferralCode}
-            showPassword={showPassword}
-            setShowPassword={setShowPassword}
-            acceptedTerms={acceptedTerms}
-            setAcceptedTerms={setAcceptedTerms}
-            loading={loading}
-            onSubmit={handleSubmit}
-          />
-
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
-              <Button
-                variant="link"
-                className="p-0 ml-1 h-auto font-normal text-blue-600"
-                onClick={switchMode}
-                type="button"
-              >
-                {mode === 'login' ? 'Sign up' : 'Sign in'}
-              </Button>
-            </p>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+      <TermsOfService 
+        isOpen={showTerms} 
+        onClose={() => setShowTerms(false)} 
+        language={language}
+      />
+    </>
   );
 };
 
