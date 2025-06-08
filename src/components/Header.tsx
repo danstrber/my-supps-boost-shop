@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, User, LogOut, MessageCircle } from 'lucide-react';
+import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle } from 'lucide-react';
 import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
@@ -13,8 +13,8 @@ interface HeaderProps {
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
   onCartOpen: () => void;
   onMenuToggle: () => void;
-  currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting';
-  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting') => void;
+  currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account';
+  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
   sidebarOpen?: boolean;
 }
 
@@ -64,8 +64,9 @@ const Header = ({
               <Button
                 variant={currentPage === 'home' ? 'default' : 'ghost'}
                 onClick={() => onPageChange('home')}
-                className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
+                className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium flex items-center"
               >
+                <Home className="h-4 w-4 mr-1" />
                 {language === 'en' ? 'Home' : 'Inicio'}
               </Button>
               <Button
@@ -130,14 +131,24 @@ const Header = ({
 
               {/* Auth Buttons */}
               {isAuthenticated ? (
-                <Button
-                  variant="outline"
-                  onClick={() => onAuthAction('logout')}
-                  className="hidden sm:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-3 py-2"
-                >
-                  <LogOut className="h-4 w-4 mr-1" />
-                  <span className="hidden md:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>
-                </Button>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => onPageChange('account')}
+                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-3 py-2"
+                  >
+                    <UserCircle className="h-4 w-4 md:mr-1" />
+                    <span className="hidden md:inline">{language === 'en' ? 'Account' : 'Cuenta'}</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => onAuthAction('logout')}
+                    className="hidden sm:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-3 py-2"
+                  >
+                    <LogOut className="h-4 w-4 mr-1" />
+                    <span className="hidden md:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>
+                  </Button>
+                </div>
               ) : (
                 <div className="flex space-x-1 md:space-x-2">
                   <Button

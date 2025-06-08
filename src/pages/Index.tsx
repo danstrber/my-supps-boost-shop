@@ -7,6 +7,7 @@ import CartModal from '@/components/CartModal';
 import AuthModal from '@/components/AuthModal';
 import ProductDetailModal from '@/components/ProductDetailModal';
 import StaticPage from '@/components/StaticPage';
+import Account from './Account';
 import { products, Product } from '@/lib/products';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
@@ -20,7 +21,7 @@ const Index = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting'>('home');
+  const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account'>('home');
   const [referralCount, setReferralCount] = useState(0);
   const [detectedReferralCode, setDetectedReferralCode] = useState<string | null>(null);
 
@@ -50,6 +51,7 @@ const Index = () => {
   const handleAuthModalAction = (action: 'login' | 'signup' | 'logout') => {
     if (action === 'logout') {
       handleAuthAction(action);
+      setCurrentPage('home'); // Redirect to home after logout
     } else {
       setAuthMode(action);
       setIsAuthModalOpen(true);
@@ -62,6 +64,23 @@ const Index = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
+    );
+  }
+
+  // Render account page
+  if (currentPage === 'account') {
+    return (
+      <Account
+        language={language}
+        onLanguageChange={setLanguage}
+        cartItemCount={cartItemCount}
+        isAuthenticated={isAuthenticated}
+        onAuthAction={handleAuthModalAction}
+        onCartOpen={() => setIsCartOpen(true)}
+        onMenuToggle={handleMenuToggle}
+        onPageChange={setCurrentPage}
+        sidebarOpen={sidebarOpen}
+      />
     );
   }
 
