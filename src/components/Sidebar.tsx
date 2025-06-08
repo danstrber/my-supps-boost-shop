@@ -32,6 +32,7 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
       md:translate-x-0 w-64 bg-white border-r border-gray-200 p-4 
       fixed md:relative z-40 h-full md:h-auto overflow-y-auto
       transition-transform duration-300 ease-in-out shadow-lg md:shadow-none
+      top-0 left-0 md:top-auto md:left-auto
     `}>
       <div className="sticky top-0 bg-white pb-4">
         <h3 className="text-lg font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">

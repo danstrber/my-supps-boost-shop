@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -220,7 +221,7 @@ const Index = () => {
   };
 
   const handleMenuToggle = () => {
-    console.log('Hamburger menu clicked, current state:', sidebarOpen);
+    console.log('Menu toggle called, current sidebarOpen:', sidebarOpen);
     setSidebarOpen(prev => {
       const newState = !prev;
       console.log('Setting sidebar to:', newState);
@@ -536,6 +537,7 @@ const Index = () => {
         onMenuToggle={handleMenuToggle}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
+        sidebarOpen={sidebarOpen}
       />
 
       <div className="flex pt-28">
@@ -563,7 +565,7 @@ const Index = () => {
       {/* Mobile sidebar overlay - IMPROVED */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
           onClick={() => {
             console.log('Overlay clicked, closing sidebar');
             setSidebarOpen(false);

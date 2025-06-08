@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -15,6 +14,7 @@ interface HeaderProps {
   onMenuToggle: () => void;
   currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment';
   onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment') => void;
+  sidebarOpen?: boolean;
 }
 
 const Header = ({
@@ -26,14 +26,15 @@ const Header = ({
   onCartOpen,
   onMenuToggle,
   currentPage,
-  onPageChange
+  onPageChange,
+  sidebarOpen = false
 }: HeaderProps) => {
   const [coachingModalOpen, setCoachingModalOpen] = useState(false);
 
   const handleMenuClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Hamburger menu button clicked!');
+    console.log('Hamburger menu button clicked! Current sidebar state:', sidebarOpen);
     onMenuToggle();
   };
 
@@ -42,10 +43,12 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* HAMBURGER MENU BUTTON - ALWAYS VISIBLE AND FUNCTIONAL */}
+            {/* HAMBURGER MENU BUTTON - FIXED */}
             <button
               onClick={handleMenuClick}
-              className="p-3 hover:bg-gray-100 rounded-lg flex items-center justify-center z-[9999] border-2 border-gray-300 hover:border-green-500"
+              className={`p-3 hover:bg-gray-100 rounded-lg flex items-center justify-center z-[9999] border-2 transition-all ${
+                sidebarOpen ? 'border-green-500 bg-green-50' : 'border-gray-300'
+              } hover:border-green-500`}
               aria-label="Toggle menu"
               style={{ minWidth: '44px', minHeight: '44px' }}
             >
