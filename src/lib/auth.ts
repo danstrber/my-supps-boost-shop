@@ -126,6 +126,29 @@ export const getCurrentUser = async (): Promise<{ user: User | null; profile: Us
   }
 };
 
+export const getUserProfile = async (authId: string): Promise<UserProfile | null> => {
+  try {
+    console.log('Fetching user profile for:', authId);
+    
+    const { data: profile, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', authId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+
+    console.log('User profile found:', profile);
+    return profile;
+  } catch (error) {
+    console.error('Error in getUserProfile:', error);
+    return null;
+  }
+};
+
 export const getUserDiscount = async (authId: string): Promise<number> => {
   try {
     console.log('Calculating user discount for:', authId);
