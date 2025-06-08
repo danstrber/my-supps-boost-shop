@@ -14,7 +14,7 @@ import { getUserProfile, getUserDiscount, type UserProfile } from '@/lib/auth';
 const Index = () => {
   const [language, setLanguage] = useState<'en' | 'es'>('en');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [cartItems, setCartItems] = useState<Product[]>([]);
+  const [cart, setCart] = useState<Record<string, number>>({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
@@ -76,16 +76,32 @@ const Index = () => {
     ? products 
     : products.filter(product => product.categories.includes(selectedCategory));
 
+  const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
+
   const handleAddToCart = (product: Product) => {
-    setCartItems(prev => [...prev, product]);
+    setCart(prev => ({
+      ...prev,
+      [product.id]: (prev[product.id] || 0) + 1
+    }));
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
     });
   };
 
-  const handleRemoveFromCart = (productId: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== productId));
+  const handleUpdateCart = (productId: string, quantity: number) => {
+    if (quantity <= 0) {
+      setCart(prev => {
+        const newCart = { ...prev };
+        delete newCart[productId];
+        return newCart;
+      });
+    } else {
+      setCart(prev => ({
+        ...prev,
+        [productId]: quantity
+      }));
+    }
   };
 
   const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
@@ -171,7 +187,7 @@ const Index = () => {
       <Header
         language={language}
         onLanguageChange={setLanguage}
-        cartItemCount={cartItems.length}
+        cartItemCount={cartItemCount}
         isAuthenticated={isAuthenticated}
         onAuthAction={handleAuthAction}
         onCartOpen={() => setIsCartOpen(true)}
@@ -204,9 +220,13 @@ const Index = () => {
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
-        cartItems={cartItems}
-        onRemoveItem={handleRemoveFromCart}
+        cart={cart}
+        products={products}
+        onUpdateCart={handleUpdateCart}
+        userDiscount={userDiscount}
         language={language}
+        isAuthenticated={isAuthenticated}
+        userProfile={userProfile}
       />
 
       <AuthModal
