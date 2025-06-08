@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -29,7 +30,7 @@ export const products: Product[] = [
     id: "mk677",
     name: "MK-677 (Ibutamoren)",
     price: 49.99,
-    categories: ["muscle growth", "recovery"],
+    categories: ["muscleGrowth", "recovery"],
     description: "Growth hormone secretagogue for enhanced muscle growth and recovery. 50 pills @ 10mg.",
     image: "photos/mk677bottle.png",
     inStock: true,
@@ -55,7 +56,7 @@ export const products: Product[] = [
     id: "rad140",
     name: "RAD-140 (Testolone)",
     price: 49.99,
-    categories: ["sarms", "muscle growth"],
+    categories: ["sarms", "muscleGrowth"],
     description: "Selective androgen receptor modulator for lean muscle gains. 50 caps @ 10mg.",
     image: "photos/rad140bottle.png",
     inStock: true,
@@ -81,7 +82,7 @@ export const products: Product[] = [
     id: "superdrol",
     name: "Superdrol",
     price: 35.00,
-    categories: ["muscle growth", "testosterone support"],
+    categories: ["muscleGrowth", "testosteroneSupport"],
     description: "Powerful prohormone for significant muscle and strength gains. 20 caps @ 10mg.",
     image: "photos/superdrolbottle.png",
     inStock: true,
@@ -107,7 +108,7 @@ export const products: Product[] = [
     id: "enclomiphene",
     name: "Enclomiphene Citrate",
     price: 25.00,
-    categories: ["pct ai", "testosterone support"],
+    categories: ["pctAi", "testosteroneSupport"],
     description: "SERM for post cycle therapy and testosterone support. 50 caps @ 12.5mg.",
     image: "photos/enclobox.png",
     inStock: true,
@@ -132,7 +133,7 @@ export const products: Product[] = [
     id: "clenbuterol",
     name: "Clenbuterol",
     price: 35.00,
-    categories: ["fat loss"],
+    categories: ["fatLoss"],
     description: "Beta-2 agonist for enhanced fat loss and metabolism. 50 tabs @ 40mcg.",
     image: "photos/clenbottle.png",
     inStock: true,
@@ -158,7 +159,7 @@ export const products: Product[] = [
     id: "aromasin",
     name: "Aromasin (Exemestane)",
     price: 25.00,
-    categories: ["pct ai"],
+    categories: ["pctAi"],
     description: "Aromatase inhibitor for estrogen control. 10 pills @ 25mg.",
     image: "photos/aromasinbox.png",
     inStock: true,
