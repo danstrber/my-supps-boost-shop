@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -285,32 +284,47 @@ const Index = () => {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
             <h3 className="text-xl font-semibold text-gray-800 mb-3">📧 Email Support</h3>
-            <p className="text-gray-600 mb-2">Para preguntas generales y asistencia:</p>
+            <p className="text-gray-600 mb-2">
+              {language === 'en' ? 'For general questions and assistance:' : 'Para preguntas generales y asistencia:'}
+            </p>
             <a href="mailto:christhomaso083@proton.me" className="text-blue-600 font-semibold hover:underline">
               christhomaso083@proton.me
             </a>
-            <p className="text-sm text-gray-500 mt-2">Tiempo de respuesta: 24-48 horas</p>
+            <p className="text-sm text-gray-500 mt-2">
+              {language === 'en' ? 'Response time: 24-48 hours' : 'Tiempo de respuesta: 24-48 horas'}
+            </p>
           </div>
           
           <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
             <h3 className="text-xl font-semibold text-gray-800 mb-3">📱 Telegram</h3>
-            <p className="text-gray-600 mb-2">Para preguntas rápidas y actualizaciones de órdenes:</p>
+            <p className="text-gray-600 mb-2">
+              {language === 'en' ? 'For quick questions and order updates:' : 'Para preguntas rápidas y actualizaciones de órdenes:'}
+            </p>
             <a href="https://t.me/DANSTRBER" className="text-green-600 font-semibold hover:underline">
               @DANSTRBER
             </a>
-            <p className="text-sm text-gray-500 mt-2">Tiempo de respuesta: 1-6 horas</p>
+            <p className="text-sm text-gray-500 mt-2">
+              {language === 'en' ? 'Response time: 1-6 hours' : 'Tiempo de respuesta: 1-6 horas'}
+            </p>
           </div>
         </div>
         
         <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🕒 Support Hours</h3>
-          <p className="text-gray-600">Lunes - Viernes: 9:00 AM - 6:00 PM (EST)</p>
-          <p className="text-gray-600">Sábado - Domingo: 10:00 AM - 4:00 PM (EST)</p>
+          <p className="text-gray-600">
+            {language === 'en' ? 'Monday - Friday: 9:00 AM - 6:00 PM (EST)' : 'Lunes - Viernes: 9:00 AM - 6:00 PM (EST)'}
+          </p>
+          <p className="text-gray-600">
+            {language === 'en' ? 'Saturday - Sunday: 10:00 AM - 4:00 PM (EST)' : 'Sábado - Domingo: 10:00 AM - 4:00 PM (EST)'}
+          </p>
         </div>
         
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
           <p className="text-yellow-800">
-            <strong>Note:</strong> All products are sold for research purposes only. We do not provide medical advice. Please consult with a healthcare professional before starting any research protocol.
+            <strong>{language === 'en' ? 'Note:' : 'Nota:'}</strong> {language === 'en' 
+              ? 'All products are sold for research purposes only. We do not provide medical advice. Please consult with a healthcare professional before starting any research protocol.'
+              : 'Todos los productos se venden solo para propósitos de investigación. No proporcionamos consejos médicos. Por favor consulta con un profesional de la salud antes de comenzar cualquier protocolo de investigación.'
+            }
           </p>
         </div>
       </div>
@@ -327,8 +341,8 @@ const Index = () => {
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🚚 Shipping Policy</h3>
           <p className="text-gray-600 text-lg mb-4">
             {language === 'en' 
-              ? 'We ship as soon as possible! Orders are typically processed and shipped within 2-3 business days.'
-              : 'Enviamos lo más pronto posible! Las órdenes se procesan y envían a menudo en 2-3 días hábiles.'
+              ? 'We ship as soon as possible! Orders are typically processed and shipped within 2-3 business days. We only ship within the USA unless you contact us on Telegram.'
+              : 'Enviamos lo más pronto posible! Las órdenes se procesan y envían a menudo en 2-3 días hábiles. Solo enviamos dentro de EE.UU. a menos que nos contactes por Telegram.'
             }
           </p>
           <ul className="space-y-2 text-gray-600">
@@ -349,16 +363,10 @@ const Index = () => {
           
           <div className="bg-purple-50 p-6 rounded-xl border border-purple-200">
             <h3 className="text-xl font-semibold text-gray-800 mb-3">🌍 Delivery Timeframes</h3>
-            <p className="text-gray-600">Domestic (USA): 3-7 business days</p>
-            <p className="text-gray-600">International: 7-21 business days</p>
+            <p className="text-gray-600">USA: 3-7 business days</p>
+            <p className="text-gray-600">International: Contact us on Telegram</p>
             <p className="text-gray-600">Express options available upon request</p>
           </div>
-        </div>
-        
-        <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
-          <p className="text-red-800">
-            <strong>Important:</strong> Delivery times may vary due to customs processing for international orders. We are not responsible for customs delays or fees.
-          </p>
         </div>
       </div>
     </div>
@@ -370,16 +378,6 @@ const Index = () => {
         {language === 'en' ? 'Lab Testing & Payment' : 'Pruebas de Laboratorio y Pago'}
       </h1>
       <div className="space-y-6">
-        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">💳 Payment Methods</h3>
-          <p className="text-gray-600 mb-4">We accept the following secure payment methods:</p>
-          <ul className="space-y-2 text-gray-600">
-            <li>₿ Bitcoin (BTC) - Preferred method</li>
-            <li>📧 Email Instructions - Fast and secure</li>
-            <li>📱 Telegram Pay - Quick checkout</li>
-          </ul>
-        </div>
-        
         <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border border-green-200">
           <h3 className="text-xl font-semibold text-gray-800 mb-3">🔬 Lab Testing</h3>
           <p className="text-gray-600 mb-4">
@@ -396,6 +394,19 @@ const Index = () => {
           </ul>
         </div>
         
+        <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+          <h3 className="text-xl font-semibold text-gray-800 mb-3">💳 Payment Methods</h3>
+          <p className="text-gray-600 mb-4">We accept the following secure payment methods:</p>
+          <ul className="space-y-2 text-gray-600">
+            <li>₿ Bitcoin (BTC) - Preferred method</li>
+            <li>📱 Telegram Pay - Quick checkout</li>
+            <li>💰 Other methods available upon request</li>
+          </ul>
+          <p className="text-sm text-gray-500 mt-4">
+            Order information is automatically saved in our database and sent to our team for processing.
+          </p>
+        </div>
+        
         <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
           <p className="text-yellow-800">
             <strong>Security Notice:</strong> All payments are processed securely. We never store payment information and use encrypted channels for all transactions.
@@ -407,6 +418,31 @@ const Index = () => {
 
   const renderHomePage = () => (
     <div className="max-w-7xl mx-auto">
+      {/* Why Choose Us Section - MOVED TO TOP AND MADE SMALLER */}
+      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-4 mb-8 shadow-xl border border-gray-600">
+        <h2 className="text-xl font-bold mb-3 text-center">
+          {language === 'en' ? 'Why Choose MySupps?' : '¿Por qué elegir MySupps?'}
+        </h2>
+        <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
+          <div>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center"><span className="mr-2">💪</span> Build Lean Muscle Faster</li>
+              <li className="flex items-center"><span className="mr-2">⚡</span> Enhance Strength and Endurance</li>
+              <li className="flex items-center"><span className="mr-2">🔄</span> Accelerate Recovery</li>
+              <li className="flex items-center"><span className="mr-2">🧬</span> Support Healthy Aging</li>
+            </ul>
+          </div>
+          <div>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-center"><span className="mr-2">✨</span> Fight Fatigue & Elevate Confidence</li>
+              <li className="flex items-center"><span className="mr-2">🏆</span> Trusted by Athletes</li>
+              <li className="flex items-center"><span className="mr-2">🔬</span> Science-Backed Formulas</li>
+              <li className="flex items-center"><span className="mr-2">📊</span> Lab Tested Quality</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* User Referral Section */}
       {user && userProfile && (
         <ReferralSection
@@ -493,35 +529,6 @@ const Index = () => {
         onAddToCart={handleAddToCart}
         onViewDetails={handleViewDetails}
       />
-
-      {/* Why Choose Us Section - MADE SMALLER */}
-      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white rounded-xl p-3 md:p-4 mt-12 shadow-xl border border-gray-600">
-        <h1 className="text-lg md:text-xl font-bold mb-2 text-center leading-tight">
-          {language === 'en' 
-            ? 'Why Choose MySupps?'
-            : '¿Por qué elegir MySupps?'
-          }
-        </h1>
-        
-        <div className="grid md:grid-cols-2 gap-3 max-w-4xl mx-auto">
-          <div className="text-center">
-            <ul className="space-y-1 text-left text-sm">
-              <li className="flex items-center"><span className="mr-2">💪</span> Build Lean Muscle Faster</li>
-              <li className="flex items-center"><span className="mr-2">⚡</span> Enhance Strength and Endurance</li>
-              <li className="flex items-center"><span className="mr-2">🔄</span> Accelerate Recovery</li>
-              <li className="flex items-center"><span className="mr-2">🧬</span> Support Healthy Aging</li>
-            </ul>
-          </div>
-          <div className="text-center">
-            <ul className="space-y-1 text-left text-sm">
-              <li className="flex items-center"><span className="mr-2">✨</span> Fight Fatigue & Elevate Confidence</li>
-              <li className="flex items-center"><span className="mr-2">🏆</span> Trusted by Athletes</li>
-              <li className="flex items-center"><span className="mr-2">🔬</span> Science-Backed Formulas</li>
-              <li className="flex items-center"><span className="mr-2">📊</span> Lab Tested Quality</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   );
 
@@ -562,7 +569,7 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Mobile sidebar overlay - IMPROVED */}
+      {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
@@ -573,6 +580,7 @@ const Index = () => {
         />
       )}
 
+      {/* Modals */}
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}

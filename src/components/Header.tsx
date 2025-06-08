@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -48,7 +49,7 @@ const Header = ({
               onClick={handleMenuClick}
               className={`p-3 hover:bg-gray-100 rounded-lg flex items-center justify-center z-[9999] border-2 transition-all ${
                 sidebarOpen ? 'border-green-500 bg-green-50' : 'border-gray-300'
-              } hover:border-green-500`}
+              } hover:border-green-500 md:hidden`}
               aria-label="Toggle menu"
               style={{ minWidth: '44px', minHeight: '44px' }}
             >
@@ -108,7 +109,7 @@ const Header = ({
 
             {/* Right side */}
             <div className="flex items-center space-x-2 md:space-x-3">
-              {/* Premium Coaching Button - SUPER OBVIOUS */}
+              {/* Premium Coaching Button */}
               <Button
                 onClick={() => setCoachingModalOpen(true)}
                 className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-orange-400 transform hover:scale-105 transition-all duration-200 text-xs md:text-base"
@@ -176,34 +177,34 @@ const Header = ({
           </div>
         </div>
 
-        {/* LAB TEST & DELIVERY SECTION - Like Fulmen Pharma reference */}
-        <div className="bg-red-600 text-white py-2">
+        {/* LAB TEST & DELIVERY SECTION - Changed to green */}
+        <div className="bg-green-600 text-white py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center space-x-6 md:space-x-12 text-sm md:text-base font-medium">
               <button 
                 onClick={() => onPageChange('payment')}
-                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>🔬</span>
-                <span>{language === 'en' ? 'LAB TEST' : 'PRUEBA DE LAB'}</span>
+                <span>{language === 'en' ? 'LAB TESTING' : 'PRUEBAS DE LAB'}</span>
               </button>
               <button 
                 onClick={() => onPageChange('delivery')}
-                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>🚚</span>
                 <span>{language === 'en' ? 'DELIVERY' : 'ENTREGA'}</span>
               </button>
               <button 
                 onClick={() => onPageChange('payment')}
-                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>💳</span>
                 <span>{language === 'en' ? 'PAYMENT' : 'PAGO'}</span>
               </button>
               <button 
                 onClick={() => onPageChange('contact')}
-                className="flex items-center space-x-2 hover:bg-red-700 px-3 py-1 rounded transition-colors"
+                className="flex items-center space-x-2 hover:bg-green-700 px-3 py-1 rounded transition-colors"
               >
                 <span>📞</span>
                 <span>{language === 'en' ? 'CONTACT US' : 'CONTÁCTANOS'}</span>
