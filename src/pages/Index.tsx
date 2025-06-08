@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
@@ -116,8 +115,8 @@ const Index = () => {
     }));
     
     toast({
-      title: language === 'en' ? 'Added to Cart' : 'Agregado al Carrito',
-      description: `${product.name} ${language === 'en' ? 'has been added to cart' : 'ha sido agregado al carrito'}`,
+      title: 'Added to Cart',
+      description: `${product.name} has been added to cart`,
     });
   };
 
@@ -178,6 +177,12 @@ const Index = () => {
       title: "Account created!",
       description: "Please check your email to verify your account before signing in.",
     });
+  };
+
+  // Close sidebar when clicking outside on mobile
+  const handleOverlayClick = () => {
+    console.log('Overlay clicked, closing sidebar');
+    setSidebarOpen(false);
   };
 
   const filteredProducts = selectedCategory === 'all' 
@@ -513,11 +518,14 @@ const Index = () => {
         </main>
       </div>
 
-      {/* Overlay for mobile */}
+      {/* Enhanced Mobile Overlay with better z-index */}
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={handleOverlayClick}
+          role="button"
+          tabIndex={0}
+          aria-label="Close sidebar"
         />
       )}
 

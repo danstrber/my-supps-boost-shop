@@ -31,7 +31,7 @@ const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userPro
       <aside 
         className={`fixed top-0 left-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:relative md:translate-x-0 md:shadow-none`}
+        } md:relative md:translate-x-0 md:shadow-none md:z-auto`}
         style={{ paddingTop: '120px' }}
       >
         <div className="p-4">

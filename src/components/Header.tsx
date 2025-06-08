@@ -35,7 +35,7 @@ const Header = ({
   const handleMenuClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Hamburger clicked! Current state:', sidebarOpen);
+    console.log('Hamburger menu clicked in Header, current state:', sidebarOpen);
     onMenuToggle();
   };
 
@@ -44,18 +44,19 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* HAMBURGER MENU BUTTON - Fixed functionality */}
+            {/* HAMBURGER MENU BUTTON - Enhanced with better styling and feedback */}
             <button
+              type="button"
               onClick={handleMenuClick}
-              className={`md:hidden p-2 rounded-lg border-2 transition-all duration-200 ${
+              className={`md:hidden p-2 rounded-lg border-2 transition-all duration-200 relative z-[100] ${
                 sidebarOpen 
-                  ? 'border-green-500 bg-green-50' 
-                  : 'border-gray-300 hover:border-green-500'
+                  ? 'border-green-500 bg-green-50 text-green-700' 
+                  : 'border-gray-300 hover:border-green-500 text-gray-700'
               }`}
-              aria-label="Toggle menu"
-              style={{ minWidth: '40px', minHeight: '40px' }}
+              aria-label={sidebarOpen ? 'Close menu' : 'Open menu'}
+              style={{ minWidth: '44px', minHeight: '44px' }}
             >
-              <Menu className="h-6 w-6 text-gray-700" />
+              <Menu className="h-6 w-6 mx-auto" />
             </button>
 
             {/* Logo */}
