@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -29,7 +28,7 @@ export const products: Product[] = [
   {
     id: "mk677",
     name: "MK-677 (Ibutamoren)",
-    price: 50.00,
+    price: 49.99,
     categories: ["muscle growth", "recovery"],
     description: "Growth hormone secretagogue for enhanced muscle growth and recovery. 50 pills @ 10mg.",
     image: "photos/mk677bottle.png",

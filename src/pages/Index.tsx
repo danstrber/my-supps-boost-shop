@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
@@ -115,8 +116,8 @@ const Index = () => {
     }));
     
     toast({
-      title: 'Added to Cart',
-      description: `${product.name} has been added to cart`,
+      title: language === 'en' ? 'Added to Cart' : 'Agregado al Carrito',
+      description: `${product.name} ${language === 'en' ? 'has been added to cart' : 'ha sido agregado al carrito'}`,
     });
   };
 
@@ -134,7 +135,7 @@ const Index = () => {
   };
 
   const getTotalCartItems = () => {
-    return Object.values(cart).reduce((total, quantity) => total + quantity, 0);
+    return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
   };
 
   const handleAuthAction = async (action: 'login' | 'signup' | 'logout') => {
@@ -164,7 +165,7 @@ const Index = () => {
   };
 
   const handleMenuToggle = () => {
-    console.log('Toggle menu clicked - current state:', sidebarOpen);
+    console.log('Hamburger menu clicked - current state:', sidebarOpen);
     setSidebarOpen(prev => {
       const newState = !prev;
       console.log('Setting sidebar state to:', newState);
@@ -177,12 +178,6 @@ const Index = () => {
       title: "Account created!",
       description: "Please check your email to verify your account before signing in.",
     });
-  };
-
-  // Close sidebar when clicking outside on mobile
-  const handleOverlayClick = () => {
-    console.log('Overlay clicked, closing sidebar');
-    setSidebarOpen(false);
   };
 
   const filteredProducts = selectedCategory === 'all' 
@@ -502,33 +497,32 @@ const Index = () => {
         onPageChange={setCurrentPage}
         sidebarOpen={sidebarOpen}
       />
-
-      <div className="flex flex-1 pt-32">
+      <div className="flex flex-1 pt-16">
         <Sidebar
           language={language}
           isOpen={sidebarOpen}
           selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
+          onCategoryChange={(category) => {
+            setSelectedCategory(category);
+            setSidebarOpen(false); // Close sidebar on category select
+          }}
           userProfile={userProfile}
           referralCount={referralCount}
         />
-
         <main className="flex-1 p-6 md:p-8 overflow-y-auto">
           {renderContent()}
         </main>
       </div>
-
-      {/* Enhanced Mobile Overlay with better z-index */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
-          onClick={handleOverlayClick}
-          role="button"
-          tabIndex={0}
-          aria-label="Close sidebar"
+          className="fixed inset-0 bg-black bg-opacity-60 z-40 md:hidden"
+          onClick={() => {
+            console.log('Overlay clicked, closing sidebar');
+            setSidebarOpen(false);
+          }}
+          aria-hidden="true"
         />
       )}
-
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -540,14 +534,12 @@ const Index = () => {
         isAuthenticated={isAuthenticated}
         userProfile={userProfile}
       />
-
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         initialMode={authMode}
         onSignupSuccess={handleSignupSuccess}
       />
-
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
@@ -559,7 +551,6 @@ const Index = () => {
         userProfile={userProfile}
         cartItems={[]}
       />
-
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
