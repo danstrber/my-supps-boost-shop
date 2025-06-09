@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu } from 'lucide-react';
+import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu, X } from 'lucide-react';
 import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
@@ -37,24 +37,30 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Hamburger Menu */}
+            {/* Hamburger Menu with X when open */}
             <div 
-              className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-between"
+              className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-center items-center"
               onClick={onMenuToggle}
               data-hamburger
             >
-              <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
-              <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
-              <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
+              {sidebarOpen ? (
+                <X className="h-6 w-6 text-gray-800" />
+              ) : (
+                <>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300 mt-1"></div>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300 mt-1"></div>
+                </>
+              )}
             </div>
 
-            {/* Logo - moved right to avoid hamburger */}
+            {/* Logo - using new uploaded logo */}
             <div 
               className="flex items-center cursor-pointer ml-16" 
               onClick={() => onPageChange('home')}
             >
               <img 
-                src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
+                src="/lovable-uploads/6b0a71a7-2cc8-4b21-b81a-9b55c81eca2e.png" 
                 alt="MySupps Logo" 
                 className="h-10 md:h-14 w-auto"
               />

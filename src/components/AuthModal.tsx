@@ -61,6 +61,7 @@ const AuthModal = ({
       setPassword('');
       setName('');
       setEmailSent(false);
+      setLoading(false);
     }
   }, [isOpen, initialMode]);
 
@@ -87,8 +88,8 @@ const AuthModal = ({
           toast({
             title: language === 'en' ? "Check your email!" : "¡Revisa tu correo!",
             description: language === 'en' 
-              ? "We've sent you a confirmation link. Please check your email and click the link to complete your registration."
-              : "Te hemos enviado un enlace de confirmación. Por favor revisa tu correo y haz clic en el enlace para completar tu registro.",
+              ? "We've sent you a confirmation link. Please check your email (including junk/spam folder) and click the link to complete your registration."
+              : "Te hemos enviado un enlace de confirmación. Por favor revisa tu correo (incluyendo carpeta de spam/correo no deseado) y haz clic en el enlace para completar tu registro.",
           });
           if (onSignupSuccess) {
             onSignupSuccess();
@@ -102,8 +103,8 @@ const AuthModal = ({
             toast({
               title: language === 'en' ? "Email not confirmed" : "Correo no confirmado",
               description: language === 'en' 
-                ? "Please check your email and confirm your account before signing in."
-                : "Por favor revisa tu correo y confirma tu cuenta antes de iniciar sesión.",
+                ? "Please check your email (including junk/spam folder) and confirm your account before signing in."
+                : "Por favor revisa tu correo (incluyendo carpeta de spam/correo no deseado) y confirma tu cuenta antes de iniciar sesión.",
               variant: "destructive",
             });
           } else {
@@ -188,8 +189,8 @@ const AuthModal = ({
         toast({
           title: language === 'en' ? "Email sent!" : "¡Correo enviado!",
           description: language === 'en' 
-            ? "We've sent you another confirmation email."
-            : "Te hemos enviado otro correo de confirmación.",
+            ? "We've sent you another confirmation email. Please check your junk/spam folder too."
+            : "Te hemos enviado otro correo de confirmación. Por favor revisa también tu carpeta de spam/correo no deseado.",
         });
       }
     } catch (error) {
@@ -205,11 +206,20 @@ const AuthModal = ({
       <h3 className="text-lg font-semibold">
         {language === 'en' ? 'Check Your Email' : 'Revisa Tu Correo'}
       </h3>
-      <p className="text-gray-600">
-        {language === 'en' 
-          ? `We've sent a confirmation link to ${email}. Please click the link in your email to complete your registration.`
-          : `Hemos enviado un enlace de confirmación a ${email}. Por favor haz clic en el enlace en tu correo para completar tu registro.`}
-      </p>
+      <div className="space-y-2">
+        <p className="text-gray-600">
+          {language === 'en' 
+            ? `We've sent a confirmation link to ${email}. Please click the link in your email to complete your registration.`
+            : `Hemos enviado un enlace de confirmación a ${email}. Por favor haz clic en el enlace en tu correo para completar tu registro.`}
+        </p>
+        <div className="bg-yellow-50 p-3 rounded-lg">
+          <p className="text-yellow-700 text-sm font-medium">
+            {language === 'en' 
+              ? '⚠️ Don\'t forget to check your junk/spam folder!'
+              : '⚠️ ¡No olvides revisar tu carpeta de spam/correo no deseado!'}
+          </p>
+        </div>
+      </div>
       <div className="space-y-2">
         <Button 
           onClick={resendConfirmation} 

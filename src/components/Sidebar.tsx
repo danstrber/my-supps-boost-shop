@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { translations } from '@/lib/translations';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { X, User, Gift } from 'lucide-react';
 import { UserProfile } from '@/lib/auth';
-import ReferralSection from './ReferralSection';
 
 interface SidebarProps {
   language: 'en' | 'es';
@@ -14,75 +15,112 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const Sidebar = ({ language, isOpen, selectedCategory, onCategoryChange, userProfile, referralCount, onClose }: SidebarProps) => {
-  const t = translations[language];
-  
+const Sidebar = ({
+  language,
+  isOpen,
+  selectedCategory,
+  onCategoryChange,
+  userProfile,
+  referralCount,
+  onClose
+}: SidebarProps) => {
   const categories = [
-    { id: 'all', label: t.allProducts },
-    { id: 'sarms', label: t.sarms },
-    { id: 'muscleGrowth', label: t.muscleGrowth },
-    { id: 'fatLoss', label: t.fatLoss },
-    { id: 'recovery', label: t.recovery },
-    { id: 'testosteroneSupport', label: t.testosteroneSupport },
-    { id: 'pctAi', label: t.pctAi }
+    { id: 'all', nameEn: 'All Products', nameEs: 'Todos los Productos', icon: '🛍️' },
+    { id: 'protein', nameEn: 'Protein', nameEs: 'Proteína', icon: '💪' },
+    { id: 'pre-workout', nameEn: 'Pre-Workout', nameEs: 'Pre-Entreno', icon: '⚡' },
+    { id: 'vitamins', nameEn: 'Vitamins', nameEs: 'Vitaminas', icon: '💊' },
+    { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores', icon: '🔥' },
+    { id: 'creatine', nameEn: 'Creatine', nameEs: 'Creatina', icon: '⚗️' },
+    { id: 'amino-acids', nameEn: 'Amino Acids', nameEs: 'Aminoácidos', icon: '🧬' },
   ];
 
-  const handleCategoryClick = (categoryId: string) => {
-    onCategoryChange(categoryId);
-    onClose(); // Close sidebar after selection on mobile
-  };
+  if (!isOpen) return null;
 
   return (
     <>
       {/* Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-[999] lg:hidden"
-          onClick={onClose}
-        />
-      )}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        onClick={onClose}
+      />
       
       {/* Sidebar */}
-      <nav 
-        className={`fixed top-0 w-64 h-full bg-gray-900 text-white pt-16 px-5 pb-5 box-border transition-all duration-300 ease-in-out overflow-y-auto z-[1000] ${
-          isOpen ? 'left-0' : '-left-64'
-        }`}
+      <div 
+        className="fixed left-0 top-0 h-full w-80 bg-white shadow-xl z-50 transform transition-transform duration-300 overflow-y-auto"
+        data-sidebar
       >
-        <div className="mt-10 mb-5">
-          <h2 className="text-lg font-bold text-white mb-4 border-b border-gray-700 pb-3">
-            {t.categories}
+        {/* Header with close button */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+          <h2 className="text-xl font-bold text-gray-800">
+            {language === 'en' ? 'Categories' : 'Categorías'}
           </h2>
-          
-          <ul className="list-none p-0">
-            {categories.map((category) => (
-              <li key={category.id}>
-                <button
-                  onClick={() => handleCategoryClick(category.id)}
-                  className={`
-                    w-full text-left py-3 px-3 border-b border-gray-700 cursor-pointer transition-colors
-                    ${selectedCategory === category.id
-                      ? 'bg-green-600 text-white'
-                      : 'hover:bg-gray-700'
-                    }
-                  `}
-                >
-                  {category.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          {userProfile && (
-            <div className="border-t border-gray-700 pt-4 mt-6">
-              <ReferralSection
-                userProfile={userProfile}
-                language={language}
-                referralCount={referralCount}
-              />
-            </div>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-full"
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </div>
-      </nav>
+
+        {/* User Profile Section */}
+        {userProfile && (
+          <div className="p-4 border-b border-gray-200 bg-green-50">
+            <div className="flex items-center space-x-3">
+              <div className="bg-green-600 rounded-full p-2">
+                <User className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-medium text-gray-800">{userProfile.name || 'User'}</p>
+                <p className="text-sm text-gray-600">{userProfile.email}</p>
+              </div>
+            </div>
+            
+            {/* Referral info */}
+            <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
+              <div className="flex items-center space-x-2">
+                <Gift className="h-4 w-4 text-green-600" />
+                <span className="text-sm font-medium text-gray-700">
+                  {language === 'en' ? 'Referral Code:' : 'Código de Referido:'}
+                </span>
+              </div>
+              <p className="text-green-600 font-mono text-sm mt-1">{userProfile.referral_code}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {language === 'en' 
+                  ? `${referralCount} people referred` 
+                  : `${referralCount} personas referidas`}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Categories */}
+        <div className="p-4">
+          <div className="space-y-2">
+            {categories.map((category) => (
+              <Button
+                key={category.id}
+                variant={selectedCategory === category.id ? 'default' : 'ghost'}
+                className={`w-full justify-start text-left h-12 ${
+                  selectedCategory === category.id
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'hover:bg-gray-100'
+                }`}
+                onClick={() => {
+                  onCategoryChange(category.id);
+                  onClose(); // Close sidebar on mobile after selection
+                }}
+              >
+                <span className="mr-3 text-lg">{category.icon}</span>
+                <span className="flex-1">
+                  {language === 'en' ? category.nameEn : category.nameEs}
+                </span>
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
     </>
   );
 };
