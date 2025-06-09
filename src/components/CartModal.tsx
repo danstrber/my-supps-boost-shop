@@ -1,12 +1,14 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Minus, Plus, Trash2, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 import { UserProfile } from '@/lib/auth';
 import PaymentModal from './PaymentModal';
+import CartItem from './cart/CartItem';
+import CartSummary from './cart/CartSummary';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -46,7 +48,7 @@ const CartModal = ({
       name: item.product.name,
       price: item.product.price,
       image: item.product.image,
-      category: item.product.categories[0] || 'supplements' // Use first category or default
+      category: item.product.categories[0] || 'supplements'
     },
     quantity: item.quantity
   }));
@@ -59,14 +61,6 @@ const CartModal = ({
   const subtotalAfterDiscount = subtotal - discountAmount;
   const shippingFee = subtotalAfterDiscount >= 100 ? 0 : 10; // Free shipping at $100
   const finalTotal = subtotalAfterDiscount + shippingFee;
-
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      onUpdateCart(productId, 0);
-    } else {
-      onUpdateCart(productId, newQuantity);
-    }
-  };
 
   const handleProceedToCheckout = () => {
     if (!isAuthenticated) {
@@ -114,105 +108,24 @@ const CartModal = ({
             {/* Cart Items */}
             <div className="space-y-3">
               {cartItems.map(({ product, quantity }) => (
-                <div key={product.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                  
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{product.name}</h4>
-                    <p className="text-sm text-gray-600">${product.price.toFixed(2)} each</p>
-                    <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-                      🔬 Lab Tested
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleQuantityChange(product.id, quantity - 1)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    
-                    <Input
-                      type="number"
-                      min="1"
-                      value={quantity}
-                      onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
-                      className="w-16 text-center h-8"
-                    />
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleQuantityChange(product.id, quantity + 1)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                    
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => onUpdateCart(product.id, 0)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  
-                  <div className="text-right">
-                    <p className="font-medium">${(product.price * quantity).toFixed(2)}</p>
-                  </div>
-                </div>
+                <CartItem
+                  key={product.id}
+                  product={product}
+                  quantity={quantity}
+                  onQuantityChange={onUpdateCart}
+                  onRemove={(productId) => onUpdateCart(productId, 0)}
+                />
               ))}
             </div>
 
-            {/* Order Summary */}
-            <div className="border-t pt-4">
-              <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-                <h4 className="font-semibold text-gray-900">Order Summary</h4>
-                
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal:</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                
-                {userDiscount > 0 && (
-                  <div className="flex justify-between text-sm text-green-600">
-                    <span>Discount ({userDiscount}%):</span>
-                    <span>-${discountAmount.toFixed(2)}</span>
-                  </div>
-                )}
-                
-                <div className="flex justify-between text-sm">
-                  <span>Shipping:</span>
-                  <span>
-                    {shippingFee === 0 ? (
-                      <span className="text-green-600">FREE</span>
-                    ) : (
-                      `$${shippingFee.toFixed(2)}`
-                    )}
-                  </span>
-                </div>
-                
-                {subtotalAfterDiscount < 100 && (
-                  <p className="text-xs text-gray-600">
-                    Add ${(100 - subtotalAfterDiscount).toFixed(2)} more for free shipping!
-                  </p>
-                )}
-                
-                <div className="border-t pt-2 flex justify-between font-semibold text-lg">
-                  <span>Total:</span>
-                  <span className="text-green-600">${finalTotal.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
+            <CartSummary
+              subtotal={subtotal}
+              userDiscount={userDiscount}
+              discountAmount={discountAmount}
+              subtotalAfterDiscount={subtotalAfterDiscount}
+              shippingFee={shippingFee}
+              finalTotal={finalTotal}
+            />
 
             {/* Checkout Button */}
             <div className="space-y-2">

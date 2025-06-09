@@ -25,23 +25,38 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
   }
 
   try {
+    // Get current user spending first
+    const { data: userData, error: fetchError } = await supabase
+      .from('users')
+      .select('total_spending')
+      .eq('auth_id', purchase.userId)
+      .single();
+
+    if (fetchError) throw fetchError;
+
     // Update user's total spending
+    const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
     const { error: userError } = await supabase
       .from('users')
-      .update({ 
-        total_spending: supabase.sql`total_spending + ${purchase.amount}`
-      })
+      .update({ total_spending: newTotalSpending })
       .eq('auth_id', purchase.userId);
 
     if (userError) throw userError;
 
     // If user was referred, update referrer's referred_spending
     if (purchase.referralCode) {
+      const { data: referrerData, error: referrerFetchError } = await supabase
+        .from('users')
+        .select('referred_spending')
+        .eq('referral_code', purchase.referralCode)
+        .single();
+
+      if (referrerFetchError) throw referrerFetchError;
+
+      const newReferredSpending = (referrerData.referred_spending || 0) + purchase.amount;
       const { error: referrerError } = await supabase
         .from('users')
-        .update({ 
-          referred_spending: supabase.sql`referred_spending + ${purchase.amount}`
-        })
+        .update({ referred_spending: newReferredSpending })
         .eq('referral_code', purchase.referralCode);
 
       if (referrerError) throw referrerError;
