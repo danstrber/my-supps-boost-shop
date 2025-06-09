@@ -89,7 +89,7 @@ const CartModal = ({
       name: product.name,
       price: product.price,
       image: product.image,
-      category: product.category || 'general'
+      category: product.categories[0] || 'general'
     },
     quantity
   }));
