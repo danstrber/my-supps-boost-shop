@@ -6,6 +6,9 @@ export interface Product {
   image: string;
   description: string;
   categories: string[];
+  featured?: boolean;
+  labTestFile?: string;
+  inStock: boolean;
   details: {
     research: string;
     effectsOnWomen: string;
@@ -32,6 +35,9 @@ export const products: Product[] = [
     image: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
     description: "Selective Androgen Receptor Modulator for lean muscle mass",
     categories: ["sarms", "muscle-growth"],
+    featured: true,
+    labTestFile: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
+    inStock: true,
     details: {
       research: "RAD-140 is a potent SARM that selectively binds to androgen receptors in muscle and bone tissue, promoting anabolic activity without the side effects typically associated with anabolic steroids.",
       effectsOnWomen: "Women may experience virilization effects at higher doses. Lower doses (5-10mg) are recommended for female users.",
@@ -67,6 +73,9 @@ export const products: Product[] = [
     image: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
     description: "Powerful SARM for muscle growth and strength gains",
     categories: ["sarms", "muscle-growth"],
+    featured: false,
+    labTestFile: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
+    inStock: true,
     details: {
       research: "LGD-4033 is one of the most researched SARMs, originally developed for preventing muscle wasting in cancer patients and age-related muscle loss.",
       effectsOnWomen: "Generally well-tolerated by women at doses of 2.5-5mg daily. Higher doses may cause mild virilization.",
@@ -102,6 +111,8 @@ export const products: Product[] = [
     image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
     description: "Growth hormone secretagogue for recovery and anti-aging",
     categories: ["recovery", "muscle-growth"],
+    featured: true,
+    inStock: true,
     details: {
       research: "MK-677 is a potent, orally active growth hormone secretagogue that mimics the action of ghrelin, stimulating the release of growth hormone and IGF-1.",
       effectsOnWomen: "Well-tolerated by women with no virilization risk. Same dosing as men (12.5-25mg daily).",
@@ -138,6 +149,8 @@ export const products: Product[] = [
     image: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
     description: "Mild SARM perfect for beginners and cutting cycles",
     categories: ["sarms", "fat-loss"],
+    featured: false,
+    inStock: true,
     details: {
       research: "Ostarine is the most studied SARM with extensive clinical trials demonstrating its ability to increase lean body mass and improve physical function.",
       effectsOnWomen: "Excellent choice for women due to its mild nature. Recommended dose: 6-12.5mg daily.",
@@ -172,6 +185,8 @@ export const products: Product[] = [
     image: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
     description: "PPAR delta agonist for endurance and fat loss",
     categories: ["fat-loss", "recovery"],
+    featured: false,
+    inStock: true,
     details: {
       research: "Cardarine is a PPAR delta receptor agonist that enhances fatty acid oxidation and glucose metabolism, originally developed for metabolic disorders.",
       effectsOnWomen: "No hormonal effects, making it excellent for women. Same dosing as men (10-20mg daily).",
@@ -206,6 +221,8 @@ export const products: Product[] = [
     image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
     description: "Powerful prohormone for rapid muscle and strength gains",
     categories: ["muscle-growth", "testosterone-support"],
+    featured: false,
+    inStock: false,
     details: {
       research: "Superdrol (Methasterone) is a potent oral anabolic steroid that provides rapid muscle and strength gains with minimal estrogenic effects.",
       effectsOnWomen: "Not recommended for women due to high androgenic activity and virilization risk.",
