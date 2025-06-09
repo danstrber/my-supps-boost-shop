@@ -82,6 +82,18 @@ const CartModal = ({
     setIsPaymentModalOpen(true);
   };
 
+  // Convert cart items to the format expected by PaymentModal
+  const paymentCartItems = cartItems.map(({ product, quantity }) => ({
+    product: {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category || 'general'
+    },
+    quantity
+  }));
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -143,7 +155,7 @@ const CartModal = ({
         finalTotal={finalTotal}
         cart={cart}
         userProfile={userProfile}
-        cartItems={cartItems}
+        cartItems={paymentCartItems}
       />
     </>
   );
