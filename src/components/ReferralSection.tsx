@@ -49,12 +49,17 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // Calculate current discount
-  const referralDiscount = referralCount > 0 ? Math.min(10 + (referralCount - 1) * 4, 25) : 0;
+  // Calculate discounts based on new system math
+  const referralDiscount = referralCount > 0 ? Math.min(10 + (referralCount - 1) * 4, 32.5) : 0;
+  
   const spendingDiscount = userProfile.referred_by 
-    ? Math.floor(userProfile.total_spending / 50) * 6.5  
-    : Math.floor(userProfile.referred_spending / 50) * 2;
-  const totalDiscount = Math.min(referralDiscount + spendingDiscount, 30);
+    ? Math.floor(userProfile.total_spending / 50) * 6  // 6% per $50 for referred users
+    : Math.floor(userProfile.total_spending / 50) * 2.5; // 2.5% per $50 for normal users
+  
+  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 2.5; // 2.5% per $50 of referred spending
+  
+  // Apply highest single discount (not cumulative)
+  const totalDiscount = Math.max(referralDiscount, spendingDiscount, referredSpendingDiscount);
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
@@ -78,7 +83,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         <div className="text-center">
           <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount}%</div>
           <div className="text-xs md:text-sm text-gray-600">
-            {language === 'en' ? 'Current Total Discount' : 'Descuento Total Actual'}
+            {language === 'en' ? 'Current Discount (Highest Single)' : 'Descuento Actual (Más Alto Individual)'}
           </div>
         </div>
       </div>
@@ -157,20 +162,21 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
             <ul className="space-y-1 text-gray-700">
               <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
               <li>• {language === 'en' ? 'Each additional referral: +4% discount' : 'Cada referido adicional: +4% descuento'}</li>
-              <li>• {language === 'en' ? 'Referral discount cap: 25%' : 'Límite descuento referidos: 25%'}</li>
-              <li>• {language === 'en' ? 'If you were referred: 6.5% per $50 spent' : 'Si fuiste referido: 6.5% por cada $50 gastados'}</li>
-              <li>• {language === 'en' ? 'If you refer others: 2% per $50 they spend' : 'Si refiere a otros: 2% por cada $50 que gasten'}</li>
-              <li>• {language === 'en' ? 'Maximum total discount: 30%' : 'Descuento total máximo: 30%'}</li>
+              <li>• {language === 'en' ? 'Maximum referral discount: 32.5% (8 referrals)' : 'Descuento máximo por referidos: 32.5% (8 referidos)'}</li>
+              <li>• {language === 'en' ? 'Referred users: 6% per $50 spent' : 'Usuarios referidos: 6% por cada $50 gastados'}</li>
+              <li>• {language === 'en' ? 'Normal users: 2.5% per $50 spent' : 'Usuarios normales: 2.5% por cada $50 gastados'}</li>
+              <li>• {language === 'en' ? 'Referrers: 2.5% per $50 of referred spending' : 'Referidores: 2.5% por cada $50 de gasto de referidos'}</li>
+              <li><strong>• {language === 'en' ? 'Only the highest single discount applies (not cumulative)' : 'Solo se aplica el descuento individual más alto (no acumulativo)'}</strong></li>
             </ul>
           </div>
           
           <div className="bg-white rounded-lg p-4 border border-green-200">
-            <h4 className="font-semibold text-green-800 mb-2">📊 {language === 'en' ? 'Your Stats' : 'Tus Estadísticas'}:</h4>
+            <h4 className="font-semibold text-green-800 mb-2">📊 {language === 'en' ? 'Your Discount Breakdown' : 'Desglose de tus Descuentos'}:</h4>
             <div className="space-y-1 text-gray-700">
-              <div>{language === 'en' ? 'Referral Code' : 'Código de Referido'}: <strong>{userProfile.referral_code}</strong></div>
-              <div>{language === 'en' ? 'Total Spending' : 'Gasto Total'}: <strong>${userProfile.total_spending.toFixed(2)}</strong></div>
-              <div>{language === 'en' ? 'Referred Spending' : 'Gasto de Referidos'}: <strong>${userProfile.referred_spending.toFixed(2)}</strong></div>
+              <div>{language === 'en' ? 'Referral Discount' : 'Descuento por Referidos'}: <strong>{referralDiscount}%</strong></div>
               <div>{language === 'en' ? 'Spending Discount' : 'Descuento por Gasto'}: <strong>{spendingDiscount}%</strong></div>
+              <div>{language === 'en' ? 'Referred Spending Discount' : 'Descuento por Gasto de Referidos'}: <strong>{referredSpendingDiscount}%</strong></div>
+              <div className="pt-2 border-t"><strong>{language === 'en' ? 'Applied Discount (Highest)' : 'Descuento Aplicado (Más Alto)'}: {totalDiscount}%</strong></div>
             </div>
           </div>
         </div>
