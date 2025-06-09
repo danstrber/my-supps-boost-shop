@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -8,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
+import { createPendingPurchase } from '@/lib/purchase-tracking';
 
 interface CartItem {
   product: {
@@ -128,6 +128,14 @@ const PaymentModal = ({
 
       console.log('Order created:', order);
 
+      // Create pending purchase (NOT saved to user spending yet)
+      createPendingPurchase(order.id, {
+        userId: userProfile?.auth_id || '',
+        amount: finalTotal,
+        items: cartItems,
+        referralCode: userProfile?.referred_by || undefined
+      });
+
       // Send order confirmation email
       try {
         const { error: emailError } = await supabase.functions.invoke('send-order-email', {
@@ -149,7 +157,7 @@ const PaymentModal = ({
 
       toast({
         title: "Order Placed Successfully!",
-        description: `Your order has been placed. You'll receive a confirmation email shortly.`,
+        description: `Your order has been placed. Purchase will be tracked once confirmed by admin.`,
       });
 
       onClose();

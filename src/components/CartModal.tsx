@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -58,7 +57,7 @@ const CartModal = ({
 
   const discountAmount = (subtotal * userDiscount) / 100;
   const subtotalAfterDiscount = subtotal - discountAmount;
-  const shippingFee = subtotalAfterDiscount >= 100 ? 0 : 10;
+  const shippingFee = subtotalAfterDiscount >= 100 ? 0 : 10; // Free shipping at $100
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
