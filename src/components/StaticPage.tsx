@@ -63,10 +63,29 @@ const StaticPage = ({
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center space-x-3">
-              <Mail className="h-5 w-5 text-green-600" />
+              <MessageCircle className="h-5 w-5 text-green-600" />
               <div>
                 <div className="font-semibold">Telegram</div>
-                <div className="text-gray-600">@mysupps_support</div>
+                <a 
+                  href="https://t.me/+fDDZObF0zjI2M2Y0" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  https://t.me/+fDDZObF0zjI2M2Y0
+                </a>
+              </div>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Mail className="h-5 w-5 text-green-600" />
+              <div>
+                <div className="font-semibold">Email</div>
+                <a 
+                  href="mailto:christhomaso083@porton.me"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  christhomaso083@porton.me
+                </a>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -83,8 +102,8 @@ const StaticPage = ({
               {language === 'en' ? 'How to Contact Us' : 'Cómo Contactarnos'}
             </h3>
             <div className="text-gray-600 space-y-2">
-              <div>• {language === 'en' ? 'For orders and general inquiries: Contact us through Telegram @mysupps_support' : 'Para pedidos e consultas generales: Contáctanos a través de Telegram @mysupps_support'}</div>
-              <div>• {language === 'en' ? 'For payment assistance: Message us on Telegram' : 'Para asistencia con pagos: Envíanos un mensaje en Telegram'}</div>
+              <div>• {language === 'en' ? 'For orders and general inquiries: Contact us through our Telegram channel' : 'Para pedidos e consultas generales: Contáctanos a través de nuestro canal de Telegram'}</div>
+              <div>• {language === 'en' ? 'For payment assistance: Message us on Telegram or email' : 'Para asistencia con pagos: Envíanos un mensaje en Telegram o correo'}</div>
               <div>• {language === 'en' ? 'We respond quickly and are available almost 24/7' : 'Respondemos rápidamente y estamos disponibles casi 24/7'}</div>
             </div>
           </div>

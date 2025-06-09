@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { signUpUser, signInUser } from '@/components/auth/authUtils';
+import { handleEmailAuth } from '@/components/auth/authUtils';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 import { Eye, EyeOff, Wallet } from 'lucide-react';
 
@@ -71,7 +71,7 @@ const AuthModal = ({
     try {
       if (mode === 'signup') {
         console.log('Starting signup process with referral code:', referralCode);
-        const { error } = await signUpUser(email, password, name, referralCode);
+        const { error } = await handleEmailAuth('signup', email, password, name, referralCode);
         
         if (error) {
           console.error('Signup error:', error);
@@ -95,7 +95,7 @@ const AuthModal = ({
           }
         }
       } else if (mode === 'login') {
-        const { error } = await signInUser(email, password);
+        const { error } = await handleEmailAuth('login', email, password);
         
         if (error) {
           if (error.message.includes('Email not confirmed')) {
@@ -345,7 +345,7 @@ const AuthModal = ({
           </div>
 
           <div className="space-y-2">
-            <GoogleSignInButton language={language} />
+            <GoogleSignInButton />
             
             <Button
               type="button"
