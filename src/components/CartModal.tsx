@@ -59,7 +59,10 @@ const CartModal = ({
 
   const discountAmount = (subtotal * userDiscount) / 100;
   const subtotalAfterDiscount = subtotal - discountAmount;
-  const shippingFee = subtotalAfterDiscount >= 100 ? 0 : 10; // Free shipping at $100
+  
+  // Updated shipping logic: $12 fee, free shipping thresholds
+  const freeShippingThreshold = userProfile && userProfile.referred_spending > 0 ? 101 : 100; // Referrers need $101, others $100
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 12; // $12 shipping fee
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   const handleProceedToCheckout = () => {
@@ -125,6 +128,7 @@ const CartModal = ({
               subtotalAfterDiscount={subtotalAfterDiscount}
               shippingFee={shippingFee}
               finalTotal={finalTotal}
+              freeShippingThreshold={freeShippingThreshold}
             />
 
             {/* Checkout Button */}

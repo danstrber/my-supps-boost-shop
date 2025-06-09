@@ -8,6 +8,7 @@ interface CartSummaryProps {
   subtotalAfterDiscount: number;
   shippingFee: number;
   finalTotal: number;
+  freeShippingThreshold?: number;
 }
 
 const CartSummary = ({ 
@@ -16,7 +17,8 @@ const CartSummary = ({
   discountAmount, 
   subtotalAfterDiscount, 
   shippingFee, 
-  finalTotal 
+  finalTotal,
+  freeShippingThreshold = 100
 }: CartSummaryProps) => {
   return (
     <div className="border-t pt-4">
@@ -46,9 +48,9 @@ const CartSummary = ({
           </span>
         </div>
         
-        {subtotalAfterDiscount < 100 && (
+        {subtotalAfterDiscount < freeShippingThreshold && (
           <p className="text-xs text-gray-600">
-            Add ${(100 - subtotalAfterDiscount).toFixed(2)} more for free shipping!
+            Add ${(freeShippingThreshold - subtotalAfterDiscount).toFixed(2)} more for free shipping!
           </p>
         )}
         

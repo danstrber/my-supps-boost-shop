@@ -49,8 +49,8 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // CORRECTED MATH per new requirements
-  const referralDiscount = referralCount > 0 ? 10 : 0; // 10% for having referrals (signup bonus)
+  // UPDATED MATH per requirements
+  const referralDiscount = referralCount > 0 ? 10 : 0; // 10% for first referral signup
   
   const spendingDiscount = userProfile.referred_by 
     ? Math.floor(userProfile.total_spending / 75) * 6  // Referred users: 6% per $75
@@ -62,8 +62,9 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   // ALL discounts STACK but cap at 30%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + personalReferrerDiscount, 30);
 
-  // Free shipping at $100 for everyone
-  const freeShipping = userProfile.total_spending >= 100;
+  // Free shipping rules: $100 for normal/referred users, $101 for referrers
+  const freeShippingThreshold = referralCount > 0 ? 101 : 100;
+  const freeShipping = userProfile.total_spending >= freeShippingThreshold;
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
@@ -94,6 +95,14 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
               🚚 {language === 'en' ? 'FREE SHIPPING!' : 'ENVÍO GRATIS!'}
             </div>
           )}
+          {!freeShipping && (
+            <div className="mt-2 text-xs text-gray-500">
+              {language === 'en' 
+                ? `Spend $${(freeShippingThreshold - userProfile.total_spending).toFixed(2)} more for free shipping!`
+                : `¡Gasta $${(freeShippingThreshold - userProfile.total_spending).toFixed(2)} más para envío gratis!`
+              }
+            </div>
+          )}
         </div>
       </div>
 
@@ -118,8 +127,10 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
           referralDiscount={referralDiscount}
           spendingDiscount={spendingDiscount}
           referredSpendingDiscount={referredSpendingDiscount}
+          personalReferrerDiscount={personalReferrerDiscount}
           totalDiscount={totalDiscount}
           freeShipping={freeShipping}
+          freeShippingThreshold={freeShippingThreshold}
         />
       )}
     </div>
