@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle } from 'lucide-react';
+import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu } from 'lucide-react';
 import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
@@ -41,6 +41,7 @@ const Header = ({
             <div 
               className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-between"
               onClick={onMenuToggle}
+              data-hamburger
             >
               <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
               <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
@@ -169,6 +170,13 @@ const Header = ({
         <div className="bg-green-600 text-white py-1 md:py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center space-x-3 md:space-x-12 text-xs md:text-base font-medium overflow-x-auto">
+              <button 
+                onClick={() => onPageChange('home')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>🏠</span>
+                <span>{language === 'en' ? 'HOME' : 'INICIO'}</span>
+              </button>
               <button 
                 onClick={() => onPageChange('labtesting')}
                 className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"

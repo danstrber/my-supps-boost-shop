@@ -345,7 +345,10 @@ const AuthModal = ({
           </div>
 
           <div className="space-y-2">
-            <GoogleSignInButton />
+            <GoogleSignInButton 
+              onClick={() => console.log('Google sign in')} 
+              loading={loading} 
+            />
             
             <Button
               type="button"

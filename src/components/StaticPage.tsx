@@ -150,8 +150,8 @@ const StaticPage = ({
             </h3>
             <p className="text-gray-600">
               {language === 'en'
-                ? 'Once your order ships, you will receive tracking information via Telegram.'
-                : 'Una vez que tu pedido sea enviado, recibirás información de seguimiento a través de Telegram.'}
+                ? 'Once your order ships, you will receive tracking information via Telegram or email.'
+                : 'Una vez que tu pedido sea enviado, recibirás información de seguimiento a través de Telegram o correo.'}
             </p>
           </div>
         </CardContent>
@@ -199,8 +199,8 @@ const StaticPage = ({
             </h3>
             <p className="text-gray-600">
               {language === 'en'
-                ? 'For other payment methods or if you need assistance, please contact us through our Telegram channel @mysupps_support'
-                : 'Para otros métodos de pago o si necesitas asistencia, por favor contáctanos a través de nuestro canal de Telegram @mysupps_support'}
+                ? 'For other payment methods or if you need assistance, please contact us through our Telegram channel or email'
+                : 'Para otros métodos de pago o si necesitas asistencia, por favor contáctanos a través de nuestro canal de Telegram o correo'}
             </p>
           </div>
         </CardContent>
