@@ -37,7 +37,7 @@ const Header = ({
       <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Hamburger Menu with X when open */}
+            {/* Hamburger Menu */}
             <div 
               className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-center items-center"
               onClick={onMenuToggle}
@@ -54,7 +54,7 @@ const Header = ({
               )}
             </div>
 
-            {/* Logo - using new uploaded logo */}
+            {/* Logo */}
             <div 
               className="flex items-center cursor-pointer ml-16" 
               onClick={() => onPageChange('home')}
@@ -63,6 +63,11 @@ const Header = ({
                 src="/lovable-uploads/6b0a71a7-2cc8-4b21-b81a-9b55c81eca2e.png" 
                 alt="MySupps Logo" 
                 className="h-10 md:h-14 w-auto"
+                onError={(e) => {
+                  console.log('Logo failed to load, falling back to text');
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.insertAdjacentHTML('afterend', '<h1 class="text-2xl font-bold text-green-600">MySupps</h1>');
+                }}
               />
             </div>
 

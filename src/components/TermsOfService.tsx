@@ -10,6 +10,8 @@ interface TermsOfServiceProps {
 }
 
 const TermsOfService = ({ isOpen, onClose, language }: TermsOfServiceProps) => {
+  console.log('TermsOfService rendered with isOpen:', isOpen);
+
   const content = language === 'en' ? {
     title: "Terms of Service",
     sections: {
@@ -25,24 +27,28 @@ const TermsOfService = ({ isOpen, onClose, language }: TermsOfServiceProps) => {
         title: "3. Age Requirement",
         content: "You must be at least 18 years old to purchase from MySupps. By making a purchase, you confirm that you are of legal age in your jurisdiction."
       },
+      referral: {
+        title: "4. Referral Program",
+        content: "Our referral program offers discounts based on successful referrals and spending. Referred users receive 6% discount per $50 spent. Referrers receive 2% per $50 of referred user spending. Additional referrals provide +4% each (maximum 25% for referrals). Total maximum discount is 30%."
+      },
       shipping: {
-        title: "4. Shipping and Delivery",
+        title: "5. Shipping and Delivery",
         content: "We ship worldwide with tracking provided. Delivery times vary by location. We are not responsible for packages lost by shipping carriers or seized by customs."
       },
       returns: {
-        title: "5. Returns and Refunds",
+        title: "6. Returns and Refunds",
         content: "Due to the nature of our products, we do not accept returns unless the product was damaged during shipping. All sales are final."
       },
       liability: {
-        title: "6. Limitation of Liability",
+        title: "7. Limitation of Liability",
         content: "MySupps shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our products."
       },
       privacy: {
-        title: "7. Privacy Policy",
+        title: "8. Privacy Policy",
         content: "We respect your privacy and protect your personal information. We do not share customer information with third parties except as required for order fulfillment."
       },
       changes: {
-        title: "8. Changes to Terms",
+        title: "9. Changes to Terms",
         content: "We reserve the right to modify these terms at any time. Continued use of our services constitutes acceptance of modified terms."
       }
     }
@@ -61,24 +67,28 @@ const TermsOfService = ({ isOpen, onClose, language }: TermsOfServiceProps) => {
         title: "3. Requisito de Edad",
         content: "Debe tener al menos 18 años para comprar en MySupps. Al realizar una compra, confirma que tiene la edad legal en su jurisdicción."
       },
+      referral: {
+        title: "4. Programa de Referidos",
+        content: "Nuestro programa de referidos ofrece descuentos basados en referidos exitosos y gastos. Los usuarios referidos reciben 6% de descuento por cada $50 gastados. Los referidores reciben 2% por cada $50 de gasto del usuario referido. Referidos adicionales proporcionan +4% cada uno (máximo 25% por referidos). Descuento total máximo es 30%."
+      },
       shipping: {
-        title: "4. Envío y Entrega",
+        title: "5. Envío y Entrega",
         content: "Enviamos a todo el mundo con seguimiento proporcionado. Los tiempos de entrega varían según la ubicación."
       },
       returns: {
-        title: "5. Devoluciones y Reembolsos",
+        title: "6. Devoluciones y Reembolsos",
         content: "Debido a la naturaleza de nuestros productos, no aceptamos devoluciones a menos que el producto haya sido dañado durante el envío."
       },
       liability: {
-        title: "6. Limitación de Responsabilidad",
+        title: "7. Limitación de Responsabilidad",
         content: "MySupps no será responsable de ningún daño directo, indirecto, incidental, especial o consecuente resultante del uso o incapacidad de usar nuestros productos."
       },
       privacy: {
-        title: "7. Política de Privacidad",
+        title: "8. Política de Privacidad",
         content: "Respetamos su privacidad y protegemos su información personal. No compartimos información del cliente con terceros."
       },
       changes: {
-        title: "8. Cambios en los Términos",
+        title: "9. Cambios en los Términos",
         content: "Nos reservamos el derecho de modificar estos términos en cualquier momento. El uso continuado de nuestros servicios constituye la aceptación de los términos modificados."
       }
     }
@@ -86,7 +96,7 @@ const TermsOfService = ({ isOpen, onClose, language }: TermsOfServiceProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh]">
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{content.title}</DialogTitle>
         </DialogHeader>
