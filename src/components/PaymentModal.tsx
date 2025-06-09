@@ -141,6 +141,7 @@ const PaymentModal = ({
           body: {
             customerEmail: customerInfo.email,
             customerName: customerInfo.fullName,
+            adminEmail: 'einarstav4@gmail.com',
             items: cartItems.map(item => ({
               id: item.product.id,
               name: item.product.name,
@@ -152,7 +153,8 @@ const PaymentModal = ({
             shippingFee: shippingFee,
             finalTotal: finalTotal,
             paymentMethod: paymentMethod,
-            paymentDetails: customerInfo
+            paymentDetails: customerInfo,
+            orderId: order.id
           }
         });
 

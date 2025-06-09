@@ -8,18 +8,23 @@ import { Product } from '@/lib/products';
 interface CartItemProps {
   product: Product;
   quantity: number;
-  onQuantityChange: (productId: string, newQuantity: number) => void;
-  onRemove: (productId: string) => void;
+  onUpdateCart: (productId: string, quantity: number) => void;
+  userDiscount: number;
+  language: 'en' | 'es';
 }
 
-const CartItem = ({ product, quantity, onQuantityChange, onRemove }: CartItemProps) => {
+const CartItem = ({ product, quantity, onUpdateCart, userDiscount, language }: CartItemProps) => {
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0) {
-      onRemove(product.id);
+      onUpdateCart(product.id, 0);
     } else {
-      onQuantityChange(product.id, newQuantity);
+      onUpdateCart(product.id, newQuantity);
     }
   };
+
+  const itemTotal = product.price * quantity;
+  const discountAmount = itemTotal * (userDiscount / 100);
+  const finalPrice = itemTotal - discountAmount;
 
   return (
     <div className="flex items-center space-x-4 p-4 border rounded-lg">
@@ -35,6 +40,11 @@ const CartItem = ({ product, quantity, onQuantityChange, onRemove }: CartItemPro
         <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
           🔬 Lab Tested
         </span>
+        {userDiscount > 0 && (
+          <p className="text-xs text-green-600 mt-1">
+            {userDiscount}% {language === 'en' ? 'discount applied' : 'descuento aplicado'}
+          </p>
+        )}
       </div>
       
       <div className="flex items-center space-x-2">
@@ -67,7 +77,7 @@ const CartItem = ({ product, quantity, onQuantityChange, onRemove }: CartItemPro
         <Button
           variant="destructive"
           size="sm"
-          onClick={() => onRemove(product.id)}
+          onClick={() => onUpdateCart(product.id, 0)}
           className="h-8 w-8 p-0"
         >
           <Trash2 className="h-4 w-4" />
@@ -75,7 +85,14 @@ const CartItem = ({ product, quantity, onQuantityChange, onRemove }: CartItemPro
       </div>
       
       <div className="text-right">
-        <p className="font-medium">${(product.price * quantity).toFixed(2)}</p>
+        {userDiscount > 0 ? (
+          <div>
+            <p className="text-sm text-gray-500 line-through">${itemTotal.toFixed(2)}</p>
+            <p className="font-medium text-green-600">${finalPrice.toFixed(2)}</p>
+          </div>
+        ) : (
+          <p className="font-medium">${itemTotal.toFixed(2)}</p>
+        )}
       </div>
     </div>
   );
