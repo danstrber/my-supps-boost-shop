@@ -31,12 +31,6 @@ const Header = ({
   sidebarOpen = false
 }: HeaderProps) => {
   const [coachingModalOpen, setCoachingModalOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
-
-  const handleLogoError = () => {
-    console.log('Logo failed to load');
-    setLogoError(true);
-  };
 
   return (
     <>
@@ -65,16 +59,7 @@ const Header = ({
               className="flex items-center cursor-pointer ml-16" 
               onClick={() => onPageChange('home')}
             >
-              {!logoError ? (
-                <img 
-                  src="/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png" 
-                  alt="MySupps Logo" 
-                  className="h-10 md:h-14 w-auto"
-                  onError={handleLogoError}
-                />
-              ) : (
-                <h1 className="text-2xl font-bold text-green-600">MySupps</h1>
-              )}
+              <h1 className="text-2xl md:text-3xl font-bold text-green-600">MySupps</h1>
             </div>
 
             {/* Navigation - Desktop Only */}
