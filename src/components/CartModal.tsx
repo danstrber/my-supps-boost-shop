@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, X } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { UserProfile } from '@/lib/auth';
+import { translations } from '@/lib/translations';
 import PaymentModal from './PaymentModal';
 import CartItem from './cart/CartItem';
 import CartSummary from './cart/CartSummary';
@@ -33,6 +34,7 @@ const CartModal = ({
   userProfile
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const t = translations[language];
 
   const cartItems = Object.entries(cart).map(([productId, quantity]) => {
     const product = products.find(p => p.id === productId);
@@ -47,7 +49,7 @@ const CartModal = ({
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
-              {language === 'en' ? 'Your Cart' : 'Tu Carrito'}
+              {t.cart}
             </DialogTitle>
           </DialogHeader>
           <div className="py-8 text-center">
@@ -64,15 +66,24 @@ const CartModal = ({
     );
   }
 
+  // Calculate totals with rounded system amounts for referral system
   const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
-  const discountAmount = subtotal * (userDiscount / 100);
-  const subtotalAfterDiscount = subtotal - discountAmount;
+  const systemSubtotal = Math.ceil(subtotal); // Round up for system calculations
+  const discountAmount = systemSubtotal * (userDiscount / 100);
+  const subtotalAfterDiscount = systemSubtotal - discountAmount;
   
   // Free shipping threshold: $100 for normal/referred users, $101 for referrers
   const isReferrer = userProfile && userProfile.referred_spending > 0;
   const freeShippingThreshold = isReferrer ? 101 : 100;
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 12;
   const finalTotal = subtotalAfterDiscount + shippingFee;
+
+  // For display and BTC payment, use original amounts
+  const displaySubtotal = subtotal;
+  const displayDiscountAmount = displaySubtotal * (userDiscount / 100);
+  const displaySubtotalAfterDiscount = displaySubtotal - displayDiscountAmount;
+  const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 12;
+  const displayFinalTotal = displaySubtotalAfterDiscount + displayShippingFee;
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -102,7 +113,7 @@ const CartModal = ({
             <DialogTitle className="flex items-center justify-between">
               <span className="flex items-center">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                {language === 'en' ? 'Your Cart' : 'Tu Carrito'}
+                {t.cart}
               </span>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="h-4 w-4" />
@@ -123,13 +134,14 @@ const CartModal = ({
             ))}
 
             <CartSummary
-              subtotal={subtotal}
+              subtotal={displaySubtotal}
               userDiscount={userDiscount}
-              discountAmount={discountAmount}
-              subtotalAfterDiscount={subtotalAfterDiscount}
-              shippingFee={shippingFee}
-              finalTotal={finalTotal}
+              discountAmount={displayDiscountAmount}
+              subtotalAfterDiscount={displaySubtotalAfterDiscount}
+              shippingFee={displayShippingFee}
+              finalTotal={displayFinalTotal}
               freeShippingThreshold={freeShippingThreshold}
+              language={language}
             />
 
             <Button 
@@ -149,13 +161,14 @@ const CartModal = ({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        orderTotal={subtotal}
-        discount={discountAmount}
-        shippingFee={shippingFee}
-        finalTotal={finalTotal}
+        orderTotal={displaySubtotal}
+        discount={displayDiscountAmount}
+        shippingFee={displayShippingFee}
+        finalTotal={displayFinalTotal}
         cart={cart}
         userProfile={userProfile}
         cartItems={paymentCartItems}
+        language={language}
       />
     </>
   );

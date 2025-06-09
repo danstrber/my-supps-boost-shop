@@ -1,16 +1,19 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
 import { createPendingPurchase } from '@/lib/purchase-tracking';
+import { translations } from '@/lib/translations';
 import OrderSummary from './payment/OrderSummary';
 import PaymentMethodInfo from './payment/PaymentMethodInfo';
 import ShippingForm from './payment/ShippingForm';
+import BitcoinTutorial from './payment/BitcoinTutorial';
+import BitcoinPaymentDetails from './payment/BitcoinPaymentDetails';
 
 interface CartItem {
   product: {
@@ -33,6 +36,7 @@ interface PaymentModalProps {
   cart: Record<string, number>;
   userProfile: UserProfile | null;
   cartItems: CartItem[];
+  language: 'en' | 'es';
 }
 
 const PaymentModal = ({
@@ -43,9 +47,10 @@ const PaymentModal = ({
   shippingFee,
   finalTotal,
   userProfile,
-  cartItems
+  cartItems,
+  language = 'en'
 }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin' | 'solana' | 'email'>('telegram');
+  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin'>('telegram');
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
     email: userProfile?.email || '',
@@ -55,45 +60,59 @@ const PaymentModal = ({
     txid: ''
   });
   const [loading, setLoading] = useState(false);
+  const [showBitcoinDetails, setShowBitcoinDetails] = useState(false);
   const { toast } = useToast();
+  const t = translations[language];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Round up cart total for system calculations but keep original for BTC payment
+  const systemTotal = Math.ceil(orderTotal);
+  const systemFinalTotal = systemTotal + shippingFee;
+  const btcPaymentAmount = finalTotal; // Keep original .99 pricing for BTC
+
+  const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"; // Example Bitcoin address
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
+      // Validate shipping info first
+      if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country) {
+        toast({
+          title: language === 'en' ? "Missing Information" : "Información Faltante",
+          description: language === 'en' ? "Please fill in all shipping information fields." : "Por favor completa todos los campos de información de envío.",
+          variant: "destructive"
+        });
+        return;
+      }
+      setShowBitcoinDetails(true);
+      return;
+    }
+
     setLoading(true);
 
     try {
       if (paymentMethod === 'telegram') {
         window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
         toast({
-          title: "Redirected to Telegram",
-          description: "Complete your order in our Telegram group for easy tracking and anonymous ordering.",
+          title: language === 'en' ? "Redirected to Telegram" : "Redirigido a Telegram",
+          description: language === 'en' ? "Complete your order in our Telegram group for easy tracking and anonymous ordering." : "Completa tu pedido en nuestro grupo de Telegram para seguimiento fácil y pedidos anónimos.",
         });
         onClose();
         return;
       }
 
-      // Validate required fields for other payment methods
-      if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country) {
+      // For Bitcoin payment, validate TXID
+      if (!customerInfo.txid) {
         toast({
-          title: "Missing Information",
-          description: "Please fill in all shipping information fields.",
+          title: language === 'en' ? "Missing Transaction ID" : "ID de Transacción Faltante",
+          description: language === 'en' ? "Please enter the transaction ID (TXID) for verification." : "Por favor ingresa el ID de transacción (TXID) para verificación.",
           variant: "destructive"
         });
         setLoading(false);
         return;
       }
 
-      if ((paymentMethod === 'bitcoin' || paymentMethod === 'solana') && !customerInfo.txid) {
-        toast({
-          title: "Missing Transaction ID",
-          description: "Please enter the transaction ID (TXID) for verification.",
-          variant: "destructive"
-        });
-        setLoading(false);
-        return;
-      }
-
-      // Create order in database
+      // Create order in database with system total (rounded up)
       const orderData = {
         user_id: userProfile?.auth_id,
         items: {
@@ -105,14 +124,16 @@ const PaymentModal = ({
             total: item.product.price * item.quantity
           }))
         },
-        original_total: orderTotal,
+        original_total: systemTotal, // Use rounded up total for system
         discount_amount: discount,
         shipping_fee: shippingFee,
-        final_total: finalTotal,
+        final_total: systemFinalTotal, // Use system total for tracking
         payment_method: paymentMethod,
         payment_details: {
           customer_info: customerInfo,
-          ...((['bitcoin', 'solana'].includes(paymentMethod)) && { txid: customerInfo.txid })
+          btc_amount_sent: btcPaymentAmount, // Store actual BTC amount
+          wallet_address: walletAddress,
+          txid: customerInfo.txid
         },
         status: 'pending'
       };
@@ -125,12 +146,10 @@ const PaymentModal = ({
 
       if (error) throw error;
 
-      console.log('Order created:', order);
-
-      // Create pending purchase (NOT saved to user spending yet)
+      // Create pending purchase with system total for referral calculations
       createPendingPurchase(order.id, {
         userId: userProfile?.auth_id || '',
-        amount: finalTotal,
+        amount: systemFinalTotal, // Use system total for referral calculations
         items: cartItems,
         referralCode: userProfile?.referred_by || undefined
       });
@@ -151,25 +170,26 @@ const PaymentModal = ({
             originalTotal: orderTotal,
             discountAmount: discount,
             shippingFee: shippingFee,
-            finalTotal: finalTotal,
+            finalTotal: btcPaymentAmount, // Use actual BTC amount in email
+            systemTotal: systemFinalTotal, // Include system total for reference
             paymentMethod: paymentMethod,
             paymentDetails: customerInfo,
-            orderId: order.id
+            orderId: order.id,
+            walletAddress: walletAddress,
+            txid: customerInfo.txid
           }
         });
 
         if (emailError) {
           console.error('Email sending failed:', emailError);
-        } else {
-          console.log('Order confirmation email sent');
         }
       } catch (emailErr) {
         console.error('Email function error:', emailErr);
       }
 
       toast({
-        title: "Order Placed Successfully!",
-        description: `Your order has been placed. Purchase will be tracked once confirmed by admin.`,
+        title: language === 'en' ? "Order Placed Successfully!" : "¡Pedido Realizado Exitosamente!",
+        description: language === 'en' ? "Your order has been placed. Purchase will be tracked once confirmed by admin." : "Tu pedido ha sido realizado. La compra será rastreada una vez confirmada por el administrador.",
       });
 
       onClose();
@@ -177,8 +197,8 @@ const PaymentModal = ({
     } catch (error: any) {
       console.error('Order creation error:', error);
       toast({
-        title: "Order Failed",
-        description: error.message || "There was an error processing your order. Please try again.",
+        title: language === 'en' ? "Order Failed" : "Pedido Falló",
+        description: error.message || (language === 'en' ? "There was an error processing your order. Please try again." : "Hubo un error procesando tu pedido. Por favor intenta de nuevo."),
         variant: "destructive"
       });
     } finally {
@@ -190,7 +210,9 @@ const PaymentModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Complete Your Order</DialogTitle>
+          <DialogTitle>
+            {language === 'en' ? 'Complete Your Order' : 'Completa tu Pedido'}
+          </DialogTitle>
         </DialogHeader>
 
         <OrderSummary
@@ -199,39 +221,64 @@ const PaymentModal = ({
           discount={discount}
           shippingFee={shippingFee}
           finalTotal={finalTotal}
+          language={language}
         />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Referral tip */}
+        <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center">
+          <p className="text-green-700 text-sm font-medium">
+            {t.wantCheaper}
+          </p>
+        </div>
+
+        <form onSubmit={handleFormSubmit} className="space-y-6">
           <div>
-            <Label htmlFor="paymentMethod">Payment Method</Label>
+            <Label htmlFor="paymentMethod">
+              {language === 'en' ? 'Payment Method' : 'Método de Pago'}
+            </Label>
             <Select value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="telegram">💬 Telegram (Recommended)</SelectItem>
-                <SelectItem value="email">📧 Email Instructions</SelectItem>
+                <SelectItem value="telegram">💬 Telegram ({language === 'en' ? 'Recommended' : 'Recomendado'})</SelectItem>
                 <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
-                <SelectItem value="solana">◎ Solana</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <PaymentMethodInfo paymentMethod={paymentMethod} />
+          <PaymentMethodInfo paymentMethod={paymentMethod} language={language} />
+
+          {paymentMethod === 'bitcoin' && !showBitcoinDetails && (
+            <BitcoinTutorial language={language} />
+          )}
 
           <ShippingForm
             customerInfo={customerInfo}
             onInfoChange={setCustomerInfo}
             paymentMethod={paymentMethod}
+            language={language}
           />
+
+          {showBitcoinDetails && paymentMethod === 'bitcoin' && (
+            <BitcoinPaymentDetails
+              amount={btcPaymentAmount}
+              walletAddress={walletAddress}
+              customerInfo={customerInfo}
+              onInfoChange={setCustomerInfo}
+              language={language}
+            />
+          )}
 
           <Button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
             disabled={loading}
           >
-            {loading ? 'Processing...' : 
-             paymentMethod === 'telegram' ? 'Join Telegram Group' : 'Complete Order'}
+            {loading ? (language === 'en' ? 'Processing...' : 'Procesando...') : 
+             paymentMethod === 'telegram' ? (language === 'en' ? 'Join Telegram Group' : 'Unirse al Grupo de Telegram') : 
+             !showBitcoinDetails ? (language === 'en' ? 'Continue to Payment' : 'Continuar al Pago') :
+             (language === 'en' ? 'Complete Order' : 'Completar Pedido')}
           </Button>
         </form>
       </DialogContent>

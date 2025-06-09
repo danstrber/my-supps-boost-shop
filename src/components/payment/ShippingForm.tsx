@@ -15,90 +15,86 @@ interface CustomerInfo {
 interface ShippingFormProps {
   customerInfo: CustomerInfo;
   onInfoChange: (info: CustomerInfo) => void;
-  paymentMethod: 'telegram' | 'bitcoin' | 'solana' | 'email';
+  paymentMethod: 'telegram' | 'bitcoin';
+  language: 'en' | 'es';
 }
 
-const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod }: ShippingFormProps) => {
+const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: ShippingFormProps) => {
   if (paymentMethod === 'telegram') return null;
 
   return (
     <div className="border-t pt-4">
-      <h4 className="font-semibold text-gray-900 mb-4">Shipping Information</h4>
+      <h4 className="font-semibold text-gray-900 mb-4">
+        {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
+      </h4>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="fullName">Full Name *</Label>
+          <Label htmlFor="fullName">
+            {language === 'en' ? 'Full Name *' : 'Nombre Completo *'}
+          </Label>
           <Input
             id="fullName"
             value={customerInfo.fullName}
             onChange={(e) => onInfoChange({...customerInfo, fullName: e.target.value})}
             required
-            placeholder="Your full name"
+            placeholder={language === 'en' ? 'Your full name' : 'Tu nombre completo'}
           />
         </div>
         
         <div>
-          <Label htmlFor="email">Email *</Label>
+          <Label htmlFor="email">
+            {language === 'en' ? 'Email *' : 'Correo Electrónico *'}
+          </Label>
           <Input
             id="email"
             type="email"
             value={customerInfo.email}
             onChange={(e) => onInfoChange({...customerInfo, email: e.target.value})}
             required
-            placeholder="your@email.com"
+            placeholder={language === 'en' ? 'your@email.com' : 'tu@correo.com'}
           />
         </div>
         
         <div className="md:col-span-2">
-          <Label htmlFor="address">Address *</Label>
+          <Label htmlFor="address">
+            {language === 'en' ? 'Address *' : 'Dirección *'}
+          </Label>
           <Input
             id="address"
             value={customerInfo.address}
             onChange={(e) => onInfoChange({...customerInfo, address: e.target.value})}
             required
-            placeholder="Street address"
+            placeholder={language === 'en' ? 'Street address' : 'Dirección de la calle'}
           />
         </div>
         
         <div>
-          <Label htmlFor="city">City *</Label>
+          <Label htmlFor="city">
+            {language === 'en' ? 'City *' : 'Ciudad *'}
+          </Label>
           <Input
             id="city"
             value={customerInfo.city}
             onChange={(e) => onInfoChange({...customerInfo, city: e.target.value})}
             required
-            placeholder="City"
+            placeholder={language === 'en' ? 'City' : 'Ciudad'}
           />
         </div>
         
         <div>
-          <Label htmlFor="country">Country *</Label>
+          <Label htmlFor="country">
+            {language === 'en' ? 'Country *' : 'País *'}
+          </Label>
           <Input
             id="country"
             value={customerInfo.country}
             onChange={(e) => onInfoChange({...customerInfo, country: e.target.value})}
             required
-            placeholder="Country"
+            placeholder={language === 'en' ? 'Country' : 'País'}
           />
         </div>
       </div>
-
-      {/* Payment-specific fields */}
-      {(paymentMethod === 'bitcoin' || paymentMethod === 'solana') && (
-        <div className="mt-4">
-          <Label htmlFor="txid">Transaction ID (TXID) *</Label>
-          <Input
-            id="txid"
-            value={customerInfo.txid}
-            onChange={(e) => onInfoChange({...customerInfo, txid: e.target.value})}
-            required
-            placeholder="Enter transaction ID after payment"
-          />
-          <p className="text-xs text-gray-600 mt-1">
-            You can submit this after receiving payment instructions
-          </p>
-        </div>
-      )}
     </div>
   );
 };
