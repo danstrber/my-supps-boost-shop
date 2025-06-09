@@ -33,7 +33,7 @@ const Account = ({
   sidebarOpen
 }: AccountPageProps) => {
   const { userProfile, userDiscount, loading } = useAuth();
-  const [referralCount] = useState(0); // This would come from actual data
+  const [referralCount] = useState(0);
 
   if (loading) {
     return (
@@ -131,49 +131,50 @@ const Account = ({
                   />
                 </div>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <DollarSign className="h-8 w-8 mx-auto mb-2 text-green-600" />
-                    <div className="text-2xl font-bold">{userDiscount}%</div>
-                    <div className="text-sm text-gray-600">
-                      {language === 'en' ? 'Current Discount' : 'Descuento Actual'}
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <DollarSign className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                    <div className="text-2xl font-bold">${userProfile.total_spending.toFixed(2)}</div>
-                    <div className="text-sm text-gray-600">
-                      {language === 'en' ? 'Total Spent' : 'Total Gastado'}
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Calendar className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-                    <div className="text-lg font-bold">
-                      {new Date(userProfile.created_at).toLocaleDateString()}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      {language === 'en' ? 'Member Since' : 'Miembro Desde'}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
             </CardContent>
           </Card>
 
-          {/* Referral Section */}
+          {/* Referral Section - Moved up here */}
           <ReferralSection
             userProfile={userProfile}
             language={language}
             referralCount={referralCount}
           />
+          
+          {/* Account Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <Card>
+              <CardContent className="p-4 text-center">
+                <DollarSign className="h-8 w-8 mx-auto mb-2 text-green-600" />
+                <div className="text-2xl font-bold">{userDiscount}%</div>
+                <div className="text-sm text-gray-600">
+                  {language === 'en' ? 'Current Discount' : 'Descuento Actual'}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4 text-center">
+                <DollarSign className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <div className="text-2xl font-bold">${userProfile.total_spending.toFixed(2)}</div>
+                <div className="text-sm text-gray-600">
+                  {language === 'en' ? 'Total Spent' : 'Total Gastado'}
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="p-4 text-center">
+                <Calendar className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+                <div className="text-lg font-bold">
+                  {new Date(userProfile.created_at).toLocaleDateString()}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {language === 'en' ? 'Member Since' : 'Miembro Desde'}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

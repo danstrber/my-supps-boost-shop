@@ -1,50 +1,68 @@
 
 import React, { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Mail } from 'lucide-react';
-import GoogleSignInButton from './auth/GoogleSignInButton';
-import AuthForm from './auth/AuthForm';
-import TermsOfService from './TermsOfService';
-import { handleEmailAuth, handleGoogleAuth } from './auth/authUtils';
-import { getReferralCodeFromUrl, clearReferralFromUrl } from '@/lib/referral';
+import { supabase } from '@/integrations/supabase/client';
+import { signUpUser, signInUser } from '@/components/auth/authUtils';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import { Eye, EyeOff, Wallet } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode: 'login' | 'signup';
+  initialMode?: 'login' | 'signup';
   referralCode?: string | null;
+  language: 'en' | 'es';
   onSignupSuccess?: () => void;
-  language?: 'en' | 'es';
 }
 
-const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCode, onSignupSuccess, language = 'en' }: AuthModalProps) => {
-  const [mode, setMode] = useState<'login' | 'signup'>(initialMode);
+// Phantom wallet interface
+declare global {
+  interface Window {
+    phantom?: {
+      solana?: {
+        isPhantom?: boolean;
+        connect: () => Promise<{ publicKey: { toString: () => string } }>;
+        disconnect: () => Promise<void>;
+        isConnected: boolean;
+      };
+    };
+  }
+}
+
+const AuthModal = ({ 
+  isOpen, 
+  onClose, 
+  initialMode = 'login', 
+  referralCode, 
+  language, 
+  onSignupSuccess 
+}: AuthModalProps) => {
+  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
-  const [referralCode, setReferralCode] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [showTerms, setShowTerms] = useState(false);
-  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
 
-  // Auto-detect referral code from URL on component mount
   useEffect(() => {
-    const urlReferralCode = getReferralCodeFromUrl();
-    if (urlReferralCode) {
-      setReferralCode(urlReferralCode);
-      console.log('Auto-detected referral code from URL:', urlReferralCode);
-      // Clear it from URL after detecting
-      clearReferralFromUrl();
-    } else if (propReferralCode) {
-      setReferralCode(propReferralCode);
+    setMode(initialMode);
+  }, [initialMode]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setMode(initialMode);
+      setEmail('');
+      setPassword('');
+      setName('');
+      setEmailSent(false);
     }
-  }, [propReferralCode]);
+  }, [isOpen, initialMode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,243 +70,309 @@ const AuthModal = ({ isOpen, onClose, initialMode, referralCode: propReferralCod
 
     try {
       if (mode === 'signup') {
-        if (!acceptedTerms) {
-          toast({
-            title: "Please accept the terms",
-            description: "You must accept all terms and conditions to create an account.",
-            variant: "destructive"
-          });
-          setLoading(false);
-          return;
-        }
-
-        if (!username.trim()) {
-          toast({
-            title: "Username required",
-            description: "Please enter a username to create your account.",
-            variant: "destructive"
-          });
-          setLoading(false);
-          return;
-        }
-
-        console.log('Starting signup process...', { email, username, referralCode });
-      } else {
-        console.log('Starting login process...', { email });
-      }
-      
-      const { data, error } = await handleEmailAuth(mode, email, password, username.trim(), referralCode.trim() || undefined);
-
-      if (error) {
-        console.error(`${mode} error:`, error);
-        throw error;
-      }
-
-      console.log(`${mode} successful:`, data);
-      
-      if (mode === 'signup') {
-        setShowEmailConfirmation(true);
-        toast({
-          title: "Check your email!",
-          description: "We've sent you a confirmation link. Please check your email and click the link to activate your account.",
-        });
-        onSignupSuccess?.();
-      } else {
-        // For login, check if email is confirmed
-        if (data.user && !data.user.email_confirmed_at) {
-          toast({
-            title: "Email not confirmed",
-            description: "Please check your email and click the confirmation link before signing in.",
-            variant: "destructive"
-          });
-          setLoading(false);
-          return;
-        }
+        console.log('Starting signup process with referral code:', referralCode);
+        const { error } = await signUpUser(email, password, name, referralCode);
         
-        toast({
-          title: "Welcome back!",
-          description: "You have been successfully signed in.",
-        });
-        onClose();
-        resetForm();
+        if (error) {
+          console.error('Signup error:', error);
+          toast({
+            title: language === 'en' ? "Error" : "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else {
+          console.log('Signup successful, email confirmation required');
+          setEmailSent(true);
+          setMode('confirm-email');
+          toast({
+            title: language === 'en' ? "Check your email!" : "¡Revisa tu correo!",
+            description: language === 'en' 
+              ? "We've sent you a confirmation link. Please check your email and click the link to complete your registration."
+              : "Te hemos enviado un enlace de confirmación. Por favor revisa tu correo y haz clic en el enlace para completar tu registro.",
+          });
+          if (onSignupSuccess) {
+            onSignupSuccess();
+          }
+        }
+      } else if (mode === 'login') {
+        const { error } = await signInUser(email, password);
+        
+        if (error) {
+          if (error.message.includes('Email not confirmed')) {
+            toast({
+              title: language === 'en' ? "Email not confirmed" : "Correo no confirmado",
+              description: language === 'en' 
+                ? "Please check your email and confirm your account before signing in."
+                : "Por favor revisa tu correo y confirma tu cuenta antes de iniciar sesión.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: language === 'en' ? "Error" : "Error",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+        } else {
+          toast({
+            title: language === 'en' ? "Welcome back!" : "¡Bienvenido de vuelta!",
+            description: language === 'en' ? "You have been signed in successfully." : "Has iniciado sesión exitosamente.",
+          });
+          onClose();
+        }
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Auth error:', error);
-      
-      // Handle specific auth errors
-      if (error.message?.includes('Invalid login credentials')) {
-        toast({
-          title: "Invalid credentials",
-          description: "Please check your email and password and try again.",
-          variant: "destructive"
-        });
-      } else if (error.message?.includes('Email not confirmed')) {
-        toast({
-          title: "Email not confirmed",
-          description: "Please check your email and click the confirmation link before signing in.",
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Authentication Error",
-          description: error.message || "An error occurred during authentication.",
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: language === 'en' ? "Error" : "Error",
+        description: language === 'en' ? "An unexpected error occurred" : "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    if (mode === 'signup' && !acceptedTerms) {
-      toast({
-        title: "Please accept the terms",
-        description: "You must accept all terms and conditions to sign up with Google.",
-        variant: "destructive"
-      });
-      return;
-    }
+  const connectPhantomWallet = async () => {
+    try {
+      if (!window.phantom?.solana) {
+        toast({
+          title: language === 'en' ? "Phantom Wallet Not Found" : "Phantom Wallet No Encontrado",
+          description: language === 'en' 
+            ? "Please install Phantom wallet to connect with Solana."
+            : "Por favor instala Phantom wallet para conectar con Solana.",
+          variant: "destructive",
+        });
+        return;
+      }
 
+      const response = await window.phantom.solana.connect();
+      const publicKey = response.publicKey.toString();
+      
+      toast({
+        title: language === 'en' ? "Wallet Connected" : "Wallet Conectado",
+        description: language === 'en' 
+          ? `Connected: ${publicKey.slice(0, 8)}...${publicKey.slice(-8)}`
+          : `Conectado: ${publicKey.slice(0, 8)}...${publicKey.slice(-8)}`,
+      });
+    } catch (error) {
+      console.error('Phantom wallet connection error:', error);
+      toast({
+        title: language === 'en' ? "Connection Failed" : "Conexión Fallida",
+        description: language === 'en' 
+          ? "Failed to connect to Phantom wallet."
+          : "No se pudo conectar a Phantom wallet.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const resendConfirmation = async () => {
     setLoading(true);
     try {
-      console.log('Starting Google signin...', { mode, referralCode });
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
+      });
       
-      const { data, error } = await handleGoogleAuth(mode, referralCode.trim() || undefined);
-
       if (error) {
-        console.error('Google auth error:', error);
-        throw error;
+        toast({
+          title: language === 'en' ? "Error" : "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: language === 'en' ? "Email sent!" : "¡Correo enviado!",
+          description: language === 'en' 
+            ? "We've sent you another confirmation email."
+            : "Te hemos enviado otro correo de confirmación.",
+        });
       }
-
-      console.log('Google signin initiated:', data);
-      toast({
-        title: "Redirecting...",
-        description: "You will be redirected to Google to complete sign in.",
-      });
-    } catch (error: any) {
-      console.error('Google auth error:', error);
-      toast({
-        title: "Google Sign In Error",
-        description: error.message || "Failed to sign in with Google.",
-        variant: "destructive"
-      });
+    } catch (error) {
+      console.error('Resend error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const resetForm = () => {
-    setEmail('');
-    setPassword('');
-    setUsername('');
-    setShowPassword(false);
-    setAcceptedTerms(false);
-    setShowEmailConfirmation(false);
-    // Don't reset referral code as it might come from URL
-  };
+  const renderConfirmEmailMode = () => (
+    <div className="space-y-4 text-center">
+      <div className="text-2xl">📧</div>
+      <h3 className="text-lg font-semibold">
+        {language === 'en' ? 'Check Your Email' : 'Revisa Tu Correo'}
+      </h3>
+      <p className="text-gray-600">
+        {language === 'en' 
+          ? `We've sent a confirmation link to ${email}. Please click the link in your email to complete your registration.`
+          : `Hemos enviado un enlace de confirmación a ${email}. Por favor haz clic en el enlace en tu correo para completar tu registro.`}
+      </p>
+      <div className="space-y-2">
+        <Button 
+          onClick={resendConfirmation} 
+          variant="outline" 
+          disabled={loading}
+          className="w-full"
+        >
+          {loading ? 
+            (language === 'en' ? 'Sending...' : 'Enviando...') : 
+            (language === 'en' ? 'Resend Email' : 'Reenviar Correo')
+          }
+        </Button>
+        <Button 
+          onClick={() => setMode('login')} 
+          variant="ghost"
+          className="w-full"
+        >
+          {language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
+        </Button>
+      </div>
+    </div>
+  );
 
-  const switchMode = () => {
-    if (mode === 'login') {
-      setMode('signup');
-    } else {
-      setMode('login');
-    }
-    resetForm();
-  };
-
-  React.useEffect(() => {
-    setMode(initialMode);
-    resetForm();
-  }, [initialMode]);
-
-  return (
-    <>
+  if (mode === 'confirm-email') {
+    return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {mode === 'login' ? 'Sign In' : 'Create Account'}
+              {language === 'en' ? 'Email Confirmation Required' : 'Confirmación de Correo Requerida'}
             </DialogTitle>
           </DialogHeader>
-          
-          {showEmailConfirmation ? (
-            <div className="space-y-4">
-              <Alert>
-                <Mail className="h-4 w-4" />
-                <AlertDescription>
-                  We've sent a confirmation email to <strong>{email}</strong>. 
-                  Please check your email and click the confirmation link to activate your account.
-                  You can close this window now.
-                </AlertDescription>
-              </Alert>
-              
-              <Button 
-                onClick={() => {
-                  onClose();
-                  resetForm();
-                }} 
-                className="w-full"
-              >
-                Got it!
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <GoogleSignInButton onClick={handleGoogleSignIn} loading={loading} />
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with email</span>
-                </div>
-              </div>
-
-              <AuthForm
-                mode={mode}
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                username={username}
-                setUsername={setUsername}
-                referralCode={referralCode}
-                setReferralCode={setReferralCode}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-                acceptedTerms={acceptedTerms}
-                setAcceptedTerms={setAcceptedTerms}
-                loading={loading}
-                onSubmit={handleSubmit}
-                onTermsClick={() => setShowTerms(true)}
-              />
-
-              <div className="text-center">
-                <p className="text-sm text-gray-600">
-                  {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
-                  <Button
-                    variant="link"
-                    className="p-0 ml-1 h-auto font-normal text-blue-600"
-                    onClick={switchMode}
-                    type="button"
-                  >
-                    {mode === 'login' ? 'Sign up' : 'Sign in'}
-                  </Button>
-                </p>
-              </div>
-            </div>
-          )}
+          {renderConfirmEmailMode()}
         </DialogContent>
       </Dialog>
+    );
+  }
 
-      <TermsOfService 
-        isOpen={showTerms} 
-        onClose={() => setShowTerms(false)} 
-        language={language}
-      />
-    </>
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {mode === 'login' 
+              ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
+              : (language === 'en' ? 'Sign Up' : 'Registrarse')}
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {mode === 'signup' && (
+            <div>
+              <Label htmlFor="name">
+                {language === 'en' ? 'Name' : 'Nombre'}
+              </Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+          )}
+          <div>
+            <Label htmlFor="email">
+              {language === 'en' ? 'Email' : 'Correo'}
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="password">
+              {language === 'en' ? 'Password' : 'Contraseña'}
+            </Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
+          </div>
+          
+          {referralCode && mode === 'signup' && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-700">
+                {language === 'en' 
+                  ? `Using referral code: ${referralCode}` 
+                  : `Usando código de referido: ${referralCode}`}
+              </p>
+            </div>
+          )}
+
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? 
+              (language === 'en' ? 'Loading...' : 'Cargando...') : 
+              (mode === 'login' 
+                ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
+                : (language === 'en' ? 'Sign Up' : 'Registrarse')
+              )
+            }
+          </Button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">
+                {language === 'en' ? 'Or continue with' : 'O continúa con'}
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <GoogleSignInButton language={language} />
+            
+            <Button
+              type="button"
+              variant="outline"
+              onClick={connectPhantomWallet}
+              className="w-full"
+            >
+              <Wallet className="h-4 w-4 mr-2" />
+              {language === 'en' ? 'Connect Phantom Wallet' : 'Conectar Phantom Wallet'}
+            </Button>
+          </div>
+
+          <div className="text-center">
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+            >
+              {mode === 'login' 
+                ? (language === 'en' ? "Don't have an account? Sign up" : "¿No tienes cuenta? Regístrate")
+                : (language === 'en' ? "Already have an account? Sign in" : "¿Ya tienes cuenta? Inicia sesión")
+              }
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Truck, CreditCard, FlaskConical, MessageCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { Truck, CreditCard, FlaskConical, MessageCircle, Mail, Phone, MapPin, Clock } from 'lucide-react';
 
 interface StaticPageProps {
   language: 'en' | 'es';
@@ -43,8 +43,8 @@ const StaticPage = ({
           </p>
           <p className="text-gray-600">
             {language === 'en'
-              ? 'All our products are lab-tested for purity and potency, ensuring you get the best value for your investment in health.'
-              : 'Todos nuestros productos son probados en laboratorio para pureza y potencia, asegurando que obtengas el mejor valor por tu inversión en salud.'}
+              ? 'All our products are carefully selected and we provide proof of content through product images and documentation.'
+              : 'Todos nuestros productos son cuidadosamente seleccionados y proporcionamos prueba de contenido a través de imágenes de productos y documentación.'}
           </p>
         </CardContent>
       </Card>
@@ -61,38 +61,31 @@ const StaticPage = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center space-x-3">
               <Mail className="h-5 w-5 text-green-600" />
               <div>
-                <div className="font-semibold">Email</div>
-                <div className="text-gray-600">support@mysupps.com</div>
+                <div className="font-semibold">Telegram</div>
+                <div className="text-gray-600">@mysupps_support</div>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <Phone className="h-5 w-5 text-green-600" />
+              <Clock className="h-5 w-5 text-green-600" />
               <div>
-                <div className="font-semibold">{language === 'en' ? 'Phone' : 'Teléfono'}</div>
-                <div className="text-gray-600">+1 (555) 123-4567</div>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <MapPin className="h-5 w-5 text-green-600" />
-              <div>
-                <div className="font-semibold">{language === 'en' ? 'Address' : 'Dirección'}</div>
-                <div className="text-gray-600">123 Health St, Wellness City</div>
+                <div className="font-semibold">{language === 'en' ? 'Availability' : 'Disponibilidad'}</div>
+                <div className="text-gray-600">{language === 'en' ? 'Almost 24/7' : 'Casi 24/7'}</div>
               </div>
             </div>
           </div>
           
           <div className="pt-4 border-t">
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Business Hours' : 'Horarios de Atención'}
+              {language === 'en' ? 'How to Contact Us' : 'Cómo Contactarnos'}
             </h3>
-            <div className="text-gray-600">
-              <div>{language === 'en' ? 'Monday - Friday: 9:00 AM - 6:00 PM' : 'Lunes - Viernes: 9:00 AM - 6:00 PM'}</div>
-              <div>{language === 'en' ? 'Saturday: 10:00 AM - 4:00 PM' : 'Sábado: 10:00 AM - 4:00 PM'}</div>
-              <div>{language === 'en' ? 'Sunday: Closed' : 'Domingo: Cerrado'}</div>
+            <div className="text-gray-600 space-y-2">
+              <div>• {language === 'en' ? 'For orders and general inquiries: Contact us through Telegram @mysupps_support' : 'Para pedidos e consultas generales: Contáctanos a través de Telegram @mysupps_support'}</div>
+              <div>• {language === 'en' ? 'For payment assistance: Message us on Telegram' : 'Para asistencia con pagos: Envíanos un mensaje en Telegram'}</div>
+              <div>• {language === 'en' ? 'We respond quickly and are available almost 24/7' : 'Respondemos rápidamente y estamos disponibles casi 24/7'}</div>
             </div>
           </div>
         </CardContent>
@@ -106,27 +99,18 @@ const StaticPage = ({
         <CardHeader>
           <CardTitle className="flex items-center">
             <Truck className="h-5 w-5 mr-2" />
-            {language === 'en' ? 'Delivery Information' : 'Información de Entrega'}
+            {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Shipping Options' : 'Opciones de Envío'}
+              {language === 'en' ? 'Shipping Policy' : 'Política de Envío'}
             </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span>{language === 'en' ? 'Standard Shipping (5-7 days)' : 'Envío Estándar (5-7 días)'}</span>
-                <span className="font-semibold">$10.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span>{language === 'en' ? 'Express Shipping (2-3 days)' : 'Envío Express (2-3 días)'}</span>
-                <span className="font-semibold">$25.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span>{language === 'en' ? 'Overnight Shipping' : 'Envío Nocturno'}</span>
-                <span className="font-semibold">$45.00</span>
-              </div>
+            <div className="space-y-3 text-gray-600">
+              <div>• {language === 'en' ? 'We ship as soon as we receive your order' : 'Enviamos tan pronto como recibimos tu pedido'}</div>
+              <div>• {language === 'en' ? 'Standard shipping available worldwide' : 'Envío estándar disponible en todo el mundo'}</div>
+              <div>• {language === 'en' ? 'Processing time: 1-2 business days' : 'Tiempo de procesamiento: 1-2 días laborables'}</div>
             </div>
           </div>
           
@@ -136,8 +120,19 @@ const StaticPage = ({
             </h3>
             <p className="text-gray-600">
               {language === 'en'
-                ? 'Free standard shipping on orders over $75!'
-                : '¡Envío estándar gratis en pedidos superiores a $75!'}
+                ? 'Free shipping on orders over $100! Orders under $100 have standard shipping fees.'
+                : '¡Envío gratis en pedidos superiores a $100! Los pedidos menores a $100 tienen tarifas de envío estándar.'}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold mb-2">
+              {language === 'en' ? 'Tracking' : 'Seguimiento'}
+            </h3>
+            <p className="text-gray-600">
+              {language === 'en'
+                ? 'Once your order ships, you will receive tracking information via Telegram.'
+                : 'Una vez que tu pedido sea enviado, recibirás información de seguimiento a través de Telegram.'}
             </p>
           </div>
         </CardContent>
@@ -157,43 +152,36 @@ const StaticPage = ({
         <CardContent className="space-y-6">
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Accepted Cards' : 'Tarjetas Aceptadas'}
+              {language === 'en' ? 'Cryptocurrency Payments' : 'Pagos con Criptomonedas'}
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 border rounded-lg">
-                <div className="font-semibold">Visa</div>
-              </div>
-              <div className="text-center p-4 border rounded-lg">
-                <div className="font-semibold">Mastercard</div>
-              </div>
-              <div className="text-center p-4 border rounded-lg">
-                <div className="font-semibold">American Express</div>
-              </div>
-              <div className="text-center p-4 border rounded-lg">
-                <div className="font-semibold">Discover</div>
-              </div>
+            <div className="text-gray-600 space-y-2">
+              <div>• {language === 'en' ? 'We accept 100+ anonymous cryptocurrencies' : 'Aceptamos más de 100 criptomonedas anónimas'}</div>
+              <div>• {language === 'en' ? 'Bitcoin, Ethereum, Litecoin, and many more' : 'Bitcoin, Ethereum, Litecoin, y muchas más'}</div>
+              <div>• {language === 'en' ? 'Fast and secure transactions' : 'Transacciones rápidas y seguras'}</div>
+              <div>• {language === 'en' ? 'Privacy-focused payment processing' : 'Procesamiento de pagos enfocado en la privacidad'}</div>
             </div>
           </div>
           
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Digital Payments' : 'Pagos Digitales'}
+              {language === 'en' ? 'Payment Process' : 'Proceso de Pago'}
             </h3>
-            <div className="space-y-2 text-gray-600">
-              <div>• PayPal</div>
-              <div>• Apple Pay</div>
-              <div>• Google Pay</div>
+            <div className="text-gray-600 space-y-2">
+              <div>1. {language === 'en' ? 'Add items to your cart and proceed to checkout' : 'Agrega artículos a tu carrito y procede al checkout'}</div>
+              <div>2. {language === 'en' ? 'Contact us through Telegram for payment instructions' : 'Contáctanos a través de Telegram para instrucciones de pago'}</div>
+              <div>3. {language === 'en' ? 'Send payment using your preferred cryptocurrency' : 'Envía el pago usando tu criptomoneda preferida'}</div>
+              <div>4. {language === 'en' ? 'We confirm payment and process your order' : 'Confirmamos el pago y procesamos tu pedido'}</div>
             </div>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Security' : 'Seguridad'}
+              {language === 'en' ? 'Alternative Payment Options' : 'Opciones de Pago Alternativas'}
             </h3>
             <p className="text-gray-600">
               {language === 'en'
-                ? 'All payments are processed securely using SSL encryption. We never store your payment information.'
-                : 'Todos los pagos se procesan de forma segura usando encriptación SSL. Nunca almacenamos tu información de pago.'}
+                ? 'For other payment methods or if you need assistance, please contact us through our Telegram channel @mysupps_support'
+                : 'Para otros métodos de pago o si necesitas asistencia, por favor contáctanos a través de nuestro canal de Telegram @mysupps_support'}
             </p>
           </div>
         </CardContent>
@@ -207,48 +195,42 @@ const StaticPage = ({
         <CardHeader>
           <CardTitle className="flex items-center">
             <FlaskConical className="h-5 w-5 mr-2" />
-            {language === 'en' ? 'Lab Testing & Quality Assurance' : 'Pruebas de Laboratorio y Aseguramiento de Calidad'}
+            {language === 'en' ? 'Product Verification' : 'Verificación de Productos'}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Third-Party Testing' : 'Pruebas de Terceros'}
+              {language === 'en' ? 'Product Documentation' : 'Documentación de Productos'}
             </h3>
             <p className="text-gray-600 mb-4">
               {language === 'en'
-                ? 'All our supplements undergo rigorous third-party testing to ensure purity, potency, and safety.'
-                : 'Todos nuestros suplementos pasan por rigurosas pruebas de terceros para asegurar pureza, potencia y seguridad.'}
+                ? 'We provide proof of content for all our products through detailed product images and documentation.'
+                : 'Proporcionamos prueba de contenido para todos nuestros productos a través de imágenes detalladas de productos y documentación.'}
             </p>
           </div>
           
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'What We Test For' : 'Qué Probamos'}
+              {language === 'en' ? 'What We Provide' : 'Qué Proporcionamos'}
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <div>• {language === 'en' ? 'Heavy Metals' : 'Metales Pesados'}</div>
-                <div>• {language === 'en' ? 'Microorganisms' : 'Microorganismos'}</div>
-                <div>• {language === 'en' ? 'Pesticides' : 'Pesticidas'}</div>
-              </div>
-              <div className="space-y-2">
-                <div>• {language === 'en' ? 'Active Ingredient Potency' : 'Potencia del Ingrediente Activo'}</div>
-                <div>• {language === 'en' ? 'Contaminants' : 'Contaminantes'}</div>
-                <div>• {language === 'en' ? 'Label Accuracy' : 'Precisión de Etiquetado'}</div>
-              </div>
+            <div className="space-y-2 text-gray-600">
+              <div>• {language === 'en' ? 'High-quality product images' : 'Imágenes de productos de alta calidad'}</div>
+              <div>• {language === 'en' ? 'Detailed ingredient lists' : 'Listas detalladas de ingredientes'}</div>
+              <div>• {language === 'en' ? 'Product authenticity documentation' : 'Documentación de autenticidad del producto'}</div>
+              <div>• {language === 'en' ? 'Expiration date verification' : 'Verificación de fecha de caducidad'}</div>
             </div>
           </div>
           
           <div>
             <h3 className="font-semibold mb-2">
-              {language === 'en' ? 'Certifications' : 'Certificaciones'}
+              {language === 'en' ? 'Quality Assurance' : 'Aseguramiento de Calidad'}
             </h3>
-            <div className="space-y-2 text-gray-600">
-              <div>• GMP (Good Manufacturing Practices)</div>
-              <div>• NSF Certified</div>
-              <div>• FDA Registered Facility</div>
-            </div>
+            <p className="text-gray-600">
+              {language === 'en'
+                ? 'All products are sourced from reputable suppliers and we ensure proper storage and handling to maintain product integrity.'
+                : 'Todos los productos provienen de proveedores reconocidos y aseguramos el almacenamiento y manejo adecuados para mantener la integridad del producto.'}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -279,11 +261,11 @@ const StaticPage = ({
       case 'contact':
         return language === 'en' ? 'Contact Us' : 'Contáctanos';
       case 'delivery':
-        return language === 'en' ? 'Delivery Information' : 'Información de Entrega';
+        return language === 'en' ? 'Shipping Information' : 'Información de Envío';
       case 'payment':
         return language === 'en' ? 'Payment Methods' : 'Métodos de Pago';
       case 'labtesting':
-        return language === 'en' ? 'Lab Testing' : 'Pruebas de Laboratorio';
+        return language === 'en' ? 'Product Verification' : 'Verificación de Productos';
       default:
         return 'Page';
     }
