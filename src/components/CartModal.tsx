@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ShoppingCart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart, X } from 'lucide-react';
 import { Product } from '@/lib/products';
-import { translations } from '@/lib/translations';
 import { UserProfile } from '@/lib/auth';
 import PaymentModal from './PaymentModal';
 import CartItem from './cart/CartItem';
@@ -33,44 +32,13 @@ const CartModal = ({
   isAuthenticated,
   userProfile
 }: CartModalProps) => {
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const t = translations[language];
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const cartItems = Object.entries(cart).map(([productId, quantity]) => {
     const product = products.find(p => p.id === productId);
-    return product ? { product, quantity } : null;
+    if (!product) return null;
+    return { product, quantity };
   }).filter(Boolean) as { product: Product; quantity: number }[];
-
-  // Transform cart items to match PaymentModal interface
-  const cartItemsForPayment = cartItems.map(item => ({
-    product: {
-      id: item.product.id,
-      name: item.product.name,
-      price: item.product.price,
-      image: item.product.image,
-      category: item.product.categories[0] || 'supplements'
-    },
-    quantity: item.quantity
-  }));
-
-  const subtotal = cartItems.reduce((total, item) => {
-    return total + (item.product.price * item.quantity);
-  }, 0);
-
-  const discountAmount = (subtotal * userDiscount) / 100;
-  const subtotalAfterDiscount = subtotal - discountAmount;
-  
-  // Updated shipping logic: $12 fee, free shipping thresholds
-  const freeShippingThreshold = userProfile && userProfile.referred_spending > 0 ? 101 : 100; // Referrers need $101, others $100
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 12; // $12 shipping fee
-  const finalTotal = subtotalAfterDiscount + shippingFee;
-
-  const handleProceedToCheckout = () => {
-    if (!isAuthenticated) {
-      return;
-    }
-    setPaymentModalOpen(true);
-  };
 
   if (cartItems.length === 0) {
     return (
@@ -78,17 +46,17 @@ const CartModal = ({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center">
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              {t.cart}
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              {language === 'en' ? 'Your Cart' : 'Tu Carrito'}
             </DialogTitle>
           </DialogHeader>
-          
-          <div className="text-center py-8">
-            <ShoppingCart className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-            <p className="text-gray-500 mb-4">Add some products to get started!</p>
-            <Button onClick={onClose} className="bg-green-600 hover:bg-green-700">
-              Continue Shopping
+          <div className="py-8 text-center">
+            <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 mb-4">
+              {language === 'en' ? 'Your cart is empty' : 'Tu carrito está vacío'}
+            </p>
+            <Button onClick={onClose}>
+              {language === 'en' ? 'Continue Shopping' : 'Seguir Comprando'}
             </Button>
           </div>
         </DialogContent>
@@ -96,30 +64,51 @@ const CartModal = ({
     );
   }
 
+  const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
+  const discountAmount = subtotal * (userDiscount / 100);
+  const subtotalAfterDiscount = subtotal - discountAmount;
+  
+  // Free shipping threshold: $100 for normal/referred users, $101 for referrers
+  const isReferrer = userProfile && userProfile.referred_spending > 0;
+  const freeShippingThreshold = isReferrer ? 101 : 100;
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 12;
+  const finalTotal = subtotalAfterDiscount + shippingFee;
+
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      alert(language === 'en' ? 'Please log in to checkout' : 'Por favor inicia sesión para proceder');
+      return;
+    }
+    setIsPaymentModalOpen(true);
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              {t.cart} ({cartItems.length} items)
+            <DialogTitle className="flex items-center justify-between">
+              <span className="flex items-center">
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                {language === 'en' ? 'Your Cart' : 'Tu Carrito'}
+              </span>
+              <Button variant="ghost" size="sm" onClick={onClose}>
+                <X className="h-4 w-4" />
+              </Button>
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="space-y-4">
-            {/* Cart Items */}
-            <div className="space-y-3">
-              {cartItems.map(({ product, quantity }) => (
-                <CartItem
-                  key={product.id}
-                  product={product}
-                  quantity={quantity}
-                  onQuantityChange={onUpdateCart}
-                  onRemove={(productId) => onUpdateCart(productId, 0)}
-                />
-              ))}
-            </div>
+            {cartItems.map(({ product, quantity }) => (
+              <CartItem
+                key={product.id}
+                product={product}
+                quantity={quantity}
+                onUpdateCart={onUpdateCart}
+                userDiscount={userDiscount}
+                language={language}
+              />
+            ))}
 
             <CartSummary
               subtotal={subtotal}
@@ -131,35 +120,30 @@ const CartModal = ({
               freeShippingThreshold={freeShippingThreshold}
             />
 
-            {/* Checkout Button */}
-            <div className="space-y-2">
-              <Button 
-                onClick={handleProceedToCheckout}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-              >
-                {isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
-              </Button>
-              
-              {!isAuthenticated && (
-                <p className="text-xs text-center text-gray-600">
-                  You need to sign in to complete your purchase
-                </p>
-              )}
-            </div>
+            <Button 
+              onClick={handleCheckout}
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
+              disabled={!isAuthenticated}
+            >
+              {!isAuthenticated 
+                ? (language === 'en' ? 'Login to Checkout' : 'Inicia Sesión para Comprar')
+                : (language === 'en' ? 'Proceed to Checkout' : 'Proceder al Pago')
+              }
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
       <PaymentModal
-        isOpen={paymentModalOpen}
-        onClose={() => setPaymentModalOpen(false)}
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
         orderTotal={subtotal}
         discount={discountAmount}
         shippingFee={shippingFee}
         finalTotal={finalTotal}
         cart={cart}
         userProfile={userProfile}
-        cartItems={cartItemsForPayment}
+        cartItems={cartItems}
       />
     </>
   );

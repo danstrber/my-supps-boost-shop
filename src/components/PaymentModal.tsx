@@ -139,9 +139,20 @@ const PaymentModal = ({
       try {
         const { error: emailError } = await supabase.functions.invoke('send-order-email', {
           body: {
-            orderId: order.id,
-            orderData,
-            customerEmail: customerInfo.email
+            customerEmail: customerInfo.email,
+            customerName: customerInfo.fullName,
+            items: cartItems.map(item => ({
+              id: item.product.id,
+              name: item.product.name,
+              price: item.product.price,
+              quantity: item.quantity
+            })),
+            originalTotal: orderTotal,
+            discountAmount: discount,
+            shippingFee: shippingFee,
+            finalTotal: finalTotal,
+            paymentMethod: paymentMethod,
+            paymentDetails: customerInfo
           }
         });
 
