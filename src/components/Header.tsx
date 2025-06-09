@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -54,7 +53,7 @@ const Header = ({
               )}
             </div>
 
-            {/* Logo */}
+            {/* Logo - Simplified */}
             <div 
               className="flex items-center cursor-pointer ml-16" 
               onClick={() => onPageChange('home')}
@@ -168,7 +167,7 @@ const Header = ({
           </div>
         </div>
 
-        {/* GREEN SECTION - More compact on mobile */}
+        {/* GREEN SECTION */}
         <div className="bg-green-600 text-white py-1 md:py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-center items-center space-x-3 md:space-x-12 text-xs md:text-base font-medium overflow-x-auto">

@@ -49,20 +49,22 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // Calculate discounts based on NEW corrected system math
-  const referralDiscount = referralCount > 0 ? Math.min(10 + (referralCount - 1) * 4, 30) : 0;
+  // NEW CORRECTED MATH per your rules
+  const referralDiscount = referralCount > 0 ? 10 + (referralCount - 1) * 4 : 0; // 10% first + 4% each additional
   
   const spendingDiscount = userProfile.referred_by 
-    ? Math.floor(userProfile.total_spending / 50) * 5  // 5% per $50 for referred users
-    : Math.floor(userProfile.total_spending / 50) * 2.5; // 2.5% per $50 for normal users
+    ? Math.floor(userProfile.total_spending / 75) * 5  // Referred users: 5% per $75
+    : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
   
-  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 2; // 2% per $50 of referred spending
+  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 1.75; // Referrer: 1.75% per $50 of referred spending
   
-  // CUMULATIVE discounts (they stack) but cap at 30%
+  // ALL discounts STACK but cap at 30%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount, 30);
 
-  // Free shipping calculation
-  const freeShipping = userProfile.referred_by && userProfile.total_spending >= 100;
+  // Free shipping calculation - updated thresholds
+  const freeShipping = userProfile.referred_by 
+    ? userProfile.total_spending >= 75  // Referred users: free shipping at $75
+    : userProfile.total_spending >= 50; // Normal users: free shipping at $50
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
@@ -169,10 +171,10 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
             <h4 className="font-semibold text-green-800 mb-2">💰 {language === 'en' ? 'How It Works' : 'Cómo Funciona'}:</h4>
             <ul className="space-y-1 text-gray-700">
               <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
-              <li>• {language === 'en' ? 'Each additional referral: +4% discount (max 30%)' : 'Cada referido adicional: +4% descuento (máx 30%)'}</li>
-              <li>• {language === 'en' ? 'Referred users: 5% per $50 spent + FREE shipping after $100' : 'Usuarios referidos: 5% por cada $50 gastados + ENVÍO GRATIS después de $100'}</li>
-              <li>• {language === 'en' ? 'Normal users: 2.5% per $50 spent (no free shipping)' : 'Usuarios normales: 2.5% por cada $50 gastados (sin envío gratis)'}</li>
-              <li>• {language === 'en' ? 'Referrers: 2% per $50 of referred spending' : 'Referidores: 2% por cada $50 de gasto de referidos'}</li>
+              <li>• {language === 'en' ? 'Each additional referral: +4% discount' : 'Cada referido adicional: +4% descuento'}</li>
+              <li>• {language === 'en' ? 'Normal users: 2% per $50 spent + FREE shipping after $50' : 'Usuarios normales: 2% por cada $50 gastados + ENVÍO GRATIS después de $50'}</li>
+              <li>• {language === 'en' ? 'Referred users: 5% per $75 spent + FREE shipping after $75' : 'Usuarios referidos: 5% por cada $75 gastados + ENVÍO GRATIS después de $75'}</li>
+              <li>• {language === 'en' ? 'Referrers: 1.75% per $50 of referred spending' : 'Referidores: 1.75% por cada $50 de gasto de referidos'}</li>
               <li><strong>• {language === 'en' ? 'All discounts STACK (cumulative up to 30% max)' : 'Todos los descuentos se ACUMULAN (acumulativo hasta 30% máximo)'}</strong></li>
             </ul>
           </div>
@@ -191,9 +193,10 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
           <div className="bg-white rounded-lg p-4 border border-green-200">
             <h4 className="font-semibold text-green-800 mb-2">💡 {language === 'en' ? 'Examples' : 'Ejemplos'}:</h4>
             <div className="space-y-2 text-xs text-gray-700">
-              <div><strong>{language === 'en' ? 'Normal User' : 'Usuario Normal'}:</strong> {language === 'en' ? '$150 spent = 7.5% discount + $10 shipping' : '$150 gastados = 7.5% descuento + $10 envío'}</div>
-              <div><strong>{language === 'en' ? 'Referred User' : 'Usuario Referido'}:</strong> {language === 'en' ? '$150 spent = 15% discount + FREE shipping' : '$150 gastados = 15% descuento + envío GRATIS'}</div>
+              <div><strong>{language === 'en' ? 'Normal User' : 'Usuario Normal'}:</strong> {language === 'en' ? '$100 spent = 4% discount + FREE shipping' : '$100 gastados = 4% descuento + envío GRATIS'}</div>
+              <div><strong>{language === 'en' ? 'Referred User' : 'Usuario Referido'}:</strong> {language === 'en' ? '$150 spent = 10% discount + FREE shipping' : '$150 gastados = 10% descuento + envío GRATIS'}</div>
               <div><strong>{language === 'en' ? 'Referrer (3 refs)' : 'Referidor (3 refs)'}:</strong> {language === 'en' ? '18% referral + own spending + referred spending (stacked)' : '18% referido + gasto propio + gasto de referidos (acumulado)'}</div>
+              <div><strong>{language === 'en' ? 'Power User' : 'Usuario Avanzado'}:</strong> {language === 'en' ? '5 referrals (26%) + $200 spent (8%) = 30% max' : '5 referidos (26%) + $200 gastados (8%) = 30% máx'}</div>
             </div>
           </div>
         </div>
