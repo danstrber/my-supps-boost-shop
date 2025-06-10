@@ -22,11 +22,6 @@ const ContactPage = ({ language }: ContactPageProps) => {
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             {language === 'en' ? 'Join our Telegram' : 'Únete a nuestro Telegram'}
           </h2>
-          <p className="text-gray-600 mb-6">
-            {language === 'en' 
-              ? 'For fastest support and updates, join our Telegram channel.' 
-              : 'Para soporte rápido y actualizaciones, únete a nuestro canal de Telegram.'}
-          </p>
           <a 
             href="https://t.me/+fDDZObF0zjI2M2Y0" 
             target="_blank" 

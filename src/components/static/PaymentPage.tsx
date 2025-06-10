@@ -12,12 +12,6 @@ const PaymentPage = ({ language }: PaymentPageProps) => {
         {language === 'en' ? 'Payment Methods' : 'Métodos de Pago'}
       </h1>
       <div className="bg-white rounded-lg shadow-lg p-8">
-        <img 
-          src="/lovable-uploads/5d2b3f9c-eeb8-40cc-b547-0902cd012226.png" 
-          alt="Payment Methods"
-          className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-md"
-        />
-        
         {/* Telegram Payment */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-blue-600 mb-4 flex items-center">
@@ -67,37 +61,24 @@ const PaymentPage = ({ language }: PaymentPageProps) => {
         {/* Cryptocurrency Payment */}
         <div>
           <h2 className="text-2xl font-bold text-orange-600 mb-4 flex items-center">
-            ₿ {language === 'en' ? 'Cryptocurrency Payment' : 'Pago con Criptomonedas'}
+            ₿ {language === 'en' ? 'Bitcoin Payment' : 'Pago con Bitcoin'}
           </h2>
           <div className="bg-orange-50 border border-orange-200 p-6 rounded-lg">
             <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
               <p className="text-blue-800 font-semibold text-lg mb-2">
-                🔒 {language === 'en' ? 'We accept 100% anonymous cryptocurrency payments!' : '¡Aceptamos pagos con criptomonedas 100% anónimos!'}
+                🔒 {language === 'en' ? 'We accept 100% anonymous Bitcoin payments!' : '¡Aceptamos pagos con Bitcoin 100% anónimos!'}
               </p>
               <p className="text-gray-700">
                 {language === 'en' 
-                  ? 'Secure, fast, and completely anonymous transactions using various cryptocurrencies.'
-                  : 'Transacciones seguras, rápidas y completamente anónimas usando varias criptomonedas.'}
+                  ? 'Secure, fast, and completely anonymous transactions using Bitcoin.'
+                  : 'Transacciones seguras, rápidas y completamente anónimas usando Bitcoin.'}
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <h4 className="font-semibold text-gray-800 mb-2">
-                  {language === 'en' ? 'Accepted Cryptocurrencies:' : 'Criptomonedas Aceptadas:'}
-                </h4>
-                <ul className="list-disc list-inside text-gray-700 space-y-1">
-                  <li>Bitcoin (BTC)</li>
-                  <li>Ethereum (ETH)</li>
-                  <li>Litecoin (LTC)</li>
-                  <li>Monero (XMR)</li>
-                  <li>USDT (Tether)</li>
-                </ul>
-              </div>
-              
-              <div>
-                <h4 className="font-semibold text-gray-800 mb-2">
-                  {language === 'en' ? 'Payment Benefits:' : 'Beneficios del Pago:'}
+                  {language === 'en' ? 'Why Bitcoin:' : 'Por Qué Bitcoin:'}
                 </h4>
                 <ul className="list-disc list-inside text-gray-700 space-y-1">
                   <li>100% anonymous transactions</li>
@@ -107,17 +88,19 @@ const PaymentPage = ({ language }: PaymentPageProps) => {
                   <li>Secure blockchain verification</li>
                 </ul>
               </div>
-            </div>
-            
-            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-              <h4 className="font-semibold text-gray-800 mb-2">
-                💡 {language === 'en' ? 'Need Help?' : '¿Necesitas Ayuda?'}
-              </h4>
-              <p className="text-gray-700 text-sm">
-                {language === 'en' 
-                  ? 'For other payment methods or if you need assistance, please contact us through our Telegram channel or email'
-                  : 'Para otros métodos de pago o si necesitas asistencia, por favor contáctanos a través de nuestro canal de Telegram o correo electrónico'}
-              </p>
+              
+              <div>
+                <h4 className="font-semibold text-gray-800 mb-2">
+                  {language === 'en' ? 'Payment Benefits:' : 'Beneficios del Pago:'}
+                </h4>
+                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                  <li>Complete privacy protection</li>
+                  <li>No personal information required</li>
+                  <li>Fast transaction processing</li>
+                  <li>Worldwide accessibility</li>
+                  <li>Decentralized security</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>

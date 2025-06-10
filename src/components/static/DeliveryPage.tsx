@@ -18,10 +18,6 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
           className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-md"
         />
         
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          {language === 'en' ? 'Fast & Secure Shipping' : 'Envío Rápido y Seguro'}
-        </h2>
-        
         <div className="text-center">
           <p className="text-gray-700 text-lg">
             {language === 'en' 

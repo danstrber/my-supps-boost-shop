@@ -34,7 +34,7 @@ export const products: Product[] = [
   {
     id: '1',
     name: 'Superdrol',
-    price: 35.00,
+    price: 34.99,
     image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
     category: 'oral-steroids',
     categories: ['oral-steroids', 'strength'],
@@ -68,7 +68,7 @@ export const products: Product[] = [
   {
     id: '2',
     name: 'MK-677',
-    price: 45.00,
+    price: 44.99,
     image: '/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png',
     category: 'sarms',
     categories: ['sarms', 'growth'],
@@ -134,7 +134,7 @@ export const products: Product[] = [
   {
     id: '4',
     name: 'Clenbuterol',
-    price: 35.00,
+    price: 34.99,
     image: '/lovable-uploads/1bf4f1ae-fdea-4150-a6f0-d7624092d03b.png',
     category: 'fat-burners',
     categories: ['fat-burners', 'cutting'],
@@ -168,7 +168,7 @@ export const products: Product[] = [
   {
     id: '5',
     name: 'Enclomiphene',
-    price: 25.00,
+    price: 24.99,
     image: '/lovable-uploads/fc2fad1d-20dd-4b74-b5e3-07f81414d651.png',
     category: 'pct',
     categories: ['pct', 'hormones'],
@@ -195,6 +195,39 @@ export const products: Product[] = [
         'Fat Loss': 2,
         'Side Effects': 4,
         'Keepability': 5
+      }
+    }
+  },
+  {
+    id: '6',
+    name: 'Aromasin',
+    price: 24.99,
+    image: '/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png',
+    category: 'pct',
+    categories: ['pct', 'anti-estrogen'],
+    description: 'Aromatase inhibitor for estrogen control during and after cycles.',
+    featured: false,
+    inStock: true,
+    dose: '25mg',
+    capsules: 10,
+    details: {
+      research: 'Aromasin (Exemestane) is extensively researched as a potent aromatase inhibitor that permanently binds to aromatase enzymes, preventing estrogen production.',
+      effectsOnWomen: 'NOT RECOMMENDED for women as it will severely suppress estrogen levels, causing bone loss, mood issues, and other serious health problems.',
+      benefits: 'Prevents gynecomastia, reduces water retention, prevents estrogen rebound, maintains muscle hardness, improves libido during cycles.',
+      sideEffects: 'Joint pain, reduced bone density with long-term use, potential mood changes, dry skin, possible negative impact on cholesterol.',
+      history: 'Originally developed for treating breast cancer in postmenopausal women, later adopted by bodybuilders for estrogen control.',
+      howItWorks: 'Irreversibly binds to aromatase enzymes, permanently deactivating them and preventing testosterone conversion to estrogen.',
+      safety: 'Should not be used without proper monitoring. Can crash estrogen levels if overdosed. Blood work essential to monitor estrogen levels.',
+      cycle: 'Used during cycles with aromatizing compounds or as part of PCT protocol. Typically 12.5-25mg every other day.',
+      cycleLength: 'Duration of cycle + 2-4 weeks',
+      strength: 'Very potent - one of the strongest aromatase inhibitors available',
+      expectations: 'Effective estrogen control, reduced water retention, prevention of estrogenic side effects. Must be dosed carefully.',
+      ratings: {
+        'Muscle Gain': 2,
+        'Strength': 2,
+        'Fat Loss': 3,
+        'Side Effects': 3,
+        'Keepability': 4
       }
     }
   }
