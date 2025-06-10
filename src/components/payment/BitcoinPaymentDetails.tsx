@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Copy } from 'lucide-react';
@@ -34,9 +33,34 @@ const BitcoinPaymentDetails = ({
 }: BitcoinPaymentDetailsProps) => {
   const { toast } = useToast();
   const t = translations[language];
+  const [btcPrice, setBtcPrice] = useState(65000); // Default fallback
+  const [loading, setLoading] = useState(true);
 
-  // Convert USD to BTC (this would normally be a real-time API call)
-  const btcAmount = (amount / 65000).toFixed(8); // Example rate, replace with real API
+  // Fetch real-time BTC price
+  useEffect(() => {
+    const fetchBtcPrice = async () => {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const data = await response.json();
+        if (data.bitcoin && data.bitcoin.usd) {
+          setBtcPrice(data.bitcoin.usd);
+        }
+      } catch (error) {
+        console.error('Failed to fetch BTC price:', error);
+        // Keep default price
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBtcPrice();
+    // Update price every 5 minutes
+    const interval = setInterval(fetchBtcPrice, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Convert USD to BTC with real-time price
+  const btcAmount = (amount / btcPrice).toFixed(8);
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -63,16 +87,21 @@ const BitcoinPaymentDetails = ({
             {t.sendExact}
           </Label>
           <div className="flex items-center justify-between mt-1">
-            <span className="text-lg font-bold text-orange-600">{btcAmount} BTC</span>
+            <span className="text-lg font-bold text-orange-600">
+              {loading ? 'Loading...' : `${btcAmount} BTC`}
+            </span>
             <button
               type="button"
               onClick={() => copyToClipboard(btcAmount, 'BTC Amount')}
               className="text-orange-600 hover:text-orange-800"
+              disabled={loading}
             >
               <Copy className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">(≈ ${amount.toFixed(0)} USD)</p>
+          <p className="text-xs text-gray-500 mt-1">
+            (≈ ${amount.toFixed(0)} USD @ ${btcPrice.toLocaleString()}/BTC)
+          </p>
         </div>
 
         <div className="bg-white p-3 rounded border">
@@ -89,14 +118,43 @@ const BitcoinPaymentDetails = ({
               <Copy className="h-4 w-4" />
             </button>
           </div>
+          <p className="text-xs text-gray-500 mt-1">
+            {language === 'en' ? 'Bitcoin (BTC) wallet address' : 'Dirección de billetera Bitcoin (BTC)'}
+          </p>
+        </div>
+
+        <div className="bg-white p-3 rounded border">
+          <Label className="text-sm font-medium text-gray-700">
+            {language === 'en' ? 'Transaction ID (Required)' : 'ID de Transacción (Requerido)'}
+          </Label>
+          <Input
+            type="text"
+            placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
+            value={customerInfo.txid}
+            onChange={handleTxidChange}
+            className="mt-1"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            {language === 'en' 
+              ? 'Enter the transaction ID after sending Bitcoin to complete your order'
+              : 'Ingresa el ID de transacción después de enviar Bitcoin para completar tu pedido'
+            }
+          </p>
         </div>
       </div>
 
-      {/* Tip Section */}
-      <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors">
-        <p className="text-green-700 text-sm font-medium">
-          {t.wantCheaper}
-        </p>
+      {/* Instructions */}
+      <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
+        <h5 className="font-medium text-blue-800 mb-2">
+          {language === 'en' ? '📋 Payment Instructions' : '📋 Instrucciones de Pago'}
+        </h5>
+        <ol className="text-blue-700 text-sm space-y-1 list-decimal list-inside">
+          <li>{language === 'en' ? 'Copy the exact BTC amount above' : 'Copia la cantidad exacta de BTC arriba'}</li>
+          <li>{language === 'en' ? 'Copy the wallet address' : 'Copia la dirección de la billetera'}</li>
+          <li>{language === 'en' ? 'Send Bitcoin from your wallet' : 'Envía Bitcoin desde tu billetera'}</li>
+          <li>{language === 'en' ? 'Copy the transaction ID and paste it above' : 'Copia el ID de transacción y pégalo arriba'}</li>
+          <li>{language === 'en' ? 'Click "Complete Order"' : 'Haz clic en "Completar Pedido"'}</li>
+        </ol>
       </div>
     </div>
   );

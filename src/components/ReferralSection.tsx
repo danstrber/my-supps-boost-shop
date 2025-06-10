@@ -49,28 +49,34 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // UPDATED REFERRAL RULES
+  // UPDATED REFERRAL RULES - MAX CAP 32%
   // First referral: 10%, each additional: 2.25% extra
   const referralDiscount = referralCount > 0 ? 10 + ((referralCount - 1) * 2.25) : 0;
   
   // If user has made referrals, they become a referrer and use referrer spending rules
   const isReferrer = referralCount > 0;
   
-  // Spending discount based on user type
+  // Spending discount based on user type - ROUNDING UP RULE
   const spendingDiscount = isReferrer
-    ? Math.floor(userProfile.total_spending / 50) * 4.25  // Referrers: 4.25% per $50
+    ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 4.25  // Referrers: 4.25% per $50 (rounded up)
     : userProfile.referred_by 
-      ? Math.floor(userProfile.total_spending / 75) * 6.5  // Referred users: 6.5% per $75
-      : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
+      ? Math.floor(Math.ceil(userProfile.total_spending) / 75) * 6.5  // Referred users: 6.5% per $75 (rounded up)
+      : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2; // Normal users: 2% per $50 (rounded up)
   
-  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 3; // Referrer: 3% per $50 of referred spending
+  const referredSpendingDiscount = Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 3; // Referrer: 3% per $50 of referred spending (rounded up)
   
-  // ALL discounts STACK but cap at 30%
-  const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount, 30);
+  // ALL discounts STACK but cap at 32%
+  const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount, 32);
 
   // Free shipping rules: $100 for normal/referred users, $110 for referrers ($10 shipping)
   const freeShippingThreshold = isReferrer ? 110 : 100;
   const freeShipping = userProfile.total_spending >= freeShippingThreshold;
+
+  // Handle referral link click
+  const handleReferralClick = () => {
+    // Navigate to referral program or show referral modal
+    window.open('/referral-program', '_blank');
+  };
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
@@ -94,7 +100,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         <div className="text-center">
           <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount.toFixed(1)}%</div>
           <div className="text-xs md:text-sm text-gray-600">
-            {language === 'en' ? 'Total Discount (Stacking)' : 'Descuento Total (Acumulativo)'}
+            {language === 'en' ? 'Total Discount (Max 32%)' : 'Descuento Total (Máx 32%)'}
           </div>
           {freeShipping && (
             <div className="mt-2 text-sm font-semibold text-blue-600">
@@ -135,9 +141,20 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         <ul className="space-y-1 text-xs text-gray-700">
           <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each extra referral: +2.25%' : 'Cada referido extra: +2.25%'}</li>
-          <li>• {language === 'en' ? 'All discounts stack up to 30%' : 'Todos los descuentos se acumulan hasta 30%'}</li>
+          <li>• {language === 'en' ? 'All discounts stack up to 32%' : 'Todos los descuentos se acumulan hasta 32%'}</li>
+          <li>• {language === 'en' ? 'Over 25% discounts only on $100+ orders' : 'Descuentos sobre 25% solo en pedidos $100+'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100' : 'Envío gratis a $100'}</li>
         </ul>
+      </div>
+
+      {/* Clickable referral tip */}
+      <div 
+        className="bg-green-100 border border-green-300 p-3 rounded-lg text-center cursor-pointer hover:bg-green-200 transition-colors"
+        onClick={handleReferralClick}
+      >
+        <p className="text-green-700 text-sm font-medium">
+          {language === 'en' ? 'Want cheaper prices? Refer friends and get discounts!' : '¿Quieres precios más baratos? ¡Refiere amigos y obtén descuentos!'}
+        </p>
       </div>
 
       {showDetails && (

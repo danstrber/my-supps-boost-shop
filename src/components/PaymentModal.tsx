@@ -70,7 +70,8 @@ const PaymentModal = ({
   const systemFinalTotal = Math.ceil(finalTotal); // Round up final total for display
   const btcPaymentAmount = systemFinalTotal; // Use rounded amount for BTC
 
-  const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+  // Your Bitcoin wallet address
+  const walletAddress = "k3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
   const sendFormspreeEmail = async (orderData: any) => {
     try {
@@ -126,6 +127,16 @@ const PaymentModal = ({
         return;
       }
       setShowBitcoinDetails(true);
+      return;
+    }
+
+    // For Bitcoin payments, require TX ID
+    if (paymentMethod === 'bitcoin' && !customerInfo.txid) {
+      toast({
+        title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
+        description: language === 'en' ? 'Please enter the transaction ID after sending Bitcoin' : 'Por favor ingresa el ID de transacción después de enviar Bitcoin',
+        variant: "destructive"
+      });
       return;
     }
 
@@ -216,6 +227,11 @@ const PaymentModal = ({
     }
   };
 
+  // Handle referral link click
+  const handleReferralClick = () => {
+    window.open('/referral-program', '_blank');
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -234,8 +250,11 @@ const PaymentModal = ({
           language={language}
         />
 
-        {/* Referral tip */}
-        <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors">
+        {/* Referral tip - now clickable */}
+        <div 
+          className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
+          onClick={handleReferralClick}
+        >
           <p className="text-green-700 text-sm font-medium">
             {t.wantCheaper}
           </p>
@@ -297,3 +316,5 @@ const PaymentModal = ({
 };
 
 export default PaymentModal;
+
+}

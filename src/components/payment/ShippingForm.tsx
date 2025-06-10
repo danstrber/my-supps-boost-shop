@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translations } from '@/lib/translations';
 
 interface CustomerInfo {
@@ -26,129 +26,161 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
   const t = translations[language];
 
   const handleChange = (field: keyof CustomerInfo, value: string) => {
-    onInfoChange({ ...customerInfo, [field]: value });
-  };
-
-  const validatePostalCode = (code: string, country: string): boolean => {
-    if (!code) return false;
-    
-    // Basic validation - at least 3 characters, alphanumeric
-    const basicPattern = /^[A-Za-z0-9\s\-]{3,10}$/;
-    return basicPattern.test(code);
-  };
-
-  const validateAddress = (address: string): boolean => {
-    if (!address || address.length < 5) return false;
-    // Should contain at least one number and some letters
-    const hasNumber = /\d/.test(address);
-    const hasLetters = /[A-Za-z]/.test(address);
-    return hasNumber && hasLetters;
+    // Auto-format phone number as US number
+    if (field === 'phoneNumber') {
+      // Remove all non-digits
+      const digits = value.replace(/\D/g, '');
+      
+      // If it starts with 1, keep it, otherwise add +1
+      let formattedNumber = '';
+      if (digits.length > 0) {
+        if (digits.startsWith('1')) {
+          formattedNumber = `+${digits}`;
+        } else {
+          formattedNumber = `+1${digits}`;
+        }
+        
+        // Format as +1 (XXX) XXX-XXXX
+        if (formattedNumber.length >= 5) {
+          const countryCode = formattedNumber.substring(0, 2);
+          const remaining = formattedNumber.substring(2);
+          
+          if (remaining.length >= 3) {
+            const areaCode = remaining.substring(0, 3);
+            const rest = remaining.substring(3);
+            
+            if (rest.length >= 3) {
+              const firstPart = rest.substring(0, 3);
+              const lastPart = rest.substring(3, 7);
+              formattedNumber = `${countryCode} (${areaCode}) ${firstPart}-${lastPart}`;
+            } else if (rest.length > 0) {
+              formattedNumber = `${countryCode} (${areaCode}) ${rest}`;
+            } else {
+              formattedNumber = `${countryCode} (${areaCode}`;
+            }
+          }
+        }
+      }
+      
+      onInfoChange({ ...customerInfo, [field]: formattedNumber });
+    } else {
+      onInfoChange({ ...customerInfo, [field]: value });
+    }
   };
 
   return (
     <div className="space-y-4">
-      <h4 className="font-semibold text-gray-900">{t.shippingInformation}</h4>
+      <h4 className="font-semibold text-gray-900">
+        {t.shippingInformation}
+      </h4>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="fullName">{t.fullName} *</Label>
           <Input
             id="fullName"
+            type="text"
+            placeholder={t.yourFullName}
             value={customerInfo.fullName}
             onChange={(e) => handleChange('fullName', e.target.value)}
-            placeholder={t.yourFullName}
             required
-            className={!customerInfo.fullName ? 'border-red-300' : ''}
           />
         </div>
-        
+
         <div>
           <Label htmlFor="email">{t.email} *</Label>
           <Input
             id="email"
             type="email"
+            placeholder={t.yourEmail}
             value={customerInfo.email}
             onChange={(e) => handleChange('email', e.target.value)}
-            placeholder={t.yourEmail}
             required
-            className={!customerInfo.email ? 'border-red-300' : ''}
           />
         </div>
-        
+
         <div className="md:col-span-2">
           <Label htmlFor="address">{t.address} *</Label>
           <Input
             id="address"
+            type="text"
+            placeholder={t.streetAddress}
             value={customerInfo.address}
             onChange={(e) => handleChange('address', e.target.value)}
-            placeholder={t.streetAddress}
             required
-            className={!validateAddress(customerInfo.address) ? 'border-red-300' : ''}
           />
-          {customerInfo.address && !validateAddress(customerInfo.address) && (
-            <p className="text-red-500 text-xs mt-1">
-              {language === 'en' ? 'Please enter a valid street address with house number' : 'Por favor ingresa una dirección válida con número de casa'}
-            </p>
-          )}
         </div>
-        
+
         <div>
           <Label htmlFor="city">{t.city} *</Label>
           <Input
             id="city"
+            type="text"
+            placeholder={t.city}
             value={customerInfo.city}
             onChange={(e) => handleChange('city', e.target.value)}
-            placeholder={t.city}
             required
-            className={!customerInfo.city ? 'border-red-300' : ''}
           />
         </div>
-        
+
         <div>
           <Label htmlFor="country">{t.country} *</Label>
-          <Input
-            id="country"
-            value={customerInfo.country}
-            onChange={(e) => handleChange('country', e.target.value)}
-            placeholder={t.country}
-            required
-            className={!customerInfo.country ? 'border-red-300' : ''}
-          />
+          <Select value={customerInfo.country} onValueChange={(value) => handleChange('country', value)}>
+            <SelectTrigger>
+              <SelectValue placeholder={language === 'en' ? 'Select country' : 'Seleccionar país'} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="US">🇺🇸 United States</SelectItem>
+              <SelectItem value="CA">🇨🇦 Canada</SelectItem>
+              <SelectItem value="MX">🇲🇽 Mexico</SelectItem>
+              <SelectItem value="GB">🇬🇧 United Kingdom</SelectItem>
+              <SelectItem value="DE">🇩🇪 Germany</SelectItem>
+              <SelectItem value="FR">🇫🇷 France</SelectItem>
+              <SelectItem value="AU">🇦🇺 Australia</SelectItem>
+              <SelectItem value="other">{language === 'en' ? 'Other' : 'Otro'}</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        
+
         <div>
           <Label htmlFor="phoneNumber">{t.phoneNumber} *</Label>
           <Input
             id="phoneNumber"
+            type="tel"
+            placeholder="+1 (555) 123-4567"
             value={customerInfo.phoneNumber}
             onChange={(e) => handleChange('phoneNumber', e.target.value)}
-            placeholder={t.yourPhoneNumber}
             required
-            className={!customerInfo.phoneNumber ? 'border-red-300' : ''}
           />
         </div>
-        
+
         <div>
           <Label htmlFor="postalCode">{t.postalCode} *</Label>
           <Input
             id="postalCode"
+            type="text"
+            placeholder={t.yourPostalCode}
             value={customerInfo.postalCode}
             onChange={(e) => handleChange('postalCode', e.target.value)}
-            placeholder={t.yourPostalCode}
             required
-            className={!validatePostalCode(customerInfo.postalCode, customerInfo.country) ? 'border-red-300' : ''}
           />
-          {customerInfo.postalCode && !validatePostalCode(customerInfo.postalCode, customerInfo.country) && (
-            <p className="text-red-500 text-xs mt-1">
-              {language === 'en' ? 'Please enter a valid postal code' : 'Por favor ingresa un código postal válido'}
-            </p>
-          )}
         </div>
       </div>
-      
-      <p className="text-xs text-gray-500">
-        * {language === 'en' ? 'Required fields for shipping' : 'Campos requeridos para el envío'}
-      </p>
+
+      {paymentMethod === 'bitcoin' && (
+        <div>
+          <Label htmlFor="txid">
+            {language === 'en' ? 'Transaction ID (after payment)' : 'ID de Transacción (después del pago)'}
+          </Label>
+          <Input
+            id="txid"
+            type="text"
+            placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
+            value={customerInfo.txid}
+            onChange={(e) => handleChange('txid', e.target.value)}
+          />
+        </div>
+      )}
     </div>
   );
 };

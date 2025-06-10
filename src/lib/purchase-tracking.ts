@@ -25,20 +25,35 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
   }
 
   try {
-    // Get current user spending first
+    // Get current user data first
     const { data: userData, error: fetchError } = await supabase
       .from('users')
-      .select('total_spending')
+      .select('total_spending, referred_by')
       .eq('auth_id', purchase.userId)
       .single();
 
     if (fetchError) throw fetchError;
 
+    // Check if this is a referred user's first purchase
+    const isFirstPurchase = userData.total_spending === 0;
+    const isReferredUser = userData.referred_by;
+
     // Update user's total spending
     const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
+    
+    // NEW RULE: Reset referred users to base 10% discount after first purchase
+    // This prevents permanent high discounts
+    let updateData: any = { total_spending: newTotalSpending };
+    
+    if (isReferredUser && isFirstPurchase) {
+      // Reset referred status after first purchase to prevent stacking
+      updateData.referred_by = null;
+      console.log('Resetting referred status after first purchase for user:', purchase.userId);
+    }
+
     const { error: userError } = await supabase
       .from('users')
-      .update({ total_spending: newTotalSpending })
+      .update(updateData)
       .eq('auth_id', purchase.userId);
 
     if (userError) throw userError;

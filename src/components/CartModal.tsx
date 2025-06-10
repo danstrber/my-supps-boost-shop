@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -68,13 +69,16 @@ const CartModal = ({
   // Calculate totals with rounded system amounts for referral system
   const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
   const systemSubtotal = Math.ceil(subtotal); // Round up for system calculations
-  const discountAmount = systemSubtotal * (userDiscount / 100);
+  
+  // NEW RULE: Over 25% discounts only on $100+ orders
+  const cappedDiscount = systemSubtotal >= 100 ? userDiscount : Math.min(userDiscount, 25);
+  
+  const discountAmount = systemSubtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = systemSubtotal - discountAmount;
   
-  // Free shipping threshold: $100 for normal/referred users, $101 for referrers
+  // Free shipping threshold: $100 for normal/referred users, $110 for referrers
   const isReferrer = userProfile && userProfile.referred_spending > 0;
-  // Calculate shipping (free shipping threshold based on subtotal after discount)
-  const freeShippingThreshold = isReferrer ? 110 : 100; // $110 for referrers, $100 for others
+  const freeShippingThreshold = isReferrer ? 110 : 100;
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // $10 shipping fee
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
@@ -83,9 +87,9 @@ const CartModal = ({
 
   // For display and BTC payment, use original amounts
   const displaySubtotal = subtotal;
-  const displayDiscountAmount = displaySubtotal * (userDiscount / 100);
+  const displayDiscountAmount = displaySubtotal * (cappedDiscount / 100);
   const displaySubtotalAfterDiscount = displaySubtotal - displayDiscountAmount;
-  const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // Updated to $10
+  const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 10;
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -130,14 +134,14 @@ const CartModal = ({
                 product={product}
                 quantity={quantity}
                 onUpdateCart={onUpdateCart}
-                userDiscount={userDiscount}
+                userDiscount={cappedDiscount}
                 language={language}
               />
             ))}
 
             <CartSummary
               subtotal={displaySubtotal}
-              userDiscount={userDiscount}
+              userDiscount={cappedDiscount}
               discountAmount={displayDiscountAmount}
               subtotalAfterDiscount={displaySubtotalAfterDiscount}
               shippingFee={displayShippingFee}
@@ -145,6 +149,18 @@ const CartModal = ({
               freeShippingThreshold={freeShippingThreshold}
               language={language}
             />
+
+            {/* Discount limitation notice */}
+            {userDiscount > 25 && systemSubtotal < 100 && (
+              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
+                <p className="text-yellow-700 text-sm">
+                  {language === 'en' 
+                    ? `Discounts over 25% are limited to orders $100+. Current discount: ${cappedDiscount}%`
+                    : `Descuentos sobre 25% están limitados a pedidos $100+. Descuento actual: ${cappedDiscount}%`
+                  }
+                </p>
+              </div>
+            )}
 
             <Button 
               onClick={handleCheckout}
