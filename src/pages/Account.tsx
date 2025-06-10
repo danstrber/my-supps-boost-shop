@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import ReferralSection from '@/components/ReferralSection';
+import TwoFactorSettings from '@/components/TwoFactorSettings';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -134,7 +135,12 @@ const Account = ({
             </CardContent>
           </Card>
 
-          {/* Referral Section - Moved up here */}
+          {/* Two-Factor Authentication Settings */}
+          <div className="mb-6">
+            <TwoFactorSettings language={language} userProfile={userProfile} />
+          </div>
+
+          {/* Referral Section */}
           <ReferralSection
             userProfile={userProfile}
             language={language}
