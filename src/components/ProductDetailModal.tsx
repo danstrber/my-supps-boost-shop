@@ -52,7 +52,8 @@ const ProductDetailModal = ({
       expectations: 'What to Expect',
       research: 'Research Background',
       history: 'History & Development',
-      labTestResults: 'Lab Test Results'
+      labTestResults: 'Lab Test Results',
+      cycle: 'Cycle Information'
     },
     es: {
       dose: 'Dosis por cápsula',
@@ -67,7 +68,8 @@ const ProductDetailModal = ({
       expectations: 'Qué Esperar',
       research: 'Antecedentes de Investigación',
       history: 'Historia y Desarrollo',
-      labTestResults: 'Resultados de Laboratorio'
+      labTestResults: 'Resultados de Laboratorio',
+      cycle: 'Información del Ciclo'
     }
   };
 
@@ -195,25 +197,6 @@ const ProductDetailModal = ({
 
             {/* Right Side - Detailed Information */}
             <div className="p-6 space-y-6">
-              {/* Lab Test Results - Only for Superdrol and Clenbuterol */}
-              {product.labTestFile && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
-                    <Shield className="h-5 w-5" />
-                    {l.labTestResults}
-                  </h3>
-                  <img 
-                    src={product.labTestFile} 
-                    alt={`${product.name} Lab Test`}
-                    className="w-full rounded-lg border border-green-300 cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => window.open(product.labTestFile, '_blank')}
-                  />
-                  <p className="text-green-700 text-sm mt-2">
-                    {language === 'en' ? 'Click to view full lab test results' : 'Haz clic para ver los resultados completos del laboratorio'}
-                  </p>
-                </div>
-              )}
-
               {/* Overview */}
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
@@ -270,7 +253,7 @@ const ProductDetailModal = ({
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
                   <Target className="h-5 w-5" />
-                  {language === 'en' ? 'Cycle Information' : 'Información del Ciclo'}
+                  {l.cycle}
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">{product.details.cycle}</p>
                 
@@ -306,6 +289,25 @@ const ProductDetailModal = ({
                   ))}
                 </div>
               </div>
+
+              {/* Lab Test Results - Only for Superdrol and Clenbuterol */}
+              {product.labTestFile && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-green-800 mb-3 flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    {l.labTestResults}
+                  </h3>
+                  <img 
+                    src={product.labTestFile} 
+                    alt={`${product.name} Lab Test`}
+                    className="w-full rounded-lg border border-green-300 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => window.open(product.labTestFile, '_blank')}
+                  />
+                  <p className="text-green-700 text-sm mt-2">
+                    {language === 'en' ? 'Click to view full lab test results' : 'Haz clic para ver los resultados completos del laboratorio'}
+                  </p>
+                </div>
+              )}
 
               {/* Categories */}
               <div>

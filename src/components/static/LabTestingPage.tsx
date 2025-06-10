@@ -39,29 +39,6 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
             </div>
           </div>
         </div>
-
-        {/* Testing Standards */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            {language === 'en' ? 'Our Testing Standards' : 'Nuestros Estándares de Prueba'}
-          </h3>
-          <div className="bg-gray-50 border border-gray-200 p-6 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>Third-party laboratory testing</li>
-                <li>Purity verification (minimum 98%)</li>
-                <li>Heavy metals contamination testing</li>
-                <li>Microbial safety analysis</li>
-              </ul>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                <li>HPLC chromatography analysis</li>
-                <li>Mass spectrometry verification</li>
-                <li>Certificate of Analysis (COA) available</li>
-                <li>ISO certified laboratory standards</li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
