@@ -37,9 +37,6 @@ export const handleEmailAuth = async (
       };
     }
 
-    // Check IP restrictions (simplified for now - will be enhanced when IP tracking table is added)
-    // TODO: Implement IP tracking when database is updated
-
     // Build metadata object
     const metadata: any = {};
     if (username?.trim()) {
@@ -66,7 +63,7 @@ export const handleEmailAuth = async (
     console.log('Auth user created successfully:', authData.user?.id);
     return { data: authData, error: authError };
   } else {
-    // Login mode - check for 2FA after successful password auth
+    // Login mode
     console.log('Attempting login for email:', email);
     
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -79,20 +76,8 @@ export const handleEmailAuth = async (
       return { data, error };
     }
 
-    // Check if user has 2FA enabled (simplified for now)
-    if (data.user) {
-      const { data: userProfile } = await supabase
-        .from('users')
-        .select('*')
-        .eq('auth_id', data.user.id)
-        .maybeSingle();
-
-      // For now, proceed with login - 2FA will be handled when database is updated
-      console.log('Login successful:', data);
-      return { data, error: null };
-    }
-    
-    return { data, error };
+    console.log('Login successful:', data);
+    return { data, error: null };
   }
 };
 
@@ -126,4 +111,88 @@ export const handleGoogleAuth = async (mode: 'login' | 'signup', referralCode?: 
   }
 
   return { data, error };
+};
+
+export const checkTwoFactorStatus = async (userId: string) => {
+  try {
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('two_factor_enabled, two_factor_method')
+      .eq('auth_id', userId)
+      .maybeSingle();
+
+    return {
+      enabled: userProfile?.two_factor_enabled || false,
+      method: userProfile?.two_factor_method || 'email'
+    };
+  } catch (error) {
+    console.error('Error checking 2FA status:', error);
+    return { enabled: false, method: 'email' };
+  }
+};
+
+export const sendTwoFactorCode = async (email: string, method: 'email' | 'sms' = 'email') => {
+  try {
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    // Store code in database
+    const { error } = await supabase
+      .from('two_factor_codes')
+      .insert({
+        email,
+        code,
+        method,
+        expires_at: expiresAt.toISOString()
+      });
+
+    if (error) {
+      console.error('Error storing 2FA code:', error);
+      return { success: false, error: error.message };
+    }
+
+    // In a real implementation, you would send the code via email/SMS
+    console.log(`2FA Code for ${email}: ${code}`);
+    
+    return { success: true };
+  } catch (error) {
+    console.error('Error in sendTwoFactorCode:', error);
+    return { success: false, error: 'Failed to send verification code' };
+  }
+};
+
+export const verifyTwoFactorCode = async (email: string, code: string) => {
+  try {
+    // Find valid code
+    const { data: codeRecord, error } = await supabase
+      .from('two_factor_codes')
+      .select('*')
+      .eq('email', email)
+      .eq('code', code)
+      .gt('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error verifying 2FA code:', error);
+      return { valid: false, error: error.message };
+    }
+
+    if (!codeRecord) {
+      return { valid: false, error: 'Invalid or expired code' };
+    }
+
+    // Delete the used code
+    await supabase
+      .from('two_factor_codes')
+      .delete()
+      .eq('id', codeRecord.id);
+
+    return { valid: true };
+  } catch (error) {
+    console.error('Error in verifyTwoFactorCode:', error);
+    return { valid: false, error: 'Failed to verify code' };
+  }
 };
