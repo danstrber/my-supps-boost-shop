@@ -98,6 +98,7 @@ const Index = () => {
         currentPage={currentPage}
         onPageChange={setCurrentPage}
         sidebarOpen={sidebarOpen}
+        onSidebarClose={handleSidebarClose}
       />
     );
   }

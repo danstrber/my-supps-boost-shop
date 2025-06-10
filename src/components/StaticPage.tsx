@@ -2,7 +2,7 @@
 import React from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import { useSidebar } from '@/hooks/useSidebar';
+import { useAuth } from '@/hooks/useAuth';
 
 interface StaticPageProps {
   language: 'en' | 'es';
@@ -15,6 +15,7 @@ interface StaticPageProps {
   currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account';
   onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
   sidebarOpen: boolean;
+  onSidebarClose: () => void;
 }
 
 const StaticPage = ({
@@ -27,9 +28,10 @@ const StaticPage = ({
   onMenuToggle,
   currentPage,
   onPageChange,
-  sidebarOpen
+  sidebarOpen,
+  onSidebarClose
 }: StaticPageProps) => {
-  const { handleSidebarClose } = useSidebar();
+  const { userProfile } = useAuth();
 
   const getPageContent = () => {
     switch (currentPage) {
@@ -159,10 +161,14 @@ const StaticPage = ({
         language={language}
         isOpen={sidebarOpen}
         selectedCategory="all"
-        onCategoryChange={() => {}} // Categories don't work on static pages, just close sidebar
-        userProfile={null}
+        onCategoryChange={() => {
+          // When user clicks category on static page, go to home and show that category
+          onPageChange('home');
+          onSidebarClose();
+        }}
+        userProfile={userProfile}
         referralCount={0}
-        onClose={handleSidebarClose}
+        onClose={onSidebarClose}
       />
 
       <main className="pt-32 px-4">
