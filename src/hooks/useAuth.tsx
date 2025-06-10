@@ -126,43 +126,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    // Set up auth state change listener
-    console.log('Setting up auth state listener...');
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (cleanup) return;
-        
-        console.log('Auth state change:', event, 'user:', session?.user?.id);
-        
-        try {
-          if (session?.user) {
-            console.log('Auth change - fetching profile for:', session.user.id);
-            const profile = await fetchUserProfile(session.user.id);
-            if (!cleanup) {
-              setUserProfile(profile);
+    // Initialize first, then set up listener
+    initialize().then(() => {
+      if (cleanup) return;
+      
+      console.log('Setting up auth state listener after initialization...');
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          if (cleanup) return;
+          
+          console.log('Auth state change:', event, 'user:', session?.user?.id);
+          
+          try {
+            if (session?.user) {
+              console.log('Auth change - fetching profile for:', session.user.id);
+              const profile = await fetchUserProfile(session.user.id);
+              if (!cleanup) {
+                setUserProfile(profile);
+              }
+            } else {
+              console.log('Auth change - no user, clearing profile');
+              if (!cleanup) {
+                setUserProfile(null);
+              }
             }
-          } else {
-            console.log('Auth change - no user, clearing profile');
+          } catch (error) {
+            console.error('Error in auth state change handler:', error);
             if (!cleanup) {
               setUserProfile(null);
             }
           }
-        } catch (error) {
-          console.error('Error in auth state change handler:', error);
-          if (!cleanup) {
-            setUserProfile(null);
-          }
         }
-      }
-    );
+      );
 
-    // Initialize auth
-    initialize();
+      // Store subscription for cleanup
+      return () => {
+        console.log('Auth listener cleanup');
+        subscription.unsubscribe();
+      };
+    });
 
     return () => {
       console.log('Auth cleanup triggered');
       cleanup = true;
-      subscription.unsubscribe();
     };
   }, []);
 
