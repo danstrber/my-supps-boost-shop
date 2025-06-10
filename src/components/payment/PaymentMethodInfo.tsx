@@ -27,31 +27,21 @@ const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) 
             <li>✅ {t.telegramExpertCoaching}</li>
             <li>✅ {t.telegramFastSupport}</li>
           </ul>
-          <p className="text-blue-600 text-xs mb-3">
+          <p className="text-blue-600 text-xs">
             {t.telegramJoinInfo}
           </p>
           
           {/* Telegram Benefits Section */}
-          <div className="p-3 bg-blue-100 rounded-lg">
+          <div className="mt-4 p-3 bg-blue-100 rounded-lg">
             <h5 className="font-medium text-blue-800 mb-2">
               {language === 'en' 
                 ? '🚀 Why Choose Telegram?' 
                 : '🚀 ¿Por Qué Elegir Telegram?'
               }
             </h5>
-            <p className="text-blue-700 text-sm mb-3">
+            <p className="text-blue-700 text-sm">
               {t.telegramEasierBuying}
             </p>
-            
-            {/* Telegram Link Button */}
-            <a 
-              href="https://t.me/+fDDZObF0zjI2M2Y0" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm"
-            >
-              {language === 'en' ? 'Join Our Telegram Group' : 'Únete a Nuestro Grupo de Telegram'}
-            </a>
           </div>
         </div>
       );

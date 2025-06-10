@@ -50,13 +50,13 @@ const PaymentModal = ({
   cartItems,
   language = 'en'
 }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin'>('bitcoin');
+  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin'>('telegram');
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
     email: userProfile?.email || '',
     address: '',
     city: '',
-    country: 'US',
+    country: 'US', // Default to US
     phoneNumber: '',
     postalCode: '',
     txid: ''
@@ -66,12 +66,13 @@ const PaymentModal = ({
   const { toast } = useToast();
   const t = translations[language];
 
+  // Round up cart total for system calculations but keep original for BTC payment
   const systemTotal = Math.ceil(orderTotal);
-  const systemFinalTotal = Math.ceil(finalTotal);
-  const btcPaymentAmount = systemFinalTotal;
+  const systemFinalTotal = Math.ceil(finalTotal); // Round up final total for display
+  const btcPaymentAmount = systemFinalTotal; // Use rounded amount for BTC
 
-  // Updated Bitcoin wallet address
-  const walletAddress = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
+  // Your Bitcoin wallet address
+  const walletAddress = "k3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
   const sendFormspreeEmail = async (orderData: any) => {
     try {
@@ -94,7 +95,6 @@ const PaymentModal = ({
         walletAddress: walletAddress
       };
 
-      console.log('Sending order notification via Formspree...');
       const response = await fetch('https://formspree.io/f/mqaqvlye', {
         method: 'POST',
         headers: {
@@ -110,24 +110,13 @@ const PaymentModal = ({
       console.log('Order notification sent successfully via Formspree');
     } catch (error) {
       console.error('Failed to send Formspree email:', error);
-      // Don't block order creation if email fails
+      // Don't throw error to prevent order creation failure
     }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (paymentMethod === 'telegram') {
-      // Just redirect to Telegram for telegram orders
-      window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
-      toast({
-        title: t.redirectedTelegram,
-        description: t.completeTelegramOrder,
-      });
-      onClose();
-      return;
-    }
-
     if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
       // Validate shipping info first
       if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
@@ -153,12 +142,32 @@ const PaymentModal = ({
     }
 
     setLoading(true);
-    console.log('Starting order creation process...');
 
     try {
+      if (paymentMethod === 'telegram') {
+        // Validate all shipping info for Telegram too
+        if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
+          toast({
+            title: t.missingInformation,
+            description: t.fillAllFields,
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+        
+        window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+        toast({
+          title: t.redirectedTelegram,
+          description: t.completeTelegramOrder,
+        });
+        onClose();
+        return;
+      }
+
       // Create order in database with system total (rounded up)
       const orderData = {
-        user_id: userProfile?.auth_id,
+        user_id: userProfile?.auth_id, // This should be the auth_id from Supabase
         items: {
           products: cartItems.map(item => ({
             id: item.product.id,
@@ -168,21 +177,20 @@ const PaymentModal = ({
             total: item.product.price * item.quantity
           }))
         },
-        original_total: systemTotal,
+        original_total: systemTotal, // Use rounded up total for system
         discount_amount: discount,
         shipping_fee: shippingFee,
-        final_total: systemFinalTotal,
+        final_total: systemFinalTotal, // Use system total for tracking
         payment_method: paymentMethod,
         payment_details: {
           customer_info: customerInfo,
-          btc_amount_sent: btcPaymentAmount,
-          wallet_address: walletAddress,
-          transaction_id: customerInfo.txid
+          btc_amount_sent: btcPaymentAmount, // Store actual BTC amount
+          wallet_address: walletAddress
         },
         status: 'pending'
       };
 
-      console.log('Creating order in database...', orderData);
+      console.log('Creating order with user_id:', userProfile?.auth_id);
 
       const { data: order, error } = await supabase
         .from('orders')
@@ -195,12 +203,10 @@ const PaymentModal = ({
         throw error;
       }
 
-      console.log('Order created successfully:', order);
-
       // Create pending purchase with system total for referral calculations
       createPendingPurchase(order.id, {
         userId: userProfile?.auth_id || '',
-        amount: systemFinalTotal,
+        amount: systemFinalTotal, // Use system total for referral calculations
         items: cartItems,
         referralCode: userProfile?.referred_by || undefined
       });
@@ -213,18 +219,6 @@ const PaymentModal = ({
         description: t.orderPlaced,
       });
 
-      // Clear the form and close modal
-      setCustomerInfo({
-        fullName: '',
-        email: userProfile?.email || '',
-        address: '',
-        city: '',
-        country: 'US',
-        phoneNumber: '',
-        postalCode: '',
-        txid: ''
-      });
-      setShowBitcoinDetails(false);
       onClose();
       
     } catch (error: any) {
@@ -237,6 +231,11 @@ const PaymentModal = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle referral link click
+  const handleReferralClick = () => {
+    window.open('/referral-program', '_blank');
   };
 
   return (
@@ -257,8 +256,11 @@ const PaymentModal = ({
           language={language}
         />
 
-        {/* Referral tip - no link, just text */}
-        <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center">
+        {/* Referral tip - now clickable */}
+        <div 
+          className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
+          onClick={handleReferralClick}
+        >
           <p className="text-green-700 text-sm font-medium">
             {t.wantCheaper}
           </p>
@@ -274,8 +276,8 @@ const PaymentModal = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
                 <SelectItem value="telegram">💬 Telegram ({t.recommended})</SelectItem>
+                <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -286,14 +288,12 @@ const PaymentModal = ({
             <BitcoinTutorial language={language} />
           )}
 
-          {paymentMethod === 'bitcoin' && (
-            <ShippingForm
-              customerInfo={customerInfo}
-              onInfoChange={setCustomerInfo}
-              paymentMethod={paymentMethod}
-              language={language}
-            />
-          )}
+          <ShippingForm
+            customerInfo={customerInfo}
+            onInfoChange={setCustomerInfo}
+            paymentMethod={paymentMethod}
+            language={language}
+          />
 
           {showBitcoinDetails && paymentMethod === 'bitcoin' && (
             <BitcoinPaymentDetails
