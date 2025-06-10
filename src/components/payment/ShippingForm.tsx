@@ -2,6 +2,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { translations } from '@/lib/translations';
 
 interface CustomerInfo {
   fullName: string;
@@ -20,31 +21,33 @@ interface ShippingFormProps {
 }
 
 const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: ShippingFormProps) => {
+  const t = translations[language];
+  
   if (paymentMethod === 'telegram') return null;
 
   return (
     <div className="border-t pt-4">
       <h4 className="font-semibold text-gray-900 mb-4">
-        {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
+        {t.shippingInformation}
       </h4>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="fullName">
-            {language === 'en' ? 'Full Name *' : 'Nombre Completo *'}
+            {t.fullName} *
           </Label>
           <Input
             id="fullName"
             value={customerInfo.fullName}
             onChange={(e) => onInfoChange({...customerInfo, fullName: e.target.value})}
             required
-            placeholder={language === 'en' ? 'Your full name' : 'Tu nombre completo'}
+            placeholder={t.yourFullName}
           />
         </div>
         
         <div>
           <Label htmlFor="email">
-            {language === 'en' ? 'Email *' : 'Correo Electrónico *'}
+            {t.email} *
           </Label>
           <Input
             id="email"
@@ -52,46 +55,46 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
             value={customerInfo.email}
             onChange={(e) => onInfoChange({...customerInfo, email: e.target.value})}
             required
-            placeholder={language === 'en' ? 'your@email.com' : 'tu@correo.com'}
+            placeholder={t.yourEmail}
           />
         </div>
         
         <div className="md:col-span-2">
           <Label htmlFor="address">
-            {language === 'en' ? 'Address *' : 'Dirección *'}
+            {t.address} *
           </Label>
           <Input
             id="address"
             value={customerInfo.address}
             onChange={(e) => onInfoChange({...customerInfo, address: e.target.value})}
             required
-            placeholder={language === 'en' ? 'Street address' : 'Dirección de la calle'}
+            placeholder={t.streetAddress}
           />
         </div>
         
         <div>
           <Label htmlFor="city">
-            {language === 'en' ? 'City *' : 'Ciudad *'}
+            {t.city} *
           </Label>
           <Input
             id="city"
             value={customerInfo.city}
             onChange={(e) => onInfoChange({...customerInfo, city: e.target.value})}
             required
-            placeholder={language === 'en' ? 'City' : 'Ciudad'}
+            placeholder={t.city}
           />
         </div>
         
         <div>
           <Label htmlFor="country">
-            {language === 'en' ? 'Country *' : 'País *'}
+            {t.country} *
           </Label>
           <Input
             id="country"
             value={customerInfo.country}
             onChange={(e) => onInfoChange({...customerInfo, country: e.target.value})}
             required
-            placeholder={language === 'en' ? 'Country' : 'País'}
+            placeholder={t.country}
           />
         </div>
       </div>

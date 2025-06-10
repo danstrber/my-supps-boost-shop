@@ -41,6 +41,19 @@ const BitcoinTutorial = ({ language }: BitcoinTutorialProps) => {
           </div>
         </div>
       </div>
+      
+      {/* Real Example Section */}
+      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+        <h5 className="font-medium text-yellow-800 mb-2">
+          {language === 'en' ? '💡 Real Example' : '💡 Ejemplo Real'}
+        </h5>
+        <p className="text-yellow-700 text-sm">
+          {language === 'en' 
+            ? 'Example: Send 0.003902 BTC to wallet address bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh'
+            : 'Ejemplo: Envía 0.003902 BTC a la dirección de billetera bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh'
+          }
+        </p>
+      </div>
     </div>
   );
 };

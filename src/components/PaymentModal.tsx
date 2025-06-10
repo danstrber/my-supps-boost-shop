@@ -1,9 +1,9 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
@@ -69,7 +69,7 @@ const PaymentModal = ({
   const systemFinalTotal = systemTotal + shippingFee;
   const btcPaymentAmount = finalTotal; // Keep original .99 pricing for BTC
 
-  const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"; // Example Bitcoin address
+  const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,8 +78,8 @@ const PaymentModal = ({
       // Validate shipping info first
       if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country) {
         toast({
-          title: language === 'en' ? "Missing Information" : "Información Faltante",
-          description: language === 'en' ? "Please fill in all shipping information fields." : "Por favor completa todos los campos de información de envío.",
+          title: t.missingInformation,
+          description: t.fillAllFields,
           variant: "destructive"
         });
         return;
@@ -94,8 +94,8 @@ const PaymentModal = ({
       if (paymentMethod === 'telegram') {
         window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
         toast({
-          title: language === 'en' ? "Redirected to Telegram" : "Redirigido a Telegram",
-          description: language === 'en' ? "Complete your order in our Telegram group for easy tracking and anonymous ordering." : "Completa tu pedido en nuestro grupo de Telegram para seguimiento fácil y pedidos anónimos.",
+          title: t.redirectedTelegram,
+          description: t.completeTelegramOrder,
         });
         onClose();
         return;
@@ -104,8 +104,8 @@ const PaymentModal = ({
       // For Bitcoin payment, validate TXID
       if (!customerInfo.txid) {
         toast({
-          title: language === 'en' ? "Missing Transaction ID" : "ID de Transacción Faltante",
-          description: language === 'en' ? "Please enter the transaction ID (TXID) for verification." : "Por favor ingresa el ID de transacción (TXID) para verificación.",
+          title: t.missingTxid,
+          description: t.enterTxid,
           variant: "destructive"
         });
         setLoading(false);
@@ -188,8 +188,8 @@ const PaymentModal = ({
       }
 
       toast({
-        title: language === 'en' ? "Order Placed Successfully!" : "¡Pedido Realizado Exitosamente!",
-        description: language === 'en' ? "Your order has been placed. Purchase will be tracked once confirmed by admin." : "Tu pedido ha sido realizado. La compra será rastreada una vez confirmada por el administrador.",
+        title: t.orderPlacedSuccess,
+        description: t.orderPlaced,
       });
 
       onClose();
@@ -197,8 +197,8 @@ const PaymentModal = ({
     } catch (error: any) {
       console.error('Order creation error:', error);
       toast({
-        title: language === 'en' ? "Order Failed" : "Pedido Falló",
-        description: error.message || (language === 'en' ? "There was an error processing your order. Please try again." : "Hubo un error procesando tu pedido. Por favor intenta de nuevo."),
+        title: t.orderFailed,
+        description: error.message || t.orderError,
         variant: "destructive"
       });
     } finally {
@@ -211,7 +211,7 @@ const PaymentModal = ({
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {language === 'en' ? 'Complete Your Order' : 'Completa tu Pedido'}
+            {t.completeYourOrder}
           </DialogTitle>
         </DialogHeader>
 
@@ -234,14 +234,14 @@ const PaymentModal = ({
         <form onSubmit={handleFormSubmit} className="space-y-6">
           <div>
             <Label htmlFor="paymentMethod">
-              {language === 'en' ? 'Payment Method' : 'Método de Pago'}
+              {t.paymentMethod}
             </Label>
             <Select value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="telegram">💬 Telegram ({language === 'en' ? 'Recommended' : 'Recomendado'})</SelectItem>
+                <SelectItem value="telegram">💬 Telegram ({t.recommended})</SelectItem>
                 <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
               </SelectContent>
             </Select>
@@ -275,10 +275,10 @@ const PaymentModal = ({
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
             disabled={loading}
           >
-            {loading ? (language === 'en' ? 'Processing...' : 'Procesando...') : 
-             paymentMethod === 'telegram' ? (language === 'en' ? 'Join Telegram Group' : 'Unirse al Grupo de Telegram') : 
-             !showBitcoinDetails ? (language === 'en' ? 'Continue to Payment' : 'Continuar al Pago') :
-             (language === 'en' ? 'Complete Order' : 'Completar Pedido')}
+            {loading ? t.processing : 
+             paymentMethod === 'telegram' ? t.joinTelegram : 
+             !showBitcoinDetails ? t.continueToPayment :
+             t.completeOrder}
           </Button>
         </form>
       </DialogContent>

@@ -150,6 +150,7 @@ export const products: Product[] = [
     description: "Mild SARM perfect for beginners and cutting cycles",
     categories: ["sarms", "fat-loss"],
     featured: false,
+    labTestFile: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
     inStock: true,
     details: {
       research: "Ostarine is the most studied SARM with extensive clinical trials demonstrating its ability to increase lean body mass and improve physical function.",
@@ -186,6 +187,7 @@ export const products: Product[] = [
     description: "PPAR delta agonist for endurance and fat loss",
     categories: ["fat-loss", "recovery"],
     featured: false,
+    labTestFile: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
     inStock: true,
     details: {
       research: "Cardarine is a PPAR delta receptor agonist that enhances fatty acid oxidation and glucose metabolism, originally developed for metabolic disorders.",

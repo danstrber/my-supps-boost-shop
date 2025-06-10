@@ -39,16 +39,25 @@ const BitcoinPaymentDetails = ({
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: language === 'en' ? "Copied!" : "¡Copiado!",
-      description: `${label} ${language === 'en' ? 'copied to clipboard' : 'copiado al portapapeles'}`,
+      title: t.copied,
+      description: `${label} ${t.copiedToClipboard}`,
     });
   };
 
   return (
     <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg space-y-4">
       <h4 className="font-semibold text-orange-800 mb-3">
-        ₿ {language === 'en' ? 'Bitcoin Payment Details' : 'Detalles del Pago Bitcoin'}
+        ₿ {t.bitcoinPaymentDetails}
       </h4>
+
+      {/* Payment Instructions Image */}
+      <div className="text-center mb-4">
+        <img 
+          src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png" 
+          alt="Bitcoin Payment Instructions"
+          className="w-full max-w-md mx-auto rounded-lg shadow-sm"
+        />
+      </div>
 
       <div className="space-y-3">
         <div className="bg-white p-3 rounded border">
@@ -97,12 +106,16 @@ const BitcoinPaymentDetails = ({
             required
           />
           <p className="text-xs text-gray-600 mt-1">
-            {language === 'en' 
-              ? 'This will be used to verify your payment'
-              : 'Esto se usará para verificar tu pago'
-            }
+            {t.txidVerification}
           </p>
         </div>
+      </div>
+
+      {/* Tip Section */}
+      <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center">
+        <p className="text-green-700 text-sm font-medium">
+          {t.wantCheaper}
+        </p>
       </div>
     </div>
   );
