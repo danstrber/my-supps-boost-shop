@@ -81,7 +81,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const initializeAuth = async () => {
       try {
         console.log('Initializing auth...');
-        setLoading(true);
         
         const { data: { user } } = await supabase.auth.getUser();
         
