@@ -75,64 +75,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   ) : 0;
 
   useEffect(() => {
-    let mounted = true;
-
-    const initializeAuth = async () => {
-      try {
-        console.log('Initializing auth...');
-        
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (mounted) {
-          if (user) {
-            console.log('User found during initialization:', user.id);
-            const profile = await fetchUserProfile(user.id);
-            setUserProfile(profile);
-          } else {
-            console.log('No user found during initialization');
-            setUserProfile(null);
-          }
-          console.log('Setting loading to false after initialization');
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-        if (mounted) {
-          setUserProfile(null);
-          setLoading(false);
-        }
-      }
-    };
-
+    console.log('Setting up auth...');
+    
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!mounted) return;
-
         console.log('Auth state changed:', event, session?.user?.id);
         
-        try {
-          if (event === 'SIGNED_IN' && session?.user) {
-            const profile = await fetchUserProfile(session.user.id);
-            setUserProfile(profile);
-          } else if (event === 'SIGNED_OUT') {
-            setUserProfile(null);
-          }
-        } catch (error) {
-          console.error('Error in auth state change handler:', error);
+        if (session?.user) {
+          const profile = await fetchUserProfile(session.user.id);
+          setUserProfile(profile);
+        } else {
           setUserProfile(null);
-        } finally {
-          if (mounted) {
-            console.log('Setting loading to false after auth state change');
-            setLoading(false);
-          }
         }
+        
+        setLoading(false);
       }
     );
 
-    initializeAuth();
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        fetchUserProfile(session.user.id).then(profile => {
+          setUserProfile(profile);
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
+    });
 
     return () => {
-      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
