@@ -18,9 +18,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  console.log('AuthProvider render - loading:', loading, 'userProfile:', userProfile?.id);
+
   const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
     try {
-      console.log('Fetching user profile for:', userId);
+      console.log('fetchUserProfile called for userId:', userId);
       
       const { data, error } = await supabase
         .from('users')
@@ -33,17 +35,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return null;
       }
 
-      console.log('User profile fetched successfully:', data);
+      console.log('User profile fetched:', data);
       return data as UserProfile;
     } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
+      console.error('Exception in fetchUserProfile:', error);
       return null;
     }
   };
 
   const refreshProfile = async () => {
     try {
-      console.log('Refreshing profile...');
+      console.log('refreshProfile called');
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const profile = await fetchUserProfile(user.id);
@@ -52,13 +54,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUserProfile(null);
       }
     } catch (error) {
-      console.error('Error refreshing profile:', error);
+      console.error('Error in refreshProfile:', error);
       setUserProfile(null);
     }
   };
 
   const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
-    console.log('Auth action triggered:', action);
+    console.log('handleAuthAction called with:', action);
     if (action === 'logout') {
       supabase.auth.signOut();
       setUserProfile(null);
@@ -75,66 +77,91 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   ) : 0;
 
   useEffect(() => {
-    console.log('Auth hook initializing...');
-    let mounted = true;
-
-    const initAuth = async () => {
+    console.log('Auth useEffect starting...');
+    let cleanup = false;
+    
+    const initialize = async () => {
       try {
-        // Get initial session
-        const { data: { session } } = await supabase.auth.getSession();
+        console.log('Getting initial session...');
+        const { data: { session }, error } = await supabase.auth.getSession();
         
-        if (!mounted) return;
+        if (error) {
+          console.error('Error getting session:', error);
+          if (!cleanup) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        console.log('Initial session result:', session?.user?.id || 'no session');
+        
+        if (cleanup) {
+          console.log('Component unmounted, skipping profile fetch');
+          return;
+        }
 
         if (session?.user) {
-          console.log('Initial session found:', session.user.id);
+          console.log('Fetching profile for user:', session.user.id);
           const profile = await fetchUserProfile(session.user.id);
-          if (mounted) {
+          if (!cleanup) {
+            console.log('Setting user profile:', profile?.id);
             setUserProfile(profile);
           }
         } else {
-          console.log('No initial session');
-          if (mounted) {
+          console.log('No session, setting userProfile to null');
+          if (!cleanup) {
             setUserProfile(null);
           }
         }
       } catch (error) {
-        console.error('Error getting initial session:', error);
-        if (mounted) {
+        console.error('Error in initialize:', error);
+        if (!cleanup) {
           setUserProfile(null);
         }
       } finally {
-        if (mounted) {
+        if (!cleanup) {
           console.log('Setting loading to false');
           setLoading(false);
         }
       }
     };
 
-    // Set up auth listener
+    // Set up auth state change listener
+    console.log('Setting up auth state listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        if (!mounted) return;
+        if (cleanup) return;
         
-        console.log('Auth state change:', event, session?.user?.id);
+        console.log('Auth state change:', event, 'user:', session?.user?.id);
         
-        if (session?.user) {
-          const profile = await fetchUserProfile(session.user.id);
-          if (mounted) {
-            setUserProfile(profile);
+        try {
+          if (session?.user) {
+            console.log('Auth change - fetching profile for:', session.user.id);
+            const profile = await fetchUserProfile(session.user.id);
+            if (!cleanup) {
+              setUserProfile(profile);
+            }
+          } else {
+            console.log('Auth change - no user, clearing profile');
+            if (!cleanup) {
+              setUserProfile(null);
+            }
           }
-        } else {
-          if (mounted) {
+        } catch (error) {
+          console.error('Error in auth state change handler:', error);
+          if (!cleanup) {
             setUserProfile(null);
           }
         }
       }
     );
 
-    // Initialize
-    initAuth();
+    // Initialize auth
+    initialize();
 
     return () => {
-      mounted = false;
+      console.log('Auth cleanup triggered');
+      cleanup = true;
       subscription.unsubscribe();
     };
   }, []);
@@ -147,6 +174,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     userDiscount, 
     handleAuthAction
   };
+
+  console.log('AuthProvider rendering with loading:', loading);
 
   return (
     <AuthContext.Provider value={contextValue}>
