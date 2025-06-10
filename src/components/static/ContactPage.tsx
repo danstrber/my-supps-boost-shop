@@ -18,7 +18,7 @@ const ContactPage = ({ language }: ContactPageProps) => {
           className="w-full max-w-2xl mx-auto mb-8 rounded-lg shadow-md"
         />
         
-        <div className="text-center mb-8">
+        <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             {language === 'en' ? 'Join our Telegram' : 'Únete a nuestro Telegram'}
           </h2>
@@ -35,23 +35,6 @@ const ContactPage = ({ language }: ContactPageProps) => {
           >
             {language === 'en' ? 'Join Telegram' : 'Unirse a Telegram'}
           </a>
-        </div>
-        
-        <div className="border-t pt-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            {language === 'en' ? 'Email Support' : 'Soporte por Email'}
-          </h3>
-          <p className="text-gray-600 mb-2">
-            {language === 'en' ? 'You can also reach us at:' : 'También puedes contactarnos en:'}
-          </p>
-          <a href="mailto:support@company.com" className="text-blue-600 hover:text-blue-800 font-medium">
-            support@company.com
-          </a>
-          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-700 font-medium">
-              ⏰ {language === 'en' ? 'We are open almost 24/7 for your convenience!' : '¡Estamos disponibles casi 24/7 para tu conveniencia!'}
-            </p>
-          </div>
         </div>
       </div>
     </div>

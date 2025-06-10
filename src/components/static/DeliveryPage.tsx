@@ -22,51 +22,12 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
           {language === 'en' ? 'Fast & Secure Shipping' : 'Envío Rápido y Seguro'}
         </h2>
         
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              {language === 'en' ? 'Processing Time' : 'Tiempo de Procesamiento'}
-            </h3>
-            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-              <p className="text-gray-700">
-                {language === 'en' 
-                  ? 'We will start shipping your order as soon as we receive it. Most orders are processed within 1-2 business days.'
-                  : 'Comenzaremos a enviar tu pedido tan pronto como lo recibamos. La mayoría de los pedidos se procesan dentro de 1-2 días hábiles.'}
-              </p>
-            </div>
-          </div>
-          
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              {language === 'en' ? 'Shipping Costs' : 'Costos de Envío'}
-            </h3>
-            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-              <div className="flex items-center mb-2">
-                <span className="text-2xl mr-2">💳</span>
-                <span className="text-green-800 font-semibold text-lg">
-                  {language === 'en' ? 'FREE SHIPPING on orders $100 and above!' : '¡ENVÍO GRATIS en pedidos de $100 y más!'}
-                </span>
-              </div>
-              <p className="text-gray-700">
-                {language === 'en' 
-                  ? 'Standard shipping rates apply for orders under $100.'
-                  : 'Las tarifas de envío estándar se aplican para pedidos menores a $100.'}
-              </p>
-            </div>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">
-              {language === 'en' ? 'Tracking' : 'Seguimiento'}
-            </h3>
-            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-              <p className="text-gray-700">
-                {language === 'en' 
-                  ? 'Once your order ships, you will receive tracking information via Telegram or email.'
-                  : 'Una vez que tu pedido sea enviado, recibirás información de seguimiento por Telegram o correo electrónico.'}
-              </p>
-            </div>
-          </div>
+        <div className="text-center">
+          <p className="text-gray-700 text-lg">
+            {language === 'en' 
+              ? 'Contact us via Telegram for shipping details and tracking information.'
+              : 'Contáctanos via Telegram para detalles de envío e información de seguimiento.'}
+          </p>
         </div>
       </div>
     </div>

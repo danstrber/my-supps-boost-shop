@@ -21,13 +21,10 @@ const ProductDetailModal = ({
   isOpen,
   onClose,
   onAddToCart,
-  language,
-  userDiscount
+  language
 }: ProductDetailModalProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageModalOpen, setImageModalOpen] = useState(false);
-
-  const discountedPrice = product.price * (1 - userDiscount / 100);
 
   // Create array of images (main image plus any additional ones)
   const images = [product.image];
@@ -106,23 +103,9 @@ const ProductDetailModal = ({
             <div className="space-y-6">
               {/* Price Section */}
               <div className="space-y-2">
-                {userDiscount > 0 ? (
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl font-bold text-green-600">
-                      ${discountedPrice.toFixed(2)}
-                    </span>
-                    <span className="text-xl text-gray-500 line-through">
-                      ${product.price.toFixed(2)}
-                    </span>
-                    <Badge variant="destructive" className="text-sm">
-                      -{userDiscount}%
-                    </Badge>
-                  </div>
-                ) : (
-                  <span className="text-3xl font-bold text-green-600">
-                    ${product.price.toFixed(2)}
-                  </span>
-                )}
+                <span className="text-3xl font-bold text-green-600">
+                  ${product.price.toFixed(2)}
+                </span>
               </div>
 
               <Separator />

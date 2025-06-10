@@ -35,44 +35,31 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
           </div>
         </div>
 
-        {/* Verification Images Section */}
+        {/* Lab Test Images Section */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
-            {language === 'en' ? 'Verification Images' : 'Imágenes de Verificación'}
+            {language === 'en' ? 'Lab Test Results' : 'Resultados de Laboratorio'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-center">
-              <div className="h-40 bg-gray-200 rounded mb-3 flex items-center justify-center">
-                <span className="text-gray-500">Product verification 1</span>
-              </div>
-              <h4 className="font-semibold text-blue-800 mb-2">Product Content Verification</h4>
-              <p className="text-gray-700 text-sm">Detailed analysis of product composition and purity levels</p>
+            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+              <img 
+                src="/lovable-uploads/71047aaf-1d52-4f01-bdb1-f051dac4a70a.png" 
+                alt="Lab Test Result 1"
+                className="w-full rounded-lg mb-3"
+              />
+              <h4 className="font-semibold text-blue-800 mb-2">Superdrol Lab Analysis</h4>
+              <p className="text-gray-700 text-sm">Detailed purity and composition analysis</p>
             </div>
             
-            <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg text-center">
-              <div className="h-40 bg-gray-200 rounded mb-3 flex items-center justify-center">
-                <span className="text-gray-500">Product verification 2</span>
-              </div>
-              <h4 className="font-semibold text-purple-800 mb-2">Quality Assurance Documentation</h4>
-              <p className="text-gray-700 text-sm">Third-party testing results and safety certificates</p>
+            <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+              <img 
+                src="/lovable-uploads/74e5658e-425e-497b-aef1-34644cbb54f1.png" 
+                alt="Lab Test Result 2"
+                className="w-full rounded-lg mb-3"
+              />
+              <h4 className="font-semibold text-purple-800 mb-2">Additional Product Testing</h4>
+              <p className="text-gray-700 text-sm">Third-party verification and quality assurance</p>
             </div>
-          </div>
-        </div>
-
-        {/* Contact for Additional Documentation */}
-        <div className="mb-8">
-          <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-            <div className="flex items-center mb-3">
-              <span className="text-2xl mr-3">📋</span>
-              <h4 className="font-semibold text-yellow-800 text-lg">
-                {language === 'en' ? 'Contact us for additional product verification documentation' : 'Contáctanos para documentación adicional de verificación de productos'}
-              </h4>
-            </div>
-            <p className="text-yellow-700">
-              {language === 'en' 
-                ? 'Contact us for additional product verification documentation or if you have specific questions about any product.'
-                : 'Contáctanos para documentación adicional de verificación de productos o si tienes preguntas específicas sobre algún producto.'}
-            </p>
           </div>
         </div>
 

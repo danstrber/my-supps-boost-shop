@@ -13,14 +13,12 @@ interface ProductGridProps {
   userDiscount: number;
 }
 
-const ProductGrid = ({ products, language, onAddToCart, onProductClick, userDiscount }: ProductGridProps) => {
+const ProductGrid = ({ products, language, onAddToCart, onProductClick }: ProductGridProps) => {
   const t = translations[language];
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
       {products.map((product) => {
-        const discountedPrice = product.price * (1 - userDiscount / 100);
-        
         return (
           <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
             <div className="relative mb-4">
@@ -76,20 +74,9 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick, userDisc
               <div className="pt-3 border-t border-gray-100">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex flex-col">
-                    {userDiscount > 0 ? (
-                      <>
-                        <span className="text-lg text-gray-500 line-through">
-                          ${product.price.toFixed(2)}
-                        </span>
-                        <span className="text-2xl md:text-3xl font-bold text-green-600">
-                          ${discountedPrice.toFixed(2)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-2xl md:text-3xl font-bold text-green-600">
-                        ${product.price.toFixed(2)}
-                      </span>
-                    )}
+                    <span className="text-2xl md:text-3xl font-bold text-green-600">
+                      ${product.price.toFixed(2)}
+                    </span>
                   </div>
                 </div>
                 

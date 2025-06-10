@@ -29,7 +29,7 @@ export interface Product {
 export const products: Product[] = [
   {
     id: '1',
-    name: 'Super Drol',
+    name: 'Superdrol',
     price: 34.99,
     image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
     category: 'oral-steroids',
