@@ -11,7 +11,7 @@ interface ProductDetailModalProps {
   product: Product;
   isOpen: boolean;
   onClose: () => void;
-  onAddToCart: (productId: string, quantity: number) => void;
+  onAddToCart: (product: Product) => void;
   language: 'en' | 'es';
   userDiscount: number;
 }
@@ -37,7 +37,7 @@ const ProductDetailModal = ({
   const hasLabTest = product.name === 'Super Drol' || product.name === 'Clenbuterol';
 
   const handleAddToCart = () => {
-    onAddToCart(product.id, quantity);
+    onAddToCart(product);
     onClose();
   };
 
