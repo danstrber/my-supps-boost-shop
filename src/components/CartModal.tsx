@@ -78,12 +78,14 @@ const CartModal = ({
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // Updated to $10
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
+  // For display purposes, show rounded totals but calculate exact totals for BTC
+  const displayFinalTotal = Math.ceil(finalTotal);
+
   // For display and BTC payment, use original amounts
   const displaySubtotal = subtotal;
   const displayDiscountAmount = displaySubtotal * (userDiscount / 100);
   const displaySubtotalAfterDiscount = displaySubtotal - displayDiscountAmount;
   const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // Updated to $10
-  const displayFinalTotal = displaySubtotalAfterDiscount + displayShippingFee;
 
   const handleCheckout = () => {
     if (!isAuthenticated) {

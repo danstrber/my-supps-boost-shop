@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Gift } from 'lucide-react';
@@ -48,20 +49,20 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // UPDATED MATH per requirements
-  const referralDiscount = referralCount > 0 ? 10 : 0; // 10% for first referral signup
+  // UPDATED REFERRAL MATH - Simplified
+  const referralDiscount = referralCount > 0 ? 2.5 : 0; // 2.5% for new user signup
   
   const spendingDiscount = userProfile.referred_by 
     ? Math.floor(userProfile.total_spending / 75) * 6  // Referred users: 6% per $75
     : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
   
-  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 5; // Referrer: 5% per $50 of referred spending
+  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 2; // Referrer: 2% per $50 of referred spending
   const personalReferrerDiscount = referralCount > 0 ? Math.floor(userProfile.total_spending / 50) * 1.75 : 0; // Referrer: 1.75% per $50 personal spending
   
   // ALL discounts STACK but cap at 30%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + personalReferrerDiscount, 30);
 
-  // Free shipping rules: $100 for normal/referred users, $101 for referrers - updated shipping fee to $10
+  // Free shipping rules: $100 for normal/referred users, $101 for referrers
   const freeShippingThreshold = referralCount > 0 ? 101 : 100;
   const freeShipping = userProfile.total_spending >= freeShippingThreshold;
 

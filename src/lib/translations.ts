@@ -1,3 +1,4 @@
+
 export const translations = {
   en: {
     // Navigation
@@ -64,7 +65,7 @@ export const translations = {
     shipping: "Shipping",
     finalTotal: "Final Total",
     freeShippingOver: "Free shipping over $100",
-    shippingFee: "Orders under $100 have a $12 shipping fee",
+    shippingFee: "Orders under $100 have a $10 shipping fee",
     continueShipping: "Continue Shopping",
     yourCartEmpty: "Your cart is empty",
     proceedCheckout: "Proceed to Checkout",
@@ -75,6 +76,23 @@ export const translations = {
     referralLink: "Referral Link",
     referralCode: "Referral Code",
     shareInvite: "Share Invite",
+    
+    // Bitcoin Tutorial
+    bitcoinTutorial: "How to Buy Bitcoin",
+    bitcoinEasy: "Easy Way (KYC Required)",
+    bitcoinAnonymous: "Anonymous Way",
+    bitcoinEasySteps: [
+      "1. Sign up at Coinbase, Kraken, or Binance",
+      "2. Complete identity verification",
+      "3. Add payment method (bank/card)",
+      "4. Buy Bitcoin and send to our address"
+    ],
+    bitcoinAnonSteps: [
+      "1. Visit LocalCoinSwap.com or Bisq",
+      "2. Find cash/gift card sellers",
+      "3. Meet locally or trade online",
+      "4. No ID required for small amounts"
+    ],
     
     // Telegram & Contact
     telegramTitle: "Why Order Through Telegram?",
@@ -97,29 +115,14 @@ export const translations = {
     telegramFastSupport: "Fast support",
     telegramJoinInfo: "Click 'Complete Order' to join our Telegram group and place your order there.",
     
-    // Bitcoin Tutorial
-    bitcoinTutorial: "How to Buy Bitcoin",
-    bitcoinEasy: "Easy Way (KYC Required)",
-    bitcoinAnonymous: "Anonymous Way",
-    bitcoinEasySteps: [
-      "1. Sign up at Coinbase, Kraken, or Binance",
-      "2. Complete identity verification",
-      "3. Add payment method (bank/card)",
-      "4. Buy Bitcoin and send to our address"
-    ],
-    bitcoinAnonSteps: [
-      "1. Visit LocalCoinSwap.com or Bisq",
-      "2. Find cash/gift card sellers",
-      "3. Meet locally or trade online",
-      "4. No ID required for small amounts"
-    ],
+    // Bitcoin Payment
     bitcoinPayment: "Bitcoin Payment",
     bitcoinPaymentDesc: "Pay with Bitcoin for maximum privacy and security.",
     bitcoinWalletInfo: "You will receive our wallet address and the exact amount to send after entering your shipping information.",
     bitcoinPaymentDetails: "Bitcoin Payment Details",
     
     // Checkout
-    wantCheaper: "💡 Want a cheaper price? Get 10% off when you refer a new user!",
+    wantCheaper: "💡 Want a cheaper price? Use a referral code for discounts!",
     sendExact: "Send exactly",
     toWallet: "to this wallet address:",
     afterPayment: "After payment, enter your transaction hash below:",
@@ -140,9 +143,13 @@ export const translations = {
     address: "Address",
     city: "City",
     country: "Country",
+    phoneNumber: "Phone Number",
+    postalCode: "Postal Code",
     yourFullName: "Your full name",
     yourEmail: "your@email.com",
     streetAddress: "Street address",
+    yourPhoneNumber: "Your phone number",
+    yourPostalCode: "Postal code",
     missingInformation: "Missing Information",
     fillAllFields: "Please fill in all shipping information fields.",
     missingTxid: "Missing Transaction ID",
@@ -202,6 +209,7 @@ export const translations = {
     featured: 'Destacado',
     inStock: 'En Stock',
     price: 'Precio',
+    labTested: 'Probado en Laboratorio',
     
     // Product Details
     dosePerCapsule: 'Dosis por cápsula',
@@ -213,7 +221,7 @@ export const translations = {
     effectsOnWomen: 'Efectos en Mujeres',
     safetyInformation: 'Información de Seguridad',
     howItWorks: 'Cómo Funciona',
-    whatToExpect: 'Qué Esperar',
+    whatToExpected: 'Qué Esperar',
     researchBackground: 'Antecedentes de Investigación',
     historyDevelopment: 'Historia y Desarrollo',
     labTestResults: 'Resultados de Laboratorio',
@@ -222,6 +230,10 @@ export const translations = {
     performanceRatings: 'Calificaciones de Rendimiento',
     categories: 'Categorías',
     clickToViewLabResults: 'Haz clic para ver los resultados completos del laboratorio',
+    research: 'Antecedentes de Investigación',
+    safety: 'Información de Seguridad',
+    cycle: 'Información del Ciclo',
+    expectations: 'Qué Esperar',
     
     // Cart
     cart: 'Carrito',
@@ -249,14 +261,48 @@ export const translations = {
     afterPayment: 'Después del Pago, Ingresa el Transaction Hash',
     txidPlaceholder: 'Ingresa el hash de transacción aquí...',
     txidVerification: 'Usaremos este hash para verificar tu pago',
-    wantCheaper: '💡 ¿Quieres un precio más barato? ¡Obtén 10% de descuento cuando refieras a un nuevo usuario!',
+    wantCheaper: '💡 ¿Quieres un precio más barato? ¡Usa un código de referido para descuentos!',
+    
+    // Bitcoin Tutorial
+    bitcoinTutorial: "Cómo Comprar Bitcoin",
+    bitcoinEasy: "Forma Fácil (KYC Requerido)",
+    bitcoinAnonymous: "Forma Anónima",
+    bitcoinEasySteps: [
+      "1. Regístrate en Coinbase, Kraken, o Binance",
+      "2. Completa la verificación de identidad",
+      "3. Agrega método de pago (banco/tarjeta)",
+      "4. Compra Bitcoin y envía a nuestra dirección"
+    ],
+    bitcoinAnonSteps: [
+      "1. Visita LocalCoinSwap.com o Bisq",
+      "2. Encuentra vendedores de efectivo/tarjetas regalo",
+      "3. Reúnete localmente o comercia en línea",
+      "4. No se requiere ID para cantidades pequeñas"
+    ],
+    
+    // Telegram
+    telegramOrdering: 'Pedidos por Telegram',
+    telegramOrderDesc: 'Realiza pedidos a través de nuestro grupo de Telegram para la experiencia más fácil:',
+    telegramEasyTracking: 'Seguimiento fácil de pedidos',
+    telegramAnonymous: 'Pedidos anónimos',
+    telegramDirectComm: 'Comunicación directa',
+    telegramExpertCoaching: 'Asesoramiento experto disponible',
+    telegramFastSupport: 'Soporte rápido',
+    telegramJoinInfo: 'Haz clic en "Completar Pedido" para unirte a nuestro grupo de Telegram y realizar tu pedido allí.',
     
     // Shipping Form
     fullName: 'Nombre Completo',
     address: 'Dirección',
     city: 'Ciudad',
     country: 'País',
+    phoneNumber: 'Número de Teléfono',
+    postalCode: 'Código Postal',
     shippingInformation: 'Información de Envío',
+    yourFullName: 'Tu nombre completo',
+    yourEmail: 'tu@email.com',
+    streetAddress: 'Dirección',
+    yourPhoneNumber: 'Tu número de teléfono',
+    yourPostalCode: 'Código postal',
     
     // Order Process
     completeYourOrder: 'Completa tu Pedido',

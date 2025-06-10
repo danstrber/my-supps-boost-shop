@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +12,8 @@ interface CustomerInfo {
   address: string;
   city: string;
   country: string;
+  phoneNumber: string;
+  postalCode: string;
   txid: string;
 }
 
@@ -33,8 +36,7 @@ const BitcoinPaymentDetails = ({
   const t = translations[language];
 
   // Convert USD to BTC (this would normally be a real-time API call)
-  const roundedAmount = Math.ceil(amount); // Round up the amount
-  const btcAmount = (roundedAmount / 65000).toFixed(8); // Example rate, replace with real API
+  const btcAmount = (amount / 65000).toFixed(8); // Example rate, replace with real API
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -42,13 +44,6 @@ const BitcoinPaymentDetails = ({
       title: t.copied,
       description: `${label} ${t.copiedToClipboard}`,
     });
-  };
-
-  // Basic TXID validation - check if it looks like a valid format but don't verify it's real
-  const validateTxid = (txid: string) => {
-    // Basic format check: 64 character hex string (typical Bitcoin TXID)
-    const txidRegex = /^[a-fA-F0-9]{64}$/;
-    return txidRegex.test(txid);
   };
 
   const handleTxidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,7 +72,7 @@ const BitcoinPaymentDetails = ({
               <Copy className="h-4 w-4" />
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">(≈ ${roundedAmount.toFixed(2)} USD)</p>
+          <p className="text-xs text-gray-500 mt-1">(≈ ${amount.toFixed(0)} USD)</p>
         </div>
 
         <div className="bg-white p-3 rounded border">
@@ -94,28 +89,6 @@ const BitcoinPaymentDetails = ({
               <Copy className="h-4 w-4" />
             </button>
           </div>
-        </div>
-
-        <div className="border-t pt-3">
-          <Label htmlFor="txid" className="text-sm font-medium text-gray-700">
-            {t.afterPayment}
-          </Label>
-          <Input
-            id="txid"
-            value={customerInfo.txid}
-            onChange={handleTxidChange}
-            placeholder={t.txidPlaceholder}
-            className={`mt-1 ${customerInfo.txid && !validateTxid(customerInfo.txid) ? 'border-red-500' : ''}`}
-            required
-          />
-          {customerInfo.txid && !validateTxid(customerInfo.txid) && (
-            <p className="text-xs text-red-600 mt-1">
-              {language === 'en' ? 'Invalid transaction hash format' : 'Formato de hash de transacción inválido'}
-            </p>
-          )}
-          <p className="text-xs text-gray-600 mt-1">
-            {t.txidVerification}
-          </p>
         </div>
       </div>
 

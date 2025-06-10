@@ -56,6 +56,8 @@ const PaymentModal = ({
     address: '',
     city: '',
     country: '',
+    phoneNumber: '',
+    postalCode: '',
     txid: ''
   });
   const [loading, setLoading] = useState(false);
@@ -77,6 +79,8 @@ const PaymentModal = ({
         customerName: customerInfo.fullName,
         customerEmail: customerInfo.email,
         customerAddress: `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.country}`,
+        customerPhone: customerInfo.phoneNumber,
+        customerPostalCode: customerInfo.postalCode,
         paymentMethod: paymentMethod,
         orderItems: cartItems.map(item => 
           `${item.product.name} x${item.quantity} - $${(item.product.price * item.quantity).toFixed(2)}`
@@ -86,7 +90,6 @@ const PaymentModal = ({
         shippingFee: shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`,
         finalTotal: `$${btcPaymentAmount.toFixed(2)}`,
         systemTotal: `$${systemFinalTotal.toFixed(2)}`,
-        transactionHash: customerInfo.txid || 'N/A',
         walletAddress: walletAddress
       };
 
@@ -114,7 +117,7 @@ const PaymentModal = ({
     
     if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
       // Validate shipping info first
-      if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country) {
+      if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
         toast({
           title: t.missingInformation,
           description: t.fillAllFields,
@@ -130,28 +133,23 @@ const PaymentModal = ({
 
     try {
       if (paymentMethod === 'telegram') {
+        // Validate all shipping info for Telegram too
+        if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
+          toast({
+            title: t.missingInformation,
+            description: t.fillAllFields,
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+        
         window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
         toast({
           title: t.redirectedTelegram,
           description: t.completeTelegramOrder,
         });
         onClose();
-        return;
-      }
-
-      // For Bitcoin payment, validate TXID format
-      const validateTxid = (txid: string) => {
-        const txidRegex = /^[a-fA-F0-9]{64}$/;
-        return txidRegex.test(txid);
-      };
-
-      if (!customerInfo.txid || !validateTxid(customerInfo.txid)) {
-        toast({
-          title: t.missingTxid,
-          description: language === 'en' ? 'Please enter a valid transaction hash' : 'Por favor ingresa un hash de transacción válido',
-          variant: "destructive"
-        });
-        setLoading(false);
         return;
       }
 
@@ -175,8 +173,7 @@ const PaymentModal = ({
         payment_details: {
           customer_info: customerInfo,
           btc_amount_sent: btcPaymentAmount, // Store actual BTC amount
-          wallet_address: walletAddress,
-          txid: customerInfo.txid
+          wallet_address: walletAddress
         },
         status: 'pending'
       };

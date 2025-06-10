@@ -27,8 +27,8 @@ const ReferralDetails = ({
       <div className="bg-white rounded-lg p-4 border border-green-200">
         <h4 className="font-semibold text-green-800 mb-2">💰 {language === 'en' ? 'How It Works' : 'Cómo Funciona'}:</h4>
         <ul className="space-y-1 text-gray-700">
-          <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
-          <li>• {language === 'en' ? 'Referrer gets: 5% per $50 spent by referred users' : 'Referidor obtiene: 5% por cada $50 gastados por usuarios referidos'}</li>
+          <li>• {language === 'en' ? 'Get 2.5% discount when someone signs up with your code' : 'Obtén 2.5% descuento cuando alguien se registre con tu código'}</li>
+          <li>• {language === 'en' ? 'Referrer gets: 2% per $50 spent by referred users' : 'Referidor obtiene: 2% por cada $50 gastados por usuarios referidos'}</li>
           <li>• {language === 'en' ? 'Referrer gets: 1.75% per $50 spent personally' : 'Referidor obtiene: 1.75% por cada $50 gastados personalmente'}</li>
           <li>• {language === 'en' ? 'Normal users: 2% per $50 spent' : 'Usuarios normales: 2% por cada $50 gastados'}</li>
           <li>• {language === 'en' ? 'Referred users: 6% per $75 spent' : 'Usuarios referidos: 6% por cada $75 gastados'}</li>
@@ -53,16 +53,6 @@ const ReferralDetails = ({
               <strong>📦 {language === 'en' ? `Need $${freeShippingThreshold} for free shipping` : `Necesitas $${freeShippingThreshold} para envío gratis`}</strong>
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg p-4 border border-green-200">
-        <h4 className="font-semibold text-green-800 mb-2">💡 {language === 'en' ? 'Examples' : 'Ejemplos'}:</h4>
-        <div className="space-y-2 text-xs text-gray-700">
-          <div><strong>{language === 'en' ? 'Normal User' : 'Usuario Normal'}:</strong> {language === 'en' ? '$100 spent = 4% discount + FREE shipping' : '$100 gastados = 4% descuento + envío GRATIS'}</div>
-          <div><strong>{language === 'en' ? 'Referred User' : 'Usuario Referido'}:</strong> {language === 'en' ? '$150 spent = 12% discount + FREE shipping' : '$150 gastados = 12% descuento + envío GRATIS'}</div>
-          <div><strong>{language === 'en' ? 'Referrer (1 referral)' : 'Referidor (1 referido)'}:</strong> {language === 'en' ? '10% signup + personal spending + referred spending (stacked)' : '10% registro + gasto personal + gasto de referidos (acumulado)'}</div>
-          <div><strong>{language === 'en' ? 'Power Referrer' : 'Referidor Avanzado'}:</strong> {language === 'en' ? '1 referral (10%) + $200 personal (7%) + $500 referred (17.5%) = 30% max + FREE at $101' : '1 referido (10%) + $200 personal (7%) + $500 referidos (17.5%) = 30% máx + GRATIS a $101'}</div>
         </div>
       </div>
     </div>
