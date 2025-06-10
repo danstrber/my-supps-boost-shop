@@ -50,13 +50,8 @@ const Header = ({
               onClick={() => onPageChange('home')}
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
-              <img 
-                src="/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png" 
-                alt="SARMs Store" 
-                className="h-8 w-auto"
-              />
-              <span className="font-bold text-xl text-gray-900 hidden sm:block">
-                SARMs Store
+              <span className="font-bold text-xl text-gray-900">
+                Premium Research Compounds
               </span>
             </button>
           </div>
