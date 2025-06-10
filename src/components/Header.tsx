@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -53,12 +54,16 @@ const Header = ({
               )}
             </div>
 
-            {/* Logo - Simplified */}
+            {/* Logo with new image */}
             <div 
               className="flex items-center cursor-pointer ml-16" 
               onClick={() => onPageChange('home')}
             >
-              <h1 className="text-2xl md:text-3xl font-bold text-green-600">MySupps</h1>
+              <img 
+                src="/lovable-uploads/7eaf0b79-d90d-4ac9-a577-b5a57d1272f1.png" 
+                alt="MySupps Logo" 
+                className="h-8 md:h-10 w-auto"
+              />
             </div>
 
             {/* Navigation - Desktop Only */}

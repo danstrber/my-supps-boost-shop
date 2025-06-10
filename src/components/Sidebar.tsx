@@ -26,12 +26,12 @@ const Sidebar = ({
 }: SidebarProps) => {
   const categories = [
     { id: 'all', nameEn: 'All Products', nameEs: 'Todos los Productos', icon: '🛍️' },
-    { id: 'protein', nameEn: 'Protein', nameEs: 'Proteína', icon: '💪' },
-    { id: 'pre-workout', nameEn: 'Pre-Workout', nameEs: 'Pre-Entreno', icon: '⚡' },
-    { id: 'vitamins', nameEn: 'Vitamins', nameEs: 'Vitaminas', icon: '💊' },
+    { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs', icon: '💪' },
+    { id: 'oral-steroids', nameEn: 'Oral Steroids', nameEs: 'Esteroides Orales', icon: '💊' },
     { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores', icon: '🔥' },
-    { id: 'creatine', nameEn: 'Creatine', nameEs: 'Creatina', icon: '⚗️' },
-    { id: 'amino-acids', nameEn: 'Amino Acids', nameEs: 'Aminoácidos', icon: '🧬' },
+    { id: 'pct', nameEn: 'PCT', nameEs: 'PCT', icon: '🔄' },
+    { id: 'hormones', nameEn: 'Hormones', nameEs: 'Hormonas', icon: '⚗️' },
+    { id: 'growth', nameEn: 'Growth', nameEs: 'Crecimiento', icon: '📈' },
   ];
 
   if (!isOpen) return null;
