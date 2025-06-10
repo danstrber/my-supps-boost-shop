@@ -49,7 +49,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // NEW REFERRAL RULES
+  // UPDATED REFERRAL RULES
   // First referral: 10%, each additional: 2.25% extra
   const referralDiscount = referralCount > 0 ? 10 + ((referralCount - 1) * 2.25) : 0;
   
@@ -58,9 +58,9 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   
   // Spending discount based on user type
   const spendingDiscount = isReferrer
-    ? Math.floor(userProfile.total_spending / 50) * 4  // Referrers: 4% per $50
+    ? Math.floor(userProfile.total_spending / 50) * 4.25  // Referrers: 4.25% per $50
     : userProfile.referred_by 
-      ? Math.floor(userProfile.total_spending / 75) * 6  // Referred users: 6% per $75
+      ? Math.floor(userProfile.total_spending / 75) * 6.5  // Referred users: 6.5% per $75
       : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
   
   const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 3; // Referrer: 3% per $50 of referred spending
@@ -68,8 +68,8 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   // ALL discounts STACK but cap at 30%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount, 30);
 
-  // Free shipping rules: $100 for normal/referred users, $101 for referrers
-  const freeShippingThreshold = isReferrer ? 101 : 100;
+  // Free shipping rules: $100 for normal/referred users, $110 for referrers ($10 shipping)
+  const freeShippingThreshold = isReferrer ? 110 : 100;
   const freeShipping = userProfile.total_spending >= freeShippingThreshold;
 
   return (

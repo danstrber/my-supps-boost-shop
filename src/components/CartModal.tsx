@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -74,8 +73,9 @@ const CartModal = ({
   
   // Free shipping threshold: $100 for normal/referred users, $101 for referrers
   const isReferrer = userProfile && userProfile.referred_spending > 0;
-  const freeShippingThreshold = isReferrer ? 101 : 100;
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // Updated to $10
+  // Calculate shipping (free shipping threshold based on subtotal after discount)
+  const freeShippingThreshold = isReferrer ? 110 : 100; // $110 for referrers, $100 for others
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // $10 shipping fee
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   // For display purposes, show rounded totals but calculate exact totals for BTC

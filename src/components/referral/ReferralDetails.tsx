@@ -30,10 +30,10 @@ const ReferralDetails = ({
           <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each additional referral: +2.25%' : 'Cada referido adicional: +2.25%'}</li>
           <li>• {language === 'en' ? 'Referrers earn: 3% per $50 spent by referrals' : 'Referidores ganan: 3% por cada $50 de referidos'}</li>
-          <li>• {language === 'en' ? 'Referrers earn: 4% per $50 spent personally' : 'Referidores ganan: 4% por cada $50 personal'}</li>
+          <li>• {language === 'en' ? 'Referrers earn: 4.25% per $50 spent personally' : 'Referidores ganan: 4.25% por cada $50 personal'}</li>
           <li>• {language === 'en' ? 'Normal users: 2% per $50 spent' : 'Usuarios normales: 2% por cada $50'}</li>
-          <li>• {language === 'en' ? 'Referred users: 6% per $75 spent' : 'Usuarios referidos: 6% por cada $75'}</li>
-          <li>• {language === 'en' ? 'Free shipping: $100 (referrers: $101)' : 'Envío gratis: $100 (referidores: $101)'}</li>
+          <li>• {language === 'en' ? 'Referred users: 6.5% per $75 spent' : 'Usuarios referidos: 6.5% por cada $75'}</li>
+          <li>• {language === 'en' ? 'Free shipping: $100 (referrers: $110)' : 'Envío gratis: $100 (referidores: $110)'}</li>
           <li><strong>• {language === 'en' ? 'All discounts STACK (max 30%)' : 'Todos los descuentos se ACUMULAN (máx 30%)'}</strong></li>
         </ul>
       </div>
