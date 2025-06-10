@@ -49,22 +49,27 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // CORRECTED REFERRAL MATH
+  // NEW REFERRAL RULES
   // First referral: 10%, each additional: 2.25% extra
   const referralDiscount = referralCount > 0 ? 10 + ((referralCount - 1) * 2.25) : 0;
   
-  const spendingDiscount = userProfile.referred_by 
-    ? Math.floor(userProfile.total_spending / 75) * 6  // Referred users: 6% per $75
-    : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
+  // If user has made referrals, they become a referrer and use referrer spending rules
+  const isReferrer = referralCount > 0;
   
-  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 5; // Referrer: 5% per $50 of referred spending
-  const personalReferrerDiscount = referralCount > 0 ? Math.floor(userProfile.total_spending / 50) * 2.5 : 0; // Referrer: 2.5% per $50 personal spending
+  // Spending discount based on user type
+  const spendingDiscount = isReferrer
+    ? Math.floor(userProfile.total_spending / 50) * 4  // Referrers: 4% per $50
+    : userProfile.referred_by 
+      ? Math.floor(userProfile.total_spending / 75) * 6  // Referred users: 6% per $75
+      : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
+  
+  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 3; // Referrer: 3% per $50 of referred spending
   
   // ALL discounts STACK but cap at 30%
-  const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + personalReferrerDiscount, 30);
+  const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount, 30);
 
   // Free shipping rules: $100 for normal/referred users, $101 for referrers
-  const freeShippingThreshold = referralCount > 0 ? 101 : 100;
+  const freeShippingThreshold = isReferrer ? 101 : 100;
   const freeShipping = userProfile.total_spending >= freeShippingThreshold;
 
   return (
@@ -122,16 +127,29 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         language={language}
       />
 
+      {/* Simplified Rules Display */}
+      <div className="bg-white rounded-lg p-3 mb-4 border border-green-200">
+        <h4 className="font-semibold text-green-800 mb-2 text-sm">
+          📋 {language === 'en' ? 'Simple Rules' : 'Reglas Simples'}:
+        </h4>
+        <ul className="space-y-1 text-xs text-gray-700">
+          <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
+          <li>• {language === 'en' ? 'Each extra referral: +2.25%' : 'Cada referido extra: +2.25%'}</li>
+          <li>• {language === 'en' ? 'All discounts stack up to 30%' : 'Todos los descuentos se acumulan hasta 30%'}</li>
+          <li>• {language === 'en' ? 'Free shipping at $100' : 'Envío gratis a $100'}</li>
+        </ul>
+      </div>
+
       {showDetails && (
         <ReferralDetails
           language={language}
           referralDiscount={referralDiscount}
           spendingDiscount={spendingDiscount}
           referredSpendingDiscount={referredSpendingDiscount}
-          personalReferrerDiscount={personalReferrerDiscount}
           totalDiscount={totalDiscount}
           freeShipping={freeShipping}
           freeShippingThreshold={freeShippingThreshold}
+          isReferrer={isReferrer}
         />
       )}
     </div>
