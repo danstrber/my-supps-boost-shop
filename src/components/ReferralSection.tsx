@@ -49,15 +49,16 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // UPDATED REFERRAL MATH - Simplified
-  const referralDiscount = referralCount > 0 ? 2.5 : 0; // 2.5% for new user signup
+  // CORRECTED REFERRAL MATH
+  // First referral: 10%, each additional: 2.25% extra
+  const referralDiscount = referralCount > 0 ? 10 + ((referralCount - 1) * 2.25) : 0;
   
   const spendingDiscount = userProfile.referred_by 
     ? Math.floor(userProfile.total_spending / 75) * 6  // Referred users: 6% per $75
     : Math.floor(userProfile.total_spending / 50) * 2; // Normal users: 2% per $50
   
-  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 2; // Referrer: 2% per $50 of referred spending
-  const personalReferrerDiscount = referralCount > 0 ? Math.floor(userProfile.total_spending / 50) * 1.75 : 0; // Referrer: 1.75% per $50 personal spending
+  const referredSpendingDiscount = Math.floor(userProfile.referred_spending / 50) * 5; // Referrer: 5% per $50 of referred spending
+  const personalReferrerDiscount = referralCount > 0 ? Math.floor(userProfile.total_spending / 50) * 2.5 : 0; // Referrer: 2.5% per $50 personal spending
   
   // ALL discounts STACK but cap at 30%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + personalReferrerDiscount, 30);
@@ -86,7 +87,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
       {/* Current Discount Display */}
       <div className="bg-white rounded-lg p-4 mb-4 border border-green-200">
         <div className="text-center">
-          <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount}%</div>
+          <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount.toFixed(1)}%</div>
           <div className="text-xs md:text-sm text-gray-600">
             {language === 'en' ? 'Total Discount (Stacking)' : 'Descuento Total (Acumulativo)'}
           </div>
