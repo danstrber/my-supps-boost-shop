@@ -49,25 +49,28 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
     }
   };
 
-  // UPDATED REFERRAL RULES - MAX CAP 32%
-  // First referral: 10%, each additional: 2.25% extra
-  const referralDiscount = referralCount > 0 ? 10 + ((referralCount - 1) * 2.25) : 0;
+  // UPDATED REFERRAL RULES
+  // Each new referral: 2.5%
+  const referralDiscount = referralCount * 2.5;
   
   // If user has made referrals, they become a referrer and use referrer spending rules
   const isReferrer = referralCount > 0;
   
   // Spending discount based on user type - ROUNDING UP RULE
-  // NEW: Referrers get 4% per $50 up to $150 max, then no more
+  // Referrers get nothing per their own spending (only from referrals)
   const spendingDiscount = isReferrer
-    ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 4, Math.floor(150 / 50) * 4)  // Referrers: 4% per $50 up to $150 max (12%)
+    ? 0  // Referrers get 0% from their own spending
     : userProfile.referred_by 
-      ? Math.floor(Math.ceil(userProfile.total_spending) / 75) * 6.5  // Referred users: 6.5% per $75 (rounded up)
+      ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5  // Referred users: 6.5% per $50 (rounded up)
       : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2; // Normal users: 2% per $50 (rounded up)
   
-  const referredSpendingDiscount = Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 3; // Referrer: 3% per $50 of referred spending (rounded up)
+  // Referrers get 5% per $50 of referred spending (rounded up), but max $150 can be used (19.5% max)
+  const maxReferredSpendingForDiscount = 150; // $150 max can contribute to discount
+  const effectiveReferredSpending = Math.min(userProfile.referred_spending, maxReferredSpendingForDiscount);
+  const referredSpendingDiscount = Math.floor(Math.ceil(effectiveReferredSpending) / 50) * 5; // 5% per $50 of referred spending (max 19.5%)
   
-  // ALL discounts STACK but cap at 32%
-  const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount, 32);
+  // ALL discounts STACK but individual caps apply
+  const totalDiscount = referralDiscount + spendingDiscount + referredSpendingDiscount;
 
   // Free shipping rules: $100 for normal/referred users, $110 for referrers ($10 shipping)
   const freeShippingThreshold = isReferrer ? 110 : 100;
@@ -101,7 +104,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         <div className="text-center">
           <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount.toFixed(1)}%</div>
           <div className="text-xs md:text-sm text-gray-600">
-            {language === 'en' ? 'Total Discount (Max 32%)' : 'Descuento Total (Máx 32%)'}
+            {language === 'en' ? 'Total Discount' : 'Descuento Total'}
           </div>
           {freeShipping && (
             <div className="mt-2 text-sm font-semibold text-blue-600">
@@ -140,20 +143,17 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
           📋 {language === 'en' ? 'Simple Rules' : 'Reglas Simples'}:
         </h4>
         <ul className="space-y-1 text-xs text-gray-700">
-          <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
-          <li>• {language === 'en' ? 'Each extra referral: +2.25%' : 'Cada referido extra: +2.25%'}</li>
-          <li>• {language === 'en' ? 'Referrers: 4% per $50 spent (max $150)' : 'Referidores: 4% por $50 gastados (máx $150)'}</li>
-          <li>• {language === 'en' ? 'All discounts stack up to 32%' : 'Todos los descuentos se acumulan hasta 32%'}</li>
-          <li>• {language === 'en' ? 'Over 25% discounts only on $150+ orders' : 'Descuentos sobre 25% solo en pedidos $150+'}</li>
+          <li>• {language === 'en' ? 'Each referral: 2.5% discount' : 'Cada referido: 2.5% descuento'}</li>
+          <li>• {language === 'en' ? 'Referrers: 5% per $50 of referral spending (max $150 = 19.5%)' : 'Referidores: 5% por $50 de gastos de referidos (máx $150 = 19.5%)'}</li>
+          <li>• {language === 'en' ? 'Referred users: 6.5% per $50 spent' : 'Usuarios referidos: 6.5% por $50 gastados'}</li>
+          <li>• {language === 'en' ? 'Normal users: 2% per $50 spent' : 'Usuarios normales: 2% por $50 gastados'}</li>
+          <li>• {language === 'en' ? 'Over 25% discounts only on $135+ orders' : 'Descuentos sobre 25% solo en pedidos $135+'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100' : 'Envío gratis a $100'}</li>
         </ul>
       </div>
 
       {/* Clickable referral tip */}
-      <div 
-        className="bg-green-100 border border-green-300 p-3 rounded-lg text-center cursor-pointer hover:bg-green-200 transition-colors"
-        onClick={handleReferralClick}
-      >
+      <div className="bg-green-100 border border-green-300 p-3 rounded-lg text-center">
         <p className="text-green-700 text-sm font-medium">
           {language === 'en' ? 'Want cheaper prices? Refer friends and get discounts!' : '¿Quieres precios más baratos? ¡Refiere amigos y obtén descuentos!'}
         </p>

@@ -41,7 +41,7 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
     // Update user's total spending
     const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
     
-    // NEW RULE: Reset referred users to base 10% discount after first purchase
+    // NEW RULE: Reset referred users to base discount after first purchase
     // This prevents permanent high discounts
     let updateData: any = { total_spending: newTotalSpending };
     

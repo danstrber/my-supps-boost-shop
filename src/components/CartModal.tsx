@@ -70,8 +70,8 @@ const CartModal = ({
   const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
   const systemSubtotal = Math.ceil(subtotal); // Round up for system calculations
   
-  // NEW RULE: Over 25% discounts only on $150+ orders (changed from $100)
-  const cappedDiscount = systemSubtotal >= 150 ? userDiscount : Math.min(userDiscount, 25);
+  // NEW RULE: Over 25% discounts only on $135+ orders (changed from $150)
+  const cappedDiscount = systemSubtotal >= 135 ? userDiscount : Math.min(userDiscount, 25);
   
   const discountAmount = systemSubtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = systemSubtotal - discountAmount;
@@ -150,13 +150,13 @@ const CartModal = ({
               language={language}
             />
 
-            {/* Discount limitation notice - updated to $150 */}
-            {userDiscount > 25 && systemSubtotal < 150 && (
+            {/* Discount limitation notice - updated to $135 */}
+            {userDiscount > 25 && systemSubtotal < 135 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">
                   {language === 'en' 
-                    ? `Discounts over 25% are limited to orders $150+. Current discount: ${cappedDiscount}%`
-                    : `Descuentos sobre 25% están limitados a pedidos $150+. Descuento actual: ${cappedDiscount}%`
+                    ? `Discounts over 25% are limited to orders $135+. Current discount: ${cappedDiscount}%`
+                    : `Descuentos sobre 25% están limitados a pedidos $135+. Descuento actual: ${cappedDiscount}%`
                   }
                 </p>
               </div>

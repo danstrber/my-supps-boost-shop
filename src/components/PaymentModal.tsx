@@ -94,6 +94,7 @@ const PaymentModal = ({
         walletAddress: walletAddress
       };
 
+      console.log('Sending order notification via Formspree...');
       const response = await fetch('https://formspree.io/f/mqaqvlye', {
         method: 'POST',
         headers: {
@@ -109,6 +110,7 @@ const PaymentModal = ({
       console.log('Order notification sent successfully via Formspree');
     } catch (error) {
       console.error('Failed to send Formspree email:', error);
+      // Don't block order creation if email fails
     }
   };
 
@@ -151,6 +153,7 @@ const PaymentModal = ({
     }
 
     setLoading(true);
+    console.log('Starting order creation process...');
 
     try {
       // Create order in database with system total (rounded up)
@@ -173,12 +176,13 @@ const PaymentModal = ({
         payment_details: {
           customer_info: customerInfo,
           btc_amount_sent: btcPaymentAmount,
-          wallet_address: walletAddress
+          wallet_address: walletAddress,
+          transaction_id: customerInfo.txid
         },
         status: 'pending'
       };
 
-      console.log('Creating order with user_id:', userProfile?.auth_id);
+      console.log('Creating order in database...', orderData);
 
       const { data: order, error } = await supabase
         .from('orders')
@@ -190,6 +194,8 @@ const PaymentModal = ({
         console.error('Supabase order creation error:', error);
         throw error;
       }
+
+      console.log('Order created successfully:', order);
 
       // Create pending purchase with system total for referral calculations
       createPendingPurchase(order.id, {
@@ -207,6 +213,18 @@ const PaymentModal = ({
         description: t.orderPlaced,
       });
 
+      // Clear the form and close modal
+      setCustomerInfo({
+        fullName: '',
+        email: userProfile?.email || '',
+        address: '',
+        city: '',
+        country: 'US',
+        phoneNumber: '',
+        postalCode: '',
+        txid: ''
+      });
+      setShowBitcoinDetails(false);
       onClose();
       
     } catch (error: any) {
