@@ -190,5 +190,3 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
 };
 
 export default ShippingForm;
-
-</edits_to_apply>
