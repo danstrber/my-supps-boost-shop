@@ -19,6 +19,7 @@ console.log('Index component loading...');
 const Index = () => {
   console.log('Index component rendering...');
   
+  // Force language to default to English
   const [language, setLanguage] = useState<'en' | 'es'>('en');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -35,6 +36,11 @@ const Index = () => {
   const { sidebarOpen, handleMenuToggle, handleSidebarClose } = useSidebar();
 
   console.log('Index state initialized', { loading, isAuthenticated });
+
+  // Force English on mount and ensure it stays English
+  useEffect(() => {
+    setLanguage('en');
+  }, []);
 
   // Check for referral code in URL on mount
   useEffect(() => {
