@@ -52,7 +52,7 @@ const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) 
             ₿ {t.bitcoinPayment}
           </h4>
           <p className="text-orange-700 text-sm mb-2">
-            {t.bitcoinPaymentDesc}
+            {t.bitcoinPaymentDetails}
           </p>
           <p className="text-orange-600 text-xs">
             {t.bitcoinWalletInfo}
