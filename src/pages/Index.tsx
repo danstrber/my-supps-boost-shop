@@ -14,7 +14,11 @@ import { useCart } from '@/hooks/useCart';
 import { useSidebar } from '@/hooks/useSidebar';
 import { getReferralCodeFromUrl } from '@/lib/referral';
 
+console.log('Index component loading...');
+
 const Index = () => {
+  console.log('Index component rendering...');
+  
   const [language, setLanguage] = useState<'en' | 'es'>('en');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -30,17 +34,23 @@ const Index = () => {
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart } = useCart();
   const { sidebarOpen, handleMenuToggle, handleSidebarClose } = useSidebar();
 
+  console.log('Index state initialized', { loading, isAuthenticated });
+
   // Check for referral code in URL on mount
   useEffect(() => {
-    const referralCode = getReferralCodeFromUrl();
-    if (referralCode) {
-      console.log('Detected referral code from URL:', referralCode);
-      setDetectedReferralCode(referralCode);
-      // Auto-open signup modal if user is not authenticated
-      if (!isAuthenticated) {
-        setAuthMode('signup');
-        setIsAuthModalOpen(true);
+    try {
+      const referralCode = getReferralCodeFromUrl();
+      if (referralCode) {
+        console.log('Detected referral code from URL:', referralCode);
+        setDetectedReferralCode(referralCode);
+        // Auto-open signup modal if user is not authenticated
+        if (!isAuthenticated) {
+          setAuthMode('signup');
+          setIsAuthModalOpen(true);
+        }
       }
+    } catch (error) {
+      console.error('Error checking referral code:', error);
     }
   }, [isAuthenticated]);
 
@@ -60,12 +70,15 @@ const Index = () => {
 
   // Show loading state while auth is initializing
   if (loading) {
+    console.log('Showing loading state...');
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-lg">Loading...</div>
       </div>
     );
   }
+
+  console.log('Index rendering main content', { currentPage });
 
   // Render account page
   if (currentPage === 'account') {
@@ -174,5 +187,7 @@ const Index = () => {
     </div>
   );
 };
+
+console.log('Index component defined');
 
 export default Index;
