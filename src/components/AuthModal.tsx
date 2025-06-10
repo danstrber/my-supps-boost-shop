@@ -172,6 +172,11 @@ const AuthModal = ({
   };
 
   const handleGoogleSignIn = async () => {
+    // Only allow Google sign in for login and signup modes, not confirm-email
+    if (mode === 'confirm-email') {
+      return;
+    }
+
     setLoading(true);
     try {
       const { error } = await handleGoogleAuth(mode, referralCode);
