@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -66,8 +65,8 @@ const PaymentModal = ({
 
   // Round up cart total for system calculations but keep original for BTC payment
   const systemTotal = Math.ceil(orderTotal);
-  const systemFinalTotal = systemTotal + shippingFee;
-  const btcPaymentAmount = finalTotal; // Keep original .99 pricing for BTC
+  const systemFinalTotal = Math.ceil(finalTotal); // Round up final total for display
+  const btcPaymentAmount = systemFinalTotal; // Use rounded amount for BTC
 
   const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
 
@@ -140,11 +139,16 @@ const PaymentModal = ({
         return;
       }
 
-      // For Bitcoin payment, validate TXID
-      if (!customerInfo.txid) {
+      // For Bitcoin payment, validate TXID format
+      const validateTxid = (txid: string) => {
+        const txidRegex = /^[a-fA-F0-9]{64}$/;
+        return txidRegex.test(txid);
+      };
+
+      if (!customerInfo.txid || !validateTxid(customerInfo.txid)) {
         toast({
           title: t.missingTxid,
-          description: t.enterTxid,
+          description: language === 'en' ? 'Please enter a valid transaction hash' : 'Por favor ingresa un hash de transacción válido',
           variant: "destructive"
         });
         setLoading(false);
@@ -229,12 +233,12 @@ const PaymentModal = ({
           orderTotal={orderTotal}
           discount={discount}
           shippingFee={shippingFee}
-          finalTotal={finalTotal}
+          finalTotal={systemFinalTotal}
           language={language}
         />
 
         {/* Referral tip */}
-        <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center">
+        <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors">
           <p className="text-green-700 text-sm font-medium">
             {t.wantCheaper}
           </p>
@@ -271,7 +275,7 @@ const PaymentModal = ({
 
           {showBitcoinDetails && paymentMethod === 'bitcoin' && (
             <BitcoinPaymentDetails
-              amount={btcPaymentAmount}
+              amount={systemFinalTotal}
               walletAddress={walletAddress}
               customerInfo={customerInfo}
               onInfoChange={setCustomerInfo}

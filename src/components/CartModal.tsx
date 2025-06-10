@@ -75,14 +75,14 @@ const CartModal = ({
   // Free shipping threshold: $100 for normal/referred users, $101 for referrers
   const isReferrer = userProfile && userProfile.referred_spending > 0;
   const freeShippingThreshold = isReferrer ? 101 : 100;
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 12;
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // Updated to $10
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   // For display and BTC payment, use original amounts
   const displaySubtotal = subtotal;
   const displayDiscountAmount = displaySubtotal * (userDiscount / 100);
   const displaySubtotalAfterDiscount = displaySubtotal - displayDiscountAmount;
-  const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 12;
+  const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // Updated to $10
   const displayFinalTotal = displaySubtotalAfterDiscount + displayShippingFee;
 
   const handleCheckout = () => {

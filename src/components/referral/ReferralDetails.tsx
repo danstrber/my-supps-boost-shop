@@ -34,7 +34,7 @@ const ReferralDetails = ({
           <li>• {language === 'en' ? 'Referred users: 6% per $75 spent' : 'Usuarios referidos: 6% por cada $75 gastados'}</li>
           <li>• {language === 'en' ? 'Normal/Referred: FREE shipping at $100' : 'Normal/Referidos: ENVÍO GRATIS a $100'}</li>
           <li>• {language === 'en' ? 'Referrers: FREE shipping at $101' : 'Referidores: ENVÍO GRATIS a $101'}</li>
-          <li>• {language === 'en' ? 'Shipping fee: $12' : 'Costo de envío: $12'}</li>
+          <li>• {language === 'en' ? 'Shipping fee: $10' : 'Costo de envío: $10'}</li>
           <li><strong>• {language === 'en' ? 'All discounts STACK (cumulative up to 30% max)' : 'Todos los descuentos se ACUMULAN (acumulativo hasta 30% máximo)'}</strong></li>
         </ul>
       </div>

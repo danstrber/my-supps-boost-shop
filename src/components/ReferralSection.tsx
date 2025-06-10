@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Gift } from 'lucide-react';
@@ -62,7 +61,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   // ALL discounts STACK but cap at 30%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + personalReferrerDiscount, 30);
 
-  // Free shipping rules: $100 for normal/referred users, $101 for referrers
+  // Free shipping rules: $100 for normal/referred users, $101 for referrers - updated shipping fee to $10
   const freeShippingThreshold = referralCount > 0 ? 101 : 100;
   const freeShipping = userProfile.total_spending >= freeShippingThreshold;
 
