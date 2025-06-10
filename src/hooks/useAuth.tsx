@@ -7,6 +7,9 @@ interface AuthContextType {
   userProfile: UserProfile | null;
   loading: boolean;
   refreshProfile: () => Promise<void>;
+  isAuthenticated: boolean;
+  userDiscount: number;
+  handleAuthAction: (action: 'login' | 'signup' | 'logout') => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,6 +52,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUserProfile(null);
     }
   };
+
+  const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
+    if (action === 'logout') {
+      supabase.auth.signOut();
+      setUserProfile(null);
+    }
+    // For login/signup, the modal will handle these actions
+  };
+
+  const isAuthenticated = !!userProfile;
+  
+  // Calculate user discount based on referrals and spending
+  const userDiscount = userProfile ? Math.min(
+    (userProfile.referred_by ? 
+      Math.floor(userProfile.total_spending / 50) * 6 : 
+      Math.floor(userProfile.referred_spending / 50) * 2
+    ), 30
+  ) : 0;
 
   useEffect(() => {
     let mounted = true;
@@ -101,7 +122,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ userProfile, loading, refreshProfile }}>
+    <AuthContext.Provider value={{ 
+      userProfile, 
+      loading, 
+      refreshProfile, 
+      isAuthenticated, 
+      userDiscount, 
+      handleAuthAction 
+    }}>
       {children}
     </AuthContext.Provider>
   );
