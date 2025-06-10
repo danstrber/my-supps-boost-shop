@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translations } from '@/lib/translations';
+import { useToast } from '@/hooks/use-toast';
 
 interface CustomerInfo {
   fullName: string;
@@ -24,6 +25,7 @@ interface ShippingFormProps {
 
 const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: ShippingFormProps) => {
   const t = translations[language];
+  const { toast } = useToast();
 
   const handleChange = (field: keyof CustomerInfo, value: string) => {
     // Auto-format phone number as US number
@@ -67,6 +69,29 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
       onInfoChange({ ...customerInfo, [field]: value });
     }
   };
+
+  const handleCountryChange = (value: string) => {
+    if (value === 'other') {
+      toast({
+        title: language === 'en' ? 'Contact Required' : 'Contacto Requerido',
+        description: language === 'en' 
+          ? 'For orders outside USA, please contact us on Telegram first'
+          : 'Para pedidos fuera de USA, por favor contáctanos en Telegram primero',
+        variant: "default"
+      });
+      // Open Telegram
+      window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+      return;
+    }
+    handleChange('country', value);
+  };
+
+  // Set default country to US if not set
+  React.useEffect(() => {
+    if (!customerInfo.country) {
+      onInfoChange({ ...customerInfo, country: 'US' });
+    }
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -125,19 +150,13 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
 
         <div>
           <Label htmlFor="country">{t.country} *</Label>
-          <Select value={customerInfo.country} onValueChange={(value) => handleChange('country', value)}>
+          <Select value={customerInfo.country || 'US'} onValueChange={handleCountryChange}>
             <SelectTrigger>
               <SelectValue placeholder={language === 'en' ? 'Select country' : 'Seleccionar país'} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="US">🇺🇸 United States</SelectItem>
-              <SelectItem value="CA">🇨🇦 Canada</SelectItem>
-              <SelectItem value="MX">🇲🇽 Mexico</SelectItem>
-              <SelectItem value="GB">🇬🇧 United Kingdom</SelectItem>
-              <SelectItem value="DE">🇩🇪 Germany</SelectItem>
-              <SelectItem value="FR">🇫🇷 France</SelectItem>
-              <SelectItem value="AU">🇦🇺 Australia</SelectItem>
-              <SelectItem value="other">{language === 'en' ? 'Other' : 'Otro'}</SelectItem>
+              <SelectItem value="other">{language === 'en' ? 'Other (Contact Telegram)' : 'Otro (Contactar Telegram)'}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -166,23 +185,10 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
           />
         </div>
       </div>
-
-      {paymentMethod === 'bitcoin' && (
-        <div>
-          <Label htmlFor="txid">
-            {language === 'en' ? 'Transaction ID (after payment)' : 'ID de Transacción (después del pago)'}
-          </Label>
-          <Input
-            id="txid"
-            type="text"
-            placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
-            value={customerInfo.txid}
-            onChange={(e) => handleChange('txid', e.target.value)}
-          />
-        </div>
-      )}
     </div>
   );
 };
 
 export default ShippingForm;
+
+</edits_to_apply>

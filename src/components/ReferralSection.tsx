@@ -57,8 +57,9 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   const isReferrer = referralCount > 0;
   
   // Spending discount based on user type - ROUNDING UP RULE
+  // NEW: Referrers get 4% per $50 up to $150 max, then no more
   const spendingDiscount = isReferrer
-    ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 4.25  // Referrers: 4.25% per $50 (rounded up)
+    ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 4, Math.floor(150 / 50) * 4)  // Referrers: 4% per $50 up to $150 max (12%)
     : userProfile.referred_by 
       ? Math.floor(Math.ceil(userProfile.total_spending) / 75) * 6.5  // Referred users: 6.5% per $75 (rounded up)
       : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2; // Normal users: 2% per $50 (rounded up)
@@ -141,8 +142,9 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         <ul className="space-y-1 text-xs text-gray-700">
           <li>• {language === 'en' ? 'First referral: 10% discount' : 'Primer referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each extra referral: +2.25%' : 'Cada referido extra: +2.25%'}</li>
+          <li>• {language === 'en' ? 'Referrers: 4% per $50 spent (max $150)' : 'Referidores: 4% por $50 gastados (máx $150)'}</li>
           <li>• {language === 'en' ? 'All discounts stack up to 32%' : 'Todos los descuentos se acumulan hasta 32%'}</li>
-          <li>• {language === 'en' ? 'Over 25% discounts only on $100+ orders' : 'Descuentos sobre 25% solo en pedidos $100+'}</li>
+          <li>• {language === 'en' ? 'Over 25% discounts only on $150+ orders' : 'Descuentos sobre 25% solo en pedidos $150+'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100' : 'Envío gratis a $100'}</li>
         </ul>
       </div>

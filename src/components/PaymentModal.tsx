@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -55,7 +56,7 @@ const PaymentModal = ({
     email: userProfile?.email || '',
     address: '',
     city: '',
-    country: '',
+    country: 'US', // Default to US
     phoneNumber: '',
     postalCode: '',
     txid: ''
@@ -166,7 +167,7 @@ const PaymentModal = ({
 
       // Create order in database with system total (rounded up)
       const orderData = {
-        user_id: userProfile?.auth_id,
+        user_id: userProfile?.auth_id, // This should be the auth_id from Supabase
         items: {
           products: cartItems.map(item => ({
             id: item.product.id,
@@ -189,13 +190,18 @@ const PaymentModal = ({
         status: 'pending'
       };
 
+      console.log('Creating order with user_id:', userProfile?.auth_id);
+
       const { data: order, error } = await supabase
         .from('orders')
         .insert([orderData])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase order creation error:', error);
+        throw error;
+      }
 
       // Create pending purchase with system total for referral calculations
       createPendingPurchase(order.id, {
