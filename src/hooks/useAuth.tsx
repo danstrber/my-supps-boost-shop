@@ -20,17 +20,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
     try {
+      console.log('Fetching user profile for:', userId);
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('auth_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user profile:', error);
         return null;
       }
 
+      console.log('User profile fetched:', data);
       return data as UserProfile;
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
@@ -40,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const refreshProfile = async () => {
     try {
+      console.log('Refreshing profile...');
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const profile = await fetchUserProfile(user.id);
@@ -54,6 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
+    console.log('Auth action triggered:', action);
     if (action === 'logout') {
       supabase.auth.signOut();
       setUserProfile(null);
@@ -76,13 +80,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const initializeAuth = async () => {
       try {
+        console.log('Initializing auth...');
+        setLoading(true);
+        
         const { data: { user } } = await supabase.auth.getUser();
         
         if (mounted) {
           if (user) {
+            console.log('User found during initialization:', user.id);
             const profile = await fetchUserProfile(user.id);
             setUserProfile(profile);
           } else {
+            console.log('No user found during initialization');
             setUserProfile(null);
           }
           setLoading(false);
@@ -121,15 +130,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  const contextValue: AuthContextType = {
+    userProfile, 
+    loading, 
+    refreshProfile, 
+    isAuthenticated, 
+    userDiscount, 
+    handleAuthAction
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      userProfile, 
-      loading, 
-      refreshProfile, 
-      isAuthenticated, 
-      userDiscount, 
-      handleAuthAction 
-    }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
