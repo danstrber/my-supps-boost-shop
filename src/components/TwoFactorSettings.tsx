@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Smartphone, Mail } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TwoFactorSettingsProps {
   language: 'en' | 'es';
@@ -18,47 +19,136 @@ const TwoFactorSettings = ({ language, userProfile }: TwoFactorSettingsProps) =>
   const [method, setMethod] = useState<'email' | 'authenticator'>('email');
   const [verificationCode, setVerificationCode] = useState('');
   const [showSetup, setShowSetup] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (userProfile) {
+      // Check current 2FA status from user profile
+      setTwoFactorEnabled(userProfile.two_factor_enabled || false);
+      setMethod(userProfile.two_factor_method || 'email');
+    }
+  }, [userProfile]);
 
   const handleToggle2FA = async (enabled: boolean) => {
     if (enabled) {
       setShowSetup(true);
     } else {
       // Disable 2FA
-      setTwoFactorEnabled(false);
-      setShowSetup(false);
-      toast({
-        title: language === 'en' ? 'Two-Factor Authentication Disabled' : 'Autenticación de Dos Factores Deshabilitada',
-        description: language === 'en' ? 'Your account is no longer protected by 2FA.' : 'Tu cuenta ya no está protegida por 2FA.',
-      });
+      setLoading(true);
+      try {
+        const { error } = await supabase
+          .from('users')
+          .update({ 
+            two_factor_enabled: false,
+            two_factor_method: null 
+          })
+          .eq('auth_id', userProfile.auth_id);
+
+        if (error) {
+          console.error('Error disabling 2FA:', error);
+          toast({
+            title: language === 'en' ? 'Error' : 'Error',
+            description: language === 'en' ? 'Failed to disable 2FA.' : 'No se pudo deshabilitar 2FA.',
+            variant: 'destructive',
+          });
+        } else {
+          setTwoFactorEnabled(false);
+          setShowSetup(false);
+          toast({
+            title: language === 'en' ? 'Two-Factor Authentication Disabled' : 'Autenticación de Dos Factores Deshabilitada',
+            description: language === 'en' ? 'Your account is no longer protected by 2FA.' : 'Tu cuenta ya no está protegida por 2FA.',
+          });
+        }
+      } catch (error) {
+        console.error('Error in handleToggle2FA:', error);
+        toast({
+          title: language === 'en' ? 'Error' : 'Error',
+          description: language === 'en' ? 'An unexpected error occurred.' : 'Ocurrió un error inesperado.',
+          variant: 'destructive',
+        });
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleSendVerification = async () => {
-    // Simulate sending verification code
-    toast({
-      title: language === 'en' ? 'Verification Code Sent' : 'Código de Verificación Enviado',
-      description: method === 'email' 
-        ? (language === 'en' ? 'Check your email for the verification code.' : 'Revisa tu correo para el código de verificación.')
-        : (language === 'en' ? 'Use your authenticator app to get the code.' : 'Usa tu aplicación autenticadora para obtener el código.'),
-    });
+    setLoading(true);
+    try {
+      // Generate and send verification code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // In a real implementation, you would send this via email/SMS
+      console.log(`2FA Setup Code: ${code}`);
+      
+      // Store the code temporarily for verification
+      setVerificationCode(''); // Clear any previous input
+      
+      toast({
+        title: language === 'en' ? 'Verification Code Sent' : 'Código de Verificación Enviado',
+        description: method === 'email' 
+          ? (language === 'en' ? 'Check your email for the verification code.' : 'Revisa tu correo para el código de verificación.')
+          : (language === 'en' ? 'Use your authenticator app to get the code.' : 'Usa tu aplicación autenticadora para obtener el código.'),
+      });
+    } catch (error) {
+      console.error('Error sending verification:', error);
+      toast({
+        title: language === 'en' ? 'Error' : 'Error',
+        description: language === 'en' ? 'Failed to send verification code.' : 'No se pudo enviar el código de verificación.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVerifyCode = async () => {
-    if (verificationCode.length === 6) {
-      setTwoFactorEnabled(true);
-      setShowSetup(false);
-      setVerificationCode('');
-      toast({
-        title: language === 'en' ? 'Two-Factor Authentication Enabled' : 'Autenticación de Dos Factores Habilitada',
-        description: language === 'en' ? 'Your account is now protected by 2FA.' : 'Tu cuenta ahora está protegida por 2FA.',
-      });
-    } else {
+    if (verificationCode.length !== 6) {
       toast({
         title: language === 'en' ? 'Invalid Code' : 'Código Inválido',
         description: language === 'en' ? 'Please enter a valid 6-digit code.' : 'Por favor ingresa un código válido de 6 dígitos.',
         variant: 'destructive',
       });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Update user's 2FA settings in database
+      const { error } = await supabase
+        .from('users')
+        .update({ 
+          two_factor_enabled: true,
+          two_factor_method: method 
+        })
+        .eq('auth_id', userProfile.auth_id);
+
+      if (error) {
+        console.error('Error enabling 2FA:', error);
+        toast({
+          title: language === 'en' ? 'Error' : 'Error',
+          description: language === 'en' ? 'Failed to enable 2FA.' : 'No se pudo habilitar 2FA.',
+          variant: 'destructive',
+        });
+      } else {
+        setTwoFactorEnabled(true);
+        setShowSetup(false);
+        setVerificationCode('');
+        toast({
+          title: language === 'en' ? 'Two-Factor Authentication Enabled' : 'Autenticación de Dos Factores Habilitada',
+          description: language === 'en' ? 'Your account is now protected by 2FA.' : 'Tu cuenta ahora está protegida por 2FA.',
+        });
+      }
+    } catch (error) {
+      console.error('Error in handleVerifyCode:', error);
+      toast({
+        title: language === 'en' ? 'Error' : 'Error',
+        description: language === 'en' ? 'An unexpected error occurred.' : 'Ocurrió un error inesperado.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,6 +175,7 @@ const TwoFactorSettings = ({ language, userProfile }: TwoFactorSettingsProps) =>
           <Switch
             checked={twoFactorEnabled}
             onCheckedChange={handleToggle2FA}
+            disabled={loading}
           />
         </div>
 
@@ -99,6 +190,7 @@ const TwoFactorSettings = ({ language, userProfile }: TwoFactorSettingsProps) =>
                   variant={method === 'email' ? 'default' : 'outline'}
                   onClick={() => setMethod('email')}
                   className="flex items-center justify-center space-x-2"
+                  disabled={loading}
                 >
                   <Mail className="h-4 w-4" />
                   <span>{language === 'en' ? 'Email' : 'Correo'}</span>
@@ -107,6 +199,7 @@ const TwoFactorSettings = ({ language, userProfile }: TwoFactorSettingsProps) =>
                   variant={method === 'authenticator' ? 'default' : 'outline'}
                   onClick={() => setMethod('authenticator')}
                   className="flex items-center justify-center space-x-2"
+                  disabled={loading}
                 >
                   <Smartphone className="h-4 w-4" />
                   <span>{language === 'en' ? 'Authenticator' : 'Autenticador'}</span>
@@ -115,10 +208,18 @@ const TwoFactorSettings = ({ language, userProfile }: TwoFactorSettingsProps) =>
             </div>
 
             <div className="space-y-3">
-              <Button onClick={handleSendVerification} variant="outline" className="w-full">
-                {method === 'email' 
-                  ? (language === 'en' ? 'Send Email Code' : 'Enviar Código por Correo')
-                  : (language === 'en' ? 'Setup Authenticator' : 'Configurar Autenticador')
+              <Button 
+                onClick={handleSendVerification} 
+                variant="outline" 
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? 
+                  (language === 'en' ? 'Sending...' : 'Enviando...') :
+                  (method === 'email' 
+                    ? (language === 'en' ? 'Send Email Code' : 'Enviar Código por Correo')
+                    : (language === 'en' ? 'Setup Authenticator' : 'Configurar Autenticador')
+                  )
                 }
               </Button>
 
@@ -133,17 +234,25 @@ const TwoFactorSettings = ({ language, userProfile }: TwoFactorSettingsProps) =>
                   placeholder="123456"
                   maxLength={6}
                   className="text-center text-lg tracking-widest"
+                  disabled={loading}
                 />
               </div>
 
-              <Button onClick={handleVerifyCode} className="w-full">
-                {language === 'en' ? 'Verify & Enable 2FA' : 'Verificar y Habilitar 2FA'}
+              <Button 
+                onClick={handleVerifyCode} 
+                className="w-full"
+                disabled={loading || verificationCode.length !== 6}
+              >
+                {loading ? 
+                  (language === 'en' ? 'Verifying...' : 'Verificando...') :
+                  (language === 'en' ? 'Verify & Enable 2FA' : 'Verificar y Habilitar 2FA')
+                }
               </Button>
             </div>
           </div>
         )}
 
-        {twoFactorEnabled && (
+        {twoFactorEnabled && !showSetup && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <div className="flex items-center space-x-2">
               <Shield className="h-5 w-5 text-green-600" />

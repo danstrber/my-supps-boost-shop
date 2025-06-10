@@ -1,14 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { handleEmailAuth } from '@/components/auth/authUtils';
+import { handleEmailAuth, checkTwoFactorStatus, sendTwoFactorCode, verifyTwoFactorCode } from '@/components/auth/authUtils';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
-import { Eye, EyeOff, Wallet } from 'lucide-react';
+import { Eye, EyeOff, Wallet, Shield } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,6 +17,7 @@ interface AuthModalProps {
   referralCode?: string | null;
   language: 'en' | 'es';
   onSignupSuccess?: () => void;
+  onTermsClick?: () => void;
 }
 
 // Phantom wallet interface
@@ -39,15 +40,20 @@ const AuthModal = ({
   initialMode = 'login', 
   referralCode, 
   language, 
-  onSignupSuccess 
+  onSignupSuccess,
+  onTermsClick
 }: AuthModalProps) => {
-  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email'>(initialMode);
+  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email' | 'two-factor'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [twoFactorMethod, setTwoFactorMethod] = useState<'email' | 'sms'>('email');
+  const [pendingLoginData, setPendingLoginData] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -62,8 +68,31 @@ const AuthModal = ({
       setName('');
       setEmailSent(false);
       setLoading(false);
+      setAcceptedTerms(false);
+      setTwoFactorCode('');
+      setPendingLoginData(null);
     }
   }, [isOpen, initialMode]);
+
+  const checkForDuplicateEmail = async (email: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+      
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" which is what we want
+        console.error('Error checking duplicate email:', error);
+        return false;
+      }
+      
+      return !!data; // Returns true if email exists
+    } catch (error) {
+      console.error('Error in checkForDuplicateEmail:', error);
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,6 +100,33 @@ const AuthModal = ({
 
     try {
       if (mode === 'signup') {
+        // Check for duplicate email first
+        const emailExists = await checkForDuplicateEmail(email);
+        if (emailExists) {
+          toast({
+            title: language === 'en' ? "Email already in use" : "Correo ya en uso",
+            description: language === 'en' 
+              ? "An account with this email already exists. Please use a different email or try signing in."
+              : "Ya existe una cuenta con este correo. Por favor usa un correo diferente o intenta iniciar sesión.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Check terms acceptance
+        if (!acceptedTerms) {
+          toast({
+            title: language === 'en' ? "Terms required" : "Términos requeridos",
+            description: language === 'en' 
+              ? "Please accept the Terms of Service to continue."
+              : "Por favor acepta los Términos de Servicio para continuar.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
         console.log('Starting signup process with referral code:', referralCode);
         const { error } = await handleEmailAuth('signup', email, password, name, referralCode);
         
@@ -96,30 +152,60 @@ const AuthModal = ({
           }
         }
       } else if (mode === 'login') {
-        const { error } = await handleEmailAuth('login', email, password);
+        const { data, error } = await handleEmailAuth('login', email, password);
         
         if (error) {
-          if (error.message.includes('Email not confirmed')) {
-            toast({
-              title: language === 'en' ? "Email not confirmed" : "Correo no confirmado",
-              description: language === 'en' 
-                ? "Please check your email (including junk/spam folder) and confirm your account before signing in."
-                : "Por favor revisa tu correo (incluyendo carpeta de spam/correo no deseado) y confirma tu cuenta antes de iniciar sesión.",
-              variant: "destructive",
-            });
+          console.error('Login error:', error);
+          toast({
+            title: language === 'en' ? "Error" : "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        } else if (data?.user) {
+          // Check if user has 2FA enabled
+          const { enabled, method } = await checkTwoFactorStatus(data.user.id);
+          
+          if (enabled) {
+            // Store login data and switch to 2FA mode
+            setPendingLoginData(data);
+            setTwoFactorMethod(method || 'email');
+            setMode('two-factor');
+            
+            // Send 2FA code
+            const { success } = await sendTwoFactorCode(email, method || 'email');
+            if (success) {
+              toast({
+                title: language === 'en' ? "Verification code sent" : "Código de verificación enviado",
+                description: language === 'en' 
+                  ? "Please check your email for the verification code."
+                  : "Por favor revisa tu correo para el código de verificación.",
+              });
+            }
           } else {
+            // Regular login without 2FA
             toast({
-              title: language === 'en' ? "Error" : "Error",
-              description: error.message,
-              variant: "destructive",
+              title: language === 'en' ? "Welcome back!" : "¡Bienvenido de vuelta!",
+              description: language === 'en' ? "You have been signed in successfully." : "Has iniciado sesión exitosamente.",
             });
+            onClose();
           }
-        } else {
+        }
+      } else if (mode === 'two-factor') {
+        // Verify 2FA code
+        const { valid, error: verifyError } = await verifyTwoFactorCode(email, twoFactorCode);
+        
+        if (valid) {
           toast({
             title: language === 'en' ? "Welcome back!" : "¡Bienvenido de vuelta!",
             description: language === 'en' ? "You have been signed in successfully." : "Has iniciado sesión exitosamente.",
           });
           onClose();
+        } else {
+          toast({
+            title: language === 'en' ? "Invalid code" : "Código inválido",
+            description: verifyError || (language === 'en' ? "Please enter a valid verification code." : "Por favor ingresa un código de verificación válido."),
+            variant: "destructive",
+          });
         }
       }
     } catch (error) {
@@ -200,6 +286,51 @@ const AuthModal = ({
     }
   };
 
+  const renderTwoFactorMode = () => (
+    <div className="space-y-4">
+      <div className="text-center">
+        <Shield className="h-12 w-12 mx-auto mb-4 text-blue-500" />
+        <h3 className="text-lg font-semibold">
+          {language === 'en' ? 'Two-Factor Authentication' : 'Autenticación de Dos Factores'}
+        </h3>
+        <p className="text-gray-600 mt-2">
+          {language === 'en' 
+            ? `We've sent a verification code to your ${twoFactorMethod === 'email' ? 'email' : 'phone'}.`
+            : `Hemos enviado un código de verificación a tu ${twoFactorMethod === 'email' ? 'correo' : 'teléfono'}.`}
+        </p>
+      </div>
+      
+      <div>
+        <Label htmlFor="twoFactorCode">
+          {language === 'en' ? 'Enter 6-digit code' : 'Ingresa código de 6 dígitos'}
+        </Label>
+        <Input
+          id="twoFactorCode"
+          value={twoFactorCode}
+          onChange={(e) => setTwoFactorCode(e.target.value)}
+          placeholder="123456"
+          maxLength={6}
+          className="text-center text-lg tracking-widest"
+        />
+      </div>
+      
+      <Button onClick={handleSubmit} className="w-full" disabled={loading || twoFactorCode.length !== 6}>
+        {loading ? 
+          (language === 'en' ? 'Verifying...' : 'Verificando...') : 
+          (language === 'en' ? 'Verify Code' : 'Verificar Código')
+        }
+      </Button>
+      
+      <Button 
+        onClick={() => setMode('login')} 
+        variant="ghost"
+        className="w-full"
+      >
+        {language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
+      </Button>
+    </div>
+  );
+
   const renderConfirmEmailMode = () => (
     <div className="space-y-4 text-center">
       <div className="text-2xl">📧</div>
@@ -253,6 +384,21 @@ const AuthModal = ({
             </DialogTitle>
           </DialogHeader>
           {renderConfirmEmailMode()}
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (mode === 'two-factor') {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {language === 'en' ? 'Two-Factor Authentication' : 'Autenticación de Dos Factores'}
+            </DialogTitle>
+          </DialogHeader>
+          {renderTwoFactorMode()}
         </DialogContent>
       </Dialog>
     );
@@ -330,6 +476,29 @@ const AuthModal = ({
                   ? `Using referral code: ${referralCode}` 
                   : `Usando código de referido: ${referralCode}`}
               </p>
+            </div>
+          )}
+
+          {mode === 'signup' && (
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="terms"
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+              />
+              <div className="text-sm leading-5">
+                <Label htmlFor="terms" className="cursor-pointer">
+                  {language === 'en' ? 'I agree to the ' : 'Acepto los '}
+                  <button
+                    type="button"
+                    onClick={onTermsClick}
+                    className="text-blue-600 hover:text-blue-800 underline"
+                  >
+                    {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
+                  </button>
+                  {language === 'en' ? ' and Privacy Policy' : ' y Política de Privacidad'}
+                </Label>
+              </div>
             </div>
           )}
 
