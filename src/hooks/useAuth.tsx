@@ -81,24 +81,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       try {
         console.log('Initializing auth...');
         
-        // Add timeout to prevent hanging
-        const authPromise = supabase.auth.getUser();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Auth timeout')), 5000)
-        );
-
-        const { data: { user } } = await Promise.race([authPromise, timeoutPromise]) as any;
+        const { data: { user } } = await supabase.auth.getUser();
         
         if (mounted) {
           if (user) {
             console.log('User found during initialization:', user.id);
-            // Add timeout for profile fetch too
-            const profilePromise = fetchUserProfile(user.id);
-            const profileTimeoutPromise = new Promise<UserProfile | null>((resolve) => 
-              setTimeout(() => resolve(null), 3000)
-            );
-            
-            const profile = await Promise.race([profilePromise, profileTimeoutPromise]);
+            const profile = await fetchUserProfile(user.id);
             setUserProfile(profile);
           } else {
             console.log('No user found during initialization');

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -6,9 +7,9 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { handleEmailAuth, checkTwoFactorStatus, sendTwoFactorCode, verifyTwoFactorCode } from '@/components/auth/authUtils';
+import { handleEmailAuth, handleGoogleAuth } from '@/components/auth/authUtils';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
-import { Eye, EyeOff, Wallet, Shield } from 'lucide-react';
+import { Eye, EyeOff, Wallet } from 'lucide-react';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -43,7 +44,7 @@ const AuthModal = ({
   onSignupSuccess,
   onTermsClick
 }: AuthModalProps) => {
-  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email' | 'two-factor'>(initialMode);
+  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -51,9 +52,6 @@ const AuthModal = ({
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState('');
-  const [twoFactorMethod, setTwoFactorMethod] = useState<'email' | 'sms'>('email');
-  const [pendingLoginData, setPendingLoginData] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -69,8 +67,6 @@ const AuthModal = ({
       setEmailSent(false);
       setLoading(false);
       setAcceptedTerms(false);
-      setTwoFactorCode('');
-      setPendingLoginData(null);
     }
   }, [isOpen, initialMode]);
 
@@ -162,50 +158,11 @@ const AuthModal = ({
             variant: "destructive",
           });
         } else if (data?.user) {
-          // Check if user has 2FA enabled
-          const { enabled, method } = await checkTwoFactorStatus(data.user.id);
-          
-          if (enabled) {
-            // Store login data and switch to 2FA mode
-            setPendingLoginData(data);
-            setTwoFactorMethod(method || 'email');
-            setMode('two-factor');
-            
-            // Send 2FA code
-            const { success } = await sendTwoFactorCode(email, method || 'email');
-            if (success) {
-              toast({
-                title: language === 'en' ? "Verification code sent" : "Código de verificación enviado",
-                description: language === 'en' 
-                  ? "Please check your email for the verification code."
-                  : "Por favor revisa tu correo para el código de verificación.",
-              });
-            }
-          } else {
-            // Regular login without 2FA
-            toast({
-              title: language === 'en' ? "Welcome back!" : "¡Bienvenido de vuelta!",
-              description: language === 'en' ? "You have been signed in successfully." : "Has iniciado sesión exitosamente.",
-            });
-            onClose();
-          }
-        }
-      } else if (mode === 'two-factor') {
-        // Verify 2FA code
-        const { valid, error: verifyError } = await verifyTwoFactorCode(email, twoFactorCode);
-        
-        if (valid) {
           toast({
             title: language === 'en' ? "Welcome back!" : "¡Bienvenido de vuelta!",
             description: language === 'en' ? "You have been signed in successfully." : "Has iniciado sesión exitosamente.",
           });
           onClose();
-        } else {
-          toast({
-            title: language === 'en' ? "Invalid code" : "Código inválido",
-            description: verifyError || (language === 'en' ? "Please enter a valid verification code." : "Por favor ingresa un código de verificación válido."),
-            variant: "destructive",
-          });
         }
       }
     } catch (error) {
@@ -213,6 +170,29 @@ const AuthModal = ({
       toast({
         title: language === 'en' ? "Error" : "Error",
         description: language === 'en' ? "An unexpected error occurred" : "Ocurrió un error inesperado",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const { error } = await handleGoogleAuth(mode, referralCode);
+      if (error) {
+        toast({
+          title: language === 'en' ? "Error" : "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Google auth error:', error);
+      toast({
+        title: language === 'en' ? "Error" : "Error",
+        description: language === 'en' ? "Failed to sign in with Google" : "Error al iniciar sesión con Google",
         variant: "destructive",
       });
     } finally {
@@ -286,51 +266,6 @@ const AuthModal = ({
     }
   };
 
-  const renderTwoFactorMode = () => (
-    <div className="space-y-4">
-      <div className="text-center">
-        <Shield className="h-12 w-12 mx-auto mb-4 text-blue-500" />
-        <h3 className="text-lg font-semibold">
-          {language === 'en' ? 'Two-Factor Authentication' : 'Autenticación de Dos Factores'}
-        </h3>
-        <p className="text-gray-600 mt-2">
-          {language === 'en' 
-            ? `We've sent a verification code to your ${twoFactorMethod === 'email' ? 'email' : 'phone'}.`
-            : `Hemos enviado un código de verificación a tu ${twoFactorMethod === 'email' ? 'correo' : 'teléfono'}.`}
-        </p>
-      </div>
-      
-      <div>
-        <Label htmlFor="twoFactorCode">
-          {language === 'en' ? 'Enter 6-digit code' : 'Ingresa código de 6 dígitos'}
-        </Label>
-        <Input
-          id="twoFactorCode"
-          value={twoFactorCode}
-          onChange={(e) => setTwoFactorCode(e.target.value)}
-          placeholder="123456"
-          maxLength={6}
-          className="text-center text-lg tracking-widest"
-        />
-      </div>
-      
-      <Button onClick={handleSubmit} className="w-full" disabled={loading || twoFactorCode.length !== 6}>
-        {loading ? 
-          (language === 'en' ? 'Verifying...' : 'Verificando...') : 
-          (language === 'en' ? 'Verify Code' : 'Verificar Código')
-        }
-      </Button>
-      
-      <Button 
-        onClick={() => setMode('login')} 
-        variant="ghost"
-        className="w-full"
-      >
-        {language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
-      </Button>
-    </div>
-  );
-
   const renderConfirmEmailMode = () => (
     <div className="space-y-4 text-center">
       <div className="text-2xl">📧</div>
@@ -389,21 +324,6 @@ const AuthModal = ({
     );
   }
 
-  if (mode === 'two-factor') {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {language === 'en' ? 'Two-Factor Authentication' : 'Autenticación de Dos Factores'}
-            </DialogTitle>
-          </DialogHeader>
-          {renderTwoFactorMode()}
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -426,6 +346,7 @@ const AuthModal = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
           )}
@@ -439,6 +360,7 @@ const AuthModal = ({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           <div>
@@ -452,6 +374,7 @@ const AuthModal = ({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
               <Button
                 type="button"
@@ -459,6 +382,7 @@ const AuthModal = ({
                 size="sm"
                 className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
+                disabled={loading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4" />
@@ -485,6 +409,7 @@ const AuthModal = ({
                 id="terms"
                 checked={acceptedTerms}
                 onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
+                disabled={loading}
               />
               <div className="text-sm leading-5">
                 <Label htmlFor="terms" className="cursor-pointer">
@@ -493,6 +418,7 @@ const AuthModal = ({
                     type="button"
                     onClick={onTermsClick}
                     className="text-blue-600 hover:text-blue-800 underline"
+                    disabled={loading}
                   >
                     {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
                   </button>
@@ -525,7 +451,7 @@ const AuthModal = ({
 
           <div className="space-y-2">
             <GoogleSignInButton 
-              onClick={() => console.log('Google sign in')} 
+              onClick={handleGoogleSignIn} 
               loading={loading} 
             />
             
@@ -534,6 +460,7 @@ const AuthModal = ({
               variant="outline"
               onClick={connectPhantomWallet}
               className="w-full"
+              disabled={loading}
             >
               <Wallet className="h-4 w-4 mr-2" />
               {language === 'en' ? 'Connect Phantom Wallet' : 'Conectar Phantom Wallet'}
@@ -545,6 +472,7 @@ const AuthModal = ({
               type="button"
               variant="link"
               onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+              disabled={loading}
             >
               {mode === 'login' 
                 ? (language === 'en' ? "Don't have an account? Sign up" : "¿No tienes cuenta? Regístrate")
