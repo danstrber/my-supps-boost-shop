@@ -1,257 +1,304 @@
-
 export interface Product {
   id: string;
   name: string;
   price: number;
   image: string;
-  description: string;
-  categories: string[];
+  category: string;
+  description?: string;
   featured?: boolean;
+  inStock?: boolean;
   labTestFile?: string;
-  inStock: boolean;
-  details: {
-    research: string;
-    effectsOnWomen: string;
-    benefits: string[];
-    sideEffects: string[];
-    history: string;
-    howItWorks: string;
-    safety: string;
-    cycle: string;
-    expectations: string;
-    ratings: {
-      effectiveness: number;
-      safety: number;
-      value: number;
-    };
-  };
 }
 
 export const products: Product[] = [
   {
-    id: "1",
-    name: "RAD-140 (Testolone)",
+    id: '1',
+    name: 'Super Drol',
     price: 34.99,
-    image: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
-    description: "Selective Androgen Receptor Modulator for lean muscle mass",
-    categories: ["sarms", "muscle-growth"],
-    featured: true,
-    labTestFile: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
-    inStock: true,
-    details: {
-      research: "RAD-140 is a potent SARM that selectively binds to androgen receptors in muscle and bone tissue, promoting anabolic activity without the side effects typically associated with anabolic steroids.",
-      effectsOnWomen: "Women may experience virilization effects at higher doses. Lower doses (5-10mg) are recommended for female users.",
-      benefits: [
-        "Increased lean muscle mass",
-        "Enhanced strength and power",
-        "Improved bone density",
-        "Fat loss while preserving muscle",
-        "No liver toxicity"
-      ],
-      sideEffects: [
-        "Mild testosterone suppression",
-        "Potential hair loss in predisposed individuals",
-        "Possible mood changes",
-        "Temporary reduction in HDL cholesterol"
-      ],
-      history: "Developed by Radius Health for treating muscle wasting and breast cancer. Currently in Phase III clinical trials.",
-      howItWorks: "RAD-140 binds to androgen receptors with high affinity and selectivity, activating anabolic pathways in muscle tissue while minimizing effects on the prostate and other organs.",
-      safety: "Generally well-tolerated in clinical studies. Regular blood work recommended to monitor hormone levels and lipid profile.",
-      cycle: "Typical cycle: 8-12 weeks at 10-20mg daily. PCT recommended for cycles longer than 8 weeks or doses above 15mg.",
-      expectations: "Users typically report noticeable strength gains within 2-3 weeks, with lean muscle mass increases of 5-10 pounds over an 8-week cycle.",
-      ratings: {
-        effectiveness: 9,
-        safety: 8,
-        value: 8
-      }
-    }
-  },
-  {
-    id: "2",
-    name: "LGD-4033 (Ligandrol)",
-    price: 32.99,
-    image: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
-    description: "Powerful SARM for muscle growth and strength gains",
-    categories: ["sarms", "muscle-growth"],
-    featured: false,
-    labTestFile: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
-    inStock: true,
-    details: {
-      research: "LGD-4033 is one of the most researched SARMs, originally developed for preventing muscle wasting in cancer patients and age-related muscle loss.",
-      effectsOnWomen: "Generally well-tolerated by women at doses of 2.5-5mg daily. Higher doses may cause mild virilization.",
-      benefits: [
-        "Rapid muscle mass gains",
-        "Significant strength increases",
-        "Enhanced recovery",
-        "Improved bone health",
-        "Minimal side effects"
-      ],
-      sideEffects: [
-        "Mild to moderate testosterone suppression",
-        "Temporary water retention",
-        "Possible headaches",
-        "Slight decrease in HDL cholesterol"
-      ],
-      history: "Developed by Ligand Pharmaceuticals and later acquired by Viking Therapeutics. Multiple clinical trials have demonstrated its efficacy and safety profile.",
-      howItWorks: "LGD-4033 selectively targets androgen receptors in muscle and bone tissue, promoting protein synthesis and nitrogen retention while avoiding unwanted effects on other organs.",
-      safety: "Extensive clinical data shows good safety profile. Regular monitoring of liver enzymes and hormone levels recommended.",
-      cycle: "Standard cycle: 6-8 weeks at 5-10mg daily. Longer cycles may require PCT.",
-      expectations: "Users typically gain 6-12 pounds of lean muscle mass over an 8-week cycle, with strength increases of 15-30%.",
-      ratings: {
-        effectiveness: 9,
-        safety: 9,
-        value: 9
-      }
-    }
-  },
-  {
-    id: "3",
-    name: "MK-677 (Ibutamoren)",
-    price: 39.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Growth hormone secretagogue for recovery and anti-aging",
-    categories: ["recovery", "muscle-growth"],
+    image: '/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png',
+    category: 'oral-steroids',
+    description: 'Powerful anabolic compound for serious muscle growth and strength gains.',
     featured: true,
     inStock: true,
-    details: {
-      research: "MK-677 is a potent, orally active growth hormone secretagogue that mimics the action of ghrelin, stimulating the release of growth hormone and IGF-1.",
-      effectsOnWomen: "Well-tolerated by women with no virilization risk. Same dosing as men (12.5-25mg daily).",
-      benefits: [
-        "Increased growth hormone levels",
-        "Enhanced sleep quality",
-        "Improved recovery",
-        "Anti-aging effects",
-        "Increased appetite",
-        "Better skin and hair"
-      ],
-      sideEffects: [
-        "Increased appetite",
-        "Temporary water retention",
-        "Possible drowsiness",
-        "Slight increase in blood sugar"
-      ],
-      history: "Originally developed by Merck for treating growth hormone deficiency and muscle wasting conditions.",
-      howItWorks: "MK-677 activates the ghrelin receptor, triggering the release of growth hormone from the pituitary gland, leading to increased IGF-1 levels.",
-      safety: "Long-term studies show good safety profile. Monitor blood glucose levels with extended use.",
-      cycle: "Can be used long-term (6+ months) at 12.5-25mg daily. Best taken before bed due to potential drowsiness.",
-      expectations: "Effects on sleep and recovery noticed within days. Body composition changes become apparent after 2-3 months of consistent use.",
-      ratings: {
-        effectiveness: 8,
-        safety: 9,
-        value: 8
-      }
-    }
+    labTestFile: '/lab-tests/superdrol-test.pdf'
   },
   {
-    id: "4",
-    name: "Ostarine (MK-2866)",
+    id: '2',
+    name: 'Anavar',
+    price: 49.99,
+    image: '/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png',
+    category: 'oral-steroids',
+    description: 'Premium quality Anavar for lean muscle gains and cutting cycles.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/anavar-test.pdf'
+  },
+  {
+    id: '3',
+    name: 'Dianabol',
     price: 29.99,
-    image: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
-    description: "Mild SARM perfect for beginners and cutting cycles",
-    categories: ["sarms", "fat-loss"],
+    image: '/lovable-uploads/68ff590a-199c-454f-a998-8cbff432589c.png',
+    category: 'oral-steroids',
+    description: 'Classic mass builder for significant gains in muscle size and strength.',
     featured: false,
-    labTestFile: "/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png",
     inStock: true,
-    details: {
-      research: "Ostarine is the most studied SARM with extensive clinical trials demonstrating its ability to increase lean body mass and improve physical function.",
-      effectsOnWomen: "Excellent choice for women due to its mild nature. Recommended dose: 6-12.5mg daily.",
-      benefits: [
-        "Lean muscle preservation during cuts",
-        "Moderate muscle gains",
-        "Joint healing properties",
-        "Minimal side effects",
-        "Good for beginners"
-      ],
-      sideEffects: [
-        "Mild testosterone suppression",
-        "Rare cases of hair shedding",
-        "Possible temporary vision changes"
-      ],
-      history: "Developed by GTx Inc. for treating muscle wasting and osteoporosis. Most extensively researched SARM.",
-      howItWorks: "Ostarine binds to androgen receptors with tissue selectivity, promoting anabolic effects in muscle while having minimal impact on other organs.",
-      safety: "Excellent safety profile in clinical studies. Minimal suppression at therapeutic doses.",
-      cycle: "Typical cycle: 8-12 weeks at 12.5-25mg daily. PCT usually not required for doses under 20mg.",
-      expectations: "Gradual muscle gains of 3-6 pounds over 8 weeks, with excellent muscle preservation during caloric deficits.",
-      ratings: {
-        effectiveness: 7,
-        safety: 10,
-        value: 9
-      }
-    }
+    labTestFile: '/lab-tests/dianabol-test.pdf'
   },
   {
-    id: "5",
-    name: "Cardarine (GW-501516)",
-    price: 34.99,
-    image: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
-    description: "PPAR delta agonist for endurance and fat loss",
-    categories: ["fat-loss", "recovery"],
-    featured: false,
-    labTestFile: "/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png",
+    id: '4',
+    name: 'Clenbuterol',
+    price: 39.99,
+    image: '/lovable-uploads/43854434-7941-4a58-a678-6315a4ff9589.png',
+    category: 'weight-loss',
+    description: 'Effective thermogenic agent for fat loss and enhanced energy levels.',
+    featured: true,
     inStock: true,
-    details: {
-      research: "Cardarine is a PPAR delta receptor agonist that enhances fatty acid oxidation and glucose metabolism, originally developed for metabolic disorders.",
-      effectsOnWomen: "No hormonal effects, making it excellent for women. Same dosing as men (10-20mg daily).",
-      benefits: [
-        "Dramatic endurance improvements",
-        "Enhanced fat oxidation",
-        "Better cardiovascular health",
-        "No hormonal suppression",
-        "Improved recovery"
-      ],
-      sideEffects: [
-        "Rare headaches",
-        "Possible mood enhancement",
-        "Very few reported side effects"
-      ],
-      history: "Developed by GlaxoSmithKline for treating dyslipidemia and diabetes. Research discontinued due to cancer concerns in rodent studies at extremely high doses.",
-      howItWorks: "Activates PPAR delta receptors, switching the body's energy source preference to fatty acids and improving mitochondrial function.",
-      safety: "Good safety profile in human studies. Rodent cancer studies used doses 100x higher than human equivalent doses.",
-      cycle: "Typical cycle: 6-8 weeks at 10-20mg daily. Can be used longer due to lack of hormonal effects.",
-      expectations: "Noticeable endurance improvements within days. Fat loss becomes apparent after 2-3 weeks of consistent use.",
-      ratings: {
-        effectiveness: 9,
-        safety: 8,
-        value: 8
-      }
-    }
+    labTestFile: '/lab-tests/clenbuterol-test.pdf'
+  },
+    {
+    id: '5',
+    name: 'Winstrol',
+    price: 54.99,
+    image: '/lovable-uploads/04f99494-1295-450f-b949-19d1b3599995.png',
+    category: 'oral-steroids',
+    description: 'Powerful anabolic compound for serious muscle growth and strength gains.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/winstrol-test.pdf'
   },
   {
-    id: "6",
-    name: "Superdrol",
-    price: 34.99,
-    image: "/lovable-uploads/e0ca2430-18d6-4293-903c-843dd951ee96.png",
-    description: "Powerful prohormone for rapid muscle and strength gains",
-    categories: ["muscle-growth", "testosterone-support"],
+    id: '6',
+    name: 'Testosterone Enanthate',
+    price: 69.99,
+    image: '/lovable-uploads/a424559d-744f-49b2-9544-909ca49b6c5a.png',
+    category: 'injectable-steroids',
+    description: 'Long-lasting testosterone ester for sustained muscle growth and performance.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/test-e-test.pdf'
+  },
+  {
+    id: '7',
+    name: 'Trenbolone Acetate',
+    price: 79.99,
+    image: '/lovable-uploads/597a1c77-401c-490a-a931-19b35259e099.png',
+    category: 'injectable-steroids',
+    description: 'Potent anabolic steroid for rapid muscle gains and enhanced strength.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/tren-a-test.pdf'
+  },
+  {
+    id: '8',
+    name: 'Masteron',
+    price: 84.99,
+    image: '/lovable-uploads/4e34a42b-9912-4499-8299-59203444955d.png',
+    category: 'injectable-steroids',
+    description: 'Premium quality Masteron for lean muscle gains and cutting cycles.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/masteron-test.pdf'
+  },
+  {
+    id: '9',
+    name: 'SARMs Stack',
+    price: 99.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Advanced SARMs stack for enhanced muscle growth and fat loss.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/sarms-stack-test.pdf'
+  },
+  {
+    id: '10',
+    name: 'Peptides Blend',
+    price: 109.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Powerful blend of peptides for muscle repair, growth, and overall recovery.',
+    featured: true,
+    inStock: true,
+    labTestFile: '/lab-tests/peptides-blend-test.pdf'
+  },
+  {
+    id: '11',
+    name: 'Equipoise',
+    price: 74.99,
+    image: '/lovable-uploads/597a1c77-401c-490a-a931-19b35259e099.png',
+    category: 'injectable-steroids',
+    description: 'Long-lasting injectable steroid for steady muscle growth and increased appetite.',
     featured: false,
-    inStock: false,
-    details: {
-      research: "Superdrol (Methasterone) is a potent oral anabolic steroid that provides rapid muscle and strength gains with minimal estrogenic effects.",
-      effectsOnWomen: "Not recommended for women due to high androgenic activity and virilization risk.",
-      benefits: [
-        "Rapid muscle mass gains",
-        "Significant strength increases",
-        "Minimal water retention",
-        "No estrogenic side effects",
-        "Dramatic physique changes"
-      ],
-      sideEffects: [
-        "Liver toxicity",
-        "Testosterone suppression",
-        "Possible hair loss",
-        "Increased blood pressure",
-        "Cholesterol changes"
-      ],
-      history: "Originally developed as Methasterone, later marketed as a dietary supplement under the name Superdrol before being classified as a controlled substance.",
-      howItWorks: "Acts as a potent androgen receptor agonist, promoting protein synthesis and nitrogen retention while blocking cortisol receptors.",
-      safety: "Requires careful monitoring due to hepatotoxicity. Liver support supplements essential. Not for beginners.",
-      cycle: "Short cycles only: 3-4 weeks at 10-20mg daily. Comprehensive PCT required. Regular blood work essential.",
-      expectations: "Users report 8-15 pounds of lean muscle gain in 3-4 weeks, with strength increases of 20-40%.",
-      ratings: {
-        effectiveness: 10,
-        safety: 5,
-        value: 7
-      }
-    }
-  }
+    inStock: true,
+    labTestFile: '/lab-tests/equipoise-test.pdf'
+  },
+  {
+    id: '12',
+    name: 'Primobolan',
+    price: 89.99,
+    image: '/lovable-uploads/4e34a42b-9912-4499-8299-59203444955d.png',
+    category: 'injectable-steroids',
+    description: 'Mild anabolic steroid for lean muscle gains and enhanced performance.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/primobolan-test.pdf'
+  },
+  {
+    id: '13',
+    name: 'HGH Fragment 176-191',
+    price: 119.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Specialized peptide for targeted fat loss and improved metabolism.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/hgh-frag-test.pdf'
+  },
+  {
+    id: '14',
+    name: 'IGF-1 LR3',
+    price: 129.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Potent peptide for muscle growth, recovery, and enhanced nutrient absorption.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/igf-1-test.pdf'
+  },
+  {
+    id: '15',
+    name: 'Ostarine (MK-2866)',
+    price: 64.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Versatile SARM for muscle growth, bone density, and overall body recomposition.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/ostarine-test.pdf'
+  },
+  {
+    id: '16',
+    name: 'Ligandrol (LGD-4033)',
+    price: 74.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Powerful SARM for significant muscle gains and increased strength.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/ligandrol-test.pdf'
+  },
+  {
+    id: '17',
+    name: 'Andarine (S-4)',
+    price: 59.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Effective SARM for fat loss, muscle hardening, and enhanced vascularity.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/andarine-test.pdf'
+  },
+  {
+    id: '18',
+    name: 'Cardarine (GW-501516)',
+    price: 69.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Performance-enhancing SARM for endurance, fat loss, and improved cholesterol levels.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/cardarine-test.pdf'
+  },
+  {
+    id: '19',
+    name: 'SR9009 (Stenabolic)',
+    price: 79.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Cutting-edge SARM for enhanced metabolism, fat loss, and improved endurance.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/sr9009-test.pdf'
+  },
+  {
+    id: '20',
+    name: 'YK-11 (Myostatin Inhibitor)',
+    price: 89.99,
+    image: '/lovable-uploads/e369912d-439f-448f-b07f-94c2c5f77791.png',
+    category: 'sarms',
+    description: 'Unique SARM for muscle growth and myostatin inhibition.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/yk11-test.pdf'
+  },
+  {
+    id: '21',
+    name: 'GHRP-6',
+    price: 99.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Growth hormone releasing peptide for muscle growth, recovery, and anti-aging.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/ghrp6-test.pdf'
+  },
+  {
+    id: '22',
+    name: 'CJC-1295',
+    price: 109.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Long-acting growth hormone releasing hormone for sustained muscle growth and recovery.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/cjc1295-test.pdf'
+  },
+  {
+    id: '23',
+    name: 'BPC-157',
+    price: 119.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Versatile peptide for accelerated healing, tissue repair, and reduced inflammation.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/bpc157-test.pdf'
+  },
+  {
+    id: '24',
+    name: 'TB-500',
+    price: 129.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Powerful peptide for injury recovery, tissue regeneration, and reduced pain.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/tb500-test.pdf'
+  },
+  {
+    id: '25',
+    name: 'Melanotan II',
+    price: 79.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Peptide for enhanced tanning, increased libido, and appetite suppression.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/mt2-test.pdf'
+  },
+  {
+    id: '26',
+    name: 'PT-141 (Bremelanotide)',
+    price: 89.99,
+    image: '/lovable-uploads/6c58b974-6e9d-4479-8999-bb94a639994a.png',
+    category: 'peptides',
+    description: 'Peptide for enhanced sexual function and increased libido.',
+    featured: false,
+    inStock: true,
+    labTestFile: '/lab-tests/pt141-test.pdf'
+  },
 ];
+
+export const getProductById = (id: string) => products.find(product => product.id === id);
+
+export const getProductsByCategory = (category: string) => products.filter(product => product.category === category);

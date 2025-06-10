@@ -71,6 +71,45 @@ const PaymentModal = ({
 
   const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
 
+  const sendFormspreeEmail = async (orderData: any) => {
+    try {
+      const formData = {
+        _subject: `NEW ORDER: ${customerInfo.fullName} - $${btcPaymentAmount.toFixed(2)}`,
+        customerName: customerInfo.fullName,
+        customerEmail: customerInfo.email,
+        customerAddress: `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.country}`,
+        paymentMethod: paymentMethod,
+        orderItems: cartItems.map(item => 
+          `${item.product.name} x${item.quantity} - $${(item.product.price * item.quantity).toFixed(2)}`
+        ).join('\n'),
+        originalTotal: `$${orderTotal.toFixed(2)}`,
+        discountAmount: discount > 0 ? `-$${discount.toFixed(2)}` : 'None',
+        shippingFee: shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`,
+        finalTotal: `$${btcPaymentAmount.toFixed(2)}`,
+        systemTotal: `$${systemFinalTotal.toFixed(2)}`,
+        transactionHash: customerInfo.txid || 'N/A',
+        walletAddress: walletAddress
+      };
+
+      const response = await fetch('https://formspree.io/f/mqaqvlye', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email notification');
+      }
+
+      console.log('Order notification sent successfully via Formspree');
+    } catch (error) {
+      console.error('Failed to send Formspree email:', error);
+      // Don't throw error to prevent order creation failure
+    }
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -154,38 +193,8 @@ const PaymentModal = ({
         referralCode: userProfile?.referred_by || undefined
       });
 
-      // Send order confirmation email
-      try {
-        const { error: emailError } = await supabase.functions.invoke('send-order-email', {
-          body: {
-            customerEmail: customerInfo.email,
-            customerName: customerInfo.fullName,
-            adminEmail: 'einarstav4@gmail.com',
-            items: cartItems.map(item => ({
-              id: item.product.id,
-              name: item.product.name,
-              price: item.product.price,
-              quantity: item.quantity
-            })),
-            originalTotal: orderTotal,
-            discountAmount: discount,
-            shippingFee: shippingFee,
-            finalTotal: btcPaymentAmount, // Use actual BTC amount in email
-            systemTotal: systemFinalTotal, // Include system total for reference
-            paymentMethod: paymentMethod,
-            paymentDetails: customerInfo,
-            orderId: order.id,
-            walletAddress: walletAddress,
-            txid: customerInfo.txid
-          }
-        });
-
-        if (emailError) {
-          console.error('Email sending failed:', emailError);
-        }
-      } catch (emailErr) {
-        console.error('Email function error:', emailErr);
-      }
+      // Send order notification via Formspree
+      await sendFormspreeEmail(orderData);
 
       toast({
         title: t.orderPlacedSuccess,

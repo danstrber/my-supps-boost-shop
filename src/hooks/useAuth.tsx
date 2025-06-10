@@ -1,88 +1,116 @@
 
-import { useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getUserProfile, getUserDiscount, type UserProfile } from '@/lib/auth';
-import { useToast } from '@/hooks/use-toast';
+import { UserProfile } from '@/lib/auth';
 
-export const useAuth = () => {
+interface AuthContextType {
+  userProfile: UserProfile | null;
+  loading: boolean;
+  refreshProfile: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userDiscount, setUserDiscount] = useState(0);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
-  useEffect(() => {
-    console.log('Setting up auth state listener...');
-    
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.id);
-      
-      if (session?.user) {
-        setIsAuthenticated(true);
-        try {
-          // Wait a moment for trigger to complete if this is a new user
-          if (event === 'SIGNED_IN') {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-          
-          const profile = await getUserProfile(session.user.id);
-          setUserProfile(profile);
-          console.log('User profile loaded:', profile);
-          
-          if (profile) {
-            // Get user discount
-            const discount = await getUserDiscount(session.user.id);
-            setUserDiscount(discount);
-            console.log('User discount:', discount);
-          }
-        } catch (error) {
-          console.error('Error loading user profile:', error);
-        }
-      } else {
-        setIsAuthenticated(false);
-        setUserProfile(null);
-        setUserDiscount(0);
-        console.log('User signed out or no session');
+  const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('auth_id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        return null;
       }
-      
-      setLoading(false);
-    });
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session check:', session?.user?.id || 'null');
-      if (session?.user) {
-        setIsAuthenticated(true);
-        getUserProfile(session.user.id).then(profile => {
-          setUserProfile(profile);
-          if (profile) {
-            getUserDiscount(session.user.id).then(setUserDiscount).catch(console.error);
-          }
-          setLoading(false);
-        }).catch(() => setLoading(false));
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
-    if (action === 'logout') {
-      supabase.auth.signOut();
-      toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
-      });
+      return data as UserProfile;
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
+      return null;
     }
   };
 
-  return {
-    userProfile,
-    isAuthenticated,
-    userDiscount,
-    loading,
-    handleAuthAction
+  const refreshProfile = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const profile = await fetchUserProfile(user.id);
+        setUserProfile(profile);
+      } else {
+        setUserProfile(null);
+      }
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+      setUserProfile(null);
+    }
   };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (mounted) {
+          if (user) {
+            const profile = await fetchUserProfile(user.id);
+            setUserProfile(profile);
+          } else {
+            setUserProfile(null);
+          }
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (mounted) {
+          setUserProfile(null);
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        if (event === 'SIGNED_IN' && session?.user) {
+          const profile = await fetchUserProfile(session.user.id);
+          setUserProfile(profile);
+        } else if (event === 'SIGNED_OUT') {
+          setUserProfile(null);
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ userProfile, loading, refreshProfile }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
