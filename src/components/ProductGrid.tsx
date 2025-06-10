@@ -16,6 +16,10 @@ interface ProductGridProps {
 const ProductGrid = ({ products, language, onAddToCart, onProductClick }: ProductGridProps) => {
   const t = translations[language];
   
+  // Force English for product display
+  const displayLanguage = 'en';
+  const displayTranslations = translations[displayLanguage];
+  
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
       {products.map((product) => {
@@ -35,13 +39,13 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                 )}
                 {product.labTestFile && (
                   <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                    {t.labTested}
+                    Lab Tested
                   </span>
                 )}
               </div>
               {!product.inStock && (
                 <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
-                  <span className="text-white font-bold text-lg">{t.outOfStock}</span>
+                  <span className="text-white font-bold text-lg">Out of Stock</span>
                 </div>
               )}
             </div>
@@ -63,7 +67,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="h-3 w-3 bg-green-500 rounded-full" />
-                  <span>{product.capsules} {language === 'en' ? 'caps' : 'cáps'}</span>
+                  <span>{product.capsules} caps</span>
                 </div>
               </div>
               
@@ -73,8 +77,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                     key={category}
                     className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium"
                   >
-                    {language === 'en' ? category.replace('-', ' ') : 
-                      t[category as keyof typeof t] || category.replace('-', ' ')}
+                    {category.replace('-', ' ')}
                   </span>
                 ))}
                 {product.categories.length > 2 && (
@@ -100,7 +103,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                     className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    {t.viewDetails}
+                    View Details
                   </Button>
                   
                   <Button
@@ -109,7 +112,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                     className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm"
                   >
                     <ShoppingCart className="h-4 w-4 mr-1" />
-                    {language === 'en' ? 'Add to Cart' : 'Agregar'}
+                    Add to Cart
                   </Button>
                 </div>
               </div>
