@@ -25,13 +25,13 @@ const Sidebar = ({
   onClose
 }: SidebarProps) => {
   const categories = [
-    { id: 'all', nameEn: 'All Products', nameEs: 'Todos los Productos', icon: '🛍️' },
-    { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs', icon: '💪' },
-    { id: 'oral-steroids', nameEn: 'Oral Steroids', nameEs: 'Esteroides Orales', icon: '💊' },
-    { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores', icon: '🔥' },
-    { id: 'pct', nameEn: 'PCT', nameEs: 'PCT', icon: '🔄' },
-    { id: 'hormones', nameEn: 'Hormones', nameEs: 'Hormonas', icon: '⚗️' },
-    { id: 'growth', nameEn: 'Growth', nameEs: 'Crecimiento', icon: '📈' },
+    { id: 'all', nameEn: 'All Products', nameEs: 'Todos los Productos' },
+    { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs' },
+    { id: 'oral-steroids', nameEn: 'Oral Steroids', nameEs: 'Esteroides Orales' },
+    { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores' },
+    { id: 'pct', nameEn: 'PCT', nameEs: 'PCT' },
+    { id: 'hormones', nameEn: 'Hormones', nameEs: 'Hormonas' },
+    { id: 'growth', nameEn: 'Growth', nameEs: 'Crecimiento' },
   ];
 
   if (!isOpen) return null;
@@ -112,7 +112,6 @@ const Sidebar = ({
                   onClose(); // Close sidebar on mobile after selection
                 }}
               >
-                <span className="mr-3 text-lg">{category.icon}</span>
                 <span className="flex-1">
                   {language === 'en' ? category.nameEn : category.nameEs}
                 </span>

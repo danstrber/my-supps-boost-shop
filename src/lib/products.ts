@@ -31,7 +31,7 @@ export const products: Product[] = [
     id: '1',
     name: 'Super Drol',
     price: 34.99,
-    image: '/lovable-uploads/fb319341-a727-49e3-afa8-ce91bd70a788.png',
+    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
     category: 'oral-steroids',
     categories: ['oral-steroids', 'strength'],
     description: 'Powerful anabolic compound for serious muscle growth and strength gains.',
