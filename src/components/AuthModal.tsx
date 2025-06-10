@@ -1,15 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { handleEmailAuth, handleGoogleAuth } from '@/components/auth/authUtils';
-import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
-import { Eye, EyeOff, Wallet } from 'lucide-react';
+import EmailConfirmationView from '@/components/auth/EmailConfirmationView';
+import AuthForm from '@/components/auth/AuthForm';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -78,12 +74,12 @@ const AuthModal = ({
         .eq('email', email)
         .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" which is what we want
+      if (error && error.code !== 'PGRST116') {
         console.error('Error checking duplicate email:', error);
         return false;
       }
       
-      return !!data; // Returns true if email exists
+      return !!data;
     } catch (error) {
       console.error('Error in checkForDuplicateEmail:', error);
       return false;
@@ -96,7 +92,6 @@ const AuthModal = ({
 
     try {
       if (mode === 'signup') {
-        // Check for duplicate email first
         const emailExists = await checkForDuplicateEmail(email);
         if (emailExists) {
           toast({
@@ -110,7 +105,6 @@ const AuthModal = ({
           return;
         }
 
-        // Check terms acceptance
         if (!acceptedTerms) {
           toast({
             title: language === 'en' ? "Terms required" : "Términos requeridos",
@@ -266,49 +260,6 @@ const AuthModal = ({
     }
   };
 
-  const renderConfirmEmailMode = () => (
-    <div className="space-y-4 text-center">
-      <div className="text-2xl">📧</div>
-      <h3 className="text-lg font-semibold">
-        {language === 'en' ? 'Check Your Email' : 'Revisa Tu Correo'}
-      </h3>
-      <div className="space-y-2">
-        <p className="text-gray-600">
-          {language === 'en' 
-            ? `We've sent a confirmation link to ${email}. Please click the link in your email to complete your registration.`
-            : `Hemos enviado un enlace de confirmación a ${email}. Por favor haz clic en el enlace en tu correo para completar tu registro.`}
-        </p>
-        <div className="bg-yellow-50 p-3 rounded-lg">
-          <p className="text-yellow-700 text-sm font-medium">
-            {language === 'en' 
-              ? '⚠️ Don\'t forget to check your junk/spam folder!'
-              : '⚠️ ¡No olvides revisar tu carpeta de spam/correo no deseado!'}
-          </p>
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Button 
-          onClick={resendConfirmation} 
-          variant="outline" 
-          disabled={loading}
-          className="w-full"
-        >
-          {loading ? 
-            (language === 'en' ? 'Sending...' : 'Enviando...') : 
-            (language === 'en' ? 'Resend Email' : 'Reenviar Correo')
-          }
-        </Button>
-        <Button 
-          onClick={() => setMode('login')} 
-          variant="ghost"
-          className="w-full"
-        >
-          {language === 'en' ? 'Back to Sign In' : 'Volver a Iniciar Sesión'}
-        </Button>
-      </div>
-    </div>
-  );
-
   if (mode === 'confirm-email') {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -318,7 +269,13 @@ const AuthModal = ({
               {language === 'en' ? 'Email Confirmation Required' : 'Confirmación de Correo Requerida'}
             </DialogTitle>
           </DialogHeader>
-          {renderConfirmEmailMode()}
+          <EmailConfirmationView
+            email={email}
+            loading={loading}
+            language={language}
+            onResendConfirmation={resendConfirmation}
+            onBackToLogin={() => setMode('login')}
+          />
         </DialogContent>
       </Dialog>
     );
@@ -334,153 +291,27 @@ const AuthModal = ({
               : (language === 'en' ? 'Sign Up' : 'Registrarse')}
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'signup' && (
-            <div>
-              <Label htmlFor="name">
-                {language === 'en' ? 'Name' : 'Nombre'}
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={loading}
-              />
-            </div>
-          )}
-          <div>
-            <Label htmlFor="email">
-              {language === 'en' ? 'Email' : 'Correo'}
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
-          </div>
-          <div>
-            <Label htmlFor="password">
-              {language === 'en' ? 'Password' : 'Contraseña'}
-            </Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                onClick={() => setShowPassword(!showPassword)}
-                disabled={loading}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
-          
-          {referralCode && mode === 'signup' && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-700">
-                {language === 'en' 
-                  ? `Using referral code: ${referralCode}` 
-                  : `Usando código de referido: ${referralCode}`}
-              </p>
-            </div>
-          )}
-
-          {mode === 'signup' && (
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="terms"
-                checked={acceptedTerms}
-                onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
-                disabled={loading}
-              />
-              <div className="text-sm leading-5">
-                <Label htmlFor="terms" className="cursor-pointer">
-                  {language === 'en' ? 'I agree to the ' : 'Acepto los '}
-                  <button
-                    type="button"
-                    onClick={onTermsClick}
-                    className="text-blue-600 hover:text-blue-800 underline"
-                    disabled={loading}
-                  >
-                    {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
-                  </button>
-                  {language === 'en' ? ' and Privacy Policy' : ' y Política de Privacidad'}
-                </Label>
-              </div>
-            </div>
-          )}
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 
-              (language === 'en' ? 'Loading...' : 'Cargando...') : 
-              (mode === 'login' 
-                ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
-                : (language === 'en' ? 'Sign Up' : 'Registrarse')
-              )
-            }
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">
-                {language === 'en' ? 'Or continue with' : 'O continúa con'}
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <GoogleSignInButton 
-              onClick={handleGoogleSignIn} 
-              loading={loading} 
-            />
-            
-            <Button
-              type="button"
-              variant="outline"
-              onClick={connectPhantomWallet}
-              className="w-full"
-              disabled={loading}
-            >
-              <Wallet className="h-4 w-4 mr-2" />
-              {language === 'en' ? 'Connect Phantom Wallet' : 'Conectar Phantom Wallet'}
-            </Button>
-          </div>
-
-          <div className="text-center">
-            <Button
-              type="button"
-              variant="link"
-              onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-              disabled={loading}
-            >
-              {mode === 'login' 
-                ? (language === 'en' ? "Don't have an account? Sign up" : "¿No tienes cuenta? Regístrate")
-                : (language === 'en' ? "Already have an account? Sign in" : "¿Ya tienes cuenta? Inicia sesión")
-              }
-            </Button>
-          </div>
-        </form>
+        <AuthForm
+          mode={mode}
+          email={email}
+          password={password}
+          name={name}
+          loading={loading}
+          showPassword={showPassword}
+          acceptedTerms={acceptedTerms}
+          referralCode={referralCode}
+          language={language}
+          onEmailChange={setEmail}
+          onPasswordChange={setPassword}
+          onNameChange={setName}
+          onShowPasswordToggle={() => setShowPassword(!showPassword)}
+          onTermsChange={setAcceptedTerms}
+          onSubmit={handleSubmit}
+          onGoogleSignIn={handleGoogleSignIn}
+          onPhantomConnect={connectPhantomWallet}
+          onModeSwitch={() => setMode(mode === 'login' ? 'signup' : 'login')}
+          onTermsClick={onTermsClick}
+        />
       </DialogContent>
     </Dialog>
   );
