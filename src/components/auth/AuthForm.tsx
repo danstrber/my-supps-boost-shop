@@ -43,6 +43,10 @@ const AuthForm = ({
   onSubmit,
   onTermsClick
 }: AuthFormProps) => {
+  const isFormValid = mode === 'login' ? 
+    email && password :
+    email && password && username && acceptedTerms;
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -55,6 +59,7 @@ const AuthForm = ({
           required
           disabled={loading}
           placeholder="Enter your email"
+          className="w-full"
         />
       </div>
 
@@ -69,12 +74,13 @@ const AuthForm = ({
             required
             disabled={loading}
             placeholder="Enter your password"
+            className="w-full pr-10"
           />
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-transparent"
             onClick={() => setShowPassword(!showPassword)}
             disabled={loading}
           >
@@ -95,6 +101,7 @@ const AuthForm = ({
               required
               disabled={loading}
               placeholder="Enter your username"
+              className="w-full"
             />
           </div>
 
@@ -107,36 +114,53 @@ const AuthForm = ({
               onChange={(e) => setReferralCode(e.target.value)}
               disabled={loading}
               placeholder="Enter referral code if you have one"
+              className="w-full"
             />
           </div>
 
-          <div className="flex items-start space-x-2">
+          <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg border">
             <Checkbox
               id="terms"
               checked={acceptedTerms}
               onCheckedChange={(checked) => setAcceptedTerms(!!checked)}
               disabled={loading}
+              className="mt-0.5"
+              required
             />
-            <div className="text-sm leading-5">
-              <Label htmlFor="terms" className="cursor-pointer">
+            <div className="text-sm leading-5 flex-1">
+              <Label htmlFor="terms" className="cursor-pointer font-medium">
                 I agree to the{' '}
                 <button
                   type="button"
                   onClick={onTermsClick}
-                  className="text-blue-600 hover:text-blue-800 underline"
+                  className="text-blue-600 hover:text-blue-800 underline font-semibold"
+                  disabled={loading}
                 >
                   Terms of Service
                 </button>{' '}
                 and Privacy Policy
               </Label>
+              <p className="text-gray-600 mt-1">
+                Required to create an account and use our services.
+              </p>
             </div>
           </div>
         </>
       )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button 
+        type="submit" 
+        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5" 
+        disabled={loading || !isFormValid}
+      >
         {loading ? 'Processing...' : mode === 'login' ? 'Sign In' : 'Create Account'}
       </Button>
+
+      {mode === 'signup' && !acceptedTerms && (
+        <p className="text-sm text-red-600 text-center">
+          You must accept the Terms of Service to create an account.
+        </p>
+      )}
     </form>
   );
 };

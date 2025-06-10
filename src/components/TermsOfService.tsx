@@ -6,129 +6,155 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface TermsOfServiceProps {
   isOpen: boolean;
   onClose: () => void;
-  language: 'en' | 'es';
 }
 
-const TermsOfService = ({ isOpen, onClose, language }: TermsOfServiceProps) => {
+const TermsOfService = ({ isOpen, onClose }: TermsOfServiceProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[80vh]">
+      <DialogContent className="sm:max-w-4xl max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle>
-            {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
-          </DialogTitle>
+          <DialogTitle>Terms of Service</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-6 text-sm">
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '1. Acceptance of Terms' : '1. Aceptación de Términos'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.'
-                  : 'Al acceder y usar este sitio web, aceptas y acuerdas estar sujeto a los términos y disposiciones de este acuerdo.'}
+              <h3 className="font-semibold text-lg mb-3">1. Acceptance of Terms</h3>
+              <p className="text-gray-700 leading-relaxed">
+                By accessing and using MySupps services, you accept and agree to be bound by the terms 
+                and provision of this agreement. If you do not agree to abide by the above, please do 
+                not use this service.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '2. Research Purposes Only' : '2. Solo para Fines de Investigación'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'All products sold on this website are strictly for research and laboratory use only. They are not intended for human consumption, veterinary use, or any other purpose.'
-                  : 'Todos los productos vendidos en este sitio web son estrictamente para uso de investigación y laboratorio únicamente. No están destinados para consumo humano, uso veterinario o cualquier otro propósito.'}
+              <h3 className="font-semibold text-lg mb-3">2. Product Information</h3>
+              <p className="text-gray-700 leading-relaxed">
+                All products sold on MySupps are intended for research purposes only and are not for 
+                human consumption. Customers must be 18 years or older to purchase products from our 
+                website. We reserve the right to refuse service to anyone for any reason at any time.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '3. Age Requirement' : '3. Requisito de Edad'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'You must be at least 18 years old to purchase products from this website. By making a purchase, you confirm that you are of legal age.'
-                  : 'Debes tener al menos 18 años para comprar productos de este sitio web. Al realizar una compra, confirmas que eres mayor de edad.'}
+              <h3 className="font-semibold text-lg mb-3">3. Account Registration</h3>
+              <p className="text-gray-700 leading-relaxed">
+                To access certain features of our service, you may be required to register for an account. 
+                You agree to provide accurate, current, and complete information during the registration 
+                process and to update such information to keep it accurate, current, and complete.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '4. Referral System' : '4. Sistema de Referidos'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'Our referral program is designed to reward legitimate referrals. Do not abuse the referral system by creating fake accounts, using multiple identities, or engaging in fraudulent activities. Violations may result in account suspension, termination, and forfeiture of any earned rewards or discounts.'
-                  : 'Nuestro programa de referidos está diseñado para recompensar referidos legítimos. No abuses del sistema de referidos creando cuentas falsas, usando múltiples identidades o participando en actividades fraudulentas. Las violaciones pueden resultar en suspensión de cuenta, terminación y pérdida de cualquier recompensa o descuento ganado.'}
+              <h3 className="font-semibold text-lg mb-3">4. Referral System Policy</h3>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+                <h4 className="font-semibold text-orange-800 mb-2">Important Notice</h4>
+                <p className="text-orange-700 leading-relaxed">
+                  <strong>Referral System Abuse:</strong> Creating multiple accounts or using fraudulent 
+                  methods to exploit the referral system is strictly prohibited. Violators may face 
+                  account suspension or termination. This includes but is not limited to:
+                </p>
+                <ul className="list-disc list-inside mt-2 text-orange-700 space-y-1">
+                  <li>Creating fake accounts to refer yourself</li>
+                  <li>Using multiple email addresses or devices to circumvent account limits</li>
+                  <li>Manipulating IP addresses or using VPNs to create multiple accounts</li>
+                  <li>Encouraging others to create accounts solely for referral benefits</li>
+                  <li>Any other fraudulent activity related to the referral program</li>
+                </ul>
+              </div>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-lg mb-3">5. Account Security</h3>
+              <p className="text-gray-700 leading-relaxed">
+                You are responsible for safeguarding the password and for all activities that occur under 
+                your account. You agree not to disclose your password to any third party and to take sole 
+                responsibility for any activities or actions under your account.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '5. Account Security' : '5. Seguridad de Cuenta'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'You are responsible for maintaining the confidentiality of your account credentials. We implement security measures including email verification and optional two-factor authentication to protect your account.'
-                  : 'Eres responsable de mantener la confidencialidad de las credenciales de tu cuenta. Implementamos medidas de seguridad incluyendo verificación de correo y autenticación de dos factores opcional para proteger tu cuenta.'}
+              <h3 className="font-semibold text-lg mb-3">6. Payment Terms</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Payment must be received before products are shipped. We accept various payment methods 
+                including cryptocurrency. All prices are subject to change without notice. Discounts 
+                earned through the referral program are applied at checkout and cannot be combined with 
+                other promotional offers unless explicitly stated.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '6. Privacy and Data Protection' : '6. Privacidad y Protección de Datos'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'We collect and process personal information in accordance with our Privacy Policy. This includes email addresses, names, and shipping information necessary to fulfill orders. We may also track IP addresses to prevent abuse and ensure security.'
-                  : 'Recopilamos y procesamos información personal de acuerdo con nuestra Política de Privacidad. Esto incluye direcciones de correo, nombres e información de envío necesaria para cumplir pedidos. También podemos rastrear direcciones IP para prevenir abuso y garantizar seguridad.'}
+              <h3 className="font-semibold text-lg mb-3">7. Shipping and Delivery</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Shipping costs and delivery times vary based on location and product availability. 
+                Free shipping thresholds may apply based on your account status and referral activity. 
+                We are not responsible for delays caused by shipping carriers or customs processes.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '7. Account Limitations' : '7. Limitaciones de Cuenta'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'To prevent abuse, we limit the number of accounts that can be created from the same email address or IP address. Each person is allowed only one account. Multiple accounts may be subject to suspension or termination.'
-                  : 'Para prevenir abuso, limitamos el número de cuentas que pueden crearse desde la misma dirección de correo o dirección IP. Cada persona tiene permitida solo una cuenta. Múltiples cuentas pueden estar sujetas a suspensión o terminación.'}
+              <h3 className="font-semibold text-lg mb-3">8. Privacy Policy</h3>
+              <p className="text-gray-700 leading-relaxed">
+                Your privacy is important to us. Our Privacy Policy explains how we collect, use, and 
+                protect your information when you use our service. By using our service, you agree to 
+                the collection and use of information in accordance with our Privacy Policy.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '8. Quality Assurance' : '8. Garantía de Calidad'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'Our products undergo third-party testing for purity and quality. Lab test results are available for select products and can be viewed on individual product pages.'
-                  : 'Nuestros productos pasan por pruebas de terceros para pureza y calidad. Los resultados de pruebas de laboratorio están disponibles para productos selectos y pueden verse en páginas individuales de productos.'}
+              <h3 className="font-semibold text-lg mb-3">9. Prohibited Uses</h3>
+              <p className="text-gray-700 leading-relaxed mb-3">
+                You may not use our service for any illegal or unauthorized purpose. You agree to comply 
+                with all local laws regarding online conduct and acceptable content. Prohibited activities include:
+              </p>
+              <ul className="list-disc list-inside text-gray-700 space-y-1">
+                <li>Violating any applicable federal, state, or local laws or regulations</li>
+                <li>Transmitting any harmful, threatening, or harassing material</li>
+                <li>Attempting to gain unauthorized access to our systems</li>
+                <li>Using our products for human consumption</li>
+                <li>Reselling products without authorization</li>
+                <li>Abusing the referral system or creating fraudulent accounts</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="font-semibold text-lg mb-3">10. Limitation of Liability</h3>
+              <p className="text-gray-700 leading-relaxed">
+                In no event shall MySupps be liable for any indirect, incidental, special, consequential, 
+                or punitive damages, including without limitation, loss of profits, data, use, goodwill, 
+                or other intangible losses, resulting from your use of the service.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '9. Limitation of Liability' : '9. Limitación de Responsabilidad'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'We are not liable for any misuse of products sold. Products are sold for research purposes only and buyers assume all responsibility for proper handling and use.'
-                  : 'No somos responsables por el mal uso de productos vendidos. Los productos se venden solo para fines de investigación y los compradores asumen toda responsabilidad por el manejo y uso apropiado.'}
+              <h3 className="font-semibold text-lg mb-3">11. Termination</h3>
+              <p className="text-gray-700 leading-relaxed">
+                We may terminate or suspend your account and bar access to the service immediately, 
+                without prior notice or liability, under our sole discretion, for any reason whatsoever 
+                and without limitation, including but not limited to a breach of the Terms, abuse of 
+                the referral system, or suspicious account activity.
               </p>
             </section>
 
             <section>
-              <h3 className="text-lg font-semibold mb-3">
-                {language === 'en' ? '10. Changes to Terms' : '10. Cambios a los Términos'}
-              </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting on the website.'
-                  : 'Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios serán efectivos inmediatamente al publicarse en el sitio web.'}
+              <h3 className="font-semibold text-lg mb-3">12. Changes to Terms</h3>
+              <p className="text-gray-700 leading-relaxed">
+                We reserve the right, at our sole discretion, to modify or replace these Terms at any time. 
+                If a revision is material, we will provide at least 30 days notice prior to any new terms 
+                taking effect. What constitutes a material change will be determined at our sole discretion.
               </p>
             </section>
+
+            <section>
+              <h3 className="font-semibold text-lg mb-3">13. Contact Information</h3>
+              <p className="text-gray-700 leading-relaxed">
+                If you have any questions about these Terms of Service, please contact us through our 
+                customer support channels. We are committed to resolving any issues or concerns you may have.
+              </p>
+            </section>
+
+            <div className="text-center text-gray-500 text-xs mt-8 pt-4 border-t">
+              Last updated: {new Date().toLocaleDateString()}
+            </div>
           </div>
         </ScrollArea>
       </DialogContent>
