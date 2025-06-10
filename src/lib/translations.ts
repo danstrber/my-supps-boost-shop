@@ -17,6 +17,14 @@ export const translations = {
     recovery: "Recovery",
     testosteroneSupport: "Testosterone Support",
     pctAi: "PCT/AI",
+    oralSteroids: "Oral Steroids",
+    fatBurners: "Fat Burners",
+    strength: "Strength",
+    bulking: "Bulking",
+    cutting: "Cutting",
+    growth: "Growth",
+    hormones: "Hormones",
+    pct: "PCT",
     
     // Products
     sortBy: "Sort by:",
@@ -181,6 +189,14 @@ export const translations = {
     recovery: "Recuperación",
     testosteroneSupport: "Apoyo de Testosterona",
     pctAi: "PCT/AI",
+    oralSteroids: "Esteroides Orales",
+    fatBurners: "Quemadores de Grasa",
+    strength: "Fuerza",
+    bulking: "Volumen",
+    cutting: "Definición",
+    growth: "Crecimiento",
+    hormones: "Hormonas",
+    pct: "PCT",
     
     // Products
     sortBy: "Ordenar por:",

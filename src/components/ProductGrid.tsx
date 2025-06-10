@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart, Eye, Pill } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
@@ -35,13 +35,13 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                 )}
                 {product.labTestFile && (
                   <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                    Lab Tested
+                    {t.labTested}
                   </span>
                 )}
               </div>
               {!product.inStock && (
                 <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
-                  <span className="text-white font-bold text-lg">Out of Stock</span>
+                  <span className="text-white font-bold text-lg">{t.outOfStock}</span>
                 </div>
               )}
             </div>
@@ -54,6 +54,18 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
               <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
                 {product.description}
               </p>
+
+              {/* Dose and Capsule Info */}
+              <div className="flex items-center gap-3 text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <Pill className="h-3 w-3" />
+                  <span>{product.dose}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="h-3 w-3 bg-green-500 rounded-full" />
+                  <span>{product.capsules} {language === 'en' ? 'caps' : 'cáps'}</span>
+                </div>
+              </div>
               
               <div className="flex flex-wrap gap-1">
                 {product.categories.slice(0, 2).map((category) => (
@@ -61,7 +73,8 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                     key={category}
                     className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium"
                   >
-                    {category}
+                    {language === 'en' ? category.replace('-', ' ') : 
+                      t[category as keyof typeof t] || category.replace('-', ' ')}
                   </span>
                 ))}
                 {product.categories.length > 2 && (
