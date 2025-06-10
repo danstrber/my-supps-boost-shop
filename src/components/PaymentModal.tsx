@@ -50,13 +50,13 @@ const PaymentModal = ({
   cartItems,
   language = 'en'
 }: PaymentModalProps) => {
-  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin'>('telegram');
+  const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin'>('bitcoin');
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
     email: userProfile?.email || '',
     address: '',
     city: '',
-    country: 'US', // Default to US
+    country: 'US',
     phoneNumber: '',
     postalCode: '',
     txid: ''
@@ -66,13 +66,12 @@ const PaymentModal = ({
   const { toast } = useToast();
   const t = translations[language];
 
-  // Round up cart total for system calculations but keep original for BTC payment
   const systemTotal = Math.ceil(orderTotal);
-  const systemFinalTotal = Math.ceil(finalTotal); // Round up final total for display
-  const btcPaymentAmount = systemFinalTotal; // Use rounded amount for BTC
+  const systemFinalTotal = Math.ceil(finalTotal);
+  const btcPaymentAmount = systemFinalTotal;
 
-  // Your Bitcoin wallet address
-  const walletAddress = "k3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
+  // Updated Bitcoin wallet address
+  const walletAddress = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
   const sendFormspreeEmail = async (orderData: any) => {
     try {
@@ -110,13 +109,23 @@ const PaymentModal = ({
       console.log('Order notification sent successfully via Formspree');
     } catch (error) {
       console.error('Failed to send Formspree email:', error);
-      // Don't throw error to prevent order creation failure
     }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (paymentMethod === 'telegram') {
+      // Just redirect to Telegram for telegram orders
+      window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+      toast({
+        title: t.redirectedTelegram,
+        description: t.completeTelegramOrder,
+      });
+      onClose();
+      return;
+    }
+
     if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
       // Validate shipping info first
       if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
@@ -144,30 +153,9 @@ const PaymentModal = ({
     setLoading(true);
 
     try {
-      if (paymentMethod === 'telegram') {
-        // Validate all shipping info for Telegram too
-        if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
-          toast({
-            title: t.missingInformation,
-            description: t.fillAllFields,
-            variant: "destructive"
-          });
-          setLoading(false);
-          return;
-        }
-        
-        window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
-        toast({
-          title: t.redirectedTelegram,
-          description: t.completeTelegramOrder,
-        });
-        onClose();
-        return;
-      }
-
       // Create order in database with system total (rounded up)
       const orderData = {
-        user_id: userProfile?.auth_id, // This should be the auth_id from Supabase
+        user_id: userProfile?.auth_id,
         items: {
           products: cartItems.map(item => ({
             id: item.product.id,
@@ -177,14 +165,14 @@ const PaymentModal = ({
             total: item.product.price * item.quantity
           }))
         },
-        original_total: systemTotal, // Use rounded up total for system
+        original_total: systemTotal,
         discount_amount: discount,
         shipping_fee: shippingFee,
-        final_total: systemFinalTotal, // Use system total for tracking
+        final_total: systemFinalTotal,
         payment_method: paymentMethod,
         payment_details: {
           customer_info: customerInfo,
-          btc_amount_sent: btcPaymentAmount, // Store actual BTC amount
+          btc_amount_sent: btcPaymentAmount,
           wallet_address: walletAddress
         },
         status: 'pending'
@@ -206,7 +194,7 @@ const PaymentModal = ({
       // Create pending purchase with system total for referral calculations
       createPendingPurchase(order.id, {
         userId: userProfile?.auth_id || '',
-        amount: systemFinalTotal, // Use system total for referral calculations
+        amount: systemFinalTotal,
         items: cartItems,
         referralCode: userProfile?.referred_by || undefined
       });
@@ -233,11 +221,6 @@ const PaymentModal = ({
     }
   };
 
-  // Handle referral link click
-  const handleReferralClick = () => {
-    window.open('/referral-program', '_blank');
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -256,11 +239,8 @@ const PaymentModal = ({
           language={language}
         />
 
-        {/* Referral tip - now clickable */}
-        <div 
-          className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
-          onClick={handleReferralClick}
-        >
+        {/* Referral tip - no link, just text */}
+        <div className="bg-green-50 border border-green-200 p-3 rounded-lg text-center">
           <p className="text-green-700 text-sm font-medium">
             {t.wantCheaper}
           </p>
@@ -276,8 +256,8 @@ const PaymentModal = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="telegram">💬 Telegram ({t.recommended})</SelectItem>
                 <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
+                <SelectItem value="telegram">💬 Telegram ({t.recommended})</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -288,12 +268,14 @@ const PaymentModal = ({
             <BitcoinTutorial language={language} />
           )}
 
-          <ShippingForm
-            customerInfo={customerInfo}
-            onInfoChange={setCustomerInfo}
-            paymentMethod={paymentMethod}
-            language={language}
-          />
+          {paymentMethod === 'bitcoin' && (
+            <ShippingForm
+              customerInfo={customerInfo}
+              onInfoChange={setCustomerInfo}
+              paymentMethod={paymentMethod}
+              language={language}
+            />
+          )}
 
           {showBitcoinDetails && paymentMethod === 'bitcoin' && (
             <BitcoinPaymentDetails
