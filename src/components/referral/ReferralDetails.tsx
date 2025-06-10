@@ -25,18 +25,57 @@ const ReferralDetails = ({
   return (
     <div className="space-y-3 text-sm">
       <div className="bg-white rounded-lg p-4 border border-green-200">
-        <h4 className="font-semibold text-green-800 mb-2">💰 {language === 'en' ? 'Current Detailed Rules (NEW!)' : 'Reglas Detalladas Actuales (¡NUEVO!)'}</h4>
-        <ul className="space-y-1 text-gray-700">
-          <li>• {language === 'en' ? 'Each referral: 2.5% discount' : 'Cada referido: 2.5% descuento'}</li>
-          <li>• {language === 'en' ? 'Referrers earn: 5% per $50 of referral spending (max 19.5%)' : 'Referidores ganan: 5% por $50 de gastos de referidos (máx 19.5%)'}</li>
-          <li>• {language === 'en' ? 'Referrers earn: 2% per $50 spent personally (rounded up)' : 'Referidores ganan: 2% por $50 personal (redondeado)'}</li>
-          <li>• {language === 'en' ? 'Referred users: 6.5% per $50 spent (rounded up)' : 'Usuarios referidos: 6.5% por $50 (redondeado)'}</li>
-          <li>• {language === 'en' ? 'Normal users: 2% per $50 spent (rounded up)' : 'Usuarios normales: 2% por $50 (redondeado)'}</li>
-          <li>• {language === 'en' ? 'Free shipping: $100 (referrers: $110)' : 'Envío gratis: $100 (referidores: $110)'}</li>
-          <li><strong>• {language === 'en' ? 'All discounts STACK (max 32%)' : 'Todos los descuentos se ACUMULAN (máx 32%)'}</strong></li>
-          <li><strong>• {language === 'en' ? 'Over 25% discounts only on orders $135+' : 'Descuentos sobre 25% solo en pedidos $135+'}</strong></li>
-          <li>• {language === 'en' ? 'Referred users reset to base discount after first purchase' : 'Usuarios referidos se reinician a descuento base después de primera compra'}</li>
-        </ul>
+        <h4 className="font-semibold text-green-800 mb-2">💰 {language === 'en' ? 'Complete Referral Rules for Everyone' : 'Reglas Completas de Referidos para Todos'}</h4>
+        
+        {/* Basic Referral Rules */}
+        <div className="mb-3">
+          <h5 className="font-medium text-green-700 mb-1">{language === 'en' ? '🎁 Basic Referral Bonuses:' : '🎁 Bonos Básicos de Referidos:'}</h5>
+          <ul className="space-y-1 text-gray-700 ml-2">
+            <li>• {language === 'en' ? 'Each successful referral: +2.5% discount' : 'Cada referido exitoso: +2.5% descuento'}</li>
+            <li>• {language === 'en' ? 'No limit on number of referrals' : 'Sin límite en número de referidos'}</li>
+          </ul>
+        </div>
+
+        {/* Spending Discounts by User Type */}
+        <div className="mb-3">
+          <h5 className="font-medium text-green-700 mb-1">{language === 'en' ? '💳 Spending Discounts by User Type:' : '💳 Descuentos por Gastos según Tipo de Usuario:'}</h5>
+          <ul className="space-y-1 text-gray-700 ml-2">
+            <li>• <strong>{language === 'en' ? 'Normal Users:' : 'Usuarios Normales:'}</strong> {language === 'en' ? '2% per $50 spent (rounded up)' : '2% por $50 gastados (redondeado)'}</li>
+            <li>• <strong>{language === 'en' ? 'Referred Users:' : 'Usuarios Referidos:'}</strong> {language === 'en' ? '6.5% per $50 spent (rounded up)' : '6.5% por $50 gastados (redondeado)'}</li>
+            <li>• <strong>{language === 'en' ? 'Referrers (Personal):' : 'Referidores (Personal):'}</strong> {language === 'en' ? '2% per $50 spent personally (rounded up)' : '2% por $50 gastados personalmente (redondeado)'}</li>
+            <li>• <strong>{language === 'en' ? 'Referrers (From Referrals):' : 'Referidores (De Referidos):'}</strong> {language === 'en' ? '5% per $50 of referral spending (max 19.5%)' : '5% por $50 de gastos de referidos (máx 19.5%)'}</li>
+          </ul>
+        </div>
+
+        {/* Stacking Rules */}
+        <div className="mb-3">
+          <h5 className="font-medium text-green-700 mb-1">{language === 'en' ? '🔄 How Discounts Stack:' : '🔄 Cómo se Acumulan los Descuentos:'}</h5>
+          <ul className="space-y-1 text-gray-700 ml-2">
+            <li>• <strong>{language === 'en' ? 'ALL discounts STACK together' : 'TODOS los descuentos se ACUMULAN'}</strong></li>
+            <li>• {language === 'en' ? 'Maximum total discount: 32%' : 'Descuento total máximo: 32%'}</li>
+            <li>• <strong>{language === 'en' ? 'Over 25% discounts only on orders $135+' : 'Descuentos sobre 25% solo en pedidos $135+'}</strong></li>
+          </ul>
+        </div>
+
+        {/* Shipping Rules */}
+        <div className="mb-3">
+          <h5 className="font-medium text-green-700 mb-1">{language === 'en' ? '🚚 Free Shipping Rules:' : '🚚 Reglas de Envío Gratis:'}</h5>
+          <ul className="space-y-1 text-gray-700 ml-2">
+            <li>• {language === 'en' ? 'Normal/Referred users: Free shipping at $100' : 'Usuarios normales/referidos: Envío gratis a $100'}</li>
+            <li>• {language === 'en' ? 'Referrers: Free shipping at $110' : 'Referidores: Envío gratis a $110'}</li>
+            <li>• {language === 'en' ? 'Otherwise: $10 shipping fee' : 'De lo contrario: $10 de envío'}</li>
+          </ul>
+        </div>
+
+        {/* Special Rules */}
+        <div>
+          <h5 className="font-medium text-green-700 mb-1">{language === 'en' ? '⚠️ Special Rules:' : '⚠️ Reglas Especiales:'}</h5>
+          <ul className="space-y-1 text-gray-700 ml-2">
+            <li>• {language === 'en' ? 'Referred users reset to base discount after first purchase' : 'Usuarios referidos se reinician a descuento base después de primera compra'}</li>
+            <li>• {language === 'en' ? 'All spending amounts are rounded UP to nearest dollar for calculations' : 'Todos los montos de gastos se redondean HACIA ARRIBA para cálculos'}</li>
+            <li>• {language === 'en' ? 'Referrer bonuses from referral spending capped at 19.5%' : 'Bonos de referidores por gastos de referidos limitados a 19.5%'}</li>
+          </ul>
+        </div>
       </div>
       
       <div className="bg-white rounded-lg p-4 border border-green-200">
