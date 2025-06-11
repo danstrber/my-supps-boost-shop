@@ -33,6 +33,7 @@ const ReferralDetails = ({
           <ul className="space-y-1 text-gray-700 ml-2">
             <li>• {language === 'en' ? 'Each successful referral: +2.5% discount' : 'Cada referido exitoso: +2.5% descuento'}</li>
             <li>• {language === 'en' ? 'No limit on number of referrals' : 'Sin límite en número de referidos'}</li>
+            <li>• {language === 'en' ? 'Referral bonuses cap at 12.5% (5 referrals max effective)' : 'Bonos de referidos máximo 12.5% (5 referidos máximo efectivo)'}</li>
           </ul>
         </div>
 
@@ -54,6 +55,7 @@ const ReferralDetails = ({
             <li>• <strong>{language === 'en' ? 'ALL discounts STACK together' : 'TODOS los descuentos se ACUMULAN'}</strong></li>
             <li>• {language === 'en' ? 'Maximum total discount: 32%' : 'Descuento total máximo: 32%'}</li>
             <li>• <strong>{language === 'en' ? 'Over 25% discounts only on orders $135+' : 'Descuentos sobre 25% solo en pedidos $135+'}</strong></li>
+            <li>• {language === 'en' ? 'Example: 12.5% referral + 19.5% spending = 32% total' : 'Ejemplo: 12.5% referidos + 19.5% gastos = 32% total'}</li>
           </ul>
         </div>
 
@@ -61,8 +63,8 @@ const ReferralDetails = ({
         <div className="mb-3">
           <h5 className="font-medium text-green-700 mb-1">{language === 'en' ? '🚚 Free Shipping Rules:' : '🚚 Reglas de Envío Gratis:'}</h5>
           <ul className="space-y-1 text-gray-700 ml-2">
-            <li>• {language === 'en' ? 'Normal/Referred users: Free shipping at $100' : 'Usuarios normales/referidos: Envío gratis a $100'}</li>
-            <li>• {language === 'en' ? 'Referrers: Free shipping at $110' : 'Referidores: Envío gratis a $110'}</li>
+            <li>• {language === 'en' ? 'Normal/Referred users: Free shipping at $100+' : 'Usuarios normales/referidos: Envío gratis a $100+'}</li>
+            <li>• {language === 'en' ? 'Referrers: Free shipping at $110+' : 'Referidores: Envío gratis a $110+'}</li>
             <li>• {language === 'en' ? 'Otherwise: $10 shipping fee' : 'De lo contrario: $10 de envío'}</li>
           </ul>
         </div>
@@ -74,6 +76,7 @@ const ReferralDetails = ({
             <li>• {language === 'en' ? 'Referred users reset to base discount after first purchase' : 'Usuarios referidos se reinician a descuento base después de primera compra'}</li>
             <li>• {language === 'en' ? 'All spending amounts are rounded UP to nearest dollar for calculations' : 'Todos los montos de gastos se redondean HACIA ARRIBA para cálculos'}</li>
             <li>• {language === 'en' ? 'Referrer bonuses from referral spending capped at 19.5%' : 'Bonos de referidores por gastos de referidos limitados a 19.5%'}</li>
+            <li>• {language === 'en' ? 'Users keep their discount levels permanently once earned' : 'Los usuarios mantienen sus niveles de descuento permanentemente una vez obtenidos'}</li>
           </ul>
         </div>
       </div>

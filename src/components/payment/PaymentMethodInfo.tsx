@@ -15,26 +15,23 @@ const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) 
       return (
         <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-800 mb-2">
-            💬 {t.telegramOrdering}
+            💬 Telegram Ordering
           </h4>
           <p className="text-blue-700 text-sm mb-3">
-            {t.telegramOrderDesc}
+            Order directly through our secure Telegram channel for the fastest and most convenient experience.
           </p>
-          <ul className="text-blue-700 text-sm space-y-1 mb-3">
-            <li>✅ {t.telegramEasyTracking}</li>
-            <li>✅ {t.telegramAnonymous}</li>
-            <li>✅ {t.telegramDirectComm}</li>
-            <li>✅ {t.telegramExpertCoaching}</li>
-            <li>✅ {t.telegramFastSupport}</li>
+          <ul className="text-blue-700 text-sm space-y-1 mb-4">
+            <li>✅ Easy order tracking</li>
+            <li>✅ Anonymous ordering</li>
+            <li>✅ Direct communication</li>
+            <li>✅ Expert coaching included</li>
+            <li>✅ 24/7 fast support</li>
           </ul>
-          <p className="text-blue-600 text-xs mb-4">
-            {t.telegramJoinInfo}
-          </p>
           
           {/* Direct Telegram Link */}
           <div className="bg-blue-100 border border-blue-300 p-4 rounded-lg text-center">
             <p className="text-blue-800 font-semibold mb-3">
-              {language === 'en' ? 'Join our Telegram channel to place your order instantly!' : '¡Únete a nuestro canal de Telegram para hacer tu pedido al instante!'}
+              Join our Telegram channel to place your order instantly!
             </p>
             <a 
               href="https://t.me/+fDDZObF0zjI2M2Y0" 
@@ -49,13 +46,10 @@ const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) 
           {/* Telegram Benefits Section */}
           <div className="mt-4 p-3 bg-blue-100 rounded-lg">
             <h5 className="font-medium text-blue-800 mb-2">
-              {language === 'en' 
-                ? '🚀 Why Choose Telegram?' 
-                : '🚀 ¿Por Qué Elegir Telegram?'
-              }
+              🚀 Why Choose Telegram?
             </h5>
             <p className="text-blue-700 text-sm">
-              {t.telegramEasierBuying}
+              Telegram makes buying easier with instant communication, order tracking, and expert guidance all in one place.
             </p>
           </div>
         </div>
