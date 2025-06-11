@@ -67,7 +67,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
   
   // NEW RULE: Referred users get 6.5% per $50 spent but max out at $150 total discounts
   const spendingDiscount = isReferrer
-    ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2  // Referrers: 2% per $50 spent personally (rounded up)
+    ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50 spent personally (rounded up) - FIXED FROM 2% TO 5%
     : userProfile.referred_by 
       ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (rounded up) MAX AT $150
       : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2; // Normal users: 2% per $50 (rounded up)
@@ -148,7 +148,7 @@ const ReferralSection = ({ userProfile, language, referralCount }: ReferralSecti
         <ul className="space-y-1 text-xs text-gray-700">
           <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each additional referral: 2.5% discount' : 'Cada referido adicional: 2.5% descuento'}</li>
-          <li>• {language === 'en' ? 'Referrers: 5% per $50 from referral spending' : 'Referidores: 5% por $50 de gastos de referidos'}</li>
+          <li>• {language === 'en' ? 'Referrers: 5% per $50 from referral spending + 5% per $50 personal spending' : 'Referidores: 5% por $50 de gastos de referidos + 5% por $50 gasto personal'}</li>
           <li>• {language === 'en' ? 'Referred users: 6.5% per $50 spent (max $150 total)' : 'Usuarios referidos: 6.5% por cada $50 gastados (máx $150 total)'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100 for everyone' : 'Envío gratis a $100 para todos'}</li>
         </ul>

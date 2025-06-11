@@ -30,19 +30,19 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
               <div className="absolute top-2 left-2 flex flex-col gap-1">
                 {product.featured && (
                   <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                    {language === 'en' ? 'Featured' : 'Destacado'}
+                    {t.featured}
                   </span>
                 )}
                 {product.labTestFile && (
                   <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                    {language === 'en' ? 'Lab Tested' : 'Probado en Laboratorio'}
+                    {t.labTested}
                   </span>
                 )}
               </div>
               {!product.inStock && (
                 <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
                   <span className="text-white font-bold text-lg">
-                    {language === 'en' ? 'Out of Stock' : 'Agotado'}
+                    {t.outOfStock}
                   </span>
                 </div>
               )}
@@ -65,7 +65,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="h-3 w-3 bg-green-500 rounded-full" />
-                  <span>{product.capsules} {language === 'en' ? 'caps' : 'cáps'}</span>
+                  <span>{product.capsules} {t.language === 'en' ? 'caps' : 'cáps'}</span>
                 </div>
               </div>
               
@@ -101,7 +101,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                     className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    {language === 'en' ? 'View Details' : 'Ver Detalles'}
+                    {t.viewDetails}
                   </Button>
                   
                   <Button
@@ -110,7 +110,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                     className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm"
                   >
                     <ShoppingCart className="h-4 w-4 mr-1" />
-                    {language === 'en' ? 'Add to Cart' : 'Agregar al Carrito'}
+                    {t.addToCart}
                   </Button>
                 </div>
               </div>

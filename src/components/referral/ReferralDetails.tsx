@@ -45,7 +45,7 @@ const ReferralDetails = ({
           <ul className="space-y-1 text-gray-700 ml-2">
             <li>• <strong>{language === 'en' ? 'Normal Users:' : 'Usuarios Normales:'}</strong> {language === 'en' ? '2% per $50 spent (rounded up)' : '2% por $50 gastados (redondeado)'}</li>
             <li>• <strong>{language === 'en' ? 'Referred Users:' : 'Usuarios Referidos:'}</strong> {language === 'en' ? '6.5% per $50 spent (max at $150 total spending)' : '6.5% por $50 gastados (máx en $150 gasto total)'}</li>
-            <li>• <strong>{language === 'en' ? 'Referrers (Personal):' : 'Referidores (Personal):'}</strong> {language === 'en' ? '2% per $50 spent personally (rounded up)' : '2% por $50 gastados personalmente (redondeado)'}</li>
+            <li>• <strong>{language === 'en' ? 'Referrers (Personal):' : 'Referidores (Personal):'}</strong> {language === 'en' ? '5% per $50 spent personally (rounded up)' : '5% por $50 gastados personalmente (redondeado)'}</li>
             <li>• <strong>{language === 'en' ? 'Referrers (From Referrals):' : 'Referidores (De Referidos):'}</strong> {language === 'en' ? '5% per $50 of referral spending' : '5% por $50 de gastos de referidos'}</li>
           </ul>
         </div>
