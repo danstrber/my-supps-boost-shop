@@ -14,7 +14,7 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ products, language, onAddToCart, onProductClick }: ProductGridProps) => {
-  const t = translations.en;
+  const t = translations[language];
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -39,7 +39,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                   </span>
                 )}
               </div>
-              {!product.inStock && (
+              {product.inStock === false && (
                 <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
                   <span className="text-white font-bold text-lg">
                     {t.outOfStock}
@@ -54,18 +54,18 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
               </h3>
               
               <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                {product.description}
+                {product.description[language]}
               </p>
 
               {/* Dose and Capsule Info */}
               <div className="flex items-center gap-3 text-xs text-gray-500">
                 <div className="flex items-center gap-1">
                   <Pill className="h-3 w-3" />
-                  <span>{product.dose}</span>
+                  <span>{product.specifications[language].dosePerCapsule}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="h-3 w-3 bg-green-500 rounded-full" />
-                  <span>{product.capsules} caps</span>
+                  <span>{product.specifications[language].capsulesPerBottle} caps</span>
                 </div>
               </div>
               
@@ -106,7 +106,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                   
                   <Button
                     onClick={() => onAddToCart(product)}
-                    disabled={!product.inStock}
+                    disabled={product.inStock === false}
                     className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm"
                   >
                     <ShoppingCart className="h-4 w-4 mr-1" />

@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -61,6 +62,12 @@ export interface Product {
     sideEffects: number;
     retention: number;
   };
+  // Additional properties needed by components
+  featured?: boolean;
+  labTestFile?: string;
+  inStock?: boolean;
+  dose?: string;
+  capsules?: string;
 }
 
 export const products: Product[] = [
