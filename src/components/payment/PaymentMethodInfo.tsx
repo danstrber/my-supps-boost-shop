@@ -1,15 +1,12 @@
 
 import React from 'react';
-import { translations } from '@/lib/translations';
 
 interface PaymentMethodInfoProps {
   paymentMethod: 'telegram' | 'bitcoin';
   language: 'en' | 'es';
 }
 
-const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) => {
-  const t = translations[language];
-  
+const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
   switch (paymentMethod) {
     case 'telegram':
       return (
@@ -39,7 +36,7 @@ const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) 
               rel="noopener noreferrer"
               className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"
             >
-              💬 {language === 'en' ? 'Join Telegram Channel' : 'Unirse al Canal de Telegram'}
+              💬 Join Telegram Channel
             </a>
           </div>
           
@@ -58,15 +55,13 @@ const PaymentMethodInfo = ({ paymentMethod, language }: PaymentMethodInfoProps) 
       return (
         <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
           <h4 className="font-semibold text-orange-800 mb-2">
-            ₿ {t.bitcoinPayment}
+            ₿ Bitcoin Payment
           </h4>
           <p className="text-orange-700 text-sm mb-2">
-            {t.bitcoinPaymentDetails}
+            Pay securely and anonymously with Bitcoin. Fast, private, and reliable.
           </p>
           <p className="text-orange-600 text-xs">
-            {language === 'en' 
-              ? 'No ID verification required - completely anonymous Bitcoin payments.'
-              : 'No se requiere verificación de ID - pagos Bitcoin completamente anónimos.'}
+            No ID verification required - completely anonymous Bitcoin payments.
           </p>
         </div>
       );

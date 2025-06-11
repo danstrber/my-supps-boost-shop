@@ -14,7 +14,7 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ products, language, onAddToCart, onProductClick }: ProductGridProps) => {
-  const t = translations[language];
+  const t = translations.en;
   
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
@@ -65,7 +65,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="h-3 w-3 bg-green-500 rounded-full" />
-                  <span>{product.capsules} {language === 'en' ? 'caps' : 'cáps'}</span>
+                  <span>{product.capsules} caps</span>
                 </div>
               </div>
               
