@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
@@ -63,14 +64,29 @@ const PaymentModal = ({
   });
   const [loading, setLoading] = useState(false);
   const [showBitcoinDetails, setShowBitcoinDetails] = useState(false);
+  const [txidError, setTxidError] = useState('');
   const { toast } = useToast();
   const t = translations[language];
 
   const systemTotal = Math.ceil(orderTotal);
   const systemFinalTotal = Math.ceil(finalTotal);
-  const btcPaymentAmount = systemFinalTotal;
+  const btcPaymentAmount = finalTotal; // Use exact amount for Bitcoin
 
-  const walletAddress = "k3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
+  const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+
+  const validateTxid = (txid: string) => {
+    const txidRegex = /^[0-9a-fA-F]{64}$/;
+    return txidRegex.test(txid);
+  };
+
+  const handleTxidChange = (value: string) => {
+    setCustomerInfo(prev => ({ ...prev, txid: value }));
+    if (value && !validateTxid(value)) {
+      setTxidError(t.invalidTxid);
+    } else {
+      setTxidError('');
+    }
+  };
 
   const sendFormspreeEmail = async (orderData: any) => {
     try {
@@ -90,7 +106,8 @@ const PaymentModal = ({
         shippingFee: shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`,
         finalTotal: `$${btcPaymentAmount.toFixed(2)}`,
         systemTotal: `$${systemFinalTotal.toFixed(2)}`,
-        walletAddress: walletAddress
+        walletAddress: walletAddress,
+        txid: customerInfo.txid || 'N/A'
       };
 
       const response = await fetch('https://formspree.io/f/mqaqvlye', {
@@ -141,10 +158,10 @@ const PaymentModal = ({
       return;
     }
 
-    if (paymentMethod === 'bitcoin' && !customerInfo.txid) {
+    if (paymentMethod === 'bitcoin' && (!customerInfo.txid || !validateTxid(customerInfo.txid))) {
       toast({
         title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
-        description: language === 'en' ? 'Please enter the transaction ID after sending Bitcoin' : 'Por favor ingresa el ID de transacción después de enviar Bitcoin',
+        description: t.invalidTxid,
         variant: "destructive"
       });
       return;
@@ -237,7 +254,6 @@ const PaymentModal = ({
           discount={discount}
           shippingFee={shippingFee}
           finalTotal={systemFinalTotal}
-          language={language}
         />
 
         <div 
@@ -265,10 +281,10 @@ const PaymentModal = ({
             </Select>
           </div>
 
-          <PaymentMethodInfo paymentMethod={paymentMethod} language={language} />
+          <PaymentMethodInfo paymentMethod={paymentMethod} />
 
           {paymentMethod === 'bitcoin' && !showBitcoinDetails && (
-            <BitcoinTutorial language={language} />
+            <BitcoinTutorial />
           )}
 
           {paymentMethod === 'bitcoin' && (
@@ -281,19 +297,38 @@ const PaymentModal = ({
           )}
 
           {showBitcoinDetails && paymentMethod === 'bitcoin' && (
-            <BitcoinPaymentDetails
-              amount={systemFinalTotal}
-              walletAddress={walletAddress}
-              customerInfo={customerInfo}
-              onInfoChange={setCustomerInfo}
-              language={language}
-            />
+            <>
+              <BitcoinPaymentDetails
+                amount={btcPaymentAmount}
+                walletAddress={walletAddress}
+                customerInfo={customerInfo}
+                onInfoChange={setCustomerInfo}
+                language={language}
+              />
+              
+              <div className="space-y-2">
+                <Label htmlFor="txid" className="text-sm font-medium">
+                  {language === 'en' ? 'Transaction ID (TXID)' : 'ID de Transacción (TXID)'}
+                </Label>
+                <Input
+                  id="txid"
+                  type="text"
+                  value={customerInfo.txid}
+                  onChange={(e) => handleTxidChange(e.target.value)}
+                  placeholder={language === 'en' ? 'Enter Bitcoin transaction ID...' : 'Ingresa el ID de transacción de Bitcoin...'}
+                  className={txidError ? 'border-red-500' : ''}
+                />
+                {txidError && (
+                  <p className="text-red-500 text-sm">{txidError}</p>
+                )}
+              </div>
+            </>
           )}
 
           <Button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-            disabled={loading}
+            disabled={loading || (paymentMethod === 'bitcoin' && showBitcoinDetails && (!customerInfo.txid || !!txidError))}
           >
             {loading ? t.processing : 
              paymentMethod === 'telegram' ? t.joinTelegram : 

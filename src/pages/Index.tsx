@@ -19,8 +19,14 @@ console.log('Index component loading...');
 const Index = () => {
   console.log('Index component rendering...');
   
-  // Force language to default to English
-  const [language, setLanguage] = useState<'en' | 'es'>('en');
+  // Initialize language from localStorage or default to English
+  const [language, setLanguage] = useState<'en' | 'es'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('language') as 'en' | 'es') || 'en';
+    }
+    return 'en';
+  });
+  
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -37,10 +43,12 @@ const Index = () => {
 
   console.log('Index state initialized', { loading, isAuthenticated });
 
-  // Force English on mount and ensure it stays English
+  // Save language preference to localStorage when it changes
   useEffect(() => {
-    setLanguage('en');
-  }, []);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', language);
+    }
+  }, [language]);
 
   // Check for referral code in URL on mount
   useEffect(() => {

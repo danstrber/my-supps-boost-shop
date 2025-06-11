@@ -8,6 +8,7 @@ import { UserProfile } from '@/lib/auth';
 import PaymentModal from './PaymentModal';
 import CartItem from './cart/CartItem';
 import CartSummary from './cart/CartSummary';
+import { translations } from '@/lib/translations';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface CartModalProps {
   userDiscount: number;
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
+  language: 'en' | 'es';
 }
 
 const CartModal = ({
@@ -28,9 +30,11 @@ const CartModal = ({
   onUpdateCart,
   userDiscount,
   isAuthenticated,
-  userProfile
+  userProfile,
+  language
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const t = translations[language];
 
   // Safety check for cart and products
   if (!cart || !products) {
@@ -50,13 +54,13 @@ const CartModal = ({
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
-              Cart
+              {t.cart}
             </DialogTitle>
           </DialogHeader>
           <div className="py-8 text-center">
             <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500 mb-4">Your cart is empty</p>
-            <Button onClick={onClose}>Continue Shopping</Button>
+            <p className="text-gray-500 mb-4">{t.emptyCart}</p>
+            <Button onClick={onClose}>{t.continueShopping}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -73,9 +77,9 @@ const CartModal = ({
   const discountAmount = systemSubtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = systemSubtotal - discountAmount;
   
-  // Free shipping threshold: $100 for normal/referred users, $110 for referrers
+  // Free shipping threshold: $65 (updated from $65.01)
   const isReferrer = userProfile && userProfile.referred_spending > 0;
-  const freeShippingThreshold = isReferrer ? 110 : 100;
+  const freeShippingThreshold = 65; // Changed from complex logic to simple $65
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // $10 shipping fee
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
@@ -108,6 +112,10 @@ const CartModal = ({
     quantity
   }));
 
+  const handleReferralClick = () => {
+    window.open('/referral-program', '_blank');
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -116,7 +124,7 @@ const CartModal = ({
             <DialogTitle className="flex items-center justify-between">
               <span className="flex items-center">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Cart
+                {t.cart}
               </span>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="h-4 w-4" />
@@ -125,6 +133,16 @@ const CartModal = ({
           </DialogHeader>
 
           <div className="space-y-4">
+            {/* Referral Discount Notice */}
+            <div 
+              className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
+              onClick={handleReferralClick}
+            >
+              <p className="text-green-700 text-sm font-medium">
+                {t.referralDiscount}
+              </p>
+            </div>
+
             {cartItems.map(({ product, quantity }) => (
               <CartItem
                 key={product.id}
@@ -149,7 +167,10 @@ const CartModal = ({
             {userDiscount > 25 && systemSubtotal < 135 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">
-                  Discounts over 25% are limited to orders $135+. Current discount: {cappedDiscount}%
+                  {language === 'en' 
+                    ? `Discounts over 25% are limited to orders $135+. Current discount: ${cappedDiscount}%`
+                    : `Los descuentos superiores al 25% están limitados a pedidos de $135+. Descuento actual: ${cappedDiscount}%`
+                  }
                 </p>
               </div>
             )}
@@ -159,7 +180,10 @@ const CartModal = ({
               className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
               disabled={!isAuthenticated}
             >
-              {!isAuthenticated ? 'Login to Checkout' : 'Proceed to Checkout'}
+              {!isAuthenticated 
+                ? (language === 'en' ? 'Login to Checkout' : 'Iniciar Sesión para Pagar')
+                : t.proceedToCheckout
+              }
             </Button>
           </div>
         </DialogContent>
@@ -175,6 +199,7 @@ const CartModal = ({
         cart={cart}
         userProfile={userProfile}
         cartItems={paymentCartItems}
+        language={language}
       />
     </>
   );
