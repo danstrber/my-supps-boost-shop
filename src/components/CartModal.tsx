@@ -8,7 +8,6 @@ import { UserProfile } from '@/lib/auth';
 import PaymentModal from './PaymentModal';
 import CartItem from './cart/CartItem';
 import CartSummary from './cart/CartSummary';
-import { translations } from '@/lib/translations';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -19,7 +18,6 @@ interface CartModalProps {
   userDiscount: number;
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
-  language: 'en' | 'es';
 }
 
 const CartModal = ({
@@ -30,11 +28,9 @@ const CartModal = ({
   onUpdateCart,
   userDiscount,
   isAuthenticated,
-  userProfile,
-  language
+  userProfile
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const t = translations[language];
 
   // Safety check for cart and products
   if (!cart || !products) {
@@ -54,13 +50,13 @@ const CartModal = ({
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
-              {t.cart}
+              Cart
             </DialogTitle>
           </DialogHeader>
           <div className="py-8 text-center">
             <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500 mb-4">{t.emptyCart}</p>
-            <Button onClick={onClose}>{t.continueShopping}</Button>
+            <p className="text-gray-500 mb-4">Your cart is empty</p>
+            <Button onClick={onClose}>Continue Shopping</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -76,8 +72,8 @@ const CartModal = ({
   const discountAmount = subtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Original shipping logic - free shipping at $65.01
-  const freeShippingThreshold = 65.01;
+  // Original shipping logic - free shipping at $100
+  const freeShippingThreshold = 100;
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10;
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
@@ -113,7 +109,7 @@ const CartModal = ({
             <DialogTitle className="flex items-center justify-between">
               <span className="flex items-center">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                {t.cart}
+                Cart
               </span>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="h-4 w-4" />
@@ -128,7 +124,7 @@ const CartModal = ({
               onClick={handleReferralClick}
             >
               <p className="text-green-700 text-sm font-medium">
-                {t.referralDiscount}
+                Want cheaper? Get 10% off by referring a new user!
               </p>
             </div>
 
@@ -156,10 +152,7 @@ const CartModal = ({
             {userDiscount > 25 && subtotal < 150 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">
-                  {language === 'en' 
-                    ? `Discounts over 25% are limited to orders $150+. Current discount: ${cappedDiscount}%`
-                    : `Los descuentos superiores al 25% están limitados a pedidos de $150+. Descuento actual: ${cappedDiscount}%`
-                  }
+                  Discounts over 25% are limited to orders $150+. Current discount: {cappedDiscount}%
                 </p>
               </div>
             )}
@@ -170,8 +163,8 @@ const CartModal = ({
               disabled={!isAuthenticated}
             >
               {!isAuthenticated 
-                ? (language === 'en' ? 'Login to Checkout' : 'Iniciar Sesión para Pagar')
-                : t.proceedToCheckout
+                ? 'Login to Checkout'
+                : 'Proceed to Checkout'
               }
             </Button>
           </div>
@@ -188,7 +181,7 @@ const CartModal = ({
         cart={cart}
         userProfile={userProfile}
         cartItems={paymentCartItems}
-        language={language}
+        language="en"
       />
     </>
   );
