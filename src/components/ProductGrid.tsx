@@ -54,7 +54,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
               </h3>
               
               <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                {language === 'en' ? product.description : product.description_es || product.description}
+                {product.description}
               </p>
 
               {/* Dose and Capsule Info */}
