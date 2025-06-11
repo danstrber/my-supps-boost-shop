@@ -10,10 +10,9 @@ interface CartItemProps {
   quantity: number;
   onUpdateCart: (productId: string, quantity: number) => void;
   userDiscount: number;
-  language: 'en' | 'es';
 }
 
-const CartItem = ({ product, quantity, onUpdateCart, userDiscount, language }: CartItemProps) => {
+const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemProps) => {
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity <= 0) {
       onUpdateCart(product.id, 0);
@@ -42,7 +41,7 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount, language }: C
         </span>
         {userDiscount > 0 && (
           <p className="text-xs text-green-600 mt-1">
-            {userDiscount}% {language === 'en' ? 'discount applied' : 'descuento aplicado'}
+            {userDiscount}% discount applied
           </p>
         )}
       </div>

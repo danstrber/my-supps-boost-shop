@@ -9,7 +9,6 @@ interface CartSummaryProps {
   shippingFee: number;
   finalTotal: number;
   freeShippingThreshold?: number;
-  language: 'en' | 'es';
 }
 
 const CartSummary = ({ 

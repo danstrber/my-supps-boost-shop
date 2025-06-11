@@ -16,7 +16,6 @@ interface OrderSummaryProps {
   discount: number;
   shippingFee: number;
   finalTotal: number;
-  language: 'en' | 'es';
 }
 
 const OrderSummary = ({ 

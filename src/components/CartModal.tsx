@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, X } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { UserProfile } from '@/lib/auth';
-import { translations } from '@/lib/translations';
 import PaymentModal from './PaymentModal';
 import CartItem from './cart/CartItem';
 import CartSummary from './cart/CartSummary';
@@ -17,7 +16,6 @@ interface CartModalProps {
   products: Product[];
   onUpdateCart: (productId: string, quantity: number) => void;
   userDiscount: number;
-  language: 'en' | 'es';
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
 }
@@ -25,16 +23,19 @@ interface CartModalProps {
 const CartModal = ({
   isOpen,
   onClose,
-  cart,
-  products,
+  cart = {},
+  products = [],
   onUpdateCart,
   userDiscount,
-  language,
   isAuthenticated,
   userProfile
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const t = translations[language];
+
+  // Safety check for cart and products
+  if (!cart || !products) {
+    return null;
+  }
 
   const cartItems = Object.entries(cart).map(([productId, quantity]) => {
     const product = products.find(p => p.id === productId);
@@ -49,17 +50,13 @@ const CartModal = ({
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
-              {t.cart}
+              Cart
             </DialogTitle>
           </DialogHeader>
           <div className="py-8 text-center">
             <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500 mb-4">
-              {language === 'en' ? 'Your cart is empty' : 'Tu carrito está vacío'}
-            </p>
-            <Button onClick={onClose}>
-              {language === 'en' ? 'Continue Shopping' : 'Seguir Comprando'}
-            </Button>
+            <p className="text-gray-500 mb-4">Your cart is empty</p>
+            <Button onClick={onClose}>Continue Shopping</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -93,7 +90,7 @@ const CartModal = ({
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
-      alert(language === 'en' ? 'Please log in to checkout' : 'Por favor inicia sesión para proceder');
+      alert('Please log in to checkout');
       return;
     }
     setIsPaymentModalOpen(true);
@@ -119,7 +116,7 @@ const CartModal = ({
             <DialogTitle className="flex items-center justify-between">
               <span className="flex items-center">
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                {t.cart}
+                Cart
               </span>
               <Button variant="ghost" size="sm" onClick={onClose}>
                 <X className="h-4 w-4" />
@@ -135,7 +132,6 @@ const CartModal = ({
                 quantity={quantity}
                 onUpdateCart={onUpdateCart}
                 userDiscount={cappedDiscount}
-                language={language}
               />
             ))}
 
@@ -147,17 +143,13 @@ const CartModal = ({
               shippingFee={displayShippingFee}
               finalTotal={displayFinalTotal}
               freeShippingThreshold={freeShippingThreshold}
-              language={language}
             />
 
             {/* Discount limitation notice - updated to $135 */}
             {userDiscount > 25 && systemSubtotal < 135 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">
-                  {language === 'en' 
-                    ? `Discounts over 25% are limited to orders $135+. Current discount: ${cappedDiscount}%`
-                    : `Descuentos sobre 25% están limitados a pedidos $135+. Descuento actual: ${cappedDiscount}%`
-                  }
+                  Discounts over 25% are limited to orders $135+. Current discount: {cappedDiscount}%
                 </p>
               </div>
             )}
@@ -167,10 +159,7 @@ const CartModal = ({
               className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
               disabled={!isAuthenticated}
             >
-              {!isAuthenticated 
-                ? (language === 'en' ? 'Login to Checkout' : 'Inicia Sesión para Comprar')
-                : (language === 'en' ? 'Proceed to Checkout' : 'Proceder al Pago')
-              }
+              {!isAuthenticated ? 'Login to Checkout' : 'Proceed to Checkout'}
             </Button>
           </div>
         </DialogContent>
@@ -186,7 +175,6 @@ const CartModal = ({
         cart={cart}
         userProfile={userProfile}
         cartItems={paymentCartItems}
-        language={language}
       />
     </>
   );

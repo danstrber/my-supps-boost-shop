@@ -3,7 +3,6 @@ import React from 'react';
 
 interface PaymentMethodInfoProps {
   paymentMethod: 'telegram' | 'bitcoin';
-  language: 'en' | 'es';
 }
 
 const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
