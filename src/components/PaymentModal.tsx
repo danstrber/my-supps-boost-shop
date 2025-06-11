@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
@@ -64,34 +63,15 @@ const PaymentModal = ({
   });
   const [loading, setLoading] = useState(false);
   const [showBitcoinDetails, setShowBitcoinDetails] = useState(false);
-  const [txidError, setTxidError] = useState('');
   const { toast } = useToast();
   const t = translations[language];
 
-  const systemTotal = Math.ceil(orderTotal);
-  const systemFinalTotal = Math.ceil(finalTotal);
-  const btcPaymentAmount = finalTotal; // Use exact amount for Bitcoin
-
   const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
-
-  const validateTxid = (txid: string) => {
-    const txidRegex = /^[0-9a-fA-F]{64}$/;
-    return txidRegex.test(txid);
-  };
-
-  const handleTxidChange = (value: string) => {
-    setCustomerInfo(prev => ({ ...prev, txid: value }));
-    if (value && !validateTxid(value)) {
-      setTxidError(t.invalidTxid);
-    } else {
-      setTxidError('');
-    }
-  };
 
   const sendFormspreeEmail = async (orderData: any) => {
     try {
       const formData = {
-        _subject: `NEW ORDER: ${customerInfo.fullName} - $${btcPaymentAmount.toFixed(2)}`,
+        _subject: `NEW ORDER: ${customerInfo.fullName} - $${finalTotal.toFixed(2)}`,
         customerName: customerInfo.fullName,
         customerEmail: customerInfo.email,
         customerAddress: `${customerInfo.address}, ${customerInfo.city}, ${customerInfo.country}`,
@@ -104,8 +84,7 @@ const PaymentModal = ({
         originalTotal: `$${orderTotal.toFixed(2)}`,
         discountAmount: discount > 0 ? `-$${discount.toFixed(2)}` : 'None',
         shippingFee: shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`,
-        finalTotal: `$${btcPaymentAmount.toFixed(2)}`,
-        systemTotal: `$${systemFinalTotal.toFixed(2)}`,
+        finalTotal: `$${finalTotal.toFixed(2)}`,
         walletAddress: walletAddress,
         txid: customerInfo.txid || 'N/A'
       };
@@ -158,15 +137,7 @@ const PaymentModal = ({
       return;
     }
 
-    if (paymentMethod === 'bitcoin' && (!customerInfo.txid || !validateTxid(customerInfo.txid))) {
-      toast({
-        title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
-        description: t.invalidTxid,
-        variant: "destructive"
-      });
-      return;
-    }
-
+    // Removed TXID validation - can complete order without TXID
     setLoading(true);
 
     try {
@@ -181,14 +152,14 @@ const PaymentModal = ({
             total: item.product.price * item.quantity
           }))
         },
-        original_total: systemTotal,
+        original_total: orderTotal,
         discount_amount: discount,
         shipping_fee: shippingFee,
-        final_total: systemFinalTotal,
+        final_total: finalTotal,
         payment_method: paymentMethod,
         payment_details: {
           customer_info: customerInfo,
-          btc_amount_sent: btcPaymentAmount,
+          btc_amount_sent: finalTotal,
           wallet_address: walletAddress
         },
         status: 'pending'
@@ -209,7 +180,7 @@ const PaymentModal = ({
 
       createPendingPurchase(order.id, {
         userId: userProfile?.auth_id || '',
-        amount: systemFinalTotal,
+        amount: finalTotal,
         items: cartItems,
         referralCode: userProfile?.referred_by || undefined
       });
@@ -253,7 +224,7 @@ const PaymentModal = ({
           orderTotal={orderTotal}
           discount={discount}
           shippingFee={shippingFee}
-          finalTotal={systemFinalTotal}
+          finalTotal={finalTotal}
         />
 
         <div 
@@ -284,7 +255,7 @@ const PaymentModal = ({
           <PaymentMethodInfo paymentMethod={paymentMethod} />
 
           {paymentMethod === 'bitcoin' && !showBitcoinDetails && (
-            <BitcoinTutorial />
+            <BitcoinTutorial language={language} />
           )}
 
           {paymentMethod === 'bitcoin' && (
@@ -297,38 +268,19 @@ const PaymentModal = ({
           )}
 
           {showBitcoinDetails && paymentMethod === 'bitcoin' && (
-            <>
-              <BitcoinPaymentDetails
-                amount={btcPaymentAmount}
-                walletAddress={walletAddress}
-                customerInfo={customerInfo}
-                onInfoChange={setCustomerInfo}
-                language={language}
-              />
-              
-              <div className="space-y-2">
-                <Label htmlFor="txid" className="text-sm font-medium">
-                  {language === 'en' ? 'Transaction ID (TXID)' : 'ID de Transacción (TXID)'}
-                </Label>
-                <Input
-                  id="txid"
-                  type="text"
-                  value={customerInfo.txid}
-                  onChange={(e) => handleTxidChange(e.target.value)}
-                  placeholder={language === 'en' ? 'Enter Bitcoin transaction ID...' : 'Ingresa el ID de transacción de Bitcoin...'}
-                  className={txidError ? 'border-red-500' : ''}
-                />
-                {txidError && (
-                  <p className="text-red-500 text-sm">{txidError}</p>
-                )}
-              </div>
-            </>
+            <BitcoinPaymentDetails
+              amount={finalTotal}
+              walletAddress={walletAddress}
+              customerInfo={customerInfo}
+              onInfoChange={setCustomerInfo}
+              language={language}
+            />
           )}
 
           <Button
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-            disabled={loading || (paymentMethod === 'bitcoin' && showBitcoinDetails && (!customerInfo.txid || !!txidError))}
+            disabled={loading}
           >
             {loading ? t.processing : 
              paymentMethod === 'telegram' ? t.joinTelegram : 

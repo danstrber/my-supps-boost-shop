@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -34,7 +33,7 @@ export const products: Product[] = [
   {
     id: '1',
     name: 'Superdrol',
-    price: 29.99,
+    price: 24.99,
     image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
     category: 'oral-steroids',
     categories: ['oral-steroids', 'strength'],
@@ -98,7 +97,7 @@ export const products: Product[] = [
   {
     id: '2',
     name: 'MK-677',
-    price: 44.99,
+    price: 24.99,
     image: '/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png',
     category: 'sarms',
     categories: ['sarms', 'growth'],
@@ -161,7 +160,7 @@ export const products: Product[] = [
   {
     id: '3',
     name: 'RAD-140',
-    price: 44.99,
+    price: 24.99,
     image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
     category: 'sarms',
     categories: ['sarms', 'bulking'],

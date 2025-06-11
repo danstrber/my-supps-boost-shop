@@ -3,8 +3,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { ShoppingCart, Star, Shield, Truck, Clock, Eye, X, Pill, Timer, Zap, AlertTriangle, Info, Target, TrendingUp } from 'lucide-react';
+import { ShoppingCart, Star, Shield, X, Pill, Timer, Zap, AlertTriangle, Info, Target, TrendingUp } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
@@ -84,6 +83,24 @@ const ProductDetailModal = ({
   };
 
   const l = labels[language];
+
+  // Get localized ratings labels
+  const ratingsLabels = {
+    en: {
+      'Muscle Gain': 'Muscle Gain',
+      'Strength': 'Strength',
+      'Fat Loss': 'Fat Loss',
+      'Side Effects': 'Side Effects',
+      'Maintainability': 'Maintainability'
+    },
+    es: {
+      'Muscle Gain': 'Ganancia Muscular',
+      'Strength': 'Fuerza',
+      'Fat Loss': 'Pérdida de Grasa',
+      'Side Effects': 'Efectos Secundarios',
+      'Maintainability': 'Mantenimiento'
+    }
+  };
 
   return (
     <>
@@ -240,7 +257,7 @@ const ProductDetailModal = ({
                 <div className="space-y-2">
                   {Object.entries(product.details.ratings).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-gray-700">{key}</span>
+                      <span className="text-xs font-medium text-gray-700">{ratingsLabels[language][key as keyof typeof ratingsLabels.en] || key}</span>
                       <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star

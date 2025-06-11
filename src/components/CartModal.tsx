@@ -67,30 +67,19 @@ const CartModal = ({
     );
   }
 
-  // Calculate totals with rounded system amounts for referral system
+  // Calculate totals - reverted to original logic
   const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
-  const systemSubtotal = Math.ceil(subtotal); // Round up for system calculations
   
-  // NEW RULE: Over 25% discounts only on $135+ orders (changed from $150)
-  const cappedDiscount = systemSubtotal >= 135 ? userDiscount : Math.min(userDiscount, 25);
+  // Original discount logic
+  const cappedDiscount = subtotal >= 150 ? userDiscount : Math.min(userDiscount, 25);
   
-  const discountAmount = systemSubtotal * (cappedDiscount / 100);
-  const subtotalAfterDiscount = systemSubtotal - discountAmount;
+  const discountAmount = subtotal * (cappedDiscount / 100);
+  const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Free shipping threshold: $65 (updated from $65.01)
-  const isReferrer = userProfile && userProfile.referred_spending > 0;
-  const freeShippingThreshold = 65; // Changed from complex logic to simple $65
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10; // $10 shipping fee
+  // Original shipping logic - free shipping at $65.01
+  const freeShippingThreshold = 65.01;
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10;
   const finalTotal = subtotalAfterDiscount + shippingFee;
-
-  // For display purposes, show rounded totals but calculate exact totals for BTC
-  const displayFinalTotal = Math.ceil(finalTotal);
-
-  // For display and BTC payment, use original amounts
-  const displaySubtotal = subtotal;
-  const displayDiscountAmount = displaySubtotal * (cappedDiscount / 100);
-  const displaySubtotalAfterDiscount = displaySubtotal - displayDiscountAmount;
-  const displayShippingFee = displaySubtotalAfterDiscount >= freeShippingThreshold ? 0 : 10;
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -154,22 +143,22 @@ const CartModal = ({
             ))}
 
             <CartSummary
-              subtotal={displaySubtotal}
+              subtotal={subtotal}
               userDiscount={cappedDiscount}
-              discountAmount={displayDiscountAmount}
-              subtotalAfterDiscount={displaySubtotalAfterDiscount}
-              shippingFee={displayShippingFee}
-              finalTotal={displayFinalTotal}
+              discountAmount={discountAmount}
+              subtotalAfterDiscount={subtotalAfterDiscount}
+              shippingFee={shippingFee}
+              finalTotal={finalTotal}
               freeShippingThreshold={freeShippingThreshold}
             />
 
-            {/* Discount limitation notice - updated to $135 */}
-            {userDiscount > 25 && systemSubtotal < 135 && (
+            {/* Discount limitation notice - back to $150 */}
+            {userDiscount > 25 && subtotal < 150 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">
                   {language === 'en' 
-                    ? `Discounts over 25% are limited to orders $135+. Current discount: ${cappedDiscount}%`
-                    : `Los descuentos superiores al 25% están limitados a pedidos de $135+. Descuento actual: ${cappedDiscount}%`
+                    ? `Discounts over 25% are limited to orders $150+. Current discount: ${cappedDiscount}%`
+                    : `Los descuentos superiores al 25% están limitados a pedidos de $150+. Descuento actual: ${cappedDiscount}%`
                   }
                 </p>
               </div>
@@ -192,10 +181,10 @@ const CartModal = ({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        orderTotal={displaySubtotal}
-        discount={displayDiscountAmount}
-        shippingFee={displayShippingFee}
-        finalTotal={displayFinalTotal}
+        orderTotal={subtotal}
+        discount={discountAmount}
+        shippingFee={shippingFee}
+        finalTotal={finalTotal}
         cart={cart}
         userProfile={userProfile}
         cartItems={paymentCartItems}
