@@ -65,7 +65,7 @@ const ProductGrid = ({ products, language, onAddToCart, onProductClick }: Produc
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="h-3 w-3 bg-green-500 rounded-full" />
-                  <span>{product.capsules} {t.language === 'en' ? 'caps' : 'cáps'}</span>
+                  <span>{product.capsules} {language === 'en' ? 'caps' : 'cáps'}</span>
                 </div>
               </div>
               
