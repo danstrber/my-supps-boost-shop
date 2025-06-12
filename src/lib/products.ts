@@ -72,7 +72,7 @@ export const products: Product[] = [
   {
     id: 'superdrol',
     name: 'Superdrol',
-    price: 39.99,
+    price: 24.99,
     image: '/lovable-uploads/03872941-927f-4c0f-bbdc-f29c84db2e6c.png',
     categories: ['oral-steroids'],
     featured: true,
@@ -124,7 +124,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 4-6 weeks maximum due to liver toxicity. Always followed by comprehensive PCT.',
       es: 'Ciclos típicos: 4-6 semanas máximo debido a toxicidad hepática. Siempre seguido por PCT integral.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
       es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
     },
@@ -139,7 +139,7 @@ export const products: Product[] = [
   {
     id: 'clenbuterol',
     name: 'Clenbuterol',
-    price: 39.99,
+    price: 35.00,
     image: '/lovable-uploads/8453db63-04b8-4354-ad42-023eb4ca2627.png',
     categories: ['fat-burners'],
     featured: true,
@@ -191,7 +191,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 2 weeks on, 2 weeks off to prevent receptor downregulation.',
       es: 'Ciclos típicos: 2 semanas sí, 2 semanas no para prevenir la regulación negativa de los receptores.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Noticeable fat loss within 2 weeks, increased energy levels, and improved endurance.',
       es: 'Pérdida de grasa notable en 2 semanas, aumento de los niveles de energía y mejora de la resistencia.'
     },
@@ -323,7 +323,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 8-12 weeks, PCT recommended for longer cycles.',
       es: 'Ciclos típicos: 8-12 semanas, PCT recomendado para ciclos más largos.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Noticeable muscle gains within 2-3 weeks, increased strength, improved recovery.',
       es: 'Ganancias musculares notables dentro de 2-3 semanas, fuerza aumentada, recuperación mejorada.'
     },
@@ -338,8 +338,8 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 39.99,
-    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
+    price: 25.00,
+    image: '',
     categories: ['pct'],
     featured: false,
     inStock: true,
@@ -350,13 +350,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '10',
         typicalCycleLength: 'As needed',
         potencyLevel: 'High Estrogen Inhibition'
       },
       es: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '10',
         typicalCycleLength: 'Según sea necesario',
         potencyLevel: 'Alta inhibición de estrógeno'
       }
@@ -389,7 +389,7 @@ export const products: Product[] = [
       en: 'Used as needed during aromatizing cycles. Typically 12.5-25mg every other day.',
       es: 'Usado según sea necesario durante ciclos aromatizantes. Típicamente 12.5-25mg cada dos días.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Prevention of estrogenic side effects, improved muscle hardness, reduced water retention.',
       es: 'Prevención de efectos secundarios estrogénicos, dureza muscular mejorada, retención de agua reducida.'
     },
@@ -404,7 +404,7 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene',
-    price: 39.99,
+    price: 25.00,
     image: '/lovable-uploads/9ac178e7-36d1-4738-ac66-d1e3917e7ec5.png',
     categories: ['pct'],
     featured: false,
@@ -415,13 +415,13 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '12.5mg',
         capsulesPerBottle: '25',
         typicalCycleLength: '4-6 weeks',
         potencyLevel: 'Moderate Testosterone Stimulation'
       },
       es: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '12.5mg',
         capsulesPerBottle: '25',
         typicalCycleLength: '4-6 semanas',
         potencyLevel: 'Estimulación moderada de testosterona'
@@ -452,10 +452,10 @@ export const products: Product[] = [
       es: 'Monitorear los niveles de testosterona. Discontinuar si ocurren cambios visuales.'
     },
     cycleInformation: {
-      en: 'Typical PCT: 4-6 weeks at 25-50mg daily.',
-      es: 'PCT típico: 4-6 semanas a 25-50mg diarios.'
+      en: 'Typical PCT: 4-6 weeks at 12.5-25mg daily.',
+      es: 'PCT típico: 4-6 semanas a 12.5-25mg diarios.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Gradual restoration of natural testosterone, improved energy and mood, maintained muscle mass.',
       es: 'Restauración gradual de testosterona natural, energía y humor mejorados, masa muscular mantenida.'
     },
