@@ -257,7 +257,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months) with monitoring.',
       es: 'Puede ser usado por períodos extendidos (3-6 meses) con monitoreo.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Improved sleep, increased appetite, gradual muscle gains, better recovery.',
       es: 'Sueño mejorado, apetito aumentado, ganancias musculares graduales, mejor recuperación.'
     },
