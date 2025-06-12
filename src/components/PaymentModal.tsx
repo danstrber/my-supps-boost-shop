@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -267,6 +266,12 @@ const PaymentModal = ({
               t.completeYourOrder
             }
           </DialogTitle>
+          <DialogDescription>
+            {orderCreated ? 
+              (language === 'en' ? 'Your order has been successfully placed' : 'Tu pedido ha sido realizado exitosamente') :
+              (language === 'en' ? 'Review your order and complete payment' : 'Revisa tu pedido y completa el pago')
+            }
+          </DialogDescription>
         </DialogHeader>
 
         {orderCreated ? (
