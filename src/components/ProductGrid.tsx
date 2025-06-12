@@ -25,13 +25,16 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      // Add null check for product
+      if (!product) return false;
+      
       const productDescription = typeof product.description === 'string' 
         ? product.description 
-        : product.description.en;
+        : product.description?.en || '';
       
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           productDescription.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || product.categories.includes(selectedCategory);
+      const matchesCategory = selectedCategory === 'all' || product.categories?.includes(selectedCategory);
       return matchesSearch && matchesCategory;
     });
   }, [searchTerm, selectedCategory]);
@@ -106,9 +109,12 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredProducts.map((product) => {
+          // Add safety checks for product and its properties
+          if (!product || !product.id) return null;
+          
           const productDescription = typeof product.description === 'string' 
             ? product.description 
-            : product.description.en;
+            : product.description?.en || '';
 
           return (
             <Card 
@@ -118,21 +124,21 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
             >
               <div className="relative">
                 <img 
-                  src={product.image} 
-                  alt={product.name}
+                  src={product.image || '/placeholder.svg'} 
+                  alt={product.name || 'Product'}
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
-                {(product.name.toLowerCase().includes('clen') || product.name.toLowerCase().includes('superdrol')) && (
+                {(product.name?.toLowerCase().includes('clen') || product.name?.toLowerCase().includes('superdrol')) && (
                   <Badge className="absolute top-2 right-2 bg-green-500 text-white">
                     Lab Tested
                   </Badge>
                 )}
               </div>
               <CardContent className="p-4">
-                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                <h3 className="font-semibold text-lg mb-2">{product.name || 'Unknown Product'}</h3>
                 <p className="text-gray-600 text-sm mb-3 line-clamp-2">{productDescription}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-green-600">${product.price}</span>
+                  <span className="text-2xl font-bold text-green-600">${product.price || 0}</span>
                   <Button 
                     onClick={(e) => handleAddToCartClick(e, product)}
                     size="sm"
