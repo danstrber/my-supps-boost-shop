@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,34 +34,68 @@ const BitcoinPaymentDetails = ({
 }: BitcoinPaymentDetailsProps) => {
   const { toast } = useToast();
   const t = translations[language];
-  const [btcPrice, setBtcPrice] = useState(65000); // Default fallback
+  const [btcPrice, setBtcPrice] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [priceError, setPriceError] = useState(false);
 
-  // Fetch real-time BTC price
+  // Fetch real-time BTC price with multiple fallbacks
   useEffect(() => {
     const fetchBtcPrice = async () => {
-      try {
-        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-        const data = await response.json();
-        if (data.bitcoin && data.bitcoin.usd) {
-          setBtcPrice(data.bitcoin.usd);
+      setLoading(true);
+      setPriceError(false);
+      
+      // Array of different Bitcoin price APIs to try
+      const apiUrls = [
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
+        'https://api.coindesk.com/v1/bpi/currentprice/USD.json',
+        'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'
+      ];
+
+      for (let i = 0; i < apiUrls.length; i++) {
+        try {
+          console.log(`Trying BTC price API ${i + 1}:`, apiUrls[i]);
+          
+          const response = await fetch(apiUrls[i]);
+          const data = await response.json();
+          
+          let price = 0;
+          
+          // Handle different API response formats
+          if (apiUrls[i].includes('coingecko') && data.bitcoin?.usd) {
+            price = data.bitcoin.usd;
+          } else if (apiUrls[i].includes('coindesk') && data.bpi?.USD?.rate_float) {
+            price = data.bpi.USD.rate_float;
+          } else if (apiUrls[i].includes('binance') && data.price) {
+            price = parseFloat(data.price);
+          }
+          
+          if (price > 0) {
+            console.log(`BTC price fetched successfully: $${price}`);
+            setBtcPrice(price);
+            setLoading(false);
+            return; // Success, exit the loop
+          }
+        } catch (error) {
+          console.error(`Failed to fetch BTC price from API ${i + 1}:`, error);
         }
-      } catch (error) {
-        console.error('Failed to fetch BTC price:', error);
-        // Keep default price
-      } finally {
-        setLoading(false);
       }
+      
+      // If all APIs fail, use fallback price and show error
+      console.warn('All BTC price APIs failed, using fallback price');
+      setBtcPrice(65000); // Fallback price
+      setPriceError(true);
+      setLoading(false);
     };
 
     fetchBtcPrice();
-    // Update price every 5 minutes
-    const interval = setInterval(fetchBtcPrice, 5 * 60 * 1000);
+    
+    // Update price every 2 minutes instead of 5
+    const interval = setInterval(fetchBtcPrice, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
   // Convert USD to BTC with real-time price
-  const btcAmount = (amount / btcPrice).toFixed(8);
+  const btcAmount = btcPrice > 0 ? (amount / btcPrice).toFixed(8) : '0.00000000';
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -94,13 +129,18 @@ const BitcoinPaymentDetails = ({
               type="button"
               onClick={() => copyToClipboard(btcAmount, 'BTC Amount')}
               className="text-orange-600 hover:text-orange-800"
-              disabled={loading}
+              disabled={loading || btcPrice === 0}
             >
               <Copy className="h-4 w-4" />
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
             (≈ ${amount.toFixed(0)} USD @ ${btcPrice.toLocaleString()}/BTC)
+            {priceError && (
+              <span className="text-red-500 ml-2">
+                {language === 'en' ? '(Price may not be current)' : '(El precio puede no estar actualizado)'}
+              </span>
+            )}
           </p>
         </div>
 

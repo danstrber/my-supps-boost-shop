@@ -80,8 +80,11 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
           : 'Solo podemos enviar fuera de EE.UU. si nos contactas a través de Telegram primero para organizar el envío internacional',
         variant: "default"
       });
-      // Open Telegram
-      window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+      
+      // Delay the redirect to let user see the message
+      setTimeout(() => {
+        window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+      }, 2000);
       return;
     }
     handleChange('country', value);

@@ -313,9 +313,13 @@ const ProductDetailModal = ({
         </DialogContent>
       </Dialog>
 
-      {/* Full-size Image Modal */}
+      {/* Full-size Image Modal - Add DialogDescription here too */}
       <Dialog open={imageModalOpen} onOpenChange={setImageModalOpen}>
         <DialogContent className="sm:max-w-4xl p-0 bg-black/95">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{product.name} - Full Size Image</DialogTitle>
+            <DialogDescription>Full size image view</DialogDescription>
+          </DialogHeader>
           <div className="relative">
             <Button
               variant="ghost"
