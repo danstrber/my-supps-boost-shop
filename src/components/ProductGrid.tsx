@@ -19,7 +19,7 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showCoachingModal, setShowCoachingModal] = useState(false);
-  const { addToCart } = useCart();
+  const { handleAddToCart } = useCart();
 
   const categories = ['all', 'sarms', 'peptides', 'pct', 'bodybuilding'];
 
@@ -27,7 +27,7 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
     return products.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+      const matchesCategory = selectedCategory === 'all' || product.categories.includes(selectedCategory);
       return matchesSearch && matchesCategory;
     });
   }, [searchTerm, selectedCategory]);
@@ -36,9 +36,9 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
     setSelectedProduct(product);
   };
 
-  const handleAddToCart = (e: React.MouseEvent, product: any) => {
+  const handleAddToCartClick = (e: React.MouseEvent, product: any) => {
     e.stopPropagation();
-    addToCart(product.id);
+    handleAddToCart(product);
   };
 
   return (
@@ -113,11 +113,6 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
                 alt={product.name}
                 className="w-full h-48 object-cover rounded-t-lg"
               />
-              {product.bestSeller && (
-                <Badge className="absolute top-2 left-2 bg-red-500 text-white">
-                  Best Seller
-                </Badge>
-              )}
               {(product.name.toLowerCase().includes('clen') || product.name.toLowerCase().includes('superdrol')) && (
                 <Badge className="absolute top-2 right-2 bg-green-500 text-white">
                   Lab Tested
@@ -130,7 +125,7 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
               <div className="flex items-center justify-between">
                 <span className="text-2xl font-bold text-green-600">${product.price}</span>
                 <Button 
-                  onClick={(e) => handleAddToCart(e, product)}
+                  onClick={(e) => handleAddToCartClick(e, product)}
                   size="sm"
                   className="bg-green-600 hover:bg-green-700"
                 >
@@ -153,7 +148,9 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
         product={selectedProduct}
         isOpen={!!selectedProduct}
         onClose={() => setSelectedProduct(null)}
-        userProfile={userProfile}
+        onAddToCart={handleAddToCart}
+        language="en"
+        userDiscount={0}
       />
 
       <CoachingModal
