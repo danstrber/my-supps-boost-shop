@@ -7,7 +7,7 @@ import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
 interface ProductDetailModalProps {
-  product: Product;
+  product: Product | null;
   isOpen: boolean;
   onClose: () => void;
   onAddToCart: (product: Product) => void;
@@ -25,6 +25,11 @@ const ProductDetailModal = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const t = translations[language];
+
+  // Early return if product is null
+  if (!product) {
+    return null;
+  }
 
   const images = [product.image];
 
