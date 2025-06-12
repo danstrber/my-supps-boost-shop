@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Search, ShoppingCart, Award, Users, MessageCircle } from 'lucide-react';
+import { Search, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
 import { products } from '@/lib/products';
 import ProductDetailModal from './ProductDetailModal';
@@ -50,37 +50,6 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Coaching Banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl shadow-lg">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="bg-white/20 p-3 rounded-full">
-              <Award className="h-8 w-8" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">✅ Expert Coaching Available</h3>
-              <p className="text-blue-100">Get personalized guidance from our experts</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div className="text-right">
-              <p className="text-sm text-blue-100">Join 500+ satisfied customers</p>
-              <div className="flex items-center text-yellow-300">
-                <Users className="h-4 w-4 mr-1" />
-                <span className="font-semibold">Premium Support</span>
-              </div>
-            </div>
-            <Button
-              onClick={() => setShowCoachingModal(true)}
-              className="bg-white text-blue-600 hover:bg-blue-50 font-medium px-6 py-2"
-            >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Learn More
-            </Button>
-          </div>
-        </div>
-      </div>
-
       {/* Search and Filter */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
