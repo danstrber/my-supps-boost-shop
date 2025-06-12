@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -161,6 +162,8 @@ const Index = () => {
           onProductClick={setSelectedProduct}
           onAddToCart={handleAddToCart}
           userDiscount={userDiscount}
+          isAuthenticated={isAuthenticated}
+          onAuthAction={handleAuthModalAction}
         />
       </main>
 

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Zap, Target, Users } from 'lucide-react';
 
@@ -22,15 +22,12 @@ const CoachingModal = ({ isOpen, onClose }: CoachingModalProps) => {
           <DialogTitle className="text-2xl font-bold text-center">
             🏆 MySupps Premium Coaching
           </DialogTitle>
+          <DialogDescription className="text-center text-gray-600">
+            Take your results to the next level with personalized coaching from our experts!
+          </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6">
-          <div className="text-center">
-            <p className="text-lg text-gray-700 mb-4">
-              Take your results to the next level with personalized coaching from our experts!
-            </p>
-          </div>
-
           <div className="grid md:grid-cols-2 gap-6">
             <div className="bg-blue-50 p-6 rounded-xl border border-blue-200">
               <div className="flex items-center mb-3">
