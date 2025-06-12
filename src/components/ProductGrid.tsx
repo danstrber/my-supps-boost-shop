@@ -25,8 +25,12 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
+      const productDescription = typeof product.description === 'string' 
+        ? product.description 
+        : product.description.en;
+      
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
+                          productDescription.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || product.categories.includes(selectedCategory);
       return matchesSearch && matchesCategory;
     });
@@ -101,41 +105,47 @@ const ProductGrid = ({ userProfile }: ProductGridProps) => {
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <Card 
-            key={product.id} 
-            className="cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => handleProductClick(product)}
-          >
-            <div className="relative">
-              <img 
-                src={product.image} 
-                alt={product.name}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-              {(product.name.toLowerCase().includes('clen') || product.name.toLowerCase().includes('superdrol')) && (
-                <Badge className="absolute top-2 right-2 bg-green-500 text-white">
-                  Lab Tested
-                </Badge>
-              )}
-            </div>
-            <CardContent className="p-4">
-              <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
-              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-green-600">${product.price}</span>
-                <Button 
-                  onClick={(e) => handleAddToCartClick(e, product)}
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <ShoppingCart className="h-4 w-4 mr-1" />
-                  Add to Cart
-                </Button>
+        {filteredProducts.map((product) => {
+          const productDescription = typeof product.description === 'string' 
+            ? product.description 
+            : product.description.en;
+
+          return (
+            <Card 
+              key={product.id} 
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => handleProductClick(product)}
+            >
+              <div className="relative">
+                <img 
+                  src={product.image} 
+                  alt={product.name}
+                  className="w-full h-48 object-cover rounded-t-lg"
+                />
+                {(product.name.toLowerCase().includes('clen') || product.name.toLowerCase().includes('superdrol')) && (
+                  <Badge className="absolute top-2 right-2 bg-green-500 text-white">
+                    Lab Tested
+                  </Badge>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        ))}
+              <CardContent className="p-4">
+                <h3 className="font-semibold text-lg mb-2">{product.name}</h3>
+                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{productDescription}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-green-600">${product.price}</span>
+                  <Button 
+                    onClick={(e) => handleAddToCartClick(e, product)}
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-1" />
+                    Add to Cart
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {filteredProducts.length === 0 && (
