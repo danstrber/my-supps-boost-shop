@@ -156,7 +156,11 @@ const Index = () => {
 
       <main className="pt-32 px-4 transition-all duration-300">
         <ProductGrid
-          userProfile={userProfile}
+          products={filteredProducts}
+          language={language}
+          onProductClick={setSelectedProduct}
+          onAddToCart={handleAddToCart}
+          userDiscount={userDiscount}
         />
       </main>
 
