@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,11 +25,10 @@ const Sidebar = ({
 }: SidebarProps) => {
   const categories = [
     { id: 'all', nameEn: 'All Products', nameEs: 'Todos los Productos' },
-    { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs' },
     { id: 'oral-steroids', nameEn: 'Oral Steroids', nameEs: 'Esteroides Orales' },
+    { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs' },
     { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores' },
     { id: 'pct', nameEn: 'PCT', nameEs: 'PCT' },
-    { id: 'hormones', nameEn: 'Hormones', nameEs: 'Hormonas' },
     { id: 'growth', nameEn: 'Growth', nameEs: 'Crecimiento' },
   ];
 

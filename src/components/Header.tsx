@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -65,32 +64,6 @@ const Header = ({
                 className="h-8 md:h-10 w-auto"
               />
             </div>
-
-            {/* Navigation - Desktop Only */}
-            <nav className="hidden lg:flex space-x-1">
-              <Button
-                variant={currentPage === 'home' ? 'default' : 'ghost'}
-                onClick={() => onPageChange('home')}
-                className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium flex items-center"
-              >
-                <Home className="h-4 w-4 mr-1" />
-                {language === 'en' ? 'Home' : 'Inicio'}
-              </Button>
-              <Button
-                variant={currentPage === 'about' ? 'default' : 'ghost'}
-                onClick={() => onPageChange('about')}
-                className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
-              >
-                {language === 'en' ? 'About' : 'Acerca de'}
-              </Button>
-              <Button
-                variant={currentPage === 'contact' ? 'default' : 'ghost'}
-                onClick={() => onPageChange('contact')}
-                className="text-gray-700 hover:text-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-medium"
-              >
-                {language === 'en' ? 'Contact' : 'Contacto'}
-              </Button>
-            </nav>
 
             {/* Right side - responsive layout */}
             <div className="flex items-center space-x-1 md:space-x-2">

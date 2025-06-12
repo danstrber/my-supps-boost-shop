@@ -66,8 +66,6 @@ export interface Product {
   featured?: boolean;
   labTestFile?: string;
   inStock?: boolean;
-  dose?: string;
-  capsules?: string;
 }
 
 export const products: Product[] = [
@@ -75,8 +73,11 @@ export const products: Product[] = [
     id: 'superdrol',
     name: 'Superdrol',
     price: 39.99,
-    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
+    image: '/lovable-uploads/03872941-927f-4c0f-bbdc-f29c84db2e6c.png',
     categories: ['oral-steroids'],
+    featured: true,
+    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
+    inStock: true,
     description: {
       en: 'Superdrol (Metasterone) is a powerful oral anabolic compound known for rapid muscle gains and strength increases.',
       es: 'Superdrol (Metasterona) es un compuesto anabólico oral potente conocido por ganancias rápidas de músculo y aumentos de fuerza.'
@@ -84,13 +85,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '20',
+        capsulesPerBottle: '50',
         typicalCycleLength: '4-6 weeks maximum',
         potencyLevel: 'Very High Anabolic Potency'
       },
       es: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '20',
+        capsulesPerBottle: '50',
         typicalCycleLength: '4-6 semanas máximo',
         potencyLevel: 'Potencia anabólica muy alta'
       }
@@ -123,7 +124,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 4-6 weeks maximum due to liver toxicity. Always followed by comprehensive PCT.',
       es: 'Ciclos típicos: 4-6 semanas máximo debido a toxicidad hepática. Siempre seguido por PCT integral.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
       es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
     },
@@ -136,139 +137,14 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'anavar',
-    name: 'Anavar',
-    price: 39.99,
-    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
-    categories: ['oral-steroids'],
-    description: {
-      en: 'Anavar (Oxandrolone) is a mild oral anabolic steroid known for promoting lean muscle gains and strength increases with relatively low side effects.',
-      es: 'Anavar (Oxandrolona) es un esteroide anabólico oral suave conocido por promover ganancias de músculo magro y aumentos de fuerza con efectos secundarios relativamente bajos.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '60',
-        typicalCycleLength: '6-8 weeks',
-        potencyLevel: 'Moderate Anabolic Potency'
-      },
-      es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '60',
-        typicalCycleLength: '6-8 semanas',
-        potencyLevel: 'Potencia anabólica moderada'
-      }
-    },
-    researchBackground: {
-      en: 'Anavar (Oxandrolone) has been studied for its anabolic effects in various clinical settings, including muscle wasting diseases and recovery from burns.',
-      es: 'Anavar (Oxandrolona) ha sido estudiado por sus efectos anabólicos en varios entornos clínicos, incluyendo enfermedades de desgaste muscular y recuperación de quemaduras.'
-    },
-    benefits: {
-      en: 'Lean muscle gains, increased strength, enhanced fat loss, improved vascularity, minimal water retention.',
-      es: 'Ganancias de músculo magro, aumento de fuerza, pérdida de grasa mejorada, vascularidad mejorada, retención mínima de agua.'
-    },
-    sideEffects: {
-      en: 'Mild liver toxicity, cholesterol imbalances, testosterone suppression, possible hair loss, acne, virilization in women.',
-      es: 'Toxicidad hepática leve, desequilibrios de colesterol, supresión de testosterona, posible pérdida de cabello, acné, virilización en mujeres.'
-    },
-    effectsOnWomen: {
-      en: 'Can be used by women at low doses, but virilization is still a risk. Monitor for masculine side effects.',
-      es: 'Puede ser utilizado por mujeres en dosis bajas, pero la virilización sigue siendo un riesgo. Monitorear los efectos secundarios masculinos.'
-    },
-    howItWorks: {
-      en: 'Binds to androgen receptors, promoting protein synthesis and muscle growth while increasing nitrogen retention.',
-      es: 'Se une a los receptores de andrógenos, promoviendo la síntesis de proteínas y el crecimiento muscular mientras aumenta la retención de nitrógeno.'
-    },
-    safetyInformation: {
-      en: 'Requires liver support (NAC, TUDCA), regular blood work monitoring, and proper post-cycle therapy. Not for beginners.',
-      es: 'Requiere apoyo hepático (NAC, TUDCA), monitoreo regular de análisis de sangre y terapia post-ciclo adecuada. No para principiantes.'
-    },
-    cycleInformation: {
-      en: 'Typical cycles: 6-8 weeks. Always followed by comprehensive PCT.',
-      es: 'Ciclos típicos: 6-8 semanas. Siempre seguido por PCT integral.'
-    },
-    whatToExpect: {
-      en: 'Users typically gain 4-6 lbs of lean muscle in 6-8 weeks with noticeable strength increases. Results are maintainable with proper PCT.',
-      es: 'Los usuarios típicamente ganan 4-6 lbs de músculo magro en 6-8 semanas con aumentos de fuerza notables. Los resultados son mantenibles con PCT adecuado.'
-    },
-    performanceRatings: {
-      muscleGain: 4,
-      strength: 4,
-      fatLoss: 4,
-      sideEffects: 3,
-      retention: 5
-    }
-  },
-  {
-    id: 'dianabol',
-    name: 'Dianabol',
-    price: 39.99,
-    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
-    categories: ['oral-steroids'],
-    description: {
-      en: 'Dianabol (Methandrostenolone) is a potent oral anabolic steroid known for rapid muscle mass gains and significant strength increases.',
-      es: 'Dianabol (Metandrostenolona) es un esteroide anabólico oral potente conocido por ganancias rápidas de masa muscular y aumentos significativos de fuerza.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '60',
-        typicalCycleLength: '4-6 weeks',
-        potencyLevel: 'High Anabolic Potency'
-      },
-      es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '60',
-        typicalCycleLength: '4-6 semanas',
-        potencyLevel: 'Potencia anabólica alta'
-      }
-    },
-    researchBackground: {
-      en: 'Dianabol (Methandrostenolone) has been extensively studied for its anabolic effects and muscle-building capabilities in research settings.',
-      es: 'Dianabol (Metandrostenolona) ha sido extensamente estudiado por sus efectos anabólicos y capacidades de construcción muscular en entornos de investigación.'
-    },
-    benefits: {
-      en: 'Rapid muscle mass gains (10-15 lbs in 4 weeks), dramatic strength increases, enhanced protein synthesis, improved nitrogen retention, increased glycogenolysis.',
-      es: 'Ganancias rápidas de masa muscular (10-15 lbs en 4 semanas), aumentos dramáticos de fuerza, síntesis proteica mejorada, retención de nitrógeno mejorada, aumento de la glucogenólisis.'
-    },
-    sideEffects: {
-      en: 'Hepatotoxicity (liver stress), cardiovascular strain, elevated blood pressure, cholesterol imbalances, testosterone suppression, estrogenic effects (water retention, gynecomastia).',
-      es: 'Hepatotoxicidad (estrés hepático), tensión cardiovascular, elevación de presión arterial, desequilibrios de colesterol, supresión de testosterona, efectos estrogénicos (retención de agua, ginecomastia).'
-    },
-    effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women due to high risk of virilization. May cause permanent masculine characteristics, voice deepening, and severe hormonal disruption.',
-      es: 'NO RECOMENDADO para mujeres debido al alto riesgo de virilización. Puede causar características masculinas permanentes, profundización de la voz y disrupción hormonal severa.'
-    },
-    howItWorks: {
-      en: 'Binds strongly to androgen receptors, promoting intense protein synthesis and muscle growth while increasing glycogenolysis.',
-      es: 'Se une fuertemente a los receptores de andrógenos, promoviendo síntesis proteica intensa y crecimiento muscular mientras aumenta la glucogenólisis.'
-    },
-    safetyInformation: {
-      en: 'Requires liver support (NAC, TUDCA), aromatase inhibitors (Arimidex, Aromasin), regular blood work monitoring, and proper post-cycle therapy. Not for beginners.',
-      es: 'Requiere apoyo hepático (NAC, TUDCA), inhibidores de la aromatasa (Arimidex, Aromasin), monitoreo regular de análisis de sangre y terapia post-ciclo adecuada. No para principiantes.'
-    },
-    cycleInformation: {
-      en: 'Typical cycles: 4-6 weeks. Always followed by comprehensive PCT.',
-      es: 'Ciclos típicos: 4-6 semanas. Siempre seguido por PCT integral.'
-    },
-    whatToExpect: {
-      en: 'Users typically gain 10-15 lbs of muscle mass in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
-      es: 'Los usuarios típicamente ganan 10-15 lbs de masa muscular en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
-    },
-    performanceRatings: {
-      muscleGain: 5,
-      strength: 5,
-      fatLoss: 2,
-      sideEffects: 2,
-      retention: 3
-    }
-  },
-    {
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 39.99,
-    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
+    image: '/lovable-uploads/8453db63-04b8-4354-ad42-023eb4ca2627.png',
     categories: ['fat-burners'],
+    featured: true,
+    labTestFile: '/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png',
+    inStock: true,
     description: {
       en: 'Clenbuterol is a powerful thermogenic stimulant known for its fat-burning and energy-boosting effects.',
       es: 'Clenbuterol es un estimulante termogénico potente conocido por sus efectos quemagrasas y energizantes.'
@@ -276,13 +152,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '40mcg',
-        capsulesPerBottle: '60',
+        capsulesPerBottle: '50',
         typicalCycleLength: '2 weeks on, 2 weeks off',
         potencyLevel: 'High Thermogenic Potency'
       },
       es: {
         dosePerCapsule: '40mcg',
-        capsulesPerBottle: '60',
+        capsulesPerBottle: '50',
         typicalCycleLength: '2 semanas sí, 2 semanas no',
         potencyLevel: 'Potencia termogénica alta'
       }
@@ -315,7 +191,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 2 weeks on, 2 weeks off to prevent receptor downregulation.',
       es: 'Ciclos típicos: 2 semanas sí, 2 semanas no para prevenir la regulación negativa de los receptores.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Noticeable fat loss within 2 weeks, increased energy levels, and improved endurance.',
       es: 'Pérdida de grasa notable en 2 semanas, aumento de los niveles de energía y mejora de la resistencia.'
     },
@@ -328,88 +204,26 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'nolvadex',
-    name: 'Nolvadex (Tamoxifen)',
-    price: 39.99,
-    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
-    categories: ['pct'],
-    description: {
-      en: 'Nolvadex (Tamoxifen) is a selective estrogen receptor modulator (SERM) used to prevent estrogenic side effects and restore natural testosterone production after anabolic cycles.',
-      es: 'Nolvadex (Tamoxifeno) es un modulador selectivo del receptor de estrógeno (SERM) utilizado para prevenir los efectos secundarios estrogénicos y restaurar la producción natural de testosterona después de los ciclos anabólicos.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '20mg',
-        capsulesPerBottle: '30',
-        typicalCycleLength: '4-6 weeks',
-        potencyLevel: 'Moderate Estrogen Modulation'
-      },
-      es: {
-        dosePerCapsule: '20mg',
-        capsulesPerBottle: '30',
-        typicalCycleLength: '4-6 semanas',
-        potencyLevel: 'Modulación de estrógeno moderada'
-      }
-    },
-    researchBackground: {
-      en: 'Nolvadex (Tamoxifen) has been extensively studied for its anti-estrogenic effects and its ability to prevent gynecomastia and other estrogen-related side effects.',
-      es: 'Nolvadex (Tamoxifeno) ha sido extensamente estudiado por sus efectos antiestrogénicos y su capacidad para prevenir la ginecomastia y otros efectos secundarios relacionados con el estrógeno.'
-    },
-    benefits: {
-      en: 'Prevents gynecomastia, restores natural testosterone production, reduces water retention, improves cholesterol levels.',
-      es: 'Previene la ginecomastia, restaura la producción natural de testosterona, reduce la retención de agua, mejora los niveles de colesterol.'
-    },
-    sideEffects: {
-      en: 'Hot flashes, mood changes, nausea, fatigue, possible blood clots.',
-      es: 'Bochornos, cambios de humor, náuseas, fatiga, posibles coágulos de sangre.'
-    },
-    effectsOnWomen: {
-      en: 'Used in women for breast cancer treatment. Not recommended for performance enhancement.',
-      es: 'Utilizado en mujeres para el tratamiento del cáncer de mama. No recomendado para la mejora del rendimiento.'
-    },
-    howItWorks: {
-      en: 'Selectively blocks estrogen receptors in breast tissue, preventing estrogenic effects.',
-      es: 'Bloquea selectivamente los receptores de estrógeno en el tejido mamario, previniendo los efectos estrogénicos.'
-    },
-    safetyInformation: {
-      en: 'Monitor for blood clot symptoms. Not for individuals with a history of blood clots.',
-      es: 'Monitorear los síntomas de coágulos de sangre. No para personas con antecedentes de coágulos de sangre.'
-    },
-    cycleInformation: {
-      en: 'Typical cycles: 4-6 weeks after anabolic cycles.',
-      es: 'Ciclos típicos: 4-6 semanas después de los ciclos anabólicos.'
-    },
-    whatToExpect: {
-      en: 'Prevention of estrogenic side effects and restoration of natural testosterone production.',
-      es: 'Prevención de los efectos secundarios estrogénicos y restauración de la producción natural de testosterona.'
-    },
-    performanceRatings: {
-      muscleGain: 0,
-      strength: 0,
-      fatLoss: 0,
-      sideEffects: 4,
-      retention: 5
-    }
-  },
-  {
     id: 'mk-677',
-    name: 'MK-677 (50 pills)',
+    name: 'MK-677',
     price: 39.99,
-    image: '/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png',
+    image: '/lovable-uploads/dcea32d8-541f-45c9-b1bf-f74a0c97c0bb.png',
     categories: ['growth'],
+    featured: false,
+    inStock: true,
     description: {
       en: 'MK-677 is a growth hormone secretagogue that stimulates natural growth hormone production.',
       es: 'MK-677 es un secretagogo de hormona de crecimiento que estimula la producción natural de hormona de crecimiento.'
     },
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '10mg',
         capsulesPerBottle: '50',
         typicalCycleLength: '8-12 weeks',
         potencyLevel: 'High Growth Hormone Stimulation'
       },
       es: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '10mg',
         capsulesPerBottle: '50',
         typicalCycleLength: '8-12 semanas',
         potencyLevel: 'Alta estimulación de hormona de crecimiento'
@@ -443,7 +257,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months) with monitoring.',
       es: 'Puede ser usado por períodos extendidos (3-6 meses) con monitoreo.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Improved sleep, increased appetite, gradual muscle gains, better recovery.',
       es: 'Sueño mejorado, apetito aumentado, ganancias musculares graduales, mejor recuperación.'
     },
@@ -457,10 +271,12 @@ export const products: Product[] = [
   },
   {
     id: 'rad-140',
-    name: 'RAD-140 (Testolone)',
+    name: 'RAD-140',
     price: 39.99,
-    image: '/lovable-uploads/561ffbe1-f890-47ce-a601-f590a96593e0.png',
+    image: '/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
     categories: ['sarms'],
+    featured: false,
+    inStock: true,
     description: {
       en: 'RAD-140 is a selective androgen receptor modulator (SARM) known for significant muscle and strength gains.',
       es: 'RAD-140 es un modulador selectivo del receptor de andrógenos (SARM) conocido por ganancias significativas de músculo y fuerza.'
@@ -468,13 +284,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '60',
+        capsulesPerBottle: '50',
         typicalCycleLength: '8-12 weeks',
         potencyLevel: 'High Anabolic Activity'
       },
       es: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '60',
+        capsulesPerBottle: '50',
         typicalCycleLength: '8-12 semanas',
         potencyLevel: 'Alta actividad anabólica'
       }
@@ -507,7 +323,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 8-12 weeks, PCT recommended for longer cycles.',
       es: 'Ciclos típicos: 8-12 semanas, PCT recomendado para ciclos más largos.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Noticeable muscle gains within 2-3 weeks, increased strength, improved recovery.',
       es: 'Ganancias musculares notables dentro de 2-3 semanas, fuerza aumentada, recuperación mejorada.'
     },
@@ -517,6 +333,138 @@ export const products: Product[] = [
       fatLoss: 3,
       sideEffects: 3,
       retention: 4
+    }
+  },
+  {
+    id: 'aromasin',
+    name: 'Aromasin (Exemestane)',
+    price: 39.99,
+    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
+    categories: ['pct'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Aromasin (Exemestane) is an aromatase inhibitor used to prevent estrogenic side effects during anabolic cycles.',
+      es: 'Aromasin (Exemestano) es un inhibidor de la aromatasa utilizado para prevenir los efectos secundarios estrogénicos durante los ciclos anabólicos.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: 'As needed',
+        potencyLevel: 'High Estrogen Inhibition'
+      },
+      es: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: 'Según sea necesario',
+        potencyLevel: 'Alta inhibición de estrógeno'
+      }
+    },
+    researchBackground: {
+      en: 'Aromasin has been extensively studied for its ability to irreversibly inhibit aromatase enzyme, preventing estrogen formation.',
+      es: 'Aromasin ha sido extensamente estudiado por su capacidad de inhibir irreversiblemente la enzima aromatasa, previniendo la formación de estrógeno.'
+    },
+    benefits: {
+      en: 'Prevents gynecomastia, reduces water retention, maintains testosterone levels, improves muscle definition.',
+      es: 'Previene la ginecomastia, reduce la retención de agua, mantiene los niveles de testosterona, mejora la definición muscular.'
+    },
+    sideEffects: {
+      en: 'Joint pain, reduced bone density, mood changes, possible cholesterol effects.',
+      es: 'Dolor articular, densidad ósea reducida, cambios de humor, posibles efectos en el colesterol.'
+    },
+    effectsOnWomen: {
+      en: 'Used in postmenopausal women for breast cancer treatment. Not for performance enhancement.',
+      es: 'Utilizado en mujeres posmenopáusicas para el tratamiento del cáncer de mama. No para la mejora del rendimiento.'
+    },
+    howItWorks: {
+      en: 'Irreversibly binds to aromatase enzyme, preventing testosterone conversion to estrogen.',
+      es: 'Se une irreversiblemente a la enzima aromatasa, previniendo la conversión de testosterona a estrógeno.'
+    },
+    safetyInformation: {
+      en: 'Monitor bone health with long-term use. Use lowest effective dose.',
+      es: 'Monitorear la salud ósea con uso a largo plazo. Usar la dosis efectiva más baja.'
+    },
+    cycleInformation: {
+      en: 'Used as needed during aromatizing cycles. Typically 12.5-25mg every other day.',
+      es: 'Usado según sea necesario durante ciclos aromatizantes. Típicamente 12.5-25mg cada dos días.'
+    },
+    whatToExpected: {
+      en: 'Prevention of estrogenic side effects, improved muscle hardness, reduced water retention.',
+      es: 'Prevención de efectos secundarios estrogénicos, dureza muscular mejorada, retención de agua reducida.'
+    },
+    performanceRatings: {
+      muscleGain: 0,
+      strength: 0,
+      fatLoss: 1,
+      sideEffects: 4,
+      retention: 5
+    }
+  },
+  {
+    id: 'enclomiphene',
+    name: 'Enclomiphene',
+    price: 39.99,
+    image: '/lovable-uploads/9ac178e7-36d1-4738-ac66-d1e3917e7ec5.png',
+    categories: ['pct'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Enclomiphene is a selective estrogen receptor modulator (SERM) used to restore natural testosterone production.',
+      es: 'Enclomifeno es un modulador selectivo del receptor de estrógeno (SERM) utilizado para restaurar la producción natural de testosterona.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '25',
+        typicalCycleLength: '4-6 weeks',
+        potencyLevel: 'Moderate Testosterone Stimulation'
+      },
+      es: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '25',
+        typicalCycleLength: '4-6 semanas',
+        potencyLevel: 'Estimulación moderada de testosterona'
+      }
+    },
+    researchBackground: {
+      en: 'Enclomiphene has been studied for its ability to stimulate natural testosterone production without estrogenic effects.',
+      es: 'Enclomifeno ha sido estudiado por su capacidad de estimular la producción natural de testosterona sin efectos estrogénicos.'
+    },
+    benefits: {
+      en: 'Restores natural testosterone, improves mood and energy, maintains muscle mass, fewer side effects than clomid.',
+      es: 'Restaura la testosterona natural, mejora el estado de ánimo y la energía, mantiene la masa muscular, menos efectos secundarios que clomid.'
+    },
+    sideEffects: {
+      en: 'Mild mood changes, possible visual disturbances, headaches.',
+      es: 'Cambios leves de humor, posibles disturbios visuales, dolores de cabeza.'
+    },
+    effectsOnWomen: {
+      en: 'Used for fertility treatment in women. Not recommended for performance enhancement.',
+      es: 'Utilizado para el tratamiento de fertilidad en mujeres. No recomendado para la mejora del rendimiento.'
+    },
+    howItWorks: {
+      en: 'Blocks estrogen receptors in the hypothalamus, stimulating LH and FSH production, which increases testosterone.',
+      es: 'Bloquea los receptores de estrógeno en el hipotálamo, estimulando la producción de LH y FSH, lo que aumenta la testosterona.'
+    },
+    safetyInformation: {
+      en: 'Monitor testosterone levels. Discontinue if visual changes occur.',
+      es: 'Monitorear los niveles de testosterona. Discontinuar si ocurren cambios visuales.'
+    },
+    cycleInformation: {
+      en: 'Typical PCT: 4-6 weeks at 25-50mg daily.',
+      es: 'PCT típico: 4-6 semanas a 25-50mg diarios.'
+    },
+    whatToExpected: {
+      en: 'Gradual restoration of natural testosterone, improved energy and mood, maintained muscle mass.',
+      es: 'Restauración gradual de testosterona natural, energía y humor mejorados, masa muscular mantenida.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 0,
+      sideEffects: 4,
+      retention: 5
     }
   }
 ];
