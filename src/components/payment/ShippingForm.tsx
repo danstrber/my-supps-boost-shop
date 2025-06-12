@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -73,10 +74,10 @@ const ShippingForm = ({ customerInfo, onInfoChange, paymentMethod, language }: S
   const handleCountryChange = (value: string) => {
     if (value === 'other') {
       toast({
-        title: language === 'en' ? 'Contact Required' : 'Contacto Requerido',
+        title: language === 'en' ? 'International Shipping' : 'Envío Internacional',
         description: language === 'en' 
-          ? 'For orders outside USA, please contact us on Telegram first'
-          : 'Para pedidos fuera de USA, por favor contáctanos en Telegram primero',
+          ? 'We can only ship outside the US if you contact us through Telegram first to arrange international shipping'
+          : 'Solo podemos enviar fuera de EE.UU. si nos contactas a través de Telegram primero para organizar el envío internacional',
         variant: "default"
       });
       // Open Telegram

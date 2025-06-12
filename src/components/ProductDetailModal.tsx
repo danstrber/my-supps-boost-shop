@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Star, Shield, X, Pill, Timer, Zap, AlertTriangle, Info, Target, TrendingUp } from 'lucide-react';
@@ -113,6 +112,9 @@ const ProductDetailModal = ({
                 <DialogTitle className="text-2xl font-bold text-gray-900">
                   {product.name}
                 </DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  {language === 'en' ? 'Detailed product information and specifications' : 'Información detallada del producto y especificaciones'}
+                </DialogDescription>
               </DialogHeader>
               
               <div className="relative group">
