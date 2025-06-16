@@ -2,8 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
@@ -72,63 +70,11 @@ const PaymentModal = ({
 
   const walletAddress = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
-  // Country codes for phone number formatting
-  const countryCodes: Record<string, string> = {
-    'United States': '+1',
-    'Canada': '+1',
-    'United Kingdom': '+44',
-    'Germany': '+49',
-    'France': '+33',
-    'Spain': '+34',
-    'Italy': '+39',
-    'Australia': '+61',
-    'Japan': '+81',
-    'Brazil': '+55',
-    'Mexico': '+52',
-    'India': '+91',
-    'China': '+86',
-    'Russia': '+7'
-  };
-
   const handleInputChange = (field: string, value: string) => {
-    if (field === 'country') {
-      // Auto-format phone number when country changes
-      const countryCode = countryCodes[value] || '+1';
-      const currentPhone = formData.phone;
-      
-      // Only add country code if phone doesn't already start with +
-      if (currentPhone && !currentPhone.startsWith('+')) {
-        setFormData(prev => ({
-          ...prev,
-          [field]: value,
-          phone: `${countryCode} ${currentPhone}`
-        }));
-      } else {
-        setFormData(prev => ({
-          ...prev,
-          [field]: value
-        }));
-      }
-    } else if (field === 'phone') {
-      // Auto-format phone number with country code
-      if (value && !value.startsWith('+')) {
-        const countryCode = countryCodes[formData.country] || '+1';
-        setFormData(prev => ({
-          ...prev,
-          [field]: `${countryCode} ${value}`
-        }));
-      } else {
-        setFormData(prev => ({
-          ...prev,
-          [field]: value
-        }));
-      }
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [field]: value
-      }));
-    }
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const sendOrderEmails = async (orderData: any) => {
@@ -384,9 +330,9 @@ const PaymentModal = ({
 
             <form onSubmit={handleFormSubmit} className="space-y-6">
               <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                <Label htmlFor="paymentMethod" className="text-base font-semibold text-gray-800 mb-3 block">
+                <div className="text-base font-semibold text-gray-800 mb-3">
                   {t.paymentMethod}
-                </Label>
+                </div>
                 <div className="space-y-3">
                   <div 
                     className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
