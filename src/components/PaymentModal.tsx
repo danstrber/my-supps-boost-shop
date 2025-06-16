@@ -90,36 +90,12 @@ const PaymentModal = ({
   const createOrderInDatabase = async () => {
     console.log('📝 Creating order in Supabase database');
     
-    // Test Supabase connection first
-    console.log('🔗 Testing Supabase connection...');
-    console.log('🔗 Supabase URL: https://kunluppghxdqfqjxruwv.supabase.co');
-    console.log('🔗 Supabase Key (first 20 chars): eyJhbGciOiJIUzI1NiIsInR5...');
-    
     if (!userProfile?.auth_id) {
       console.error('❌ No user auth_id found:', userProfile);
       throw new Error('User authentication required');
     }
 
     console.log('👤 User auth_id:', userProfile.auth_id);
-
-    // Test basic Supabase functionality
-    try {
-      console.log('🧪 Testing basic Supabase query...');
-      const { data: testData, error: testError } = await supabase
-        .from('orders')
-        .select('count')
-        .limit(1);
-      
-      console.log('🧪 Test query result:', { testData, testError });
-      
-      if (testError) {
-        console.error('❌ Basic Supabase test failed:', testError);
-        throw new Error(`Supabase connection failed: ${testError.message}`);
-      }
-    } catch (testErr) {
-      console.error('❌ Supabase test query failed:', testErr);
-      throw new Error(`Database connection failed: ${testErr.message}`);
-    }
 
     // Prepare order data
     const orderData = {
@@ -149,69 +125,32 @@ const PaymentModal = ({
     };
 
     console.log('📦 Inserting order data:', orderData);
-    console.log('📦 Order data JSON:', JSON.stringify(orderData, null, 2));
 
     try {
       console.log('🔄 Making Supabase insert request...');
-      console.log('🔄 Request timestamp:', new Date().toISOString());
       
-      const insertPromise = supabase
+      const { data, error } = await supabase
         .from('orders')
         .insert([orderData])
         .select()
         .single();
       
-      console.log('🔄 Insert promise created, waiting for response...');
-      
-      // Add timeout to detect hanging requests
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000);
-      });
-      
-      const result = await Promise.race([insertPromise, timeoutPromise]);
-      const { data, error } = result as any;
-      
-      console.log('📊 Supabase response received at:', new Date().toISOString());
-      console.log('📊 Raw response:', { data, error });
-      console.log('📊 Response data type:', typeof data);
-      console.log('📊 Response error type:', typeof error);
-      console.log('📊 Full response JSON:', JSON.stringify({ data, error }, null, 2));
+      console.log('📊 Supabase response received:', { data, error });
 
       if (error) {
         console.error('❌ Database error details:', error);
-        console.error('❌ Error code:', error.code);
-        console.error('❌ Error message:', error.message);
-        console.error('❌ Error details:', error.details);
-        console.error('❌ Error hint:', error.hint);
         throw new Error(`Database error: ${error.message}`);
       }
 
       if (!data) {
         console.error('❌ No data returned from insert');
-        console.error('❌ This might indicate RLS policy blocking the insert');
-        throw new Error('No order data returned from database - check RLS policies');
+        throw new Error('No order data returned from database');
       }
 
       console.log('✅ Order created successfully with ID:', data.id);
-      console.log('✅ Full order data:', data);
       return data;
     } catch (err: any) {
       console.error('💥 Insert operation failed:', err);
-      console.error('💥 Error name:', err.name);
-      console.error('💥 Error message:', err.message);
-      console.error('💥 Error stack:', err.stack);
-      console.error('💥 Error type:', typeof err);
-      console.error('💥 Error details:', JSON.stringify(err, null, 2));
-      
-      // Check for specific error types
-      if (err.name === 'FetchError' || err.message?.includes('fetch')) {
-        throw new Error('Network connection failed - check internet connection and Supabase status');
-      }
-      
-      if (err.message?.includes('timeout')) {
-        throw new Error('Request timed out - Supabase may be overloaded');
-      }
-      
       throw err;
     }
   };
