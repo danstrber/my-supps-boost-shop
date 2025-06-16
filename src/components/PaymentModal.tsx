@@ -79,14 +79,8 @@ const PaymentModal = ({
 
   const sendOrderEmails = async (orderData: any) => {
     try {
-      console.log('Attempting to send order emails with data:', {
-        customerEmail: formData.email,
-        customerName: formData.fullName,
-        orderTotal,
-        finalTotal
-      });
+      console.log('Sending order emails...');
       
-      // Send via Supabase edge function
       const { data, error } = await supabase.functions.invoke('send-order-email', {
         body: {
           customerEmail: formData.email,
@@ -107,15 +101,14 @@ const PaymentModal = ({
       });
 
       if (error) {
-        console.error('Supabase email error:', error);
-        throw error;
+        console.error('Email error:', error);
+        return false;
       }
 
-      console.log('Order emails sent successfully via Supabase:', data);
+      console.log('Emails sent successfully:', data);
       return true;
     } catch (error) {
-      console.error('Failed to send order emails:', error);
-      // Continue with order creation even if email fails
+      console.error('Email sending failed:', error);
       return false;
     }
   };
@@ -139,27 +132,66 @@ const PaymentModal = ({
     });
   };
 
+  const createOrder = async () => {
+    if (!userProfile?.auth_id) {
+      throw new Error('User not authenticated');
+    }
+
+    const orderData = {
+      user_id: userProfile.auth_id,
+      items: {
+        products: cartItems.map(item => ({
+          id: item.product.id,
+          name: item.product.name,
+          price: item.product.price,
+          quantity: item.quantity,
+          total: item.product.price * item.quantity
+        }))
+      },
+      original_total: orderTotal,
+      discount_amount: discount,
+      shipping_fee: shippingFee,
+      final_total: finalTotal,
+      payment_method: paymentMethod,
+      payment_details: {
+        customer_info: formData,
+        btc_amount_sent: finalTotal,
+        wallet_address: walletAddress,
+        txid: txid.trim() || null
+      },
+      status: 'pending'
+    };
+
+    console.log('Creating order with data:', orderData);
+
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([orderData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Database error:', error);
+      throw new Error(`Failed to create order: ${error.message}`);
+    }
+
+    console.log('Order created successfully:', data);
+    return data;
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('=== FORM SUBMIT START ===');
-    console.log('Button clicked! Form submitted with method:', paymentMethod);
-    console.log('Current form data:', formData);
-    console.log('User profile:', userProfile);
-    console.log('Cart items:', cartItems);
-    console.log('Order totals:', { orderTotal, discount, shippingFee, finalTotal });
+    console.log('Form submitted with method:', paymentMethod);
     
     if (paymentMethod === 'telegram') {
-      console.log('Processing Telegram payment...');
       handleTelegramRedirect();
       return;
     }
 
     if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
-      console.log('Validating form for Bitcoin payment...');
-      
-      if (!formData.fullName || !formData.email || !formData.address || !formData.city || !formData.country || !formData.phone || !formData.zipCode) {
-        console.log('Form validation failed - missing fields');
+      if (!formData.fullName || !formData.email || !formData.address || 
+          !formData.city || !formData.country || !formData.phone || !formData.zipCode) {
         toast({
           title: t.missingInformation,
           description: t.fillAllFields,
@@ -168,13 +200,11 @@ const PaymentModal = ({
         return;
       }
       
-      console.log('Form validation passed, showing Bitcoin details');
       setShowBitcoinDetails(true);
       return;
     }
 
     if (paymentExpired) {
-      console.log('Payment expired, cannot proceed');
       toast({
         title: language === 'en' ? 'Payment Expired' : 'Pago Expirado',
         description: language === 'en' ? 'Please refresh and try again.' : 'Por favor, actualiza e inténtalo de nuevo.',
@@ -183,9 +213,7 @@ const PaymentModal = ({
       return;
     }
 
-    // Validate TXID for Bitcoin payments
     if (paymentMethod === 'bitcoin' && !txid.trim()) {
-      console.log('TXID validation failed');
       toast({
         title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
         description: language === 'en' ? 'Please enter the Bitcoin transaction ID to complete your order.' : 'Por favor, ingresa el ID de transacción de Bitcoin para completar tu pedido.',
@@ -195,145 +223,47 @@ const PaymentModal = ({
     }
 
     setLoading(true);
-    console.log('=== STARTING ORDER CREATION ===');
 
     try {
-      if (!userProfile?.auth_id) {
-        console.error('User not authenticated - no auth_id found');
-        throw new Error('User not authenticated. Please log in and try again.');
-      }
-
-      console.log('Creating order with user auth_id:', userProfile.auth_id);
-      console.log('Supabase client status:', supabase ? 'Connected' : 'Not connected');
-
-      const orderData = {
-        user_id: userProfile.auth_id,
-        items: {
-          products: cartItems.map(item => ({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity,
-            total: item.product.price * item.quantity
-          }))
-        },
-        original_total: orderTotal,
-        discount_amount: discount,
-        shipping_fee: shippingFee,
-        final_total: finalTotal,
-        payment_method: paymentMethod,
-        payment_details: {
-          customer_info: formData,
-          btc_amount_sent: finalTotal,
-          wallet_address: walletAddress,
-          txid: txid.trim() || null
-        },
-        status: 'pending'
-      };
-
-      console.log('Order data prepared:', orderData);
-      console.log('About to insert into Supabase orders table...');
-
-      // Test Supabase connection first
-      console.log('Testing Supabase connection...');
-      const { data: connectionTest, error: connectionError } = await supabase
-        .from('orders')
-        .select('count')
-        .limit(1);
-
-      if (connectionError) {
-        console.error('Supabase connection test failed:', connectionError);
-        throw new Error(`Database connection failed: ${connectionError.message}`);
-      }
-
-      console.log('Supabase connection test passed:', connectionTest);
-
-      // Insert the order
-      console.log('Inserting order into database...');
-      const { data: order, error } = await supabase
-        .from('orders')
-        .insert([orderData])
-        .select()
-        .single();
-
-      if (error) {
-        console.error('=== SUPABASE ORDER CREATION ERROR ===');
-        console.error('Error details:', error);
-        console.error('Error message:', error.message);
-        console.error('Error code:', error.code);
-        console.error('Error hint:', error.hint);
-        console.error('Error details:', error.details);
-        
-        // More specific error messages
-        if (error.code === '42501') {
-          throw new Error('Permission denied. Please ensure you are logged in and try again.');
-        } else if (error.code === '23502') {
-          throw new Error('Missing required data. Please check all fields are filled.');
-        } else if (error.code === '23505') {
-          throw new Error('Duplicate order detected. Please try again.');
-        } else {
-          throw new Error(`Database error: ${error.message}. Code: ${error.code}`);
-        }
-      }
-
-      console.log('=== ORDER CREATED SUCCESSFULLY ===');
-      console.log('Order created successfully:', order);
-      console.log('Order ID:', order.id);
-
-      // Create pending purchase for tracking
-      console.log('Creating pending purchase tracking...');
+      const order = await createOrder();
+      
       createPendingPurchase(order.id, {
-        userId: userProfile.auth_id,
+        userId: userProfile!.auth_id,
         amount: finalTotal,
         items: cartItems,
         referralCode: userProfile?.referred_by || undefined
       });
 
-      // Send order confirmation emails
-      console.log('Sending order confirmation emails...');
-      const emailSent = await sendOrderEmails(orderData);
-      console.log('Email sending result:', emailSent);
+      await sendOrderEmails(order);
 
       setOrderCreated(order.id);
-      console.log('Order state updated, showing success message');
-
+      
       toast({
         title: t.orderPlacedSuccess || 'Order Placed Successfully!',
-        description: `${t.orderPlaced || 'Your order has been placed.'} Order ID: ${order.id.slice(0, 8)}`,
+        description: `Order ID: ${order.id.slice(0, 8)}`,
       });
 
-      // Clear cart from localStorage
-      console.log('Clearing cart from localStorage...');
       localStorage.removeItem('cart');
       
-      // Don't auto-close modal, let user see the success message
-      console.log('Order process completed successfully');
-      
     } catch (error: any) {
-      console.error('=== ORDER CREATION FAILED ===');
-      console.error('Full error object:', error);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
+      console.error('Order creation failed:', error);
       
       toast({
         title: t.orderFailed || 'Order Failed',
-        description: error.message || t.orderError || 'There was an error processing your order. Please try again.',
+        description: error.message || 'There was an error processing your order. Please try again.',
         variant: "destructive"
       });
     } finally {
-      console.log('=== ORDER PROCESS COMPLETE ===');
       setLoading(false);
     }
   };
 
   const handleReferralClick = () => {
-    // Navigate to account page instead of non-existent referral page
     onClose();
     window.location.hash = '#account';
     window.location.reload();
   };
 
-  // Reset states when modal closes
   const handleModalClose = () => {
     setShowBitcoinDetails(false);
     setOrderCreated(null);

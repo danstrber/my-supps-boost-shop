@@ -8,7 +8,6 @@ export interface PendingPurchase {
   referralCode?: string;
 }
 
-// Store pending purchases in memory until confirmed
 const pendingPurchases = new Map<string, PendingPurchase>();
 
 export const createPendingPurchase = (orderId: string, purchase: PendingPurchase): void => {
@@ -25,7 +24,6 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
   }
 
   try {
-    // Get current user data first
     const { data: userData, error: fetchError } = await supabase
       .from('users')
       .select('total_spending, referred_by')
@@ -34,19 +32,14 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
 
     if (fetchError) throw fetchError;
 
-    // Check if this is a referred user's first purchase
     const isFirstPurchase = userData.total_spending === 0;
     const isReferredUser = userData.referred_by;
 
-    // Update user's total spending
     const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
     
-    // NEW RULE: Reset referred users to base 10% discount after first purchase
-    // This prevents permanent high discounts
     let updateData: any = { total_spending: newTotalSpending };
     
     if (isReferredUser && isFirstPurchase) {
-      // Reset referred status after first purchase to prevent stacking
       updateData.referred_by = null;
       console.log('Resetting referred status after first purchase for user:', purchase.userId);
     }
@@ -58,7 +51,6 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
 
     if (userError) throw userError;
 
-    // If user was referred, update referrer's referred_spending
     if (purchase.referralCode) {
       const { data: referrerData, error: referrerFetchError } = await supabase
         .from('users')
@@ -77,7 +69,6 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
       if (referrerError) throw referrerError;
     }
 
-    // Remove from pending purchases
     pendingPurchases.delete(orderId);
     
     console.log('Purchase confirmed and saved:', orderId);
