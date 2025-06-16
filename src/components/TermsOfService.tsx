@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface TermsOfServiceProps {
@@ -11,9 +11,12 @@ interface TermsOfServiceProps {
 const TermsOfService = ({ isOpen, onClose }: TermsOfServiceProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl max-h-[80vh]">
+      <DialogContent className="sm:max-w-4xl max-h-[80vh]" aria-describedby="terms-description">
         <DialogHeader>
           <DialogTitle>Terms of Service</DialogTitle>
+          <DialogDescription id="terms-description">
+            Please read these terms and conditions carefully before using our service.
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-6 text-sm">
@@ -27,7 +30,16 @@ const TermsOfService = ({ isOpen, onClose }: TermsOfServiceProps) => {
             </section>
 
             <section>
-              <h3 className="font-semibold text-lg mb-3">2. Product Information</h3>
+              <h3 className="font-semibold text-lg mb-3">2. Product Information and Age Restrictions</h3>
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <h4 className="font-semibold text-red-800 mb-2">IMPORTANT LEGAL REQUIREMENTS</h4>
+                <ul className="list-disc list-inside text-red-700 space-y-1">
+                  <li><strong>NOT FOR HUMAN CONSUMPTION:</strong> All products are strictly for research purposes only</li>
+                  <li><strong>AGE RESTRICTION:</strong> You must be 18 years or older to purchase</li>
+                  <li><strong>RESEARCH ONLY:</strong> Products are intended for laboratory research use only</li>
+                  <li><strong>NO MEDICAL CLAIMS:</strong> Products are not intended to diagnose, treat, cure, or prevent any disease</li>
+                </ul>
+              </div>
               <p className="text-gray-700 leading-relaxed">
                 All products sold on MySupps are intended for research purposes only and are not for 
                 human consumption. Customers must be 18 years or older to purchase products from our 
@@ -110,9 +122,10 @@ const TermsOfService = ({ isOpen, onClose }: TermsOfServiceProps) => {
                 <li>Violating any applicable federal, state, or local laws or regulations</li>
                 <li>Transmitting any harmful, threatening, or harassing material</li>
                 <li>Attempting to gain unauthorized access to our systems</li>
-                <li>Using our products for human consumption</li>
+                <li><strong>Using our products for human consumption</strong></li>
                 <li>Reselling products without authorization</li>
                 <li>Abusing the referral system or creating fraudulent accounts</li>
+                <li>Purchasing if under 18 years of age</li>
               </ul>
             </section>
 

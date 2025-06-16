@@ -158,12 +158,16 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
         <div>
           <Label htmlFor="shipping-country">{labels[language].country}</Label>
           <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
-            <SelectTrigger id="shipping-country" name="country">
+            <SelectTrigger id="shipping-country" name="country" className="bg-white z-50">
               <SelectValue placeholder="Select country" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border border-gray-200 shadow-lg z-50 max-h-60">
               {countries.map((country) => (
-                <SelectItem key={country} value={country}>
+                <SelectItem 
+                  key={country} 
+                  value={country}
+                  className="hover:bg-gray-100 cursor-pointer py-2 px-3"
+                >
                   {country}
                 </SelectItem>
               ))}

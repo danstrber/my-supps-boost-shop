@@ -330,10 +330,10 @@ const PaymentModal = ({
 
             <form onSubmit={handleFormSubmit} className="space-y-6">
               <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                <div className="text-base font-semibold text-gray-800 mb-3">
+                <Label htmlFor="payment-method-group" className="text-base font-semibold text-gray-800 mb-3 block">
                   {t.paymentMethod}
-                </div>
-                <div className="space-y-3">
+                </Label>
+                <div className="space-y-3" role="radiogroup" aria-labelledby="payment-method-group">
                   <div 
                     className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
                       paymentMethod === 'telegram' 
@@ -352,6 +352,7 @@ const PaymentModal = ({
                           checked={paymentMethod === 'telegram'}
                           onChange={() => setPaymentMethod('telegram')}
                           className="text-blue-600"
+                          aria-describedby="telegram-description"
                         />
                         <label htmlFor="payment-telegram" className="font-medium cursor-pointer">💬 Telegram</label>
                         <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
@@ -379,6 +380,7 @@ const PaymentModal = ({
                           checked={paymentMethod === 'bitcoin'}
                           onChange={() => setPaymentMethod('bitcoin')}
                           className="text-orange-600"
+                          aria-describedby="bitcoin-description"
                         />
                         <label htmlFor="payment-bitcoin" className="font-medium cursor-pointer">₿ Bitcoin</label>
                         <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">

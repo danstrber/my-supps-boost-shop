@@ -81,9 +81,9 @@ const CartModal = ({
   const discountAmount = subtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Free shipping at $100
+  // Updated shipping fee to $7.50
   const freeShippingThreshold = 100;
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10;
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 7.5;
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   console.log('Cart calculation:', {
