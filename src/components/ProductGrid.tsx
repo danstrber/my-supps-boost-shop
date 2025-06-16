@@ -59,24 +59,12 @@ const ProductGrid = ({
                   className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
-                  {product.featured && (
-                    <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                      {t.featured}
-                    </span>
-                  )}
-                  {product.labTestFile && (
+                  {product.labTested && (
                     <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
                       {t.labTested}
                     </span>
                   )}
                 </div>
-                {product.inStock === false && (
-                  <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
-                    <span className="text-white font-bold text-lg">
-                      {t.outOfStock}
-                    </span>
-                  </div>
-                )}
               </div>
               
               <div className="space-y-3">
@@ -88,15 +76,11 @@ const ProductGrid = ({
                   {product.description[language]}
                 </p>
 
-                {/* Dose and Capsule Info */}
+                {/* Category Info */}
                 <div className="flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Pill className="h-3 w-3" />
-                    <span>{product.specifications[language].dosePerCapsule}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
+                    <span className="capitalize">{product.category}</span>
                   </div>
                 </div>
                 
@@ -137,8 +121,7 @@ const ProductGrid = ({
                     
                     <Button
                       onClick={() => onAddToCart(product)}
-                      disabled={product.inStock === false}
-                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm"
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg shadow-sm"
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" />
                       {t.addToCart}
