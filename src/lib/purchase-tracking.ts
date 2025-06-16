@@ -8,6 +8,7 @@ export interface PendingPurchase {
   referralCode?: string;
 }
 
+// Simple in-memory storage for pending purchases
 const pendingPurchases = new Map<string, PendingPurchase>();
 
 export const createPendingPurchase = (orderId: string, purchase: PendingPurchase): void => {
@@ -26,65 +27,61 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
   try {
     console.log('🔄 Confirming purchase for order:', orderId);
     
+    // Update user spending
     const { data: userData, error: fetchError } = await supabase
       .from('users')
       .select('total_spending, referred_by')
       .eq('auth_id', purchase.userId)
-      .single();
+      .maybeSingle();
 
     if (fetchError) {
       console.error('❌ Error fetching user data:', fetchError);
       throw fetchError;
     }
 
-    const isFirstPurchase = userData.total_spending === 0;
-    const isReferredUser = userData.referred_by;
-
-    const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
-    
-    let updateData: any = { total_spending: newTotalSpending };
-    
-    if (isReferredUser && isFirstPurchase) {
-      updateData.referred_by = null;
-      console.log('🔄 Resetting referred status after first purchase for user:', purchase.userId);
-    }
-
-    const { error: userError } = await supabase
-      .from('users')
-      .update(updateData)
-      .eq('auth_id', purchase.userId);
-
-    if (userError) {
-      console.error('❌ Error updating user spending:', userError);
-      throw userError;
-    }
-
-    if (purchase.referralCode) {
-      console.log('🔄 Processing referral spending for code:', purchase.referralCode);
+    if (userData) {
+      const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
       
-      const { data: referrerData, error: referrerFetchError } = await supabase
+      const { error: userError } = await supabase
         .from('users')
-        .select('referred_spending')
-        .eq('referral_code', purchase.referralCode)
-        .single();
+        .update({ total_spending: newTotalSpending })
+        .eq('auth_id', purchase.userId);
 
-      if (referrerFetchError) {
-        console.error('❌ Error fetching referrer data:', referrerFetchError);
-        throw referrerFetchError;
+      if (userError) {
+        console.error('❌ Error updating user spending:', userError);
+        throw userError;
       }
 
-      const newReferredSpending = (referrerData.referred_spending || 0) + purchase.amount;
-      const { error: referrerError } = await supabase
-        .from('users')
-        .update({ referred_spending: newReferredSpending })
-        .eq('referral_code', purchase.referralCode);
+      // Handle referral spending if applicable
+      if (purchase.referralCode) {
+        console.log('🔄 Processing referral spending for code:', purchase.referralCode);
+        
+        const { data: referrerData, error: referrerFetchError } = await supabase
+          .from('users')
+          .select('referred_spending')
+          .eq('referral_code', purchase.referralCode)
+          .maybeSingle();
 
-      if (referrerError) {
-        console.error('❌ Error updating referrer spending:', referrerError);
-        throw referrerError;
+        if (referrerFetchError) {
+          console.error('❌ Error fetching referrer data:', referrerFetchError);
+          // Don't throw here, just log the error
+        } else if (referrerData) {
+          const newReferredSpending = (referrerData.referred_spending || 0) + purchase.amount;
+          
+          const { error: referrerError } = await supabase
+            .from('users')
+            .update({ referred_spending: newReferredSpending })
+            .eq('referral_code', purchase.referralCode);
+
+          if (referrerError) {
+            console.error('❌ Error updating referrer spending:', referrerError);
+            // Don't throw here, just log the error
+          }
+        }
       }
     }
 
+    // Remove from pending purchases
     pendingPurchases.delete(orderId);
     
     console.log('✅ Purchase confirmed and saved:', orderId);
