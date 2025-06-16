@@ -59,6 +59,7 @@ const BitcoinPaymentDetails = ({
                 value={`$${amount.toFixed(2)} USD`}
                 readOnly
                 className="bg-gray-100"
+                aria-describedby="btc-amount-description"
               />
               <Button
                 type="button"
@@ -66,11 +67,12 @@ const BitcoinPaymentDetails = ({
                 size="sm"
                 onClick={() => copyToClipboard(`$${amount.toFixed(2)}`, 'Amount')}
                 className="px-3"
+                aria-label="Copy amount"
               >
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p id="btc-amount-description" className="text-xs text-gray-500 mt-1">
               {language === 'en' 
                 ? 'Send the exact USD equivalent in Bitcoin to the address below'
                 : 'Envía el equivalente exacto en USD en Bitcoin a la dirección de abajo'}
@@ -89,6 +91,7 @@ const BitcoinPaymentDetails = ({
                 value={walletAddress}
                 readOnly
                 className="bg-gray-100 font-mono text-sm"
+                aria-describedby="wallet-address-description"
               />
               <Button
                 type="button"
@@ -96,6 +99,7 @@ const BitcoinPaymentDetails = ({
                 size="sm"
                 onClick={() => copyToClipboard(walletAddress, 'Address')}
                 className="px-3"
+                aria-label="Copy wallet address"
               >
                 <Copy className="h-4 w-4" />
               </Button>
@@ -105,10 +109,16 @@ const BitcoinPaymentDetails = ({
                 size="sm"
                 onClick={openBlockExplorer}
                 className="px-3"
+                aria-label="View on block explorer"
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
             </div>
+            <p id="wallet-address-description" className="text-xs text-gray-500 mt-1">
+              {language === 'en' 
+                ? 'Bitcoin wallet address for payment'
+                : 'Dirección de billetera Bitcoin para el pago'}
+            </p>
           </div>
 
           <div>
@@ -124,8 +134,9 @@ const BitcoinPaymentDetails = ({
               className="mt-1"
               placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
               required
+              aria-describedby="transaction-id-description"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p id="transaction-id-description" className="text-xs text-gray-500 mt-1">
               {language === 'en' 
                 ? 'Enter the transaction ID from your Bitcoin wallet after sending payment'
                 : 'Ingresa el ID de transacción de tu billetera Bitcoin después de enviar el pago'}

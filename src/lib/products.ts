@@ -123,7 +123,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 4-6 weeks maximum due to liver toxicity. Always followed by comprehensive PCT.',
       es: 'Ciclos típicos: 4-6 semanas máximo debido a toxicidad hepática. Siempre seguido por PCT integral.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
       es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
     },
@@ -324,7 +324,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 6-8 weeks maximum. Longer cycles increase suppression risk.',
       es: 'Ciclos típicos: 6-8 semanas máximo. Ciclos más largos aumentan el riesgo de supresión.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report 8-15 lbs of lean muscle gain in 6-8 weeks with exceptional strength increases.',
       es: 'Los usuarios reportan 8-15 lbs de ganancia de músculo magro en 6-8 semanas con aumentos excepcionales de fuerza.'
     },

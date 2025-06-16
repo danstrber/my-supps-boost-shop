@@ -22,6 +22,8 @@ const CartSummary = ({
 }: CartSummaryProps) => {
   const amountForFreeShipping = freeShippingThreshold - subtotalAfterDiscount;
   const showFreeShippingMessage = subtotalAfterDiscount < freeShippingThreshold;
+  // Round up the display amount to encourage hitting free shipping threshold
+  const displayAmountForFreeShipping = Math.ceil(amountForFreeShipping);
 
   return (
     <div className="bg-gray-50 p-4 rounded-lg space-y-3">
@@ -44,7 +46,7 @@ const CartSummary = ({
       
       {showFreeShippingMessage && (
         <div className="text-center bg-blue-50 border border-blue-200 p-2 rounded text-blue-700 text-sm">
-          Add ${Math.ceil(amountForFreeShipping * 100) / 100} more for free shipping!
+          Add ${displayAmountForFreeShipping.toFixed(2)} more for free shipping!
         </div>
       )}
       
