@@ -90,12 +90,36 @@ const PaymentModal = ({
   const createOrderInDatabase = async () => {
     console.log('📝 Creating order in Supabase database');
     
+    // Test Supabase connection first
+    console.log('🔗 Testing Supabase connection...');
+    console.log('🔗 Supabase URL:', supabase.supabaseUrl);
+    console.log('🔗 Supabase Key (first 20 chars):', supabase.supabaseKey?.substring(0, 20) + '...');
+    
     if (!userProfile?.auth_id) {
       console.error('❌ No user auth_id found:', userProfile);
       throw new Error('User authentication required');
     }
 
     console.log('👤 User auth_id:', userProfile.auth_id);
+
+    // Test basic Supabase functionality
+    try {
+      console.log('🧪 Testing basic Supabase query...');
+      const { data: testData, error: testError } = await supabase
+        .from('orders')
+        .select('count')
+        .limit(1);
+      
+      console.log('🧪 Test query result:', { testData, testError });
+      
+      if (testError) {
+        console.error('❌ Basic Supabase test failed:', testError);
+        throw new Error(`Supabase connection failed: ${testError.message}`);
+      }
+    } catch (testErr) {
+      console.error('❌ Supabase test query failed:', testErr);
+      throw new Error(`Database connection failed: ${testErr.message}`);
+    }
 
     // Prepare order data
     const orderData = {
@@ -125,38 +149,69 @@ const PaymentModal = ({
     };
 
     console.log('📦 Inserting order data:', orderData);
+    console.log('📦 Order data JSON:', JSON.stringify(orderData, null, 2));
 
     try {
       console.log('🔄 Making Supabase insert request...');
+      console.log('🔄 Request timestamp:', new Date().toISOString());
       
-      const { data, error } = await supabase
+      const insertPromise = supabase
         .from('orders')
         .insert([orderData])
         .select()
         .single();
-
-      console.log('📊 Supabase response:', { data, error });
-      console.log('📊 Full response details:', JSON.stringify({ data, error }, null, 2));
+      
+      console.log('🔄 Insert promise created, waiting for response...');
+      
+      // Add timeout to detect hanging requests
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout after 30 seconds')), 30000);
+      });
+      
+      const result = await Promise.race([insertPromise, timeoutPromise]);
+      const { data, error } = result as any;
+      
+      console.log('📊 Supabase response received at:', new Date().toISOString());
+      console.log('📊 Raw response:', { data, error });
+      console.log('📊 Response data type:', typeof data);
+      console.log('📊 Response error type:', typeof error);
+      console.log('📊 Full response JSON:', JSON.stringify({ data, error }, null, 2));
 
       if (error) {
         console.error('❌ Database error details:', error);
         console.error('❌ Error code:', error.code);
         console.error('❌ Error message:', error.message);
         console.error('❌ Error details:', error.details);
+        console.error('❌ Error hint:', error.hint);
         throw new Error(`Database error: ${error.message}`);
       }
 
       if (!data) {
         console.error('❌ No data returned from insert');
-        throw new Error('No order data returned from database');
+        console.error('❌ This might indicate RLS policy blocking the insert');
+        throw new Error('No order data returned from database - check RLS policies');
       }
 
       console.log('✅ Order created successfully with ID:', data.id);
+      console.log('✅ Full order data:', data);
       return data;
-    } catch (err) {
+    } catch (err: any) {
       console.error('💥 Insert operation failed:', err);
+      console.error('💥 Error name:', err.name);
+      console.error('💥 Error message:', err.message);
+      console.error('💥 Error stack:', err.stack);
       console.error('💥 Error type:', typeof err);
       console.error('💥 Error details:', JSON.stringify(err, null, 2));
+      
+      // Check for specific error types
+      if (err.name === 'FetchError' || err.message?.includes('fetch')) {
+        throw new Error('Network connection failed - check internet connection and Supabase status');
+      }
+      
+      if (err.message?.includes('timeout')) {
+        throw new Error('Request timed out - Supabase may be overloaded');
+      }
+      
       throw err;
     }
   };
@@ -318,8 +373,10 @@ const PaymentModal = ({
     console.log('📝 Form submitted with method:', paymentMethod);
     
     setError(null);
+    setCurrentStep('Validating form data...');
     
     if (paymentMethod === 'telegram') {
+      setCurrentStep('Processing Telegram order...');
       await handleTelegramRedirect();
       return;
     }
@@ -357,17 +414,22 @@ const PaymentModal = ({
       return;
     }
 
-    // Bitcoin order processing
     console.log('🟡 Processing Bitcoin order...');
     setLoading(true);
+    setCurrentStep('Creating order in database...');
 
     try {
+      console.log('🔄 Starting order creation process...');
       const order = await createOrderInDatabase();
-      console.log('✅ Bitcoin order created:', order.id);
+      console.log('✅ Order creation completed:', order.id);
       
+      setCurrentStep('Updating user spending...');
       await updateUserSpending();
+      
+      setCurrentStep('Sending notifications...');
       await sendOrderNotifications(order);
       
+      setCurrentStep('Finalizing order...');
       localStorage.removeItem('cart');
       setOrderCreated(order.id);
       
@@ -379,6 +441,7 @@ const PaymentModal = ({
     } catch (error: any) {
       console.error('❌ Bitcoin order failed:', error);
       setError(error.message);
+      setCurrentStep('Order failed');
       toast({
         title: t.orderFailed || 'Order Failed',
         description: error.message,
@@ -386,6 +449,7 @@ const PaymentModal = ({
       });
     } finally {
       setLoading(false);
+      setCurrentStep('');
     }
   };
 

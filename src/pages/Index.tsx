@@ -8,6 +8,7 @@ import AuthModal from '@/components/AuthModal';
 import ProductDetailModal from '@/components/ProductDetailModal';
 import StaticPage from '@/components/StaticPage';
 import Account from './Account';
+import SupabaseTest from '@/components/SupabaseTest';
 import { products, Product } from '@/lib/products';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
@@ -265,6 +266,13 @@ const Index = () => {
       />
 
       <main className="pt-32 px-4 transition-all duration-300">
+        {/* Temporary Supabase test - remove after testing */}
+        {isAuthenticated && (
+          <div className="max-w-md mx-auto mb-6">
+            <SupabaseTest />
+          </div>
+        )}
+        
         <ProductGrid
           products={filteredProducts}
           language={language}
