@@ -68,19 +68,34 @@ const CartModal = ({
     );
   }
 
-  // Calculate totals - reverted to original logic
+  // Calculate totals with improved discount logic
   const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
   
-  // Original discount logic
-  const cappedDiscount = subtotal >= 150 ? userDiscount : Math.min(userDiscount, 25);
+  // Apply discount only if user is authenticated and has a discount
+  const actualDiscount = isAuthenticated && userDiscount > 0 ? userDiscount : 0;
+  
+  // Cap discount based on order value
+  const cappedDiscount = subtotal >= 150 ? actualDiscount : Math.min(actualDiscount, 25);
   
   const discountAmount = subtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Original shipping logic - free shipping at $100
+  // Free shipping at $100
   const freeShippingThreshold = 100;
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 10;
   const finalTotal = subtotalAfterDiscount + shippingFee;
+
+  console.log('Cart calculation:', {
+    subtotal,
+    userDiscount,
+    actualDiscount,
+    cappedDiscount,
+    discountAmount,
+    subtotalAfterDiscount,
+    shippingFee,
+    finalTotal,
+    isAuthenticated
+  });
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -159,8 +174,8 @@ const CartModal = ({
               freeShippingThreshold={freeShippingThreshold}
             />
 
-            {/* Discount limitation notice - back to $150 */}
-            {userDiscount > 25 && subtotal < 150 && (
+            {/* Discount limitation notice */}
+            {actualDiscount > 25 && subtotal < 150 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">
                   Discounts over 25% are limited to orders $150+. Current discount: {cappedDiscount}%

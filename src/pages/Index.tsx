@@ -56,20 +56,32 @@ const Index = () => {
     // Referral discount: 2.5% per referral
     const referralDiscount = referralCount * 2.5;
     
-    // Spending discount based on user type - FIXED LOGIC
+    // Spending discount based on user type
     const spendingDiscount = isReferrer
       ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50
       : userProfile.referred_by 
         ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
-        : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // FIXED: Standard users: 2.5% per $50
+        : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // Standard users: 2.5% per $50
     
     // Referred spending discount for referrers
     const referredSpendingDiscount = isReferrer
       ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 5, Math.floor(150 / 50) * 5)
       : 0;
     
+    const totalDiscount = referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus;
+    
+    console.log('Discount calculation:', {
+      userProfile,
+      isReferrer,
+      firstReferralBonus,
+      referralDiscount,
+      spendingDiscount,
+      referredSpendingDiscount,
+      totalDiscount
+    });
+    
     // Total discount capped at 32%
-    return Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
+    return Math.min(totalDiscount, 32);
   };
 
   const userDiscount = calculateUserDiscount();

@@ -6,30 +6,19 @@ import { Copy } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { translations } from '@/lib/translations';
 
-interface CustomerInfo {
-  fullName: string;
-  email: string;
-  address: string;
-  city: string;
-  country: string;
-  phoneNumber: string;
-  postalCode: string;
-  txid: string;
-}
-
 interface BitcoinPaymentDetailsProps {
   amount: number;
   walletAddress: string;
-  customerInfo: CustomerInfo;
-  onInfoChange: (info: CustomerInfo) => void;
+  txid: string;
+  onTxidChange: (txid: string) => void;
   language: 'en' | 'es';
 }
 
 const BitcoinPaymentDetails = ({
   amount,
   walletAddress,
-  customerInfo,
-  onInfoChange,
+  txid,
+  onTxidChange,
   language
 }: BitcoinPaymentDetailsProps) => {
   const { toast } = useToast();
@@ -107,7 +96,7 @@ const BitcoinPaymentDetails = ({
 
   const handleTxidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    onInfoChange({...customerInfo, txid: value});
+    onTxidChange(value);
   };
 
   return (
@@ -170,7 +159,7 @@ const BitcoinPaymentDetails = ({
           <Input
             type="text"
             placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
-            value={customerInfo.txid}
+            value={txid}
             onChange={handleTxidChange}
             className="mt-1"
           />

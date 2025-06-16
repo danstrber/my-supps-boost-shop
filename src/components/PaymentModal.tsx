@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -51,16 +52,17 @@ const PaymentModal = ({
   language = 'en'
 }: PaymentModalProps) => {
   const [paymentMethod, setPaymentMethod] = useState<'telegram' | 'bitcoin'>('telegram');
-  const [customerInfo, setCustomerInfo] = useState({
+  const [formData, setFormData] = useState({
     fullName: '',
     email: userProfile?.email || '',
     address: '',
     city: '',
+    state: '',
+    zipCode: '',
     country: 'US',
-    phoneNumber: '',
-    postalCode: '',
-    txid: ''
+    phone: '',
   });
+  const [txid, setTxid] = useState('');
   const [loading, setLoading] = useState(false);
   const [showBitcoinDetails, setShowBitcoinDetails] = useState(false);
   const [orderCreated, setOrderCreated] = useState<string | null>(null);
@@ -70,13 +72,20 @@ const PaymentModal = ({
 
   const walletAddress = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const sendOrderEmails = async (orderData: any) => {
     try {
       // Send via Supabase edge function
       const { error } = await supabase.functions.invoke('send-order-email', {
         body: {
-          customerEmail: customerInfo.email,
-          customerName: customerInfo.fullName,
+          customerEmail: formData.email,
+          customerName: formData.fullName,
           items: cartItems.map(item => ({
             id: item.product.id,
             name: item.product.name,
@@ -131,7 +140,7 @@ const PaymentModal = ({
     }
 
     if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
-      if (!customerInfo.fullName || !customerInfo.email || !customerInfo.address || !customerInfo.city || !customerInfo.country || !customerInfo.phoneNumber || !customerInfo.postalCode) {
+      if (!formData.fullName || !formData.email || !formData.address || !formData.city || !formData.country || !formData.phone || !formData.zipCode) {
         toast({
           title: t.missingInformation,
           description: t.fillAllFields,
@@ -153,7 +162,7 @@ const PaymentModal = ({
     }
 
     // Validate TXID for Bitcoin payments
-    if (paymentMethod === 'bitcoin' && !customerInfo.txid.trim()) {
+    if (paymentMethod === 'bitcoin' && !txid.trim()) {
       toast({
         title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
         description: language === 'en' ? 'Please enter the Bitcoin transaction ID to complete your order.' : 'Por favor, ingresa el ID de transacción de Bitcoin para completar tu pedido.',
@@ -182,10 +191,10 @@ const PaymentModal = ({
         final_total: finalTotal,
         payment_method: paymentMethod,
         payment_details: {
-          customer_info: customerInfo,
+          customer_info: formData,
           btc_amount_sent: finalTotal,
           wallet_address: walletAddress,
-          txid: customerInfo.txid
+          txid: txid
         },
         status: 'pending'
       };
@@ -252,7 +261,7 @@ const PaymentModal = ({
     setShowBitcoinDetails(false);
     setOrderCreated(null);
     setPaymentExpired(false);
-    setCustomerInfo(prev => ({ ...prev, txid: '' }));
+    setTxid('');
     onClose();
   };
 
@@ -390,9 +399,8 @@ const PaymentModal = ({
 
               {paymentMethod === 'bitcoin' && (
                 <ShippingForm
-                  customerInfo={customerInfo}
-                  onInfoChange={setCustomerInfo}
-                  paymentMethod={paymentMethod}
+                  formData={formData}
+                  onInputChange={handleInputChange}
                   language={language}
                 />
               )}
@@ -401,8 +409,8 @@ const PaymentModal = ({
                 <BitcoinPaymentDetails
                   amount={finalTotal}
                   walletAddress={walletAddress}
-                  customerInfo={customerInfo}
-                  onInfoChange={setCustomerInfo}
+                  txid={txid}
+                  onTxidChange={setTxid}
                   language={language}
                 />
               )}
