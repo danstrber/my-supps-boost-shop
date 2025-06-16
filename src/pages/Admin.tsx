@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { confirmPurchase } from '@/lib/purchase-tracking';
+import { updateUserSpending } from '@/lib/purchase-tracking';
 import Header from '@/components/Header';
 
 interface Order {
@@ -60,21 +60,38 @@ const Admin = () => {
 
       if (error) throw error;
 
-      // Confirm purchase (updates user spending)
-      const success = await confirmPurchase(orderId);
+      // Get order details to update user spending
+      const { data: orderData, error: fetchError } = await supabase
+        .from('orders')
+        .select('user_id, final_total')
+        .eq('id', orderId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching order data:', fetchError);
+        toast({
+          title: "Warning",
+          description: "Order confirmed but couldn't update user spending"
+        });
+        return;
+      }
+
+      // Update user spending
+      const success = await updateUserSpending(orderData.user_id, orderData.final_total);
       
       if (success) {
         toast({
           title: "Success",
           description: "Order confirmed and user spending updated!"
         });
-        fetchOrders(); // Refresh the list
       } else {
         toast({
           title: "Warning",
-          description: "Order status updated but spending tracking failed"
+          description: "Order confirmed but spending update failed"
         });
       }
+      
+      fetchOrders(); // Refresh the list
     } catch (error: any) {
       console.error('Error confirming order:', error);
       toast({
