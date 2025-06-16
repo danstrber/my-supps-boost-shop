@@ -105,17 +105,24 @@ const ProductDetailModal = ({
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{product.name} - Product Details</DialogTitle>
+            <DialogDescription>
+              {language === 'en' ? 'Detailed product information and specifications' : 'Información detallada del producto y especificaciones'}
+            </DialogDescription>
+          </DialogHeader>
+          
           <div className="grid md:grid-cols-2 gap-6">
             {/* Left Side - Image and Basic Info */}
             <div className="space-y-6">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold text-gray-900">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   {product.name}
-                </DialogTitle>
-                <DialogDescription className="text-gray-600">
+                </h2>
+                <p className="text-gray-600">
                   {language === 'en' ? 'Detailed product information and specifications' : 'Información detallada del producto y especificaciones'}
-                </DialogDescription>
-              </DialogHeader>
+                </p>
+              </div>
               
               <div className="relative group">
                 <img
@@ -318,7 +325,7 @@ const ProductDetailModal = ({
         <DialogContent className="sm:max-w-4xl p-0 bg-black/95">
           <DialogHeader className="sr-only">
             <DialogTitle>{product.name} - Full Size Image</DialogTitle>
-            <DialogDescription>Full size image view</DialogDescription>
+            <DialogDescription>Full size image view of {product.name}</DialogDescription>
           </DialogHeader>
           <div className="relative">
             <Button

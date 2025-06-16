@@ -250,6 +250,7 @@ const PaymentModal = ({
 
       console.log('=== ORDER CREATED SUCCESSFULLY ===');
       console.log('Order created successfully:', order);
+      console.log('Order ID:', order.id);
 
       // Create pending purchase for tracking
       console.log('Creating pending purchase tracking...');
@@ -277,12 +278,8 @@ const PaymentModal = ({
       console.log('Clearing cart from localStorage...');
       localStorage.removeItem('cart');
       
-      // Close modal after delay to show success
-      setTimeout(() => {
-        console.log('Closing modal and reloading page...');
-        onClose();
-        window.location.reload();
-      }, 3000);
+      // Don't auto-close modal, let user see the success message
+      console.log('Order process completed successfully');
       
     } catch (error: any) {
       console.error('=== ORDER CREATION FAILED ===');
@@ -359,6 +356,12 @@ const PaymentModal = ({
                 <p>Email: christhomaso083@proton.me</p>
                 <p>Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@DANSTRBER</a></p>
               </div>
+              <button
+                onClick={handleModalClose}
+                className="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
+              >
+                {language === 'en' ? 'Continue Shopping' : 'Continuar Comprando'}
+              </button>
             </div>
           </div>
         ) : (

@@ -336,7 +336,7 @@ export const products: Product[] = [
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
     price: 25,
-    image: '/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
+    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
     categories: ['pct', 'testosterone-booster'],
     featured: false,
     inStock: true,
@@ -346,13 +346,13 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '12.5mg',
+        dosePerCapsule: '25mg',
         capsulesPerBottle: '25',
         typicalCycleLength: '4-6 weeks PCT',
         potencyLevel: 'Moderate Testosterone Stimulation'
       },
       es: {
-        dosePerCapsule: '12.5mg',
+        dosePerCapsule: '25mg',
         capsulesPerBottle: '25',
         typicalCycleLength: '4-6 semanas PCT',
         potencyLevel: 'Estimulación moderada de testosterona'
