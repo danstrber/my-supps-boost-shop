@@ -80,11 +80,9 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
   const freeShippingThreshold = 100;
   const freeShipping = userProfile.total_spending >= freeShippingThreshold;
 
-  // Handle referral link click - navigate to account page
+  // Handle referral link click - just stay on same page since we're already on account
   const handleReferralClick = () => {
-    if (onPageChange) {
-      onPageChange('account');
-    }
+    // Do nothing since we're already on the account page
   };
 
   return (
@@ -155,16 +153,6 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
           <li>• {language === 'en' ? 'Referred users: 6.5% per $50 spent (max $150 total)' : 'Usuarios referidos: 6.5% por cada $50 gastados (máx $150 total)'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100 for everyone' : 'Envío gratis a $100 para todos'}</li>
         </ul>
-      </div>
-
-      {/* Clickable referral tip */}
-      <div 
-        className="bg-green-100 border border-green-300 p-3 rounded-lg text-center cursor-pointer hover:bg-green-200 transition-colors"
-        onClick={handleReferralClick}
-      >
-        <p className="text-green-700 text-sm font-medium">
-          {language === 'en' ? 'Want cheaper prices? Refer friends and get discounts!' : '¿Quieres precios más baratos? ¡Refiere amigos y obtén descuentos!'}
-        </p>
       </div>
 
       {showDetails && (

@@ -37,11 +37,42 @@ const Index = () => {
   const [detectedReferralCode, setDetectedReferralCode] = useState<string | null>(null);
 
   // Custom hooks
-  const { userProfile, isAuthenticated, userDiscount, loading, handleAuthAction } = useAuth();
+  const { userProfile, isAuthenticated, loading, handleAuthAction } = useAuth();
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart } = useCart();
   const { sidebarOpen, handleMenuToggle, handleSidebarClose } = useSidebar();
 
   console.log('Index state initialized', { loading, isAuthenticated });
+
+  // Calculate user discount with proper standard user logic
+  const calculateUserDiscount = () => {
+    if (!userProfile) return 0;
+    
+    // Check if user has made referrals
+    const isReferrer = referralCount > 0;
+    
+    // First referral bonus
+    const firstReferralBonus = userProfile.referred_by ? 10 : 0;
+    
+    // Referral discount: 2.5% per referral
+    const referralDiscount = referralCount * 2.5;
+    
+    // Spending discount based on user type - FIXED LOGIC
+    const spendingDiscount = isReferrer
+      ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50
+      : userProfile.referred_by 
+        ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
+        : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // FIXED: Standard users: 2.5% per $50
+    
+    // Referred spending discount for referrers
+    const referredSpendingDiscount = isReferrer
+      ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 5, Math.floor(150 / 50) * 5)
+      : 0;
+    
+    // Total discount capped at 32%
+    return Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
+  };
+
+  const userDiscount = calculateUserDiscount();
 
   // Save language preference to localStorage when it changes
   useEffect(() => {
@@ -180,6 +211,7 @@ const Index = () => {
         userDiscount={userDiscount}
         isAuthenticated={isAuthenticated}
         userProfile={userProfile}
+        onPageChange={handlePageChange}
       />
 
       <AuthModal

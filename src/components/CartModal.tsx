@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, X } from 'lucide-react';
 import { Product } from '@/lib/products';
@@ -18,6 +18,7 @@ interface CartModalProps {
   userDiscount: number;
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
+  onPageChange?: (page: string) => void;
 }
 
 const CartModal = ({
@@ -28,7 +29,8 @@ const CartModal = ({
   onUpdateCart,
   userDiscount,
   isAuthenticated,
-  userProfile
+  userProfile,
+  onPageChange
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -52,6 +54,9 @@ const CartModal = ({
               <ShoppingCart className="h-5 w-5 mr-2" />
               Cart
             </DialogTitle>
+            <DialogDescription>
+              Your shopping cart is currently empty.
+            </DialogDescription>
           </DialogHeader>
           <div className="py-8 text-center">
             <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
@@ -98,7 +103,10 @@ const CartModal = ({
   }));
 
   const handleReferralClick = () => {
-    window.open('/referral-program', '_blank');
+    if (onPageChange) {
+      onPageChange('account');
+      onClose();
+    }
   };
 
   return (
@@ -115,6 +123,9 @@ const CartModal = ({
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
+            <DialogDescription>
+              Review your items and proceed to checkout when ready.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">

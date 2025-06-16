@@ -36,9 +36,11 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
       <div className="flex-1">
         <h4 className="font-medium text-gray-900">{product.name}</h4>
         <p className="text-sm text-gray-600">${product.price.toFixed(2)} each</p>
-        <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
-          🔬 Lab Tested
-        </span>
+        {product.labTestFile && (
+          <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+            🔬 Lab Tested
+          </span>
+        )}
         {userDiscount > 0 && (
           <p className="text-xs text-green-600 mt-1">
             {userDiscount}% discount applied
@@ -52,16 +54,20 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
           size="sm"
           onClick={() => handleQuantityChange(quantity - 1)}
           className="h-8 w-8 p-0"
+          aria-label="Decrease quantity"
         >
           <Minus className="h-4 w-4" />
         </Button>
         
         <Input
+          id={`quantity-${product.id}`}
+          name={`quantity-${product.id}`}
           type="number"
           min="1"
           value={quantity}
           onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
           className="w-16 text-center h-8"
+          aria-label={`Quantity for ${product.name}`}
         />
         
         <Button
@@ -69,6 +75,7 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
           size="sm"
           onClick={() => handleQuantityChange(quantity + 1)}
           className="h-8 w-8 p-0"
+          aria-label="Increase quantity"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -78,6 +85,7 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
           size="sm"
           onClick={() => onUpdateCart(product.id, 0)}
           className="h-8 w-8 p-0"
+          aria-label={`Remove ${product.name} from cart`}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
