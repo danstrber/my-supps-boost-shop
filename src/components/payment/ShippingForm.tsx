@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ChevronDown } from 'lucide-react';
 
 interface ShippingFormProps {
   formData: {
@@ -20,6 +20,9 @@ interface ShippingFormProps {
 }
 
 const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) => {
+  const [countrySearchOpen, setCountrySearchOpen] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
+
   const labels = {
     en: {
       fullName: 'Full Name',
@@ -73,6 +76,10 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
     'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen',
     'Zambia', 'Zimbabwe'
   ];
+
+  const filteredCountries = countries.filter(country =>
+    country.toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
@@ -155,20 +162,50 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
             autoComplete="postal-code"
           />
         </div>
-        <div>
+        <div className="relative">
           <Label htmlFor="country">{labels[language].country}</Label>
-          <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
-            <SelectTrigger id="country">
-              <SelectValue placeholder="Select country" />
-            </SelectTrigger>
-            <SelectContent>
-              {countries.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="relative">
+            <button
+              id="country"
+              name="country"
+              type="button"
+              className="w-full flex items-center justify-between h-10 px-3 py-2 text-left border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+              onClick={() => setCountrySearchOpen(!countrySearchOpen)}
+            >
+              <span>{formData.country || 'Select country'}</span>
+              <ChevronDown className="h-4 w-4" />
+            </button>
+            
+            {countrySearchOpen && (
+              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                <div className="p-2">
+                  <Input
+                    type="text"
+                    placeholder="Search countries..."
+                    value={countrySearch}
+                    onChange={(e) => setCountrySearch(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="max-h-48 overflow-y-auto">
+                  {filteredCountries.map((country) => (
+                    <button
+                      key={country}
+                      type="button"
+                      className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
+                      onClick={() => {
+                        onInputChange('country', country);
+                        setCountrySearchOpen(false);
+                        setCountrySearch('');
+                      }}
+                    >
+                      {country}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Copy } from 'lucide-react';
+import { Copy, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { translations } from '@/lib/translations';
 
 interface BitcoinPaymentDetailsProps {
   amount: number;
@@ -22,168 +22,124 @@ const BitcoinPaymentDetails = ({
   language
 }: BitcoinPaymentDetailsProps) => {
   const { toast } = useToast();
-  const t = translations[language];
-  const [btcPrice, setBtcPrice] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [priceError, setPriceError] = useState(false);
 
-  // Fetch real-time BTC price with multiple fallbacks
-  useEffect(() => {
-    const fetchBtcPrice = async () => {
-      setLoading(true);
-      setPriceError(false);
-      
-      // Array of different Bitcoin price APIs to try
-      const apiUrls = [
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd',
-        'https://api.coindesk.com/v1/bpi/currentprice/USD.json',
-        'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'
-      ];
-
-      for (let i = 0; i < apiUrls.length; i++) {
-        try {
-          console.log(`Trying BTC price API ${i + 1}:`, apiUrls[i]);
-          
-          const response = await fetch(apiUrls[i]);
-          const data = await response.json();
-          
-          let price = 0;
-          
-          // Handle different API response formats
-          if (apiUrls[i].includes('coingecko') && data.bitcoin?.usd) {
-            price = data.bitcoin.usd;
-          } else if (apiUrls[i].includes('coindesk') && data.bpi?.USD?.rate_float) {
-            price = data.bpi.USD.rate_float;
-          } else if (apiUrls[i].includes('binance') && data.price) {
-            price = parseFloat(data.price);
-          }
-          
-          if (price > 0) {
-            console.log(`BTC price fetched successfully: $${price}`);
-            setBtcPrice(price);
-            setLoading(false);
-            return; // Success, exit the loop
-          }
-        } catch (error) {
-          console.error(`Failed to fetch BTC price from API ${i + 1}:`, error);
-        }
-      }
-      
-      // If all APIs fail, use fallback price and show error
-      console.warn('All BTC price APIs failed, using fallback price');
-      setBtcPrice(65000); // Fallback price
-      setPriceError(true);
-      setLoading(false);
-    };
-
-    fetchBtcPrice();
-    
-    // Update price every 2 minutes instead of 5
-    const interval = setInterval(fetchBtcPrice, 2 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Convert USD to BTC with real-time price
-  const btcAmount = btcPrice > 0 ? (amount / btcPrice).toFixed(8) : '0.00000000';
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: t.copied,
-      description: `${label} ${t.copiedToClipboard}`,
-    });
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: language === 'en' ? 'Copied!' : '¡Copiado!',
+        description: language === 'en' ? `${label} copied to clipboard` : `${label} copiado al portapapeles`,
+      });
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+    }
   };
 
-  const handleTxidChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    onTxidChange(value);
+  const openBlockExplorer = () => {
+    window.open(`https://blockchair.com/bitcoin/address/${walletAddress}`, '_blank');
   };
 
   return (
-    <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg space-y-4">
-      <h4 className="font-semibold text-orange-800 mb-3">
-        ₿ {t.bitcoinPaymentDetails}
-      </h4>
-
-      <div className="space-y-3">
-        <div className="bg-white p-3 rounded border">
-          <Label className="text-sm font-medium text-gray-700">
-            {t.sendExact}
-          </Label>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg font-bold text-orange-600">
-              {loading ? 'Loading...' : `${btcAmount} BTC`}
-            </span>
-            <button
-              type="button"
-              onClick={() => copyToClipboard(btcAmount, 'BTC Amount')}
-              className="text-orange-600 hover:text-orange-800"
-              disabled={loading || btcPrice === 0}
-            >
-              <Copy className="h-4 w-4" />
-            </button>
+    <div className="space-y-6">
+      <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-orange-800 mb-4">
+          {language === 'en' ? '₿ Bitcoin Payment Details' : '₿ Detalles de Pago Bitcoin'}
+        </h3>
+        
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="btc-amount" className="text-sm font-medium text-gray-700">
+              {language === 'en' ? 'Send Exact Amount' : 'Enviar Cantidad Exacta'}
+            </Label>
+            <div className="flex items-center space-x-2 mt-1">
+              <Input
+                id="btc-amount"
+                name="btc-amount"
+                type="text"
+                value={`$${amount.toFixed(2)} USD`}
+                readOnly
+                className="bg-gray-100"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => copyToClipboard(`$${amount.toFixed(2)}`, 'Amount')}
+                className="px-3"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              {language === 'en' 
+                ? 'Send the exact USD equivalent in Bitcoin to the address below'
+                : 'Envía el equivalente exacto en USD en Bitcoin a la dirección de abajo'}
+            </p>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            (≈ ${amount.toFixed(0)} USD @ ${btcPrice.toLocaleString()}/BTC)
-            {priceError && (
-              <span className="text-red-500 ml-2">
-                {language === 'en' ? '(Price may not be current)' : '(El precio puede no estar actualizado)'}
-              </span>
-            )}
-          </p>
-        </div>
 
-        <div className="bg-white p-3 rounded border">
-          <Label className="text-sm font-medium text-gray-700">
-            {t.toWallet}
-          </Label>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm font-mono break-all mr-2">{walletAddress}</span>
-            <button
-              type="button"
-              onClick={() => copyToClipboard(walletAddress, 'Wallet Address')}
-              className="text-orange-600 hover:text-orange-800 flex-shrink-0"
-            >
-              <Copy className="h-4 w-4" />
-            </button>
+          <div>
+            <Label htmlFor="wallet-address" className="text-sm font-medium text-gray-700">
+              {language === 'en' ? 'To Wallet Address' : 'A Dirección de Billetera'}
+            </Label>
+            <div className="flex items-center space-x-2 mt-1">
+              <Input
+                id="wallet-address"
+                name="wallet-address"
+                type="text"
+                value={walletAddress}
+                readOnly
+                className="bg-gray-100 font-mono text-sm"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => copyToClipboard(walletAddress, 'Address')}
+                className="px-3"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openBlockExplorer}
+                className="px-3"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
-            {language === 'en' ? 'Bitcoin (BTC) wallet address' : 'Dirección de billetera Bitcoin (BTC)'}
-          </p>
-        </div>
 
-        <div className="bg-white p-3 rounded border">
-          <Label className="text-sm font-medium text-gray-700">
-            {language === 'en' ? 'Transaction ID (Required)' : 'ID de Transacción (Requerido)'}
-          </Label>
-          <Input
-            type="text"
-            placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
-            value={txid}
-            onChange={handleTxidChange}
-            className="mt-1"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            {language === 'en' 
-              ? 'Enter the transaction ID after sending Bitcoin to complete your order'
-              : 'Ingresa el ID de transacción después de enviar Bitcoin para completar tu pedido'
-            }
-          </p>
+          <div>
+            <Label htmlFor="transaction-id" className="text-sm font-medium text-gray-700">
+              {language === 'en' ? 'Transaction ID (Required)' : 'ID de Transacción (Requerido)'}
+            </Label>
+            <Input
+              id="transaction-id"
+              name="transaction-id"
+              type="text"
+              value={txid}
+              onChange={(e) => onTxidChange(e.target.value)}
+              className="mt-1"
+              placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {language === 'en' 
+                ? 'Enter the transaction ID from your Bitcoin wallet after sending payment'
+                : 'Ingresa el ID de transacción de tu billetera Bitcoin después de enviar el pago'}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
-        <h5 className="font-medium text-blue-800 mb-2">
-          {language === 'en' ? '📋 Payment Instructions' : '📋 Instrucciones de Pago'}
-        </h5>
-        <ol className="text-blue-700 text-sm space-y-1 list-decimal list-inside">
-          <li>{language === 'en' ? 'Copy the exact BTC amount above' : 'Copia la cantidad exacta de BTC arriba'}</li>
-          <li>{language === 'en' ? 'Copy the wallet address' : 'Copia la dirección de la billetera'}</li>
-          <li>{language === 'en' ? 'Send Bitcoin from your wallet' : 'Envía Bitcoin desde tu billetera'}</li>
-          <li>{language === 'en' ? 'Copy the transaction ID and paste it above' : 'Copia el ID de transacción y pégalo arriba'}</li>
-          <li>{language === 'en' ? 'Click "Complete Order"' : 'Haz clic en "Completar Pedido"'}</li>
-        </ol>
+      <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+        <p className="text-red-700 text-sm font-medium">
+          {language === 'en' 
+            ? '⚠️ Important: Send the exact amount in Bitcoin equivalent. Orders will be processed once payment is confirmed on the blockchain.'
+            : '⚠️ Importante: Envía la cantidad exacta en equivalente Bitcoin. Los pedidos se procesarán una vez que el pago sea confirmado en la blockchain.'}
+        </p>
       </div>
     </div>
   );

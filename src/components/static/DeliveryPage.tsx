@@ -19,8 +19,8 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
             </h2>
             <p className="text-gray-700 text-lg mb-6">
               {language === 'en' 
-                ? 'We provide worldwide shipping for all our research compounds. Processing and delivery times vary by location.'
-                : 'Proporcionamos envío mundial para todos nuestros compuestos de investigación. Los tiempos de procesamiento y entrega varían según la ubicación.'}
+                ? 'We provide shipping within the USA and to select international locations. Processing and delivery times vary by location.'
+                : 'Proporcionamos envío dentro de EE.UU. y a ubicaciones internacionales selectas. Los tiempos de procesamiento y entrega varían según la ubicación.'}
             </p>
           </div>
 
@@ -40,11 +40,20 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
                 {language === 'en' ? 'Delivery Time' : 'Tiempo de Entrega'}
               </h3>
-              <p className="text-gray-600">
-                {language === 'en' 
-                  ? 'Standard delivery: 7-14 business days worldwide.'
-                  : 'Entrega estándar: 7-14 días hábiles en todo el mundo.'}
-              </p>
+              <div className="text-gray-600 space-y-2">
+                <p className="font-medium">
+                  {language === 'en' ? 'USA Domestic:' : 'Nacional EE.UU.:'} 
+                  <span className="font-normal ml-1">
+                    {language === 'en' ? '3-7 business days' : '3-7 días hábiles'}
+                  </span>
+                </p>
+                <p className="font-medium">
+                  {language === 'en' ? 'International:' : 'Internacional:'} 
+                  <span className="font-normal ml-1">
+                    {language === 'en' ? '7-14 business days' : '7-14 días hábiles'}
+                  </span>
+                </p>
+              </div>
             </div>
           </div>
 
