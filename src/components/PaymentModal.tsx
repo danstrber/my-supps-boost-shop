@@ -225,7 +225,7 @@ const PaymentModal = ({
           customer_info: formData,
           btc_amount_sent: finalTotal,
           wallet_address: walletAddress,
-          txid: txid || null
+          txid: txid.trim() || null
         },
         status: 'pending'
       };

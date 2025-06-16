@@ -267,72 +267,6 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'aromasin',
-    name: 'Aromasin (Exemestane)',
-    price: 25,
-    image: '/placeholder.svg',
-    categories: ['pct', 'ai'],
-    featured: false,
-    inStock: true,
-    description: {
-      en: 'Aromasin is a powerful aromatase inhibitor used for estrogen control during and after anabolic cycles.',
-      es: 'Aromasin es un inhibidor de aromatasa potente usado para control de estrógeno durante y después de ciclos anabólicos.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: 'As needed during cycle',
-        potencyLevel: 'High Estrogen Suppression'
-      },
-      es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: 'Según necesidad durante ciclo',
-        potencyLevel: 'Alta supresión de estrógeno'
-      }
-    },
-    researchBackground: {
-      en: 'Aromasin is an FDA-approved aromatase inhibitor originally developed for breast cancer treatment, extensively studied for hormone regulation.',
-      es: 'Aromasin es un inhibidor de aromatasa aprobado por FDA originalmente desarrollado para tratamiento de cáncer de mama, extensamente estudiado para regulación hormonal.'
-    },
-    benefits: {
-      en: 'Prevents estrogen-related side effects, reduces water retention, prevents gynecomastia, maintains testosterone levels, improves muscle hardness.',
-      es: 'Previene efectos secundarios relacionados con estrógeno, reduce retención de agua, previene ginecomastia, mantiene niveles de testosterona, mejora dureza muscular.'
-    },
-    sideEffects: {
-      en: 'Joint pain, mood changes, fatigue, hot flashes, potential lipid changes, possible bone density reduction with long-term use.',
-      es: 'Dolor articular, cambios de humor, fatiga, sofocos, posibles cambios lipídicos, posible reducción de densidad ósea con uso prolongado.'
-    },
-    effectsOnWomen: {
-      en: 'Generally not recommended for women unless specifically needed for medical reasons under professional supervision.',
-      es: 'Generalmente no recomendado para mujeres a menos que sea específicamente necesario por razones médicas bajo supervisión profesional.'
-    },
-    howItWorks: {
-      en: 'Irreversibly binds to aromatase enzyme, preventing the conversion of androgens to estrogens.',
-      es: 'Se une irreversiblemente a la enzima aromatasa, previniendo la conversión de andrógenos a estrógenos.'
-    },
-    safetyInformation: {
-      en: 'Use only when needed. Monitor hormone levels regularly. Do not crash estrogen levels completely.',
-      es: 'Usar solo cuando sea necesario. Monitorear niveles hormonales regularmente. No reducir completamente los niveles de estrógeno.'
-    },
-    cycleInformation: {
-      en: 'Typically used at 12.5-25mg every other day during cycle and PCT as needed.',
-      es: 'Típicamente usado a 12.5-25mg cada dos días durante ciclo y PCT según necesidad.'
-    },
-    whatToExpect: {
-      en: 'Users report reduced water retention and prevention of estrogen-related side effects within days of use.',
-      es: 'Los usuarios reportan reducción de retención de agua y prevención de efectos secundarios relacionados con estrógeno en días de uso.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 1,
-      fatLoss: 2,
-      sideEffects: 3,
-      retention: 5
-    }
-  },
-  {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
     price: 25,
@@ -463,6 +397,72 @@ export const products: Product[] = [
       fatLoss: 5,
       sideEffects: 2,
       retention: 3
+    }
+  },
+  {
+    id: 'aromasin',
+    name: 'Aromasin (Exemestane)',
+    price: 25,
+    image: '/lovable-uploads/3676fa98-6e90-442a-99d8-ce8d8d9bef23.png',
+    categories: ['pct', 'ai'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Aromasin is a powerful aromatase inhibitor used for estrogen control during and after anabolic cycles.',
+      es: 'Aromasin es un inhibidor de aromatasa potente usado para control de estrógeno durante y después de ciclos anabólicos.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10',
+        typicalCycleLength: 'As needed during cycle',
+        potencyLevel: 'High Estrogen Suppression'
+      },
+      es: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10',
+        typicalCycleLength: 'Según necesidad durante ciclo',
+        potencyLevel: 'Alta supresión de estrógeno'
+      }
+    },
+    researchBackground: {
+      en: 'Aromasin is an FDA-approved aromatase inhibitor originally developed for breast cancer treatment, extensively studied for hormone regulation.',
+      es: 'Aromasin es un inhibidor de aromatasa aprobado por FDA originalmente desarrollado para tratamiento de cáncer de mama, extensamente estudiado para regulación hormonal.'
+    },
+    benefits: {
+      en: 'Prevents estrogen-related side effects, reduces water retention, prevents gynecomastia, maintains testosterone levels, improves muscle hardness.',
+      es: 'Previene efectos secundarios relacionados con estrógeno, reduce retención de agua, previene ginecomastia, mantiene niveles de testosterona, mejora dureza muscular.'
+    },
+    sideEffects: {
+      en: 'Joint pain, mood changes, fatigue, hot flashes, potential lipid changes, possible bone density reduction with long-term use.',
+      es: 'Dolor articular, cambios de humor, fatiga, sofocos, posibles cambios lipídicos, posible reducción de densidad ósea con uso prolongado.'
+    },
+    effectsOnWomen: {
+      en: 'Generally not recommended for women unless specifically needed for medical reasons under professional supervision.',
+      es: 'Generalmente no recomendado para mujeres a menos que sea específicamente necesario por razones médicas bajo supervisión profesional.'
+    },
+    howItWorks: {
+      en: 'Irreversibly binds to aromatase enzyme, preventing the conversion of androgens to estrogens.',
+      es: 'Se une irreversiblemente a la enzima aromatasa, previniendo la conversión de andrógenos a estrógenos.'
+    },
+    safetyInformation: {
+      en: 'Use only when needed. Monitor hormone levels regularly. Do not crash estrogen levels completely.',
+      es: 'Usar solo cuando sea necesario. Monitorear niveles hormonales regularmente. No reducir completamente los niveles de estrógeno.'
+    },
+    cycleInformation: {
+      en: 'Typically used at 12.5-25mg every other day during cycle and PCT as needed.',
+      es: 'Típicamente usado a 12.5-25mg cada dos días durante ciclo y PCT según necesidad.'
+    },
+    whatToExpect: {
+      en: 'Users report reduced water retention and prevention of estrogen-related side effects within days of use.',
+      es: 'Los usuarios reportan reducción de retención de agua y prevención de efectos secundarios relacionados con estrógeno en días de uso.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 2,
+      sideEffects: 3,
+      retention: 5
     }
   }
 ];
