@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -29,31 +28,24 @@ export interface Product {
   };
   benefits: {
     en: string;
-    es: string;
   };
   sideEffects: {
     en: string;
-    es: string;
   };
   effectsOnWomen: {
     en: string;
-    es: string;
   };
   howItWorks: {
     en: string;
-    es: string;
   };
   safetyInformation: {
     en: string;
-    es: string;
   };
   cycleInformation: {
     en: string;
-    es: string;
   };
   whatToExpect: {
     en: string;
-    es: string;
   };
   performanceRatings: {
     muscleGain: number;
