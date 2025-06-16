@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,10 +10,14 @@ import { Bitcoin, MessageCircle, CreditCard, ArrowLeft, Check } from 'lucide-rea
 import { UserProfile } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { translations } from '@/lib/translations';
+import { useToast } from '@/hooks/use-toast';
+import { createPendingPurchase } from '@/lib/purchase-tracking';
 import BitcoinPaymentDetails from './payment/BitcoinPaymentDetails';
 import BitcoinTutorial from './payment/BitcoinTutorial';
 import ShippingForm from './payment/ShippingForm';
 import OrderSummary from './payment/OrderSummary';
+import PaymentMethodInfo from './payment/PaymentMethodInfo';
+import PaymentTimer from './payment/PaymentTimer';
 import TermsOfService from './TermsOfService';
 
 interface CartItem {
