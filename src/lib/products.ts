@@ -403,7 +403,7 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
-    image: '/lovable-uploads/3676fa98-6e90-442a-99d8-ce8d8d9bef23.png',
+    image: '/placeholder.svg',
     categories: ['pct', 'ai'],
     featured: false,
     inStock: true,

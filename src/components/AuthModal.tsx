@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -276,10 +275,9 @@ const AuthModal = ({
           </DialogHeader>
           <EmailConfirmationView
             email={email}
-            loading={loading}
-            language={language}
             onResendConfirmation={resendConfirmation}
-            onBackToLogin={() => setMode('login')}
+            resendLoading={loading}
+            language={language}
           />
         </DialogContent>
       </Dialog>

@@ -126,7 +126,9 @@ export const translations = {
     invalidTxid: 'Invalid TXID. Must be a 64-character hexadecimal string.',
     referralDiscount: 'Want cheaper? Get 10% off by referring a new user!',
     termsOfService: 'Terms of Service',
-    agreeToTerms: 'I agree to the Terms of Service'
+    agreeToTerms: 'I agree to the Terms of Service',
+    checkYourEmail: 'Check Your Email',
+    resendEmail: 'Resend Email'
   },
   es: {
     home: 'Inicio',
@@ -254,6 +256,8 @@ export const translations = {
     invalidTxid: 'TXID inválido. Debe ser una cadena hexadecimal de 64 caracteres.',
     referralDiscount: '¿Quieres ahorrar? ¡Obtén un 10% de descuento al referir a un nuevo usuario!',
     termsOfService: 'Términos de Servicio',
-    agreeToTerms: 'Acepto los Términos de Servicio'
+    agreeToTerms: 'Acepto los Términos de Servicio',
+    checkYourEmail: 'Revisa Tu Correo',
+    resendEmail: 'Reenviar Correo'
   }
 };
