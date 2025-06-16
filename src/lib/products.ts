@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -142,7 +141,6 @@ export const products: Product[] = [
     image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
     categories: ['growth-hormone'],
     featured: true,
-    labTestFile: '/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png',
     inStock: true,
     description: {
       en: 'MK-677 is a growth hormone secretagogue that stimulates natural growth hormone and IGF-1 production.',
@@ -151,13 +149,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '50',
         typicalCycleLength: '8-12 weeks',
         potencyLevel: 'High Growth Hormone Release'
       },
       es: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '50',
         typicalCycleLength: '8-12 semanas',
         potencyLevel: 'Alta liberación de hormona del crecimiento'
       }
@@ -205,7 +203,7 @@ export const products: Product[] = [
   {
     id: 'rad140',
     name: 'RAD-140 (Testolone)',
-    price: 45,
+    price: 55,
     image: '/lovable-uploads/5d2b3f9c-eeb8-40cc-b547-0902cd012226.png',
     categories: ['sarms'],
     featured: false,
@@ -218,13 +216,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '50',
         typicalCycleLength: '6-8 weeks',
         potencyLevel: 'Very High Anabolic Activity'
       },
       es: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '50',
         typicalCycleLength: '6-8 semanas',
         potencyLevel: 'Actividad anabólica muy alta'
       }
@@ -408,6 +406,7 @@ export const products: Product[] = [
     image: '/lovable-uploads/fc2fad1d-20dd-4b74-b5e3-07f81414d651.png',
     categories: ['fat-burner'],
     featured: false,
+    labTestFile: '/lovable-uploads/fb319341-a727-49e3-afa8-ce91bd70a788.png',
     inStock: true,
     description: {
       en: 'Clenbuterol is a powerful beta-2 agonist used for fat loss and improving cardiovascular performance.',
@@ -455,7 +454,7 @@ export const products: Product[] = [
       en: 'Typical protocol: 2 weeks on, 2 weeks off. Start at 20mcg, increase gradually to tolerance.',
       es: 'Protocolo típico: 2 semanas sí, 2 semanas no. Comenzar a 20mcg, aumentar gradualmente según tolerancia.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report noticeable fat loss within 1-2 weeks, increased energy, and improved muscle definition.',
       es: 'Los usuarios reportan pérdida notable de grasa en 1-2 semanas, energía aumentada y definición muscular mejorada.'
     },

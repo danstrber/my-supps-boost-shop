@@ -79,7 +79,12 @@ const PaymentModal = ({
 
   const sendOrderEmails = async (orderData: any) => {
     try {
-      console.log('Attempting to send order emails...');
+      console.log('Attempting to send order emails with data:', {
+        customerEmail: formData.email,
+        customerName: formData.fullName,
+        orderTotal,
+        finalTotal
+      });
       
       // Send via Supabase edge function
       const { data, error } = await supabase.functions.invoke('send-order-email', {
@@ -107,9 +112,11 @@ const PaymentModal = ({
       }
 
       console.log('Order emails sent successfully via Supabase:', data);
+      return true;
     } catch (error) {
       console.error('Failed to send order emails:', error);
       // Continue with order creation even if email fails
+      return false;
     }
   };
 
@@ -136,6 +143,8 @@ const PaymentModal = ({
     e.preventDefault();
     
     console.log('Form submitted with method:', paymentMethod);
+    console.log('Current form data:', formData);
+    console.log('User profile:', userProfile);
     
     if (paymentMethod === 'telegram') {
       handleTelegramRedirect();
@@ -143,7 +152,10 @@ const PaymentModal = ({
     }
 
     if (paymentMethod === 'bitcoin' && !showBitcoinDetails) {
+      console.log('Validating form for Bitcoin payment...');
+      
       if (!formData.fullName || !formData.email || !formData.address || !formData.city || !formData.country || !formData.phone || !formData.zipCode) {
+        console.log('Form validation failed - missing fields');
         toast({
           title: t.missingInformation,
           description: t.fillAllFields,
@@ -151,6 +163,8 @@ const PaymentModal = ({
         });
         return;
       }
+      
+      console.log('Form validation passed, showing Bitcoin details');
       setShowBitcoinDetails(true);
       return;
     }
@@ -166,6 +180,7 @@ const PaymentModal = ({
 
     // Validate TXID for Bitcoin payments
     if (paymentMethod === 'bitcoin' && !txid.trim()) {
+      console.log('TXID validation failed');
       toast({
         title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
         description: language === 'en' ? 'Please enter the Bitcoin transaction ID to complete your order.' : 'Por favor, ingresa el ID de transacción de Bitcoin para completar tu pedido.',
@@ -178,8 +193,12 @@ const PaymentModal = ({
     console.log('Starting order creation process...');
 
     try {
+      if (!userProfile?.auth_id) {
+        throw new Error('User not authenticated');
+      }
+
       const orderData = {
-        user_id: userProfile?.auth_id,
+        user_id: userProfile.auth_id,
         items: {
           products: cartItems.map(item => ({
             id: item.product.id,
@@ -220,14 +239,15 @@ const PaymentModal = ({
 
       // Create pending purchase for tracking
       createPendingPurchase(order.id, {
-        userId: userProfile?.auth_id || '',
+        userId: userProfile.auth_id,
         amount: finalTotal,
         items: cartItems,
         referralCode: userProfile?.referred_by || undefined
       });
 
       // Send order confirmation emails
-      await sendOrderEmails(orderData);
+      const emailSent = await sendOrderEmails(orderData);
+      console.log('Email sending result:', emailSent);
 
       setOrderCreated(order.id);
 
