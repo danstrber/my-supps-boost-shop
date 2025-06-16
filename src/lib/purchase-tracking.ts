@@ -8,7 +8,7 @@ export interface PendingPurchase {
   referralCode?: string;
 }
 
-// Simple in-memory storage for pending purchases
+// Simplified tracking system
 const pendingPurchases = new Map<string, PendingPurchase>();
 
 export const createPendingPurchase = (orderId: string, purchase: PendingPurchase): void => {
@@ -16,80 +16,8 @@ export const createPendingPurchase = (orderId: string, purchase: PendingPurchase
   console.log('📝 Pending purchase created:', orderId, purchase);
 };
 
-export const confirmPurchase = async (orderId: string): Promise<boolean> => {
-  const purchase = pendingPurchases.get(orderId);
-  
-  if (!purchase) {
-    console.error('❌ No pending purchase found for order:', orderId);
-    return false;
-  }
-
-  try {
-    console.log('🔄 Confirming purchase for order:', orderId);
-    
-    // Update user spending
-    const { data: userData, error: fetchError } = await supabase
-      .from('users')
-      .select('total_spending, referred_by')
-      .eq('auth_id', purchase.userId)
-      .maybeSingle();
-
-    if (fetchError) {
-      console.error('❌ Error fetching user data:', fetchError);
-      throw fetchError;
-    }
-
-    if (userData) {
-      const newTotalSpending = (userData.total_spending || 0) + purchase.amount;
-      
-      const { error: userError } = await supabase
-        .from('users')
-        .update({ total_spending: newTotalSpending })
-        .eq('auth_id', purchase.userId);
-
-      if (userError) {
-        console.error('❌ Error updating user spending:', userError);
-        throw userError;
-      }
-
-      // Handle referral spending if applicable
-      if (purchase.referralCode) {
-        console.log('🔄 Processing referral spending for code:', purchase.referralCode);
-        
-        const { data: referrerData, error: referrerFetchError } = await supabase
-          .from('users')
-          .select('referred_spending')
-          .eq('referral_code', purchase.referralCode)
-          .maybeSingle();
-
-        if (referrerFetchError) {
-          console.error('❌ Error fetching referrer data:', referrerFetchError);
-          // Don't throw here, just log the error
-        } else if (referrerData) {
-          const newReferredSpending = (referrerData.referred_spending || 0) + purchase.amount;
-          
-          const { error: referrerError } = await supabase
-            .from('users')
-            .update({ referred_spending: newReferredSpending })
-            .eq('referral_code', purchase.referralCode);
-
-          if (referrerError) {
-            console.error('❌ Error updating referrer spending:', referrerError);
-            // Don't throw here, just log the error
-          }
-        }
-      }
-    }
-
-    // Remove from pending purchases
-    pendingPurchases.delete(orderId);
-    
-    console.log('✅ Purchase confirmed and saved:', orderId);
-    return true;
-  } catch (error) {
-    console.error('❌ Error confirming purchase:', error);
-    return false;
-  }
+export const getPendingPurchase = (orderId: string): PendingPurchase | undefined => {
+  return pendingPurchases.get(orderId);
 };
 
 export const cancelPendingPurchase = (orderId: string): void => {
@@ -97,6 +25,66 @@ export const cancelPendingPurchase = (orderId: string): void => {
   console.log('🗑️ Pending purchase cancelled:', orderId);
 };
 
-export const getPendingPurchase = (orderId: string): PendingPurchase | undefined => {
-  return pendingPurchases.get(orderId);
+// Direct order creation function for better reliability
+export const createOrder = async (orderData: any) => {
+  console.log('🚀 Creating order directly:', orderData);
+  
+  try {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([orderData])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('❌ Database error:', error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    if (!data) {
+      throw new Error('No order data returned from database');
+    }
+
+    console.log('✅ Order created successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('💥 Order creation failed:', error);
+    throw error;
+  }
+};
+
+// Update user spending with better error handling
+export const updateUserSpending = async (userId: string, amount: number) => {
+  console.log('💰 Updating user spending:', { userId, amount });
+  
+  try {
+    const { data: userData, error: fetchError } = await supabase
+      .from('users')
+      .select('total_spending')
+      .eq('auth_id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('❌ Error fetching user data:', fetchError);
+      return false;
+    }
+
+    const newTotalSpending = (userData.total_spending || 0) + amount;
+    
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ total_spending: newTotalSpending })
+      .eq('auth_id', userId);
+
+    if (updateError) {
+      console.error('❌ Error updating user spending:', updateError);
+      return false;
+    }
+
+    console.log('✅ User spending updated successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ Error in spending update:', error);
+    return false;
+  }
 };

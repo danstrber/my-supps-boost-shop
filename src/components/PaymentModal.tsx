@@ -65,7 +65,7 @@ const PaymentModal = ({
   const [orderCreated, setOrderCreated] = useState<string | null>(null);
   const [paymentExpired, setPaymentExpired] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [processingStep, setProcessingStep] = useState<string>('');
+  const [currentStep, setCurrentStep] = useState<string>('');
   const { toast } = useToast();
   const t = translations[language];
 
@@ -85,28 +85,27 @@ const PaymentModal = ({
     setTxid('');
     setLoading(false);
     setError(null);
-    setProcessingStep('');
+    setCurrentStep('');
   };
 
-  const createOrderInDatabase = async () => {
-    setProcessingStep('Creating order in database...');
-    console.log('📝 Creating order in Supabase database');
+  const createOrder = async () => {
+    console.log('🚀 Starting order creation process...');
+    setCurrentStep('Creating your order...');
     
     if (!userProfile?.auth_id) {
       throw new Error('User authentication required');
     }
 
+    // Prepare order data
     const orderData = {
       user_id: userProfile.auth_id,
-      items: {
-        products: cartItems.map(item => ({
-          id: item.product.id,
-          name: item.product.name,
-          price: item.product.price,
-          quantity: item.quantity,
-          total: item.product.price * item.quantity
-        }))
-      },
+      items: cartItems.map(item => ({
+        id: item.product.id,
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        total: item.product.price * item.quantity
+      })),
       original_total: orderTotal,
       discount_amount: discount,
       shipping_fee: shippingFee,
@@ -122,38 +121,45 @@ const PaymentModal = ({
       status: paymentMethod === 'telegram' ? 'pending_telegram' : 'pending_bitcoin'
     };
 
-    console.log('📦 Inserting order data:', orderData);
+    console.log('📦 Order data prepared:', orderData);
 
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([orderData])
-      .select()
-      .single();
+    try {
+      // Insert order into database
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([orderData])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('❌ Database error:', error);
-      throw new Error(`Database error: ${error.message}`);
+      console.log('🔄 Supabase response:', { data, error });
+
+      if (error) {
+        console.error('❌ Database error:', error);
+        throw new Error(`Failed to create order: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error('No order data returned from database');
+      }
+
+      console.log('✅ Order created successfully:', data);
+      return data;
+    } catch (err) {
+      console.error('💥 Order creation failed:', err);
+      throw err;
     }
-
-    if (!data) {
-      throw new Error('No order data returned from database');
-    }
-
-    console.log('✅ Order created successfully:', data);
-    return data;
   };
 
-  const updateUserSpending = async (orderId: string) => {
-    setProcessingStep('Updating user spending...');
-    console.log('💰 Updating user spending records');
+  const updateUserSpending = async () => {
+    setCurrentStep('Updating your account...');
+    console.log('💰 Updating user spending records...');
     
     if (!userProfile?.auth_id) return;
 
     try {
-      // Get current user data
       const { data: userData, error: fetchError } = await supabase
         .from('users')
-        .select('total_spending, referred_by')
+        .select('total_spending')
         .eq('auth_id', userProfile.auth_id)
         .single();
 
@@ -162,7 +168,6 @@ const PaymentModal = ({
         return;
       }
 
-      // Update total spending
       const newTotalSpending = (userData.total_spending || 0) + finalTotal;
       
       const { error: updateError } = await supabase
@@ -181,12 +186,12 @@ const PaymentModal = ({
     }
   };
 
-  const sendOrderNotifications = async (orderData: any) => {
-    setProcessingStep('Sending order notifications...');
-    console.log('📧 Sending order confirmation emails');
+  const sendNotifications = async (orderData: any) => {
+    setCurrentStep('Sending confirmations...');
+    console.log('📧 Sending order notifications...');
     
     try {
-      const { data, error } = await supabase.functions.invoke('send-order-email', {
+      const { error } = await supabase.functions.invoke('send-order-email', {
         body: {
           customerEmail: formData.email,
           customerName: formData.fullName,
@@ -207,37 +212,26 @@ const PaymentModal = ({
       });
 
       if (error) {
-        console.error('❌ Email error:', error);
-        return false;
+        console.error('❌ Notification error:', error);
+      } else {
+        console.log('✅ Notifications sent successfully');
       }
-
-      console.log('✅ Emails sent successfully');
-      return true;
     } catch (error) {
-      console.error('❌ Email sending failed:', error);
-      return false;
+      console.error('❌ Notification sending failed:', error);
     }
   };
 
-  const handleTelegramRedirect = async () => {
-    console.log('🔄 Processing Telegram order...');
+  const handleTelegramOrder = async () => {
+    console.log('🔵 Processing Telegram order...');
     setLoading(true);
     setError(null);
 
     try {
-      // Create order in database first
-      const order = await createOrderInDatabase();
+      const order = await createOrder();
+      await updateUserSpending();
+      await sendNotifications(order);
       
-      // Update user spending
-      await updateUserSpending(order.id);
-      
-      // Send notifications
-      await sendOrderNotifications(order);
-      
-      // Clear cart
       localStorage.removeItem('cart');
-      
-      // Set success state
       setOrderCreated(order.id);
       
       toast({
@@ -245,7 +239,6 @@ const PaymentModal = ({
         description: `Order ID: ${order.id.slice(0, 8)}. Redirecting to Telegram...`,
       });
 
-      // Redirect to Telegram
       setTimeout(() => {
         window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
       }, 1000);
@@ -260,7 +253,39 @@ const PaymentModal = ({
       });
     } finally {
       setLoading(false);
-      setProcessingStep('');
+      setCurrentStep('');
+    }
+  };
+
+  const handleBitcoinOrder = async () => {
+    console.log('🟡 Processing Bitcoin order...');
+    setLoading(true);
+    setError(null);
+
+    try {
+      const order = await createOrder();
+      await updateUserSpending();
+      await sendNotifications(order);
+      
+      localStorage.removeItem('cart');
+      setOrderCreated(order.id);
+      
+      toast({
+        title: t.orderPlacedSuccess || 'Order Placed Successfully!',
+        description: `Order ID: ${order.id.slice(0, 8)}`,
+      });
+
+    } catch (error: any) {
+      console.error('❌ Bitcoin order failed:', error);
+      setError(error.message);
+      toast({
+        title: t.orderFailed || 'Order Failed',
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+      setCurrentStep('');
     }
   };
 
@@ -275,12 +300,12 @@ const PaymentModal = ({
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('📝 Form submitted with method:', paymentMethod);
     
-    console.log('🔄 Form submitted with method:', paymentMethod);
     setError(null);
     
     if (paymentMethod === 'telegram') {
-      await handleTelegramRedirect();
+      await handleTelegramOrder();
       return;
     }
 
@@ -317,43 +342,7 @@ const PaymentModal = ({
       return;
     }
 
-    setLoading(true);
-
-    try {
-      console.log('🔄 Processing Bitcoin order...');
-      
-      // Create order in database
-      const order = await createOrderInDatabase();
-      
-      // Update user spending
-      await updateUserSpending(order.id);
-      
-      // Send notifications
-      await sendOrderNotifications(order);
-      
-      // Clear cart
-      localStorage.removeItem('cart');
-      
-      console.log('✅ Bitcoin order completed successfully');
-      setOrderCreated(order.id);
-      
-      toast({
-        title: t.orderPlacedSuccess || 'Order Placed Successfully!',
-        description: `Order ID: ${order.id.slice(0, 8)}`,
-      });
-
-    } catch (error: any) {
-      console.error('❌ Bitcoin order failed:', error);
-      setError(error.message);
-      toast({
-        title: t.orderFailed || 'Order Failed',
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-      setProcessingStep('');
-    }
+    await handleBitcoinOrder();
   };
 
   const handleModalClose = () => {
@@ -429,14 +418,20 @@ const PaymentModal = ({
                   <p className="text-red-700 text-sm">
                     <strong>Error:</strong> {error}
                   </p>
+                  <p className="text-red-600 text-xs mt-2">
+                    Please check the console (F12) for more details.
+                  </p>
                 </div>
               )}
 
-              {loading && processingStep && (
+              {loading && currentStep && (
                 <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-4">
-                  <p className="text-blue-700 text-sm">
-                    <strong>Processing:</strong> {processingStep}
-                  </p>
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                    <p className="text-blue-700 text-sm">
+                      <strong>Processing:</strong> {currentStep}
+                    </p>
+                  </div>
                 </div>
               )}
 
