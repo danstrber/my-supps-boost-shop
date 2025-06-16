@@ -12,18 +12,73 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
         {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
       </h1>
       <div className="bg-white rounded-lg shadow-lg p-8">
-        <img 
-          src="/lovable-uploads/3d1bbbbd-6bf6-479b-9030-d3c83459de3b.png" 
-          alt="Shipping Information"
-          className="w-full max-w-3xl mx-auto mb-8 rounded-lg shadow-md"
-        />
-        
-        <div className="text-center">
-          <p className="text-gray-700 text-lg">
-            {language === 'en' 
-              ? 'Contact us via Telegram for shipping details and tracking information.'
-              : 'Contáctanos via Telegram para detalles de envío e información de seguimiento.'}
-          </p>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+              {language === 'en' ? 'Shipping & Delivery' : 'Envío y Entrega'}
+            </h2>
+            <p className="text-gray-700 text-lg mb-6">
+              {language === 'en' 
+                ? 'We provide worldwide shipping for all our research compounds. Processing and delivery times vary by location.'
+                : 'Proporcionamos envío mundial para todos nuestros compuestos de investigación. Los tiempos de procesamiento y entrega varían según la ubicación.'}
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                {language === 'en' ? 'Processing Time' : 'Tiempo de Procesamiento'}
+              </h3>
+              <p className="text-gray-600">
+                {language === 'en' 
+                  ? 'Orders are processed within 24-48 hours of confirmation.'
+                  : 'Los pedidos se procesan dentro de 24-48 horas de confirmación.'}
+              </p>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                {language === 'en' ? 'Delivery Time' : 'Tiempo de Entrega'}
+              </h3>
+              <p className="text-gray-600">
+                {language === 'en' 
+                  ? 'Standard delivery: 7-14 business days worldwide.'
+                  : 'Entrega estándar: 7-14 días hábiles en todo el mundo.'}
+              </p>
+            </div>
+          </div>
+
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">
+              {language === 'en' ? 'Tracking & Support' : 'Seguimiento y Soporte'}
+            </h3>
+            <p className="text-gray-700 text-lg mb-4">
+              {language === 'en' 
+                ? 'Contact us via Telegram for shipping details and tracking information.'
+                : 'Contáctanos via Telegram para detalles de envío e información de seguimiento.'}
+            </p>
+            <div className="text-center">
+              <a 
+                href="https://t.me/+fDDZObF0zjI2M2Y0" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+              >
+                {language === 'en' ? 'Contact Support' : 'Contactar Soporte'}
+              </a>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+              {language === 'en' ? 'Important Legal Notice' : 'Aviso Legal Importante'}
+            </h3>
+            <p className="text-yellow-700 text-sm">
+              {language === 'en' 
+                ? 'These products are intended for research purposes only and are not for human consumption. Must be 18+ to purchase. Not intended to diagnose, treat, cure, or prevent any disease.'
+                : 'Estos productos están destinados únicamente para fines de investigación y no son para consumo humano. Debe ser mayor de 18 años para comprar. No está destinado a diagnosticar, tratar, curar o prevenir ninguna enfermedad.'}
+            </p>
+          </div>
         </div>
       </div>
     </div>

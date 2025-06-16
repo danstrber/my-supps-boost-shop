@@ -43,7 +43,7 @@ const Index = () => {
 
   console.log('Index state initialized', { loading, isAuthenticated });
 
-  // Calculate user discount with proper standard user logic
+  // Calculate user discount with updated rates (3% normal, 7% referred)
   const calculateUserDiscount = () => {
     if (!userProfile) return 0;
     
@@ -56,7 +56,7 @@ const Index = () => {
     // Referral discount: 2.5% per referral
     const referralDiscount = referralCount * 2.5;
     
-    // FIXED: Calculate spending discount based on current cart value for better UX
+    // Calculate spending discount based on current cart value for better UX
     const cartItems = Object.entries(cart).map(([productId, quantity]) => {
       const product = products.find(p => p.id === productId);
       if (!product) return null;
@@ -66,12 +66,12 @@ const Index = () => {
     const currentCartValue = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
     const totalSpendingForDiscount = userProfile.total_spending + currentCartValue;
     
-    // Spending discount based on user type
+    // Updated spending discount: 3% for normal users, 7% for referred users
     const spendingDiscount = isReferrer
       ? Math.floor(totalSpendingForDiscount / 50) * 5  // Referrers: 5% per $50
       : userProfile.referred_by 
-        ? Math.min(Math.floor(totalSpendingForDiscount / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
-        : Math.floor(totalSpendingForDiscount / 50) * 2.5; // Standard users: 2.5% per $50
+        ? Math.floor(totalSpendingForDiscount / 50) * 7  // Referred users: 7% per $50
+        : Math.floor(totalSpendingForDiscount / 50) * 3; // Standard users: 3% per $50
     
     // Referred spending discount for referrers
     const referredSpendingDiscount = isReferrer

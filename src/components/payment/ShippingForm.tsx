@@ -77,9 +77,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="shipping-fullName">{labels[language].fullName}</Label>
+        <Label htmlFor="fullName">{labels[language].fullName}</Label>
         <Input
-          id="shipping-fullName"
+          id="fullName"
           name="fullName"
           type="text"
           value={formData.fullName}
@@ -90,9 +90,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       </div>
 
       <div>
-        <Label htmlFor="shipping-email">{labels[language].email}</Label>
+        <Label htmlFor="email">{labels[language].email}</Label>
         <Input
-          id="shipping-email"
+          id="email"
           name="email"
           type="email"
           value={formData.email}
@@ -103,9 +103,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       </div>
 
       <div>
-        <Label htmlFor="shipping-address">{labels[language].address}</Label>
+        <Label htmlFor="address">{labels[language].address}</Label>
         <Input
-          id="shipping-address"
+          id="address"
           name="address"
           type="text"
           value={formData.address}
@@ -117,9 +117,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="shipping-city">{labels[language].city}</Label>
+          <Label htmlFor="city">{labels[language].city}</Label>
           <Input
-            id="shipping-city"
+            id="city"
             name="city"
             type="text"
             value={formData.city}
@@ -129,9 +129,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           />
         </div>
         <div>
-          <Label htmlFor="shipping-state">{labels[language].state}</Label>
+          <Label htmlFor="state">{labels[language].state}</Label>
           <Input
-            id="shipping-state"
+            id="state"
             name="state"
             type="text"
             value={formData.state}
@@ -144,9 +144,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="shipping-zipCode">{labels[language].zipCode}</Label>
+          <Label htmlFor="zipCode">{labels[language].zipCode}</Label>
           <Input
-            id="shipping-zipCode"
+            id="zipCode"
             name="zipCode"
             type="text"
             value={formData.zipCode}
@@ -156,9 +156,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           />
         </div>
         <div>
-          <Label htmlFor="shipping-country">{labels[language].country}</Label>
+          <Label htmlFor="country">{labels[language].country}</Label>
           <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
-            <SelectTrigger id="shipping-country" name="country">
+            <SelectTrigger id="country">
               <SelectValue placeholder="Select country" />
             </SelectTrigger>
             <SelectContent>
@@ -173,9 +173,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       </div>
 
       <div>
-        <Label htmlFor="shipping-phone">{labels[language].phone}</Label>
+        <Label htmlFor="phone">{labels[language].phone}</Label>
         <Input
-          id="shipping-phone"
+          id="phone"
           name="phone"
           type="tel"
           value={formData.phone}
