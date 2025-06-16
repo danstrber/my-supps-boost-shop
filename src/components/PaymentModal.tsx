@@ -92,8 +92,8 @@ const PaymentModal = ({
     
     // Test Supabase connection first
     console.log('🔗 Testing Supabase connection...');
-    console.log('🔗 Supabase URL:', supabase.supabaseUrl);
-    console.log('🔗 Supabase Key (first 20 chars):', supabase.supabaseKey?.substring(0, 20) + '...');
+    console.log('🔗 Supabase URL: https://kunluppghxdqfqjxruwv.supabase.co');
+    console.log('🔗 Supabase Key (first 20 chars): eyJhbGciOiJIUzI1NiIsInR5...');
     
     if (!userProfile?.auth_id) {
       console.error('❌ No user auth_id found:', userProfile);

@@ -13,8 +13,8 @@ const SupabaseTest = () => {
     
     try {
       console.log('🧪 Testing Supabase connection...');
-      console.log('🔗 Supabase URL:', supabase.supabaseUrl);
-      console.log('🔗 Supabase Key (first 20 chars):', supabase.supabaseKey?.substring(0, 20) + '...');
+      console.log('🔗 Supabase URL: https://kunluppghxdqfqjxruwv.supabase.co');
+      console.log('🔗 Supabase Key (first 20 chars): eyJhbGciOiJIUzI1NiIsInR5...');
       
       // Test 1: Basic connection
       const { data: healthData, error: healthError } = await supabase
