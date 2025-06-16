@@ -403,66 +403,71 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
-    image: '/placeholder.svg',
+    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
     categories: ['pct', 'ai'],
     featured: false,
     inStock: true,
     description: {
-      en: 'Aromasin is a powerful aromatase inhibitor used for estrogen control during and after anabolic cycles.',
-      es: 'Aromasin es un inhibidor de aromatasa potente usado para control de estrógeno durante y después de ciclos anabólicos.'
+      en: 'Aromasin (Exemestane) is a potent aromatase inhibitor (AI) used to control estrogen levels during and after anabolic steroid cycles. As a third-generation AI, it effectively reduces estrogen production and helps prevent estrogen-related side effects.',
+      es: 'Aromasin (Exemestano) es un potente inhibidor de aromatasa (AI) utilizado para controlar los niveles de estrógeno durante y después de los ciclos de esteroides anabólicos. Como un AI de tercera generación, reduce efectivamente la producción de estrógeno y ayuda a prevenir efectos secundarios relacionados con el estrógeno.'
+    },
+    keyIngredients: {
+      en: ['Exemestane 25mg'],
+      es: ['Exemestano 25mg']
+    },
+    dosage: {
+      en: '12.5-25mg daily, preferably with meals',
+      es: '12.5-25mg diarios, preferiblemente con comidas'
+    },
+    benefits: {
+      en: [
+        'Powerful estrogen suppression',
+        'Prevents gynecomastia',
+        'Reduces water retention',
+        'Supports lean muscle gains',
+        'Third-generation AI technology'
+      ],
+      es: [
+        'Supresión potente del estrógeno',
+        'Previene la ginecomastia',
+        'Reduce la retención de agua',
+        'Apoya las ganancias de músculo magro',
+        'Tecnología AI de tercera generación'
+      ]
+    },
+    usage: {
+      en: 'Take with food to enhance absorption. Start with lower dose and adjust based on response and blood work.',
+      es: 'Tomar con comida para mejorar la absorción. Comenzar con dosis más baja y ajustar según respuesta y análisis de sangre.'
+    },
+    warnings: {
+      en: [
+        'Monitor estrogen levels regularly',
+        'May affect cholesterol levels',
+        'Can cause joint discomfort',
+        'Not for use by women',
+        'Consult healthcare provider before use'
+      ],
+      es: [
+        'Monitorear los niveles de estrógeno regularmente',
+        'Puede afectar los niveles de colesterol',
+        'Puede causar molestias articulares',
+        'No para uso de mujeres',
+        'Consultar con profesional de salud antes del uso'
+      ]
     },
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: 'As needed during cycle',
-        potencyLevel: 'High Estrogen Suppression'
+        'Active Ingredient': 'Exemestane',
+        'Strength': '25mg per capsule',
+        'Quantity': '10 capsules',
+        'Form': 'Oral capsules'
       },
       es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: 'Según necesidad durante ciclo',
-        potencyLevel: 'Alta supresión de estrógeno'
+        'Ingrediente Activo': 'Exemestano',
+        'Concentración': '25mg por cápsula',
+        'Cantidad': '10 cápsulas',
+        'Forma': 'Cápsulas orales'
       }
-    },
-    researchBackground: {
-      en: 'Aromasin is an FDA-approved aromatase inhibitor originally developed for breast cancer treatment, extensively studied for hormone regulation.',
-      es: 'Aromasin es un inhibidor de aromatasa aprobado por FDA originalmente desarrollado para tratamiento de cáncer de mama, extensamente estudiado para regulación hormonal.'
-    },
-    benefits: {
-      en: 'Prevents estrogen-related side effects, reduces water retention, prevents gynecomastia, maintains testosterone levels, improves muscle hardness.',
-      es: 'Previene efectos secundarios relacionados con estrógeno, reduce retención de agua, previene ginecomastia, mantiene niveles de testosterona, mejora dureza muscular.'
-    },
-    sideEffects: {
-      en: 'Joint pain, mood changes, fatigue, hot flashes, potential lipid changes, possible bone density reduction with long-term use.',
-      es: 'Dolor articular, cambios de humor, fatiga, sofocos, posibles cambios lipídicos, posible reducción de densidad ósea con uso prolongado.'
-    },
-    effectsOnWomen: {
-      en: 'Generally not recommended for women unless specifically needed for medical reasons under professional supervision.',
-      es: 'Generalmente no recomendado para mujeres a menos que sea específicamente necesario por razones médicas bajo supervisión profesional.'
-    },
-    howItWorks: {
-      en: 'Irreversibly binds to aromatase enzyme, preventing the conversion of androgens to estrogens.',
-      es: 'Se une irreversiblemente a la enzima aromatasa, previniendo la conversión de andrógenos a estrógenos.'
-    },
-    safetyInformation: {
-      en: 'Use only when needed. Monitor hormone levels regularly. Do not crash estrogen levels completely.',
-      es: 'Usar solo cuando sea necesario. Monitorear niveles hormonales regularmente. No reducir completamente los niveles de estrógeno.'
-    },
-    cycleInformation: {
-      en: 'Typically used at 12.5-25mg every other day during cycle and PCT as needed.',
-      es: 'Típicamente usado a 12.5-25mg cada dos días durante ciclo y PCT según necesidad.'
-    },
-    whatToExpect: {
-      en: 'Users report reduced water retention and prevention of estrogen-related side effects within days of use.',
-      es: 'Los usuarios reportan reducción de retención de agua y prevención de efectos secundarios relacionados con estrógeno en días de uso.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 1,
-      fatLoss: 2,
-      sideEffects: 3,
-      retention: 5
     }
   }
 ];

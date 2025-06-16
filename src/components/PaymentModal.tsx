@@ -143,7 +143,7 @@ const PaymentModal = ({
     e.preventDefault();
     
     console.log('=== FORM SUBMIT START ===');
-    console.log('Form submitted with method:', paymentMethod);
+    console.log('Button clicked! Form submitted with method:', paymentMethod);
     console.log('Current form data:', formData);
     console.log('User profile:', userProfile);
     console.log('Cart items:', cartItems);
@@ -200,10 +200,11 @@ const PaymentModal = ({
     try {
       if (!userProfile?.auth_id) {
         console.error('User not authenticated - no auth_id found');
-        throw new Error('User not authenticated');
+        throw new Error('User not authenticated. Please log in and try again.');
       }
 
       console.log('Creating order with user auth_id:', userProfile.auth_id);
+      console.log('Supabase client status:', supabase ? 'Connected' : 'Not connected');
 
       const orderData = {
         user_id: userProfile.auth_id,
@@ -231,7 +232,20 @@ const PaymentModal = ({
       };
 
       console.log('Order data prepared:', orderData);
-      console.log('Inserting into Supabase orders table...');
+      console.log('About to insert into Supabase orders table...');
+
+      // Test Supabase connection first
+      const { data: connectionTest, error: connectionError } = await supabase
+        .from('orders')
+        .select('count')
+        .limit(1);
+
+      if (connectionError) {
+        console.error('Supabase connection test failed:', connectionError);
+        throw new Error(`Database connection failed: ${connectionError.message}`);
+      }
+
+      console.log('Supabase connection test passed');
 
       const { data: order, error } = await supabase
         .from('orders')
@@ -245,7 +259,18 @@ const PaymentModal = ({
         console.error('Error message:', error.message);
         console.error('Error code:', error.code);
         console.error('Error hint:', error.hint);
-        throw new Error(`Database error: ${error.message}`);
+        console.error('Error details:', error.details);
+        
+        // More specific error messages
+        if (error.code === '42501') {
+          throw new Error('Permission denied. Please ensure you are logged in and try again.');
+        } else if (error.code === '23502') {
+          throw new Error('Missing required data. Please check all fields are filled.');
+        } else if (error.code === '23505') {
+          throw new Error('Duplicate order detected. Please try again.');
+        } else {
+          throw new Error(`Database error: ${error.message}. Code: ${error.code}`);
+        }
       }
 
       console.log('=== ORDER CREATED SUCCESSFULLY ===');
