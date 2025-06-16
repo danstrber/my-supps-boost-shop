@@ -142,11 +142,15 @@ const PaymentModal = ({
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('=== FORM SUBMIT START ===');
     console.log('Form submitted with method:', paymentMethod);
     console.log('Current form data:', formData);
     console.log('User profile:', userProfile);
+    console.log('Cart items:', cartItems);
+    console.log('Order totals:', { orderTotal, discount, shippingFee, finalTotal });
     
     if (paymentMethod === 'telegram') {
+      console.log('Processing Telegram payment...');
       handleTelegramRedirect();
       return;
     }
@@ -170,6 +174,7 @@ const PaymentModal = ({
     }
 
     if (paymentExpired) {
+      console.log('Payment expired, cannot proceed');
       toast({
         title: language === 'en' ? 'Payment Expired' : 'Pago Expirado',
         description: language === 'en' ? 'Please refresh and try again.' : 'Por favor, actualiza e inténtalo de nuevo.',
@@ -190,12 +195,15 @@ const PaymentModal = ({
     }
 
     setLoading(true);
-    console.log('Starting order creation process...');
+    console.log('=== STARTING ORDER CREATION ===');
 
     try {
       if (!userProfile?.auth_id) {
+        console.error('User not authenticated - no auth_id found');
         throw new Error('User not authenticated');
       }
+
+      console.log('Creating order with user auth_id:', userProfile.auth_id);
 
       const orderData = {
         user_id: userProfile.auth_id,
@@ -217,12 +225,13 @@ const PaymentModal = ({
           customer_info: formData,
           btc_amount_sent: finalTotal,
           wallet_address: walletAddress,
-          txid: txid
+          txid: txid || null
         },
         status: 'pending'
       };
 
-      console.log('Creating order with data:', orderData);
+      console.log('Order data prepared:', orderData);
+      console.log('Inserting into Supabase orders table...');
 
       const { data: order, error } = await supabase
         .from('orders')
@@ -231,13 +240,19 @@ const PaymentModal = ({
         .single();
 
       if (error) {
-        console.error('Supabase order creation error:', error);
+        console.error('=== SUPABASE ORDER CREATION ERROR ===');
+        console.error('Error details:', error);
+        console.error('Error message:', error.message);
+        console.error('Error code:', error.code);
+        console.error('Error hint:', error.hint);
         throw new Error(`Database error: ${error.message}`);
       }
 
+      console.log('=== ORDER CREATED SUCCESSFULLY ===');
       console.log('Order created successfully:', order);
 
       // Create pending purchase for tracking
+      console.log('Creating pending purchase tracking...');
       createPendingPurchase(order.id, {
         userId: userProfile.auth_id,
         amount: finalTotal,
@@ -246,34 +261,42 @@ const PaymentModal = ({
       });
 
       // Send order confirmation emails
+      console.log('Sending order confirmation emails...');
       const emailSent = await sendOrderEmails(orderData);
       console.log('Email sending result:', emailSent);
 
       setOrderCreated(order.id);
+      console.log('Order state updated, showing success message');
 
       toast({
-        title: t.orderPlacedSuccess,
-        description: `${t.orderPlaced} Order ID: ${order.id.slice(0, 8)}`,
+        title: t.orderPlacedSuccess || 'Order Placed Successfully!',
+        description: `${t.orderPlaced || 'Your order has been placed.'} Order ID: ${order.id.slice(0, 8)}`,
       });
 
       // Clear cart from localStorage
+      console.log('Clearing cart from localStorage...');
       localStorage.removeItem('cart');
       
-      // Close modal after short delay to show success
+      // Close modal after delay to show success
       setTimeout(() => {
+        console.log('Closing modal and reloading page...');
         onClose();
-        // Reload page to update cart state
         window.location.reload();
       }, 3000);
       
     } catch (error: any) {
-      console.error('Order creation error:', error);
+      console.error('=== ORDER CREATION FAILED ===');
+      console.error('Full error object:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
       toast({
-        title: t.orderFailed,
-        description: error.message || t.orderError,
+        title: t.orderFailed || 'Order Failed',
+        description: error.message || t.orderError || 'There was an error processing your order. Please try again.',
         variant: "destructive"
       });
     } finally {
+      console.log('=== ORDER PROCESS COMPLETE ===');
       setLoading(false);
     }
   };
@@ -297,7 +320,10 @@ const PaymentModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"
+        aria-describedby="payment-modal-description"
+      >
         <DialogHeader>
           <DialogTitle>
             {orderCreated ? 
@@ -305,7 +331,7 @@ const PaymentModal = ({
               t.completeYourOrder
             }
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="payment-modal-description">
             {orderCreated ? 
               (language === 'en' ? 'Your order has been successfully placed and will be processed within 24 hours.' : 'Tu pedido ha sido realizado exitosamente y será procesado en 24 horas.') :
               (language === 'en' ? 'Review your order details and select your preferred payment method below.' : 'Revisa los detalles de tu pedido y selecciona tu método de pago preferido.')

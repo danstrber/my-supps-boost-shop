@@ -138,7 +138,7 @@ export const products: Product[] = [
     id: 'mk677',
     name: 'MK-677 (Ibutamoren)',
     price: 40,
-    image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
+    image: '/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png',
     categories: ['growth-hormone'],
     featured: true,
     inStock: true,
@@ -148,13 +148,13 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '10mg',
         capsulesPerBottle: '50',
         typicalCycleLength: '8-12 weeks',
         potencyLevel: 'High Growth Hormone Release'
       },
       es: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '10mg',
         capsulesPerBottle: '50',
         typicalCycleLength: '8-12 semanas',
         potencyLevel: 'Alta liberación de hormona del crecimiento'
@@ -204,10 +204,9 @@ export const products: Product[] = [
     id: 'rad140',
     name: 'RAD-140 (Testolone)',
     price: 55,
-    image: '/lovable-uploads/5d2b3f9c-eeb8-40cc-b547-0902cd012226.png',
+    image: '/lovable-uploads/81518186-f1a6-4b15-a733-1307a6f1f474.png',
     categories: ['sarms'],
     featured: false,
-    labTestFile: '/lovable-uploads/8453db63-04b8-4354-ad42-023eb4ca2627.png',
     inStock: true,
     description: {
       en: 'RAD-140 is considered one of the most powerful SARMs for muscle building and strength enhancement.',
@@ -270,7 +269,7 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 50,
+    price: 25,
     image: '/placeholder.svg',
     categories: ['pct', 'ai'],
     featured: false,
@@ -282,13 +281,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '10',
         typicalCycleLength: 'As needed during cycle',
         potencyLevel: 'High Estrogen Suppression'
       },
       es: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        capsulesPerBottle: '10',
         typicalCycleLength: 'Según necesidad durante ciclo',
         potencyLevel: 'Alta supresión de estrógeno'
       }
@@ -336,7 +335,7 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
-    price: 55,
+    price: 25,
     image: '/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
     categories: ['pct', 'testosterone-booster'],
     featured: false,
@@ -347,14 +346,14 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        dosePerCapsule: '12.5mg',
+        capsulesPerBottle: '25',
         typicalCycleLength: '4-6 weeks PCT',
         potencyLevel: 'Moderate Testosterone Stimulation'
       },
       es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '30',
+        dosePerCapsule: '12.5mg',
+        capsulesPerBottle: '25',
         typicalCycleLength: '4-6 semanas PCT',
         potencyLevel: 'Estimulación moderada de testosterona'
       }
