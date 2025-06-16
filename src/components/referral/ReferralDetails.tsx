@@ -42,7 +42,7 @@ const ReferralDetails = ({
         <div className="mb-3">
           <h5 className="font-medium text-green-700 mb-1">💳 Spending Discounts by User Type:</h5>
           <ul className="space-y-1 text-gray-700 ml-2">
-            <li>• <strong>Normal Users:</strong> 2% per $50 spent (rounded up)</li>
+            <li>• <strong>Standard Users:</strong> 2.5% per $50 spent (rounded up)</li>
             <li>• <strong>Referred Users:</strong> 6.5% per $50 spent (max at $150 total spending)</li>
             <li>• <strong>Referrers (Personal):</strong> 5% per $50 spent personally (rounded up)</li>
             <li>• <strong>Referrers (From Referrals):</strong> 5% per $50 of referral spending</li>
@@ -77,6 +77,7 @@ const ReferralDetails = ({
             <li>• All spending amounts are rounded UP to nearest dollar for calculations</li>
             <li>• Users keep their discount levels permanently once earned</li>
             <li>• When referred users start referring, they use referrer spending rules (5% per $50)</li>
+            <li>• Standard users who haven't been referred get 2.5% per $50 spent</li>
           </ul>
         </div>
       </div>

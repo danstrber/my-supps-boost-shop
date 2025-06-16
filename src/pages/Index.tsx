@@ -82,6 +82,10 @@ const Index = () => {
     }
   };
 
+  const handlePageChange = (page: string) => {
+    setCurrentPage(page as 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account');
+  };
+
   // Show loading state while auth is initializing
   if (loading) {
     console.log('Showing loading state...');
@@ -105,7 +109,7 @@ const Index = () => {
         onAuthAction={handleAuthModalAction}
         onCartOpen={() => setIsCartOpen(true)}
         onMenuToggle={handleMenuToggle}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         sidebarOpen={sidebarOpen}
       />
     );
@@ -123,7 +127,7 @@ const Index = () => {
         onCartOpen={() => setIsCartOpen(true)}
         onMenuToggle={handleMenuToggle}
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         sidebarOpen={sidebarOpen}
         onSidebarClose={handleSidebarClose}
       />
@@ -141,7 +145,7 @@ const Index = () => {
         onCartOpen={() => setIsCartOpen(true)}
         onMenuToggle={handleMenuToggle}
         currentPage={currentPage}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
         sidebarOpen={sidebarOpen}
       />
 

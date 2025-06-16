@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -8,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { User, DollarSign, Calendar } from 'lucide-react';
 import ReferralSection from '@/components/ReferralSection';
 import TwoFactorSettings from '@/components/TwoFactorSettings';
 import CartModal from '@/components/CartModal';
@@ -22,7 +24,7 @@ interface AccountProps {
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
   onCartOpen: () => void;
   onMenuToggle: () => void;
-  onPageChange: (page: string) => void;
+  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
   sidebarOpen: boolean;
 }
 
@@ -41,6 +43,38 @@ const Account = ({
   const { cart, handleUpdateCart } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
+
+  // Calculate user discount based on the rules
+  const calculateUserDiscount = () => {
+    if (!userProfile) return 0;
+    
+    // Check if user has made referrals
+    const referralCount = 0; // This would come from actual referral data
+    const isReferrer = referralCount > 0;
+    
+    // First referral bonus
+    const firstReferralBonus = userProfile.referred_by ? 10 : 0;
+    
+    // Referral discount: 2.5% per referral
+    const referralDiscount = referralCount * 2.5;
+    
+    // Spending discount based on user type
+    const spendingDiscount = isReferrer
+      ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50
+      : userProfile.referred_by 
+        ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
+        : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // Standard users: 2.5% per $50
+    
+    // Referred spending discount for referrers
+    const referredSpendingDiscount = isReferrer
+      ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 5, Math.floor(150 / 50) * 5)
+      : 0;
+    
+    // Total discount capped at 32%
+    return Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
+  };
+
+  const userDiscount = calculateUserDiscount();
 
   if (loading) {
     return (
@@ -138,6 +172,7 @@ const Account = ({
             userProfile={userProfile}
             language={language}
             referralCount={0}
+            onPageChange={onPageChange}
           />
           
           {/* Account Stats */}
@@ -183,7 +218,7 @@ const Account = ({
         cart={cart}
         products={products}
         onUpdateCart={handleUpdateCart}
-        userDiscount={userProfile?.discount_percentage || 0}
+        userDiscount={userDiscount}
         isAuthenticated={isAuthenticated}
         userProfile={userProfile}
       />
