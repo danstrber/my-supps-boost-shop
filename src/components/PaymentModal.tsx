@@ -1,24 +1,18 @@
 
-import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Bitcoin, MessageCircle, CreditCard, ArrowLeft, Check } from 'lucide-react';
-import { UserProfile } from '@/lib/auth';
-import { supabase } from '@/integrations/supabase/client';
-import { translations } from '@/lib/translations';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { UserProfile } from '@/lib/auth';
 import { createPendingPurchase } from '@/lib/purchase-tracking';
-import BitcoinPaymentDetails from './payment/BitcoinPaymentDetails';
-import BitcoinTutorial from './payment/BitcoinTutorial';
-import ShippingForm from './payment/ShippingForm';
+import { translations } from '@/lib/translations';
 import OrderSummary from './payment/OrderSummary';
 import PaymentMethodInfo from './payment/PaymentMethodInfo';
+import ShippingForm from './payment/ShippingForm';
+import BitcoinTutorial from './payment/BitcoinTutorial';
+import BitcoinPaymentDetails from './payment/BitcoinPaymentDetails';
 import PaymentTimer from './payment/PaymentTimer';
-import TermsOfService from './TermsOfService';
 
 interface CartItem {
   product: {

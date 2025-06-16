@@ -162,7 +162,7 @@ const ProductDetailModal = ({
                     <Timer className="h-4 w-4 text-purple-600" />
                     <div>
                       <span className="text-gray-600 text-xs block">{l.cycleLength}</span>
-                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleDuration}</span>
+                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleLength}</span>
                     </div>
                   </div>
                   <div className="bg-white p-2 rounded flex items-center gap-2">
