@@ -235,6 +235,7 @@ const PaymentModal = ({
       console.log('About to insert into Supabase orders table...');
 
       // Test Supabase connection first
+      console.log('Testing Supabase connection...');
       const { data: connectionTest, error: connectionError } = await supabase
         .from('orders')
         .select('count')
@@ -245,8 +246,10 @@ const PaymentModal = ({
         throw new Error(`Database connection failed: ${connectionError.message}`);
       }
 
-      console.log('Supabase connection test passed');
+      console.log('Supabase connection test passed:', connectionTest);
 
+      // Insert the order
+      console.log('Inserting order into database...');
       const { data: order, error } = await supabase
         .from('orders')
         .insert([orderData])
@@ -381,12 +384,20 @@ const PaymentModal = ({
                 <p>Email: christhomaso083@proton.me</p>
                 <p>Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@DANSTRBER</a></p>
               </div>
-              <button
-                onClick={handleModalClose}
-                className="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg"
-              >
-                {language === 'en' ? 'Continue Shopping' : 'Continuar Comprando'}
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                <button
+                  onClick={handleModalClose}
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors"
+                >
+                  {language === 'en' ? 'Continue Shopping' : 'Continuar Comprando'}
+                </button>
+                <button
+                  onClick={() => window.location.hash = '#account'}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                >
+                  {language === 'en' ? 'View My Orders' : 'Ver Mis Pedidos'}
+                </button>
+              </div>
             </div>
           </div>
         ) : (

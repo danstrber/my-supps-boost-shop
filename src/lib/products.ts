@@ -64,6 +64,22 @@ export interface Product {
   featured?: boolean;
   labTestFile?: string;
   inStock?: boolean;
+  keyIngredients?: {
+    en: string[];
+    es: string[];
+  };
+  dosage?: {
+    en: string;
+    es: string;
+  };
+  usage?: {
+    en: string;
+    es: string;
+  };
+  warnings?: {
+    en: string[];
+    es: string[];
+  };
 }
 
 export const products: Product[] = [
@@ -420,20 +436,8 @@ export const products: Product[] = [
       es: '12.5-25mg diarios, preferiblemente con comidas'
     },
     benefits: {
-      en: [
-        'Powerful estrogen suppression',
-        'Prevents gynecomastia',
-        'Reduces water retention',
-        'Supports lean muscle gains',
-        'Third-generation AI technology'
-      ],
-      es: [
-        'Supresión potente del estrógeno',
-        'Previene la ginecomastia',
-        'Reduce la retención de agua',
-        'Apoya las ganancias de músculo magro',
-        'Tecnología AI de tercera generación'
-      ]
+      en: 'Powerful estrogen suppression, prevents gynecomastia, reduces water retention, supports lean muscle gains, third-generation AI technology',
+      es: 'Supresión potente del estrógeno, previene la ginecomastia, reduce la retención de agua, apoya las ganancias de músculo magro, tecnología AI de tercera generación'
     },
     usage: {
       en: 'Take with food to enhance absorption. Start with lower dose and adjust based on response and blood work.',
@@ -457,17 +461,52 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        'Active Ingredient': 'Exemestane',
-        'Strength': '25mg per capsule',
-        'Quantity': '10 capsules',
-        'Form': 'Oral capsules'
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10',
+        typicalCycleLength: '4-8 weeks',
+        potencyLevel: 'High Aromatase Inhibition'
       },
       es: {
-        'Ingrediente Activo': 'Exemestano',
-        'Concentración': '25mg por cápsula',
-        'Cantidad': '10 cápsulas',
-        'Forma': 'Cápsulas orales'
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10',
+        typicalCycleLength: '4-8 semanas',
+        potencyLevel: 'Alta inhibición de aromatasa'
       }
+    },
+    researchBackground: {
+      en: 'Aromasin (Exemestane) has been extensively studied as a third-generation aromatase inhibitor with irreversible binding properties, making it highly effective for estrogen control.',
+      es: 'Aromasin (Exemestano) ha sido extensamente estudiado como un inhibidor de aromatasa de tercera generación con propiedades de unión irreversible, haciéndolo altamente efectivo para el control del estrógeno.'
+    },
+    sideEffects: {
+      en: 'Joint pain, decreased bone density, mood changes, hot flashes, fatigue, decreased libido, possible cholesterol changes.',
+      es: 'Dolor articular, densidad ósea disminuida, cambios de humor, sofocos, fatiga, libido disminuida, posibles cambios de colesterol.'
+    },
+    effectsOnWomen: {
+      en: 'NOT RECOMMENDED for women of reproductive age. May be used in postmenopausal women under medical supervision for specific conditions.',
+      es: 'NO RECOMENDADO para mujeres en edad reproductiva. Puede usarse en mujeres postmenopáusicas bajo supervisión médica para condiciones específicas.'
+    },
+    howItWorks: {
+      en: 'Irreversibly binds to and inactivates aromatase enzyme, preventing conversion of androgens to estrogens.',
+      es: 'Se une irreversiblemente e inactiva la enzima aromatasa, previniendo la conversión de andrógenos a estrógenos.'
+    },
+    safetyInformation: {
+      en: 'Regular blood work essential. Monitor estrogen levels and bone health. Use lowest effective dose.',
+      es: 'Análisis de sangre regular esencial. Monitorear niveles de estrógeno y salud ósea. Usar la dosis efectiva más baja.'
+    },
+    cycleInformation: {
+      en: 'Typical use: 12.5-25mg daily during cycle. Adjust based on estrogen levels and side effects.',
+      es: 'Uso típico: 12.5-25mg diario durante el ciclo. Ajustar según niveles de estrógeno y efectos secundarios.'
+    },
+    whatToExpect: {
+      en: 'Users report effective estrogen control within 1-2 weeks, reduced water retention, and prevention of estrogen-related side effects.',
+      es: 'Los usuarios reportan control efectivo del estrógeno en 1-2 semanas, retención de agua reducida y prevención de efectos secundarios relacionados con el estrógeno.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 2,
+      sideEffects: 3,
+      retention: 4
     }
   }
 ];
