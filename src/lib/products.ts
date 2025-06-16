@@ -403,7 +403,7 @@ export const products: Product[] = [
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 35,
-    image: '/lovable-uploads/fc2fad1d-20dd-4b74-b5e3-07f81414d651.png',
+    image: '/lovable-uploads/c13fb27e-2e08-4a90-a2a8-c8d6138e0c9a.png',
     categories: ['fat-burner'],
     featured: false,
     labTestFile: '/lovable-uploads/fb319341-a727-49e3-afa8-ce91bd70a788.png',
@@ -454,7 +454,7 @@ export const products: Product[] = [
       en: 'Typical protocol: 2 weeks on, 2 weeks off. Start at 20mcg, increase gradually to tolerance.',
       es: 'Protocolo típico: 2 semanas sí, 2 semanas no. Comenzar a 20mcg, aumentar gradualmente según tolerancia.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report noticeable fat loss within 1-2 weeks, increased energy, and improved muscle definition.',
       es: 'Los usuarios reportan pérdida notable de grasa en 1-2 semanas, energía aumentada y definición muscular mejorada.'
     },
