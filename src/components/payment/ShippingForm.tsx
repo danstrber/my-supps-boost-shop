@@ -2,6 +2,7 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface ShippingFormProps {
   formData: {
@@ -42,12 +43,40 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
     }
   };
 
+  const countries = [
+    'United States',
+    'Canada',
+    'United Kingdom',
+    'Germany',
+    'France',
+    'Spain',
+    'Italy',
+    'Australia',
+    'Japan',
+    'Brazil',
+    'Mexico',
+    'India',
+    'China',
+    'Russia',
+    'Netherlands',
+    'Sweden',
+    'Norway',
+    'Denmark',
+    'Finland',
+    'Switzerland',
+    'Austria',
+    'Belgium',
+    'Portugal',
+    'Poland',
+    'Czech Republic'
+  ];
+
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor="fullName">{labels[language].fullName}</Label>
+        <Label htmlFor="shipping-fullName">{labels[language].fullName}</Label>
         <Input
-          id="fullName"
+          id="shipping-fullName"
           name="fullName"
           type="text"
           value={formData.fullName}
@@ -58,9 +87,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       </div>
 
       <div>
-        <Label htmlFor="email">{labels[language].email}</Label>
+        <Label htmlFor="shipping-email">{labels[language].email}</Label>
         <Input
-          id="email"
+          id="shipping-email"
           name="email"
           type="email"
           value={formData.email}
@@ -71,9 +100,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       </div>
 
       <div>
-        <Label htmlFor="address">{labels[language].address}</Label>
+        <Label htmlFor="shipping-address">{labels[language].address}</Label>
         <Input
-          id="address"
+          id="shipping-address"
           name="address"
           type="text"
           value={formData.address}
@@ -85,9 +114,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="city">{labels[language].city}</Label>
+          <Label htmlFor="shipping-city">{labels[language].city}</Label>
           <Input
-            id="city"
+            id="shipping-city"
             name="city"
             type="text"
             value={formData.city}
@@ -97,9 +126,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           />
         </div>
         <div>
-          <Label htmlFor="state">{labels[language].state}</Label>
+          <Label htmlFor="shipping-state">{labels[language].state}</Label>
           <Input
-            id="state"
+            id="shipping-state"
             name="state"
             type="text"
             value={formData.state}
@@ -112,9 +141,9 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="zipCode">{labels[language].zipCode}</Label>
+          <Label htmlFor="shipping-zipCode">{labels[language].zipCode}</Label>
           <Input
-            id="zipCode"
+            id="shipping-zipCode"
             name="zipCode"
             type="text"
             value={formData.zipCode}
@@ -124,30 +153,40 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           />
         </div>
         <div>
-          <Label htmlFor="country">{labels[language].country}</Label>
-          <Input
-            id="country"
-            name="country"
-            type="text"
-            value={formData.country}
-            onChange={(e) => onInputChange('country', e.target.value)}
-            required
-            autoComplete="country"
-          />
+          <Label htmlFor="shipping-country">{labels[language].country}</Label>
+          <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
+            <SelectTrigger id="shipping-country">
+              <SelectValue placeholder="Select country" />
+            </SelectTrigger>
+            <SelectContent>
+              {countries.map((country) => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       <div>
-        <Label htmlFor="phone">{labels[language].phone}</Label>
+        <Label htmlFor="shipping-phone">{labels[language].phone}</Label>
         <Input
-          id="phone"
+          id="shipping-phone"
           name="phone"
           type="tel"
           value={formData.phone}
           onChange={(e) => onInputChange('phone', e.target.value)}
           required
           autoComplete="tel"
+          placeholder="+1 (555) 123-4567"
         />
+        <p className="text-xs text-gray-500 mt-1">
+          {language === 'en' 
+            ? 'Phone number will be auto-formatted with country code'
+            : 'El número de teléfono será formateado automáticamente con código de país'
+          }
+        </p>
       </div>
     </div>
   );

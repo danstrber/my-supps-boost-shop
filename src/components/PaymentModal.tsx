@@ -59,7 +59,7 @@ const PaymentModal = ({
     city: '',
     state: '',
     zipCode: '',
-    country: 'US',
+    country: 'United States',
     phone: '',
   });
   const [txid, setTxid] = useState('');
@@ -72,11 +72,63 @@ const PaymentModal = ({
 
   const walletAddress = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
+  // Country codes for phone number formatting
+  const countryCodes: Record<string, string> = {
+    'United States': '+1',
+    'Canada': '+1',
+    'United Kingdom': '+44',
+    'Germany': '+49',
+    'France': '+33',
+    'Spain': '+34',
+    'Italy': '+39',
+    'Australia': '+61',
+    'Japan': '+81',
+    'Brazil': '+55',
+    'Mexico': '+52',
+    'India': '+91',
+    'China': '+86',
+    'Russia': '+7'
+  };
+
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    if (field === 'country') {
+      // Auto-format phone number when country changes
+      const countryCode = countryCodes[value] || '+1';
+      const currentPhone = formData.phone;
+      
+      // Only add country code if phone doesn't already start with +
+      if (currentPhone && !currentPhone.startsWith('+')) {
+        setFormData(prev => ({
+          ...prev,
+          [field]: value,
+          phone: `${countryCode} ${currentPhone}`
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [field]: value
+        }));
+      }
+    } else if (field === 'phone') {
+      // Auto-format phone number with country code
+      if (value && !value.startsWith('+')) {
+        const countryCode = countryCodes[formData.country] || '+1';
+        setFormData(prev => ({
+          ...prev,
+          [field]: `${countryCode} ${value}`
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          [field]: value
+        }));
+      }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [field]: value
+      }));
+    }
   };
 
   const sendOrderEmails = async (orderData: any) => {
@@ -238,6 +290,8 @@ const PaymentModal = ({
       // Close modal after short delay to show success
       setTimeout(() => {
         onClose();
+        // Reload page to update cart state
+        window.location.reload();
       }, 3000);
       
     } catch (error: any) {
@@ -253,7 +307,10 @@ const PaymentModal = ({
   };
 
   const handleReferralClick = () => {
-    window.open('/referral-program', '_blank');
+    // Navigate to account page instead of non-existent referral page
+    onClose();
+    window.location.hash = '#account';
+    window.location.reload();
   };
 
   // Reset states when modal closes
@@ -262,12 +319,13 @@ const PaymentModal = ({
     setOrderCreated(null);
     setPaymentExpired(false);
     setTxid('');
+    setLoading(false);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="payment-dialog-description">
         <DialogHeader>
           <DialogTitle>
             {orderCreated ? 
@@ -275,7 +333,7 @@ const PaymentModal = ({
               t.completeYourOrder
             }
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription id="payment-dialog-description">
             {orderCreated ? 
               (language === 'en' ? 'Your order has been successfully placed and will be processed within 24 hours.' : 'Tu pedido ha sido realizado exitosamente y será procesado en 24 horas.') :
               (language === 'en' ? 'Review your order details and select your preferred payment method below.' : 'Revisa los detalles de tu pedido y selecciona tu método de pago preferido.')
@@ -341,14 +399,15 @@ const PaymentModal = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <input
-                          type="radio"
+                          id="payment-telegram"
                           name="paymentMethod"
+                          type="radio"
                           value="telegram"
                           checked={paymentMethod === 'telegram'}
                           onChange={() => setPaymentMethod('telegram')}
                           className="text-blue-600"
                         />
-                        <span className="font-medium">💬 Telegram</span>
+                        <label htmlFor="payment-telegram" className="font-medium cursor-pointer">💬 Telegram</label>
                         <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
                           {t.recommended}
                         </span>
@@ -367,14 +426,15 @@ const PaymentModal = ({
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <input
-                          type="radio"
+                          id="payment-bitcoin"
                           name="paymentMethod"
+                          type="radio"
                           value="bitcoin"
                           checked={paymentMethod === 'bitcoin'}
                           onChange={() => setPaymentMethod('bitcoin')}
                           className="text-orange-600"
                         />
-                        <span className="font-medium">₿ Bitcoin</span>
+                        <label htmlFor="payment-bitcoin" className="font-medium cursor-pointer">₿ Bitcoin</label>
                         <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
                           Anonymous
                         </span>
@@ -420,7 +480,7 @@ const PaymentModal = ({
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
                 disabled={loading || paymentExpired}
               >
-                {loading ? t.processing : 
+                {loading ? (language === 'en' ? 'Processing...' : 'Procesando...') : 
                  paymentExpired ? (language === 'en' ? 'Payment Expired' : 'Pago Expirado') :
                  paymentMethod === 'telegram' ? t.joinTelegram : 
                  !showBitcoinDetails ? t.continueToPayment :

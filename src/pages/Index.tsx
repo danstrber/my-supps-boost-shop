@@ -56,12 +56,22 @@ const Index = () => {
     // Referral discount: 2.5% per referral
     const referralDiscount = referralCount * 2.5;
     
+    // FIXED: Calculate spending discount based on current cart value for better UX
+    const cartItems = Object.entries(cart).map(([productId, quantity]) => {
+      const product = products.find(p => p.id === productId);
+      if (!product) return null;
+      return { product, quantity };
+    }).filter(Boolean) as { product: Product; quantity: number }[];
+    
+    const currentCartValue = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
+    const totalSpendingForDiscount = userProfile.total_spending + currentCartValue;
+    
     // Spending discount based on user type
     const spendingDiscount = isReferrer
-      ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50
+      ? Math.floor(totalSpendingForDiscount / 50) * 5  // Referrers: 5% per $50
       : userProfile.referred_by 
-        ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
-        : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // Standard users: 2.5% per $50
+        ? Math.min(Math.floor(totalSpendingForDiscount / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
+        : Math.floor(totalSpendingForDiscount / 50) * 2.5; // Standard users: 2.5% per $50
     
     // Referred spending discount for referrers
     const referredSpendingDiscount = isReferrer
@@ -72,6 +82,8 @@ const Index = () => {
     
     console.log('Discount calculation:', {
       userProfile,
+      currentCartValue,
+      totalSpendingForDiscount,
       isReferrer,
       firstReferralBonus,
       referralDiscount,
@@ -144,36 +156,86 @@ const Index = () => {
   // Render account page
   if (currentPage === 'account') {
     return (
-      <Account
-        language={language}
-        onLanguageChange={setLanguage}
-        cartItemCount={cartItemCount}
-        isAuthenticated={isAuthenticated}
-        onAuthAction={handleAuthModalAction}
-        onCartOpen={() => setIsCartOpen(true)}
-        onMenuToggle={handleMenuToggle}
-        onPageChange={handlePageChange}
-        sidebarOpen={sidebarOpen}
-      />
+      <>
+        <Account
+          language={language}
+          onLanguageChange={setLanguage}
+          cartItemCount={cartItemCount}
+          isAuthenticated={isAuthenticated}
+          onAuthAction={handleAuthModalAction}
+          onCartOpen={() => setIsCartOpen(true)}
+          onMenuToggle={handleMenuToggle}
+          onPageChange={handlePageChange}
+          sidebarOpen={sidebarOpen}
+        />
+
+        <CartModal
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cart={cart}
+          products={products}
+          onUpdateCart={handleUpdateCart}
+          userDiscount={userDiscount}
+          isAuthenticated={isAuthenticated}
+          userProfile={userProfile}
+          onPageChange={handlePageChange}
+        />
+
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialMode={authMode}
+          referralCode={detectedReferralCode}
+          language={language}
+          onSignupSuccess={() => {
+            console.log('Signup successful, user should be created in database');
+          }}
+        />
+      </>
     );
   }
 
   // Render static pages
   if (currentPage !== 'home') {
     return (
-      <StaticPage
-        language={language}
-        onLanguageChange={setLanguage}
-        cartItemCount={cartItemCount}
-        isAuthenticated={isAuthenticated}
-        onAuthAction={handleAuthModalAction}
-        onCartOpen={() => setIsCartOpen(true)}
-        onMenuToggle={handleMenuToggle}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-        sidebarOpen={sidebarOpen}
-        onSidebarClose={handleSidebarClose}
-      />
+      <>
+        <StaticPage
+          language={language}
+          onLanguageChange={setLanguage}
+          cartItemCount={cartItemCount}
+          isAuthenticated={isAuthenticated}
+          onAuthAction={handleAuthModalAction}
+          onCartOpen={() => setIsCartOpen(true)}
+          onMenuToggle={handleMenuToggle}
+          currentPage={currentPage}
+          onPageChange={handlePageChange}
+          sidebarOpen={sidebarOpen}
+          onSidebarClose={handleSidebarClose}
+        />
+
+        <CartModal
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cart={cart}
+          products={products}
+          onUpdateCart={handleUpdateCart}
+          userDiscount={userDiscount}
+          isAuthenticated={isAuthenticated}
+          userProfile={userProfile}
+          onPageChange={handlePageChange}
+        />
+
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialMode={authMode}
+          referralCode={detectedReferralCode}
+          language={language}
+          onSignupSuccess={() => {
+            console.log('Signup successful, user should be created in database');
+          }}
+        />
+      </>
     );
   }
 
