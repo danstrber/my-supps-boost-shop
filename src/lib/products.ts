@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -28,24 +29,31 @@ export interface Product {
   };
   benefits: {
     en: string;
+    es: string;
   };
   sideEffects: {
     en: string;
+    es: string;
   };
   effectsOnWomen: {
     en: string;
+    es: string;
   };
   howItWorks: {
     en: string;
+    es: string;
   };
   safetyInformation: {
     en: string;
+    es: string;
   };
   cycleInformation: {
     en: string;
+    es: string;
   };
   whatToExpect: {
     en: string;
+    es: string;
   };
   performanceRatings: {
     muscleGain: number;
@@ -383,7 +391,7 @@ export const products: Product[] = [
       en: 'Typical PCT: 25mg daily for 4-6 weeks starting immediately after cycle completion.',
       es: 'PCT típico: 25mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report testosterone recovery within 2-4 weeks, maintained muscle gains, and improved energy levels.',
       es: 'Los usuarios reportan recuperación de testosterona en 2-4 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
     },
