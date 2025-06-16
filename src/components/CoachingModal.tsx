@@ -23,7 +23,7 @@ const CoachingModal = ({ isOpen, onClose }: CoachingModalProps) => {
             🏆 MySupps Premium Coaching
           </DialogTitle>
           <DialogDescription className="text-center text-gray-600">
-            Take your results to the next level with personalized coaching from our experts!
+            Take your results to the next level with personalized coaching from our experts. Get custom cycles, dosage optimization, and 24/7 support in our private community.
           </DialogDescription>
         </DialogHeader>
         

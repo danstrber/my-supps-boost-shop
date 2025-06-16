@@ -68,7 +68,7 @@ const PaymentModal = ({
   const { toast } = useToast();
   const t = translations[language];
 
-  const walletAddress = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+  const walletAddress = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
   const sendOrderEmails = async (orderData: any) => {
     try {
@@ -268,8 +268,8 @@ const PaymentModal = ({
           </DialogTitle>
           <DialogDescription>
             {orderCreated ? 
-              (language === 'en' ? 'Your order has been successfully placed' : 'Tu pedido ha sido realizado exitosamente') :
-              (language === 'en' ? 'Review your order and complete payment' : 'Revisa tu pedido y completa el pago')
+              (language === 'en' ? 'Your order has been successfully placed and will be processed within 24 hours.' : 'Tu pedido ha sido realizado exitosamente y será procesado en 24 horas.') :
+              (language === 'en' ? 'Review your order details and select your preferred payment method below.' : 'Revisa los detalles de tu pedido y selecciona tu método de pago preferido.')
             }
           </DialogDescription>
         </DialogHeader>
@@ -316,19 +316,63 @@ const PaymentModal = ({
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div>
-                <Label htmlFor="paymentMethod">
+              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                <Label htmlFor="paymentMethod" className="text-base font-semibold text-gray-800 mb-3 block">
                   {t.paymentMethod}
                 </Label>
-                <Select value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="telegram">💬 Telegram ({t.recommended})</SelectItem>
-                    <SelectItem value="bitcoin">₿ Bitcoin</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-3">
+                  <div 
+                    className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                      paymentMethod === 'telegram' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                    onClick={() => setPaymentMethod('telegram')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="telegram"
+                          checked={paymentMethod === 'telegram'}
+                          onChange={() => setPaymentMethod('telegram')}
+                          className="text-blue-600"
+                        />
+                        <span className="font-medium">💬 Telegram</span>
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                          {t.recommended}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                      paymentMethod === 'bitcoin' 
+                        ? 'border-orange-500 bg-orange-50' 
+                        : 'border-gray-200 hover:border-orange-300'
+                    }`}
+                    onClick={() => setPaymentMethod('bitcoin')}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name="paymentMethod"
+                          value="bitcoin"
+                          checked={paymentMethod === 'bitcoin'}
+                          onChange={() => setPaymentMethod('bitcoin')}
+                          className="text-orange-600"
+                        />
+                        <span className="font-medium">₿ Bitcoin</span>
+                        <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
+                          Anonymous
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <PaymentMethodInfo paymentMethod={paymentMethod} />

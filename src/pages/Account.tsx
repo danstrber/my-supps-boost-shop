@@ -1,16 +1,20 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
-import ReferralSection from '@/components/ReferralSection';
-import TwoFactorSettings from '@/components/TwoFactorSettings';
+import Sidebar from '@/components/Sidebar';
 import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { User, Mail, Calendar, DollarSign } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import ReferralSection from '@/components/ReferralSection';
+import TwoFactorSettings from '@/components/TwoFactorSettings';
+import CartModal from '@/components/CartModal';
+import { products } from '@/lib/products';
+import { useCart } from '@/hooks/useCart';
 
-interface AccountPageProps {
+interface AccountProps {
   language: 'en' | 'es';
   onLanguageChange: (lang: 'en' | 'es') => void;
   cartItemCount: number;
@@ -18,23 +22,25 @@ interface AccountPageProps {
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
   onCartOpen: () => void;
   onMenuToggle: () => void;
-  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
+  onPageChange: (page: string) => void;
   sidebarOpen: boolean;
 }
 
-const Account = ({
-  language,
-  onLanguageChange,
-  cartItemCount,
-  isAuthenticated,
-  onAuthAction,
+const Account = ({ 
+  language, 
+  onLanguageChange, 
+  cartItemCount, 
+  isAuthenticated, 
+  onAuthAction, 
   onCartOpen,
   onMenuToggle,
   onPageChange,
   sidebarOpen
-}: AccountPageProps) => {
-  const { userProfile, userDiscount, loading } = useAuth();
-  const [referralCount] = useState(0);
+}: AccountProps) => {
+  const { userProfile, loading } = useAuth();
+  const { cart, handleUpdateCart } = useCart();
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { toast } = useToast();
 
   if (loading) {
     return (
@@ -44,35 +50,12 @@ const Account = ({
     );
   }
 
-  if (!isAuthenticated || !userProfile) {
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Header
-          language={language}
-          onLanguageChange={onLanguageChange}
-          cartItemCount={cartItemCount}
-          isAuthenticated={isAuthenticated}
-          onAuthAction={onAuthAction}
-          onCartOpen={onCartOpen}
-          onMenuToggle={onMenuToggle}
-          currentPage="account"
-          onPageChange={onPageChange}
-          sidebarOpen={sidebarOpen}
-        />
-        <div className="pt-32 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl font-bold mb-4">
-              {language === 'en' ? 'Please Sign In' : 'Por Favor Inicia Sesión'}
-            </h1>
-            <p className="text-gray-600 mb-8">
-              {language === 'en' 
-                ? 'You need to be signed in to view your account.' 
-                : 'Necesitas iniciar sesión para ver tu cuenta.'}
-            </p>
-            <Button onClick={() => onAuthAction('login')} className="bg-green-600 hover:bg-green-700">
-              {language === 'en' ? 'Sign In' : 'Iniciar Sesión'}
-            </Button>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Please log in to access your account</h1>
+          <Button onClick={() => onAuthAction('login')}>Login</Button>
         </div>
       </div>
     );
@@ -86,13 +69,23 @@ const Account = ({
         cartItemCount={cartItemCount}
         isAuthenticated={isAuthenticated}
         onAuthAction={onAuthAction}
-        onCartOpen={onCartOpen}
+        onCartOpen={() => setIsCartOpen(true)}
         onMenuToggle={onMenuToggle}
         currentPage="account"
         onPageChange={onPageChange}
         sidebarOpen={sidebarOpen}
       />
-      
+
+      <Sidebar
+        language={language}
+        isOpen={sidebarOpen}
+        selectedCategory="all"
+        onCategoryChange={() => {}}
+        userProfile={userProfile}
+        referralCount={0}
+        onClose={() => {}}
+      />
+
       <div className="pt-32 px-4">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold mb-8">
@@ -144,7 +137,7 @@ const Account = ({
           <ReferralSection
             userProfile={userProfile}
             language={language}
-            referralCount={referralCount}
+            referralCount={0}
           />
           
           {/* Account Stats */}
@@ -183,6 +176,17 @@ const Account = ({
           </div>
         </div>
       </div>
+
+      <CartModal
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        products={products}
+        onUpdateCart={handleUpdateCart}
+        userDiscount={userProfile?.discount_percentage || 0}
+        isAuthenticated={isAuthenticated}
+        userProfile={userProfile}
+      />
     </div>
   );
 };

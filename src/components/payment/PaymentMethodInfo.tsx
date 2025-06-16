@@ -11,7 +11,7 @@ const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
       return (
         <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
           <h4 className="font-semibold text-blue-800 mb-2">
-            💬 Telegram Ordering
+            💬 Telegram Ordering (Recommended)
           </h4>
           <p className="text-blue-700 text-sm mb-3">
             Order directly through our secure Telegram channel for the fastest and most convenient experience.
@@ -20,7 +20,6 @@ const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
             <li>✅ Easy order tracking</li>
             <li>✅ Anonymous ordering</li>
             <li>✅ Direct communication</li>
-            <li>✅ Expert coaching included</li>
             <li>✅ 24/7 fast support</li>
           </ul>
           
@@ -56,11 +55,20 @@ const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
           <h4 className="font-semibold text-orange-800 mb-2">
             ₿ Bitcoin Payment
           </h4>
-          <p className="text-orange-700 text-sm mb-2">
+          <p className="text-orange-700 text-sm mb-3">
             Pay securely and anonymously with Bitcoin. Fast, private, and reliable.
           </p>
+          <div className="bg-orange-100 border border-orange-300 p-3 rounded-lg mb-3">
+            <p className="text-orange-800 font-medium mb-2">Benefits:</p>
+            <ul className="text-orange-700 text-sm space-y-1">
+              <li>✅ 100% anonymous transactions</li>
+              <li>✅ No personal ID verification required</li>
+              <li>✅ Secure blockchain verification</li>
+              <li>✅ Global accessibility</li>
+            </ul>
+          </div>
           <p className="text-orange-600 text-xs">
-            No ID verification required - completely anonymous Bitcoin payments.
+            Complete privacy protection - no personal information required for Bitcoin payments.
           </p>
         </div>
       );
