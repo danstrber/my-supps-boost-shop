@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
@@ -65,6 +65,7 @@ const PaymentModal = ({
   const [showBitcoinDetails, setShowBitcoinDetails] = useState(false);
   const [orderCreated, setOrderCreated] = useState<string | null>(null);
   const [paymentExpired, setPaymentExpired] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const t = translations[language];
 
@@ -77,9 +78,18 @@ const PaymentModal = ({
     }));
   };
 
+  const resetModal = () => {
+    setShowBitcoinDetails(false);
+    setOrderCreated(null);
+    setPaymentExpired(false);
+    setTxid('');
+    setLoading(false);
+    setError(null);
+  };
+
   const sendOrderEmails = async (orderData: any) => {
     try {
-      console.log('Sending order emails...');
+      console.log('🔄 Sending order emails...');
       
       const { data, error } = await supabase.functions.invoke('send-order-email', {
         body: {
@@ -101,25 +111,26 @@ const PaymentModal = ({
       });
 
       if (error) {
-        console.error('Email error:', error);
+        console.error('❌ Email error:', error);
         return false;
       }
 
-      console.log('Emails sent successfully:', data);
+      console.log('✅ Emails sent successfully:', data);
       return true;
     } catch (error) {
-      console.error('Email sending failed:', error);
+      console.error('❌ Email sending failed:', error);
       return false;
     }
   };
 
   const handleTelegramRedirect = () => {
-    console.log('Redirecting to Telegram...');
+    console.log('🔄 Redirecting to Telegram...');
     window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
     toast({
       title: t.redirectedTelegram,
       description: t.completeTelegramOrder,
     });
+    resetModal();
     onClose();
   };
 
@@ -133,6 +144,8 @@ const PaymentModal = ({
   };
 
   const createOrder = async () => {
+    console.log('🔄 Starting order creation process...');
+    
     if (!userProfile?.auth_id) {
       throw new Error('User not authenticated');
     }
@@ -162,27 +175,37 @@ const PaymentModal = ({
       status: 'pending'
     };
 
-    console.log('Creating order with data:', orderData);
+    console.log('📦 Order data prepared:', orderData);
 
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([orderData])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert([orderData])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Database error:', error);
-      throw new Error(`Failed to create order: ${error.message}`);
+      if (error) {
+        console.error('❌ Supabase insert error:', error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      if (!data) {
+        throw new Error('No data returned from database');
+      }
+
+      console.log('✅ Order successfully created:', data);
+      return data;
+    } catch (dbError: any) {
+      console.error('❌ Database operation failed:', dbError);
+      throw new Error(`Failed to save order: ${dbError.message}`);
     }
-
-    console.log('Order created successfully:', data);
-    return data;
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log('Form submitted with method:', paymentMethod);
+    console.log('🔄 Form submitted with method:', paymentMethod);
+    setError(null);
     
     if (paymentMethod === 'telegram') {
       handleTelegramRedirect();
@@ -225,8 +248,10 @@ const PaymentModal = ({
     setLoading(true);
 
     try {
+      console.log('🔄 Creating order...');
       const order = await createOrder();
       
+      console.log('🔄 Setting up purchase tracking...');
       createPendingPurchase(order.id, {
         userId: userProfile!.auth_id,
         amount: finalTotal,
@@ -234,8 +259,10 @@ const PaymentModal = ({
         referralCode: userProfile?.referred_by || undefined
       });
 
+      console.log('🔄 Sending confirmation emails...');
       await sendOrderEmails(order);
 
+      console.log('✅ Order process completed successfully');
       setOrderCreated(order.id);
       
       toast({
@@ -243,14 +270,18 @@ const PaymentModal = ({
         description: `Order ID: ${order.id.slice(0, 8)}`,
       });
 
+      // Clear cart on successful order
       localStorage.removeItem('cart');
       
     } catch (error: any) {
-      console.error('Order creation failed:', error);
+      console.error('❌ Order creation failed:', error);
+      
+      const errorMessage = error.message || 'Unknown error occurred';
+      setError(errorMessage);
       
       toast({
         title: t.orderFailed || 'Order Failed',
-        description: error.message || 'There was an error processing your order. Please try again.',
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -258,18 +289,8 @@ const PaymentModal = ({
     }
   };
 
-  const handleReferralClick = () => {
-    onClose();
-    window.location.hash = '#account';
-    window.location.reload();
-  };
-
   const handleModalClose = () => {
-    setShowBitcoinDetails(false);
-    setOrderCreated(null);
-    setPaymentExpired(false);
-    setTxid('');
-    setLoading(false);
+    resetModal();
     onClose();
   };
 
@@ -277,7 +298,7 @@ const PaymentModal = ({
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogContent 
         className="sm:max-w-2xl max-h-[90vh] overflow-y-auto"
-        aria-describedby="payment-modal-description"
+        aria-describedby="payment-modal-content"
       >
         <DialogHeader>
           <DialogTitle>
@@ -286,176 +307,186 @@ const PaymentModal = ({
               t.completeYourOrder
             }
           </DialogTitle>
-          <DialogDescription id="payment-modal-description">
-            {orderCreated ? 
-              (language === 'en' ? 'Your order has been successfully placed and will be processed within 24 hours.' : 'Tu pedido ha sido realizado exitosamente y será procesado en 24 horas.') :
-              (language === 'en' ? 'Review your order details and select your preferred payment method below.' : 'Revisa los detalles de tu pedido y selecciona tu método de pago preferido.')
-            }
-          </DialogDescription>
         </DialogHeader>
 
-        {orderCreated ? (
-          <div className="space-y-4 text-center">
-            <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-800 mb-2">
-                {language === 'en' ? 'Thank you for your order!' : '¡Gracias por tu pedido!'}
-              </h3>
-              <p className="text-green-700 mb-4">
-                {language === 'en' ? 'Order ID:' : 'ID del Pedido:'} <strong>{orderCreated.slice(0, 8)}</strong>
-              </p>
-              <p className="text-sm text-green-600 mb-4">
-                {language === 'en' ? 
-                  'You will receive a confirmation email shortly. Our team will process your order within 24 hours.' :
-                  'Recibirás un email de confirmación pronto. Nuestro equipo procesará tu pedido en 24 horas.'
-                }
-              </p>
-              <div className="space-y-2 text-sm">
-                <p><strong>{language === 'en' ? 'Support:' : 'Soporte:'}</strong></p>
-                <p>Email: christhomaso083@proton.me</p>
-                <p>Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@DANSTRBER</a></p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                <button
-                  onClick={handleModalClose}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors"
-                >
-                  {language === 'en' ? 'Continue Shopping' : 'Continuar Comprando'}
-                </button>
-                <button
-                  onClick={() => window.location.hash = '#account'}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-                >
-                  {language === 'en' ? 'View My Orders' : 'Ver Mis Pedidos'}
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            <OrderSummary
-              cartItems={cartItems}
-              orderTotal={orderTotal}
-              discount={discount}
-              shippingFee={shippingFee}
-              finalTotal={finalTotal}
-            />
-
-            <div 
-              className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
-              onClick={handleReferralClick}
-            >
-              <p className="text-green-700 text-sm font-medium">
-                {t.wantCheaper}
-              </p>
-            </div>
-
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-                <div className="text-base font-semibold text-gray-800 mb-3">
-                  {t.paymentMethod}
+        <div id="payment-modal-content">
+          {orderCreated ? (
+            <div className="space-y-4 text-center">
+              <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">
+                  {language === 'en' ? 'Thank you for your order!' : '¡Gracias por tu pedido!'}
+                </h3>
+                <p className="text-green-700 mb-4">
+                  {language === 'en' ? 'Order ID:' : 'ID del Pedido:'} <strong>{orderCreated.slice(0, 8)}</strong>
+                </p>
+                <p className="text-sm text-green-600 mb-4">
+                  {language === 'en' ? 
+                    'You will receive a confirmation email shortly. Our team will process your order within 24 hours.' :
+                    'Recibirás un email de confirmación pronto. Nuestro equipo procesará tu pedido en 24 horas.'
+                  }
+                </p>
+                <div className="space-y-2 text-sm">
+                  <p><strong>{language === 'en' ? 'Support:' : 'Soporte:'}</strong></p>
+                  <p>Email: christhomaso083@proton.me</p>
+                  <p>Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@DANSTRBER</a></p>
                 </div>
-                <div className="space-y-3">
-                  <div 
-                    className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
-                      paymentMethod === 'telegram' 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
-                    onClick={() => setPaymentMethod('telegram')}
+                <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                  <button
+                    onClick={handleModalClose}
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          id="payment-telegram"
-                          name="paymentMethod"
-                          type="radio"
-                          value="telegram"
-                          checked={paymentMethod === 'telegram'}
-                          onChange={() => setPaymentMethod('telegram')}
-                          className="text-blue-600"
-                        />
-                        <label htmlFor="payment-telegram" className="font-medium cursor-pointer">💬 Telegram</label>
-                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                          {t.recommended}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div 
-                    className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
-                      paymentMethod === 'bitcoin' 
-                        ? 'border-orange-500 bg-orange-50' 
-                        : 'border-gray-200 hover:border-orange-300'
-                    }`}
-                    onClick={() => setPaymentMethod('bitcoin')}
+                    {language === 'en' ? 'Continue Shopping' : 'Continuar Comprando'}
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleModalClose();
+                      window.location.hash = '#account';
+                    }}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <input
-                          id="payment-bitcoin"
-                          name="paymentMethod"
-                          type="radio"
-                          value="bitcoin"
-                          checked={paymentMethod === 'bitcoin'}
-                          onChange={() => setPaymentMethod('bitcoin')}
-                          className="text-orange-600"
-                        />
-                        <label htmlFor="payment-bitcoin" className="font-medium cursor-pointer">₿ Bitcoin</label>
-                        <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
-                          Anonymous
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                    {language === 'en' ? 'View My Orders' : 'Ver Mis Pedidos'}
+                  </button>
                 </div>
               </div>
-
-              <PaymentMethodInfo paymentMethod={paymentMethod} />
-
-              {paymentMethod === 'bitcoin' && showBitcoinDetails && (
-                <PaymentTimer 
-                  onExpired={handlePaymentExpired}
-                  language={language}
-                />
+            </div>
+          ) : (
+            <>
+              {error && (
+                <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
+                  <p className="text-red-700 text-sm">
+                    <strong>Error:</strong> {error}
+                  </p>
+                </div>
               )}
 
-              {paymentMethod === 'bitcoin' && !showBitcoinDetails && (
-                <BitcoinTutorial language={language} />
-              )}
+              <OrderSummary
+                cartItems={cartItems}
+                orderTotal={orderTotal}
+                discount={discount}
+                shippingFee={shippingFee}
+                finalTotal={finalTotal}
+              />
 
-              {paymentMethod === 'bitcoin' && (
-                <ShippingForm
-                  formData={formData}
-                  onInputChange={handleInputChange}
-                  language={language}
-                />
-              )}
-
-              {showBitcoinDetails && paymentMethod === 'bitcoin' && !paymentExpired && (
-                <BitcoinPaymentDetails
-                  amount={finalTotal}
-                  walletAddress={walletAddress}
-                  txid={txid}
-                  onTxidChange={setTxid}
-                  language={language}
-                />
-              )}
-
-              <Button
-                type="submit"
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-                disabled={loading || paymentExpired}
+              <div 
+                className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
+                onClick={() => {
+                  handleModalClose();
+                  window.location.hash = '#account';
+                }}
               >
-                {loading ? (language === 'en' ? 'Processing...' : 'Procesando...') : 
-                 paymentExpired ? (language === 'en' ? 'Payment Expired' : 'Pago Expirado') :
-                 paymentMethod === 'telegram' ? t.joinTelegram : 
-                 !showBitcoinDetails ? t.continueToPayment :
-                 t.completeOrder}
-              </Button>
-            </form>
-          </>
-        )}
+                <p className="text-green-700 text-sm font-medium">
+                  {t.wantCheaper}
+                </p>
+              </div>
+
+              <form onSubmit={handleFormSubmit} className="space-y-6">
+                <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                  <div className="text-base font-semibold text-gray-800 mb-3">
+                    {t.paymentMethod}
+                  </div>
+                  <div className="space-y-3">
+                    <div 
+                      className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                        paymentMethod === 'telegram' 
+                          ? 'border-blue-500 bg-blue-50' 
+                          : 'border-gray-200 hover:border-blue-300'
+                      }`}
+                      onClick={() => setPaymentMethod('telegram')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            id="payment-telegram"
+                            name="paymentMethod"
+                            type="radio"
+                            value="telegram"
+                            checked={paymentMethod === 'telegram'}
+                            onChange={() => setPaymentMethod('telegram')}
+                            className="text-blue-600"
+                          />
+                          <label htmlFor="payment-telegram" className="font-medium cursor-pointer">💬 Telegram</label>
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                            {t.recommended}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div 
+                      className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                        paymentMethod === 'bitcoin' 
+                          ? 'border-orange-500 bg-orange-50' 
+                          : 'border-gray-200 hover:border-orange-300'
+                      }`}
+                      onClick={() => setPaymentMethod('bitcoin')}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            id="payment-bitcoin"
+                            name="paymentMethod"
+                            type="radio"
+                            value="bitcoin"
+                            checked={paymentMethod === 'bitcoin'}
+                            onChange={() => setPaymentMethod('bitcoin')}
+                            className="text-orange-600"
+                          />
+                          <label htmlFor="payment-bitcoin" className="font-medium cursor-pointer">₿ Bitcoin</label>
+                          <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full font-medium">
+                            Anonymous
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <PaymentMethodInfo paymentMethod={paymentMethod} />
+
+                {paymentMethod === 'bitcoin' && showBitcoinDetails && (
+                  <PaymentTimer 
+                    onExpired={handlePaymentExpired}
+                    language={language}
+                  />
+                )}
+
+                {paymentMethod === 'bitcoin' && !showBitcoinDetails && (
+                  <BitcoinTutorial language={language} />
+                )}
+
+                {paymentMethod === 'bitcoin' && (
+                  <ShippingForm
+                    formData={formData}
+                    onInputChange={handleInputChange}
+                    language={language}
+                  />
+                )}
+
+                {showBitcoinDetails && paymentMethod === 'bitcoin' && !paymentExpired && (
+                  <BitcoinPaymentDetails
+                    amount={finalTotal}
+                    walletAddress={walletAddress}
+                    txid={txid}
+                    onTxidChange={setTxid}
+                    language={language}
+                  />
+                )}
+
+                <Button
+                  type="submit"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
+                  disabled={loading || paymentExpired}
+                >
+                  {loading ? (language === 'en' ? 'Processing...' : 'Procesando...') : 
+                   paymentExpired ? (language === 'en' ? 'Payment Expired' : 'Pago Expirado') :
+                   paymentMethod === 'telegram' ? t.joinTelegram : 
+                   !showBitcoinDetails ? t.continueToPayment :
+                   t.completeOrder}
+                </Button>
+              </form>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

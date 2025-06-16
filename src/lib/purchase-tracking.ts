@@ -12,25 +12,30 @@ const pendingPurchases = new Map<string, PendingPurchase>();
 
 export const createPendingPurchase = (orderId: string, purchase: PendingPurchase): void => {
   pendingPurchases.set(orderId, purchase);
-  console.log('Pending purchase created:', orderId, purchase);
+  console.log('📝 Pending purchase created:', orderId, purchase);
 };
 
 export const confirmPurchase = async (orderId: string): Promise<boolean> => {
   const purchase = pendingPurchases.get(orderId);
   
   if (!purchase) {
-    console.error('No pending purchase found for order:', orderId);
+    console.error('❌ No pending purchase found for order:', orderId);
     return false;
   }
 
   try {
+    console.log('🔄 Confirming purchase for order:', orderId);
+    
     const { data: userData, error: fetchError } = await supabase
       .from('users')
       .select('total_spending, referred_by')
       .eq('auth_id', purchase.userId)
       .single();
 
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+      console.error('❌ Error fetching user data:', fetchError);
+      throw fetchError;
+    }
 
     const isFirstPurchase = userData.total_spending === 0;
     const isReferredUser = userData.referred_by;
@@ -41,7 +46,7 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
     
     if (isReferredUser && isFirstPurchase) {
       updateData.referred_by = null;
-      console.log('Resetting referred status after first purchase for user:', purchase.userId);
+      console.log('🔄 Resetting referred status after first purchase for user:', purchase.userId);
     }
 
     const { error: userError } = await supabase
@@ -49,16 +54,24 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
       .update(updateData)
       .eq('auth_id', purchase.userId);
 
-    if (userError) throw userError;
+    if (userError) {
+      console.error('❌ Error updating user spending:', userError);
+      throw userError;
+    }
 
     if (purchase.referralCode) {
+      console.log('🔄 Processing referral spending for code:', purchase.referralCode);
+      
       const { data: referrerData, error: referrerFetchError } = await supabase
         .from('users')
         .select('referred_spending')
         .eq('referral_code', purchase.referralCode)
         .single();
 
-      if (referrerFetchError) throw referrerFetchError;
+      if (referrerFetchError) {
+        console.error('❌ Error fetching referrer data:', referrerFetchError);
+        throw referrerFetchError;
+      }
 
       const newReferredSpending = (referrerData.referred_spending || 0) + purchase.amount;
       const { error: referrerError } = await supabase
@@ -66,22 +79,25 @@ export const confirmPurchase = async (orderId: string): Promise<boolean> => {
         .update({ referred_spending: newReferredSpending })
         .eq('referral_code', purchase.referralCode);
 
-      if (referrerError) throw referrerError;
+      if (referrerError) {
+        console.error('❌ Error updating referrer spending:', referrerError);
+        throw referrerError;
+      }
     }
 
     pendingPurchases.delete(orderId);
     
-    console.log('Purchase confirmed and saved:', orderId);
+    console.log('✅ Purchase confirmed and saved:', orderId);
     return true;
   } catch (error) {
-    console.error('Error confirming purchase:', error);
+    console.error('❌ Error confirming purchase:', error);
     return false;
   }
 };
 
 export const cancelPendingPurchase = (orderId: string): void => {
   pendingPurchases.delete(orderId);
-  console.log('Pending purchase cancelled:', orderId);
+  console.log('🗑️ Pending purchase cancelled:', orderId);
 };
 
 export const getPendingPurchase = (orderId: string): PendingPurchase | undefined => {
