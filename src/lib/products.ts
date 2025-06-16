@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -70,7 +71,7 @@ export const products: Product[] = [
   {
     id: 'superdrol',
     name: 'Superdrol',
-    price: 24.99,
+    price: 25,
     image: '/lovable-uploads/03872941-927f-4c0f-bbdc-f29c84db2e6c.png',
     categories: ['oral-steroids'],
     featured: true,
@@ -137,7 +138,7 @@ export const products: Product[] = [
   {
     id: 'mk677',
     name: 'MK-677 (Ibutamoren)',
-    price: 39.99,
+    price: 40,
     image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
     categories: ['growth-hormone'],
     featured: true,
@@ -204,7 +205,7 @@ export const products: Product[] = [
   {
     id: 'rad140',
     name: 'RAD-140 (Testolone)',
-    price: 44.99,
+    price: 45,
     image: '/lovable-uploads/5d2b3f9c-eeb8-40cc-b547-0902cd012226.png',
     categories: ['sarms'],
     featured: false,
@@ -271,11 +272,10 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 49.99,
-    image: '/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png',
+    price: 50,
+    image: '/placeholder.svg',
     categories: ['pct', 'ai'],
     featured: false,
-    labTestFile: '/lovable-uploads/7698b7f4-aef8-4e6a-a8da-ad22e5909715.png',
     inStock: true,
     description: {
       en: 'Aromasin is a powerful aromatase inhibitor used for estrogen control during and after anabolic cycles.',
@@ -338,11 +338,10 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
-    price: 54.99,
+    price: 55,
     image: '/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
     categories: ['pct', 'testosterone-booster'],
     featured: false,
-    labTestFile: '/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png',
     inStock: true,
     description: {
       en: 'Enclomiphene is a selective estrogen receptor modulator (SERM) used for post-cycle therapy and natural testosterone restoration.',
@@ -405,11 +404,10 @@ export const products: Product[] = [
   {
     id: 'clenbuterol',
     name: 'Clenbuterol',
-    price: 34.99,
+    price: 35,
     image: '/lovable-uploads/fc2fad1d-20dd-4b74-b5e3-07f81414d651.png',
     categories: ['fat-burner'],
     featured: false,
-    labTestFile: '/lovable-uploads/fb319341-a727-49e3-afa8-ce91bd70a788.png',
     inStock: true,
     description: {
       en: 'Clenbuterol is a powerful beta-2 agonist used for fat loss and improving cardiovascular performance.',

@@ -79,8 +79,10 @@ const PaymentModal = ({
 
   const sendOrderEmails = async (orderData: any) => {
     try {
+      console.log('Attempting to send order emails...');
+      
       // Send via Supabase edge function
-      const { error } = await supabase.functions.invoke('send-order-email', {
+      const { data, error } = await supabase.functions.invoke('send-order-email', {
         body: {
           customerEmail: formData.email,
           customerName: formData.fullName,
@@ -104,7 +106,7 @@ const PaymentModal = ({
         throw error;
       }
 
-      console.log('Order emails sent successfully via Supabase');
+      console.log('Order emails sent successfully via Supabase:', data);
     } catch (error) {
       console.error('Failed to send order emails:', error);
       // Continue with order creation even if email fails
@@ -112,6 +114,7 @@ const PaymentModal = ({
   };
 
   const handleTelegramRedirect = () => {
+    console.log('Redirecting to Telegram...');
     window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
     toast({
       title: t.redirectedTelegram,
@@ -131,6 +134,8 @@ const PaymentModal = ({
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('Form submitted with method:', paymentMethod);
     
     if (paymentMethod === 'telegram') {
       handleTelegramRedirect();
@@ -170,6 +175,7 @@ const PaymentModal = ({
     }
 
     setLoading(true);
+    console.log('Starting order creation process...');
 
     try {
       const orderData = {
@@ -271,7 +277,7 @@ const PaymentModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleModalClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="payment-dialog-description">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {orderCreated ? 
@@ -279,7 +285,7 @@ const PaymentModal = ({
               t.completeYourOrder
             }
           </DialogTitle>
-          <DialogDescription id="payment-dialog-description">
+          <DialogDescription>
             {orderCreated ? 
               (language === 'en' ? 'Your order has been successfully placed and will be processed within 24 hours.' : 'Tu pedido ha sido realizado exitosamente y será procesado en 24 horas.') :
               (language === 'en' ? 'Review your order details and select your preferred payment method below.' : 'Revisa los detalles de tu pedido y selecciona tu método de pago preferido.')
