@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -98,31 +97,71 @@ const PaymentModal = ({
 
     console.log('👤 User auth_id:', userProfile.auth_id);
 
-    // Test Supabase connection first
-    console.log('🧪 Testing Supabase connection...');
-    
-    // Test basic query to verify connection
+    // Test authentication first
+    console.log('🧪 Testing authentication...');
     try {
-      console.log('🧪 Testing database connectivity...');
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      console.log('🧪 Auth check result:', { user: user?.id, authError });
+      
+      if (authError) {
+        console.error('❌ Auth error:', authError);
+        throw new Error(`Authentication error: ${authError.message}`);
+      }
+      
+      if (!user) {
+        console.error('❌ No authenticated user found');
+        throw new Error('User not authenticated');
+      }
+      
+      if (user.id !== userProfile.auth_id) {
+        console.error('❌ User ID mismatch:', { authenticated: user.id, profile: userProfile.auth_id });
+        throw new Error('User authentication mismatch');
+      }
+      
+      console.log('✅ Authentication verified');
+    } catch (testError: any) {
+      console.error('🧪 Authentication test failed:', testError);
+      throw new Error(`Authentication failed: ${testError.message}`);
+    }
+
+    // Test basic database connectivity
+    console.log('🧪 Testing database connectivity...');
+    try {
       const { data: healthData, error: healthError } = await supabase
         .from('users')
         .select('id')
         .limit(1);
       console.log('🧪 Health check result:', { healthData, healthError });
       
-      // Test auth
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      console.log('🧪 Auth check result:', { user: user?.id, authError });
+      if (healthError) {
+        console.error('❌ Database connectivity error:', healthError);
+        throw new Error(`Database connectivity error: ${healthError.message}`);
+      }
       
-      // Test orders table access
+      console.log('✅ Database connectivity verified');
+    } catch (testError: any) {
+      console.error('🧪 Connectivity test failed:', testError);
+      throw new Error(`Database connectivity failed: ${testError.message}`);
+    }
+
+    // Test orders table access
+    console.log('🧪 Testing orders table access...');
+    try {
       const { data: ordersData, error: ordersError } = await supabase
         .from('orders')
         .select('id')
         .limit(1);
       console.log('🧪 Orders query result:', { ordersData, ordersError });
       
-    } catch (testError) {
-      console.error('🧪 Connection test failed:', testError);
+      if (ordersError) {
+        console.error('❌ Orders table access error:', ordersError);
+        throw new Error(`Orders table access error: ${ordersError.message} (Check RLS policies)`);
+      }
+      
+      console.log('✅ Orders table access verified');
+    } catch (testError: any) {
+      console.error('🧪 Orders access test failed:', testError);
+      throw new Error(`Orders table access failed: ${testError.message}`);
     }
 
     // Prepare order data
@@ -171,7 +210,17 @@ const PaymentModal = ({
         console.error('❌ Error message:', error.message);
         console.error('❌ Error details:', error.details);
         console.error('❌ Error hint:', error.hint);
-        throw new Error(`Database error: ${error.message} (Code: ${error.code})`);
+        
+        // Provide specific error messages for common issues
+        if (error.code === '42501') {
+          throw new Error('Permission denied - RLS policy may be blocking insert. Please contact support.');
+        } else if (error.code === '23503') {
+          throw new Error('Foreign key constraint violation - User reference issue.');
+        } else if (error.code === '23505') {
+          throw new Error('Duplicate entry - Order may already exist.');
+        } else {
+          throw new Error(`Database error: ${error.message} (Code: ${error.code})`);
+        }
       }
 
       if (!data) {
