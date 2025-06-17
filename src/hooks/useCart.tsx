@@ -14,9 +14,18 @@ export const useCart = () => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
-        setCart(JSON.parse(savedCart));
+        const parsedCart = JSON.parse(savedCart);
+        // Ensure all values are valid numbers and remove any invalid entries
+        const validCart: Record<string, number> = {};
+        Object.entries(parsedCart).forEach(([key, value]) => {
+          if (typeof value === 'number' && value > 0) {
+            validCart[key] = value;
+          }
+        });
+        setCart(validCart);
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
+        setCart({});
       }
     }
   }, []);
@@ -26,7 +35,10 @@ export const useCart = () => {
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
-  const cartItemCount = Object.values(cart).reduce((total, quantity) => total + quantity, 0);
+  // Calculate cart item count properly - only count valid positive quantities
+  const cartItemCount = Object.values(cart).reduce((total, quantity) => {
+    return total + (typeof quantity === 'number' && quantity > 0 ? quantity : 0);
+  }, 0);
 
   const handleAddToCart = (product: Product) => {
     setCart(prev => ({
