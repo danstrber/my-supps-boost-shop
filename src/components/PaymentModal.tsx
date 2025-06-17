@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -422,19 +423,28 @@ const PaymentModal = ({
           {orderCreated ? (
             <div className="space-y-4 text-center">
               <div className="bg-green-50 border border-green-200 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
-                  {language === 'en' ? 'Thank you for your order!' : '¡Gracias por tu pedido!'}
+                <div className="text-6xl mb-4">🎉</div>
+                <h3 className="text-xl font-bold text-green-800 mb-2">
+                  {language === 'en' ? 'Order Successfully Placed!' : '¡Pedido Realizado Exitosamente!'}
                 </h3>
                 <p className="text-green-700 mb-4">
                   {language === 'en' ? 'Order ID:' : 'ID del Pedido:'} <strong>{orderCreated.slice(0, 8)}</strong>
                 </p>
+                <div className="bg-white p-4 rounded-lg border border-green-200 mb-4">
+                  <p className="text-sm text-green-600 mb-3">
+                    {language === 'en' ? 
+                      '✅ Order saved to database\n✅ Email confirmation sent\n✅ Payment processing initiated' :
+                      '✅ Pedido guardado en base de datos\n✅ Email de confirmación enviado\n✅ Procesamiento de pago iniciado'
+                    }
+                  </p>
+                </div>
                 <p className="text-sm text-green-600 mb-4">
                   {language === 'en' ? 
                     'You will receive a confirmation email shortly. Our team will process your order within 24 hours.' :
                     'Recibirás un email de confirmación pronto. Nuestro equipo procesará tu pedido en 24 horas.'
                   }
                 </p>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-sm bg-blue-50 p-3 rounded-lg border">
                   <p><strong>{language === 'en' ? 'Support:' : 'Soporte:'}</strong></p>
                   <p>Email: christhomaso083@proton.me</p>
                   <p>Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">@DANSTRBER</a></p>
@@ -462,11 +472,15 @@ const PaymentModal = ({
             <>
               {error && (
                 <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
-                  <p className="text-red-700 text-sm">
+                  <div className="flex items-center mb-2">
+                    <span className="text-2xl mr-2">❌</span>
+                    <h4 className="font-semibold text-red-800">Order Failed</h4>
+                  </div>
+                  <p className="text-red-700 text-sm mb-2">
                     <strong>Error:</strong> {error}
                   </p>
-                  <p className="text-red-600 text-xs mt-2">
-                    Please check the console (F12) for more details.
+                  <p className="text-red-600 text-xs">
+                    Please try again or contact support if the issue persists.
                   </p>
                 </div>
               )}
