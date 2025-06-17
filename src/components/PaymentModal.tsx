@@ -98,6 +98,34 @@ const PaymentModal = ({
 
     console.log('👤 User auth_id:', userProfile.auth_id);
 
+    // Test Supabase connection first
+    console.log('🧪 Testing Supabase connection...');
+    console.log('🔗 Supabase URL:', supabase.supabaseUrl);
+    console.log('🔗 Supabase Key (first 20 chars):', supabase.supabaseKey.substring(0, 20) + '...');
+    
+    // Test basic query to verify connection
+    try {
+      const { data: healthData, error: healthError } = await supabase
+        .from('users')
+        .select('id')
+        .limit(1);
+      console.log('🧪 Health check result:', { healthData, healthError });
+      
+      // Test auth
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      console.log('🧪 Auth check result:', { user: user?.id, authError });
+      
+      // Test orders table access
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('id')
+        .limit(1);
+      console.log('🧪 Orders query result:', { ordersData, ordersError });
+      
+    } catch (testError) {
+      console.error('🧪 Connection test failed:', testError);
+    }
+
     // Prepare order data
     const orderData = {
       user_id: userProfile.auth_id,
@@ -140,7 +168,11 @@ const PaymentModal = ({
 
       if (error) {
         console.error('❌ Database error details:', error);
-        throw new Error(`Database error: ${error.message}`);
+        console.error('❌ Error code:', error.code);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error details:', error.details);
+        console.error('❌ Error hint:', error.hint);
+        throw new Error(`Database error: ${error.message} (Code: ${error.code})`);
       }
 
       if (!data) {
@@ -152,6 +184,9 @@ const PaymentModal = ({
       return data;
     } catch (err: any) {
       console.error('💥 Insert operation failed:', err);
+      console.error('💥 Error name:', err.name);
+      console.error('💥 Error message:', err.message);
+      console.error('💥 Error stack:', err.stack);
       throw err;
     }
   };

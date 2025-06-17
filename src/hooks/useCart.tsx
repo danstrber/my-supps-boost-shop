@@ -18,13 +18,16 @@ export const useCart = () => {
         // Ensure all values are valid numbers and remove any invalid entries
         const validCart: Record<string, number> = {};
         Object.entries(parsedCart).forEach(([key, value]) => {
-          if (typeof value === 'number' && value > 0) {
-            validCart[key] = value;
+          if (typeof value === 'number' && value > 0 && !isNaN(value)) {
+            validCart[key] = Math.max(1, Math.floor(value)); // Ensure positive integers
           }
         });
+        console.log('📦 Loading cart from localStorage:', { savedCart, parsedCart, validCart });
         setCart(validCart);
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
+        // Clear corrupted cart data
+        localStorage.removeItem('cart');
         setCart({});
       }
     }
@@ -32,19 +35,28 @@ export const useCart = () => {
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
+    console.log('💾 Saving cart to localStorage:', cart);
     localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
 
   // Calculate cart item count properly - only count valid positive quantities
   const cartItemCount = Object.values(cart).reduce((total, quantity) => {
-    return total + (typeof quantity === 'number' && quantity > 0 ? quantity : 0);
+    const validQuantity = typeof quantity === 'number' && quantity > 0 && !isNaN(quantity) ? Math.floor(quantity) : 0;
+    return total + validQuantity;
   }, 0);
 
+  console.log('🧮 Cart calculation:', { cart, cartItemCount, values: Object.values(cart) });
+
   const handleAddToCart = (product: Product) => {
-    setCart(prev => ({
-      ...prev,
-      [product.id]: (prev[product.id] || 0) + 1
-    }));
+    setCart(prev => {
+      const currentQuantity = prev[product.id] || 0;
+      const newQuantity = currentQuantity + 1;
+      console.log('➕ Adding to cart:', { productId: product.id, currentQuantity, newQuantity });
+      return {
+        ...prev,
+        [product.id]: newQuantity
+      };
+    });
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -52,24 +64,38 @@ export const useCart = () => {
   };
 
   const handleUpdateCart = (productId: string, quantity: number) => {
+    console.log('🔄 Updating cart:', { productId, quantity });
     if (quantity <= 0) {
       setCart(prev => {
         const newCart = { ...prev };
         delete newCart[productId];
+        console.log('🗑️ Removing from cart:', { productId, newCart });
         return newCart;
       });
     } else {
-      setCart(prev => ({
-        ...prev,
-        [productId]: quantity
-      }));
+      setCart(prev => {
+        const newCart = {
+          ...prev,
+          [productId]: Math.max(1, Math.floor(quantity)) // Ensure positive integer
+        };
+        console.log('📝 Updating cart quantity:', { productId, quantity, newCart });
+        return newCart;
+      });
     }
+  };
+
+  // Add a function to clear cart
+  const clearCart = () => {
+    console.log('🧹 Clearing cart');
+    setCart({});
+    localStorage.removeItem('cart');
   };
 
   return {
     cart,
     cartItemCount,
     handleAddToCart,
-    handleUpdateCart
+    handleUpdateCart,
+    clearCart
   };
 };
