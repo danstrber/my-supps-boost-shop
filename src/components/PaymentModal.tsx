@@ -43,6 +43,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
 
   const calculateTotalUSD = () => {
+    if (!products || !Array.isArray(products)) {
+      console.error('Products not loaded');
+      return 0;
+    }
     return products.reduce((total, p) => total + (cart[p.id] || 0) * (p.price || 0), 0) - userDiscount + 7.5;
   };
 
@@ -174,6 +178,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         throw new Error('All fields are required');
       }
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
+      if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
       if (paymentMethod === 'bitcoin') {
         const totalUSD = calculateTotalUSD();
@@ -181,8 +186,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         const btcAmount = totalUSD / currentPrice;
         setBtcAmount(btcAmount);
         setStep(2);
-      } else {
-        setStep(2); // Placeholder for Telegram
+      } else if (paymentMethod === 'telegram') {
+        // Redirect to Telegram for payment
+        window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+        toast({
+          title: 'Telegram Payment',
+          description: 'Please complete your order via Telegram.',
+        });
+        onClose();
       }
     } catch (err: any) {
       setError(err.message);
@@ -198,6 +209,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
     try {
       if (!txId) throw new Error('Transaction ID is required');
+      if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
       const totalUSD = calculateTotalUSD();
       const { btc: { currentPrice } } = await fetchCryptoPrice();
@@ -224,6 +236,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       await createOrderInDatabase(orderData);
       await sendOrderEmail(orderData);
       onOrderSuccess();
+      onClose();
     } catch (err: any) {
       setError(err.message);
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -232,169 +245,217 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
+  const handleClose = () => {
+    setStep(1);
+    setError(null);
+    onClose();
+  };
+
   if (!isOpen) return null;
 
-  return step === 1 ? (
+  return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">Complete Your Purchase</h2>
-        <form onSubmit={handleProceed}>
-          <div className="space-y-4">
-            <label className="block">
-              Full Name: 
-              <input 
-                type="text" 
-                value={formData.fullName} 
-                onChange={(e) => handleInputChange('fullName', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              Email: 
-              <input 
-                type="email" 
-                value={formData.email} 
-                onChange={(e) => handleInputChange('email', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              Address: 
-              <input 
-                type="text" 
-                value={formData.address} 
-                onChange={(e) => handleInputChange('address', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              City: 
-              <input 
-                type="text" 
-                value={formData.city} 
-                onChange={(e) => handleInputChange('city', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              State: 
-              <input 
-                type="text" 
-                value={formData.state} 
-                onChange={(e) => handleInputChange('state', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              Zip Code: 
-              <input 
-                type="text" 
-                value={formData.zipCode} 
-                onChange={(e) => handleInputChange('zipCode', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              Country: 
-              <input 
-                type="text" 
-                value={formData.country} 
-                onChange={(e) => handleInputChange('country', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <label className="block">
-              Phone: 
-              <input 
-                type="text" 
-                value={formData.phone} 
-                onChange={(e) => handleInputChange('phone', e.target.value)} 
-                required 
-                className="w-full border rounded p-2 mt-1" 
-              />
-            </label>
-            <div className="space-y-2">
-              <label className="block">
-                <input 
-                  type="radio" 
-                  value="bitcoin" 
-                  checked={paymentMethod === 'bitcoin'} 
-                  onChange={() => setPaymentMethod('bitcoin')} 
-                  className="mr-2"
-                /> 
-                Bitcoin
-              </label>
-              <label className="block">
-                <input 
-                  type="radio" 
-                  value="telegram" 
-                  checked={paymentMethod === 'telegram'} 
-                  onChange={() => setPaymentMethod('telegram')} 
-                  className="mr-2"
-                /> 
-                Telegram
-              </label>
+        {step === 1 ? (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Complete Your Purchase</h2>
+              <button 
+                onClick={handleClose}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+                aria-label="Close modal"
+              >
+                ×
+              </button>
             </div>
-          </div>
-          {error && <p className="text-red-500 mt-2">{error}</p>}
-          <div className="mt-4 flex space-x-2">
-            <button 
-              type="submit" 
-              disabled={isLoading} 
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {isLoading ? 'Processing...' : 'Proceed to Payment'}
-            </button>
-            <button 
-              type="button" 
-              onClick={onClose} 
-              className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  ) : (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-        <h2 className="text-2xl font-bold mb-4">Confirm Bitcoin Payment</h2>
-        <div className="mb-4 p-4 bg-orange-50 border border-orange-200 rounded">
-          <p className="mb-2">Send exactly <strong>{btcAmount.toFixed(8)} BTC</strong></p>
-          <p className="mb-2">To address: <strong className="font-mono text-sm break-all">{myAddress}</strong></p>
-          <p className="text-sm text-gray-600">Total: ${calculateTotalUSD().toFixed(2)} USD</p>
-        </div>
-        <input 
-          type="text" 
-          value={txId} 
-          onChange={(e) => setTxId(e.target.value)} 
-          placeholder="Enter Transaction ID after sending Bitcoin" 
-          className="w-full border rounded p-2 mb-4" 
-        />
-        {error && <p className="text-red-500 mb-2">{error}</p>}
-        <div className="flex space-x-2">
-          <button 
-            onClick={handleConfirm} 
-            disabled={isLoading} 
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-          >
-            {isLoading ? 'Verifying...' : 'Confirm Payment'}
-          </button>
-          <button 
-            onClick={() => setStep(1)} 
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
-          >
-            Back
-          </button>
-        </div>
+            <form onSubmit={handleProceed}>
+              <div className="space-y-4">
+                <label className="block">
+                  Full Name: 
+                  <input 
+                    id="fullName"
+                    name="fullName"
+                    type="text" 
+                    value={formData.fullName} 
+                    onChange={(e) => handleInputChange('fullName', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  Email: 
+                  <input 
+                    id="email"
+                    name="email"
+                    type="email" 
+                    value={formData.email} 
+                    onChange={(e) => handleInputChange('email', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  Address: 
+                  <input 
+                    id="address"
+                    name="address"
+                    type="text" 
+                    value={formData.address} 
+                    onChange={(e) => handleInputChange('address', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  City: 
+                  <input 
+                    id="city"
+                    name="city"
+                    type="text" 
+                    value={formData.city} 
+                    onChange={(e) => handleInputChange('city', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  State: 
+                  <input 
+                    id="state"
+                    name="state"
+                    type="text" 
+                    value={formData.state} 
+                    onChange={(e) => handleInputChange('state', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  Zip Code: 
+                  <input 
+                    id="zipCode"
+                    name="zipCode"
+                    type="text" 
+                    value={formData.zipCode} 
+                    onChange={(e) => handleInputChange('zipCode', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  Country: 
+                  <input 
+                    id="country"
+                    name="country"
+                    type="text" 
+                    value={formData.country} 
+                    onChange={(e) => handleInputChange('country', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <label className="block">
+                  Phone: 
+                  <input 
+                    id="phone"
+                    name="phone"
+                    type="text" 
+                    value={formData.phone} 
+                    onChange={(e) => handleInputChange('phone', e.target.value)} 
+                    required 
+                    className="w-full border rounded p-2 mt-1" 
+                  />
+                </label>
+                <div className="space-y-2">
+                  <label className="block">
+                    <input 
+                      id="bitcoin"
+                      name="paymentMethod"
+                      type="radio" 
+                      value="bitcoin" 
+                      checked={paymentMethod === 'bitcoin'} 
+                      onChange={() => setPaymentMethod('bitcoin')} 
+                      className="mr-2"
+                    /> 
+                    Bitcoin
+                  </label>
+                  <label className="block">
+                    <input 
+                      id="telegram"
+                      name="paymentMethod"
+                      type="radio" 
+                      value="telegram" 
+                      checked={paymentMethod === 'telegram'} 
+                      onChange={() => setPaymentMethod('telegram')} 
+                      className="mr-2"
+                    /> 
+                    Telegram
+                  </label>
+                </div>
+              </div>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
+              <div className="mt-4 flex space-x-2">
+                <button 
+                  type="submit" 
+                  disabled={isLoading} 
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                >
+                  {isLoading ? 'Processing...' : 'Proceed to Payment'}
+                </button>
+                <button 
+                  type="button" 
+                  onClick={handleClose} 
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </>
+        ) : (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Confirm Bitcoin Payment</h2>
+              <button 
+                onClick={handleClose}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+            </div>
+            <div className="mb-4 p-4 bg-orange-50 border border-orange-200 rounded">
+              <p className="mb-2">Send exactly <strong>{btcAmount.toFixed(8)} BTC</strong></p>
+              <p className="mb-2">To address: <strong className="font-mono text-sm break-all">{myAddress}</strong></p>
+              <p className="text-sm text-gray-600">Total: ${calculateTotalUSD().toFixed(2)} USD</p>
+            </div>
+            <input 
+              id="txId"
+              name="txId"
+              type="text" 
+              value={txId} 
+              onChange={(e) => setTxId(e.target.value)} 
+              placeholder="Enter Transaction ID after sending Bitcoin" 
+              className="w-full border rounded p-2 mb-4" 
+            />
+            {error && <p className="text-red-500 mb-2">{error}</p>}
+            <div className="flex space-x-2">
+              <button 
+                onClick={handleConfirm} 
+                disabled={isLoading} 
+                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+              >
+                {isLoading ? 'Verifying...' : 'Confirm Payment'}
+              </button>
+              <button 
+                onClick={() => setStep(1)} 
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Back
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

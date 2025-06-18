@@ -106,18 +106,6 @@ const CartModal = ({
     setIsPaymentModalOpen(true);
   };
 
-  // Convert cart items to the format expected by PaymentModal
-  const paymentCartItems = cartItems.map(({ product, quantity }) => ({
-    product: {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      category: product.categories[0] || 'general'
-    },
-    quantity
-  }));
-
   const handleReferralClick = () => {
     if (onPageChange) {
       onPageChange('account');
@@ -201,14 +189,15 @@ const CartModal = ({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        orderTotal={subtotal}
-        discount={discountAmount}
-        shippingFee={shippingFee}
-        finalTotal={finalTotal}
         cart={cart}
+        products={products}
+        userDiscount={discountAmount}
         userProfile={userProfile}
-        cartItems={paymentCartItems}
-        language="en"
+        onOrderSuccess={() => {
+          setIsPaymentModalOpen(false);
+          onClose();
+          alert('Order placed successfully!');
+        }}
       />
     </>
   );
