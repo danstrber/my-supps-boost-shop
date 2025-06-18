@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -103,6 +102,8 @@ const CartModal = ({
       alert('Please log in to checkout');
       return;
     }
+    // Close cart modal first, then open payment modal
+    onClose();
     setIsPaymentModalOpen(true);
   };
 
@@ -113,9 +114,18 @@ const CartModal = ({
     }
   };
 
+  const handlePaymentModalClose = () => {
+    setIsPaymentModalOpen(false);
+  };
+
+  const handleOrderSuccess = () => {
+    setIsPaymentModalOpen(false);
+    alert('Order placed successfully!');
+  };
+
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen && !isPaymentModalOpen} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
@@ -188,16 +198,12 @@ const CartModal = ({
 
       <PaymentModal
         isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
+        onClose={handlePaymentModalClose}
         cart={cart}
         products={products}
         userDiscount={discountAmount}
         userProfile={userProfile}
-        onOrderSuccess={() => {
-          setIsPaymentModalOpen(false);
-          onClose();
-          alert('Order placed successfully!');
-        }}
+        onOrderSuccess={handleOrderSuccess}
       />
     </>
   );

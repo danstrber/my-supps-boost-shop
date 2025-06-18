@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -51,9 +50,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const fetchCryptoPrice = async () => {
-    const response = await fetch('https://api.coindesk.com/v1/bpi/currentprice/BTC.json');
-    const data = await response.json();
-    return { btc: { currentPrice: data.bpi.USD.rate_float } };
+    try {
+      // Use a different API that's more reliable
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+      const data = await response.json();
+      return { btc: { currentPrice: data.bitcoin.usd } };
+    } catch (error) {
+      console.error('Failed to fetch crypto price, using fallback');
+      // Fallback price in case API fails
+      return { btc: { currentPrice: 50000 } };
+    }
   };
 
   const checkTransaction = async (txId: string, requiredSatoshis: number) => {
@@ -257,26 +263,28 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-8 rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
         {step === 1 ? (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Complete Your Purchase</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-800">Complete Your Purchase</h2>
               <button 
                 onClick={handleClose}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
                 aria-label="Close modal"
               >
                 ×
               </button>
             </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">Please fill out your shipping information to complete your order.</p>
+            <div className="mb-6">
+              <p className="text-gray-600">Please fill out your shipping information to complete your order.</p>
             </div>
-            <form onSubmit={handleProceed}>
-              <div className="space-y-4">
-                <label className="block">
-                  Full Name: 
+            <form onSubmit={handleProceed} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
                   <input 
                     id="fullName"
                     name="fullName"
@@ -284,11 +292,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={formData.fullName} 
                     onChange={(e) => handleInputChange('fullName', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="name"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your full name"
                   />
-                </label>
-                <label className="block">
-                  Email: 
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
                   <input 
                     id="email"
                     name="email"
@@ -296,23 +308,35 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={formData.email} 
                     onChange={(e) => handleInputChange('email', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="email"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your email"
                   />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Street Address
                 </label>
-                <label className="block">
-                  Address: 
-                  <input 
-                    id="address"
-                    name="address"
-                    type="text" 
-                    value={formData.address} 
-                    onChange={(e) => handleInputChange('address', e.target.value)} 
-                    required 
-                    className="w-full border rounded p-2 mt-1" 
-                  />
-                </label>
-                <label className="block">
-                  City: 
+                <input 
+                  id="address"
+                  name="address"
+                  type="text" 
+                  value={formData.address} 
+                  onChange={(e) => handleInputChange('address', e.target.value)} 
+                  required 
+                  autoComplete="street-address"
+                  className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="Enter your street address"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    City
+                  </label>
                   <input 
                     id="city"
                     name="city"
@@ -320,11 +344,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={formData.city} 
                     onChange={(e) => handleInputChange('city', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="address-level2"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="City"
                   />
-                </label>
-                <label className="block">
-                  State: 
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    State
+                  </label>
                   <input 
                     id="state"
                     name="state"
@@ -332,11 +360,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={formData.state} 
                     onChange={(e) => handleInputChange('state', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="address-level1"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="State"
                   />
-                </label>
-                <label className="block">
-                  Zip Code: 
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ZIP Code
+                  </label>
                   <input 
                     id="zipCode"
                     name="zipCode"
@@ -344,11 +376,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={formData.zipCode} 
                     onChange={(e) => handleInputChange('zipCode', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="postal-code"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="ZIP"
                   />
-                </label>
-                <label className="block">
-                  Country: 
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Country
+                  </label>
                   <input 
                     id="country"
                     name="country"
@@ -356,23 +395,33 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={formData.country} 
                     onChange={(e) => handleInputChange('country', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="country-name"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Country"
                   />
-                </label>
-                <label className="block">
-                  Phone: 
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Phone Number
+                  </label>
                   <input 
                     id="phone"
                     name="phone"
-                    type="text" 
+                    type="tel" 
                     value={formData.phone} 
                     onChange={(e) => handleInputChange('phone', e.target.value)} 
                     required 
-                    className="w-full border rounded p-2 mt-1" 
+                    autoComplete="tel"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Phone number"
                   />
-                </label>
-                <div className="space-y-2">
-                  <label className="block">
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
+                <div className="space-y-3">
+                  <label className="flex items-center space-x-3 cursor-pointer">
                     <input 
                       id="bitcoin"
                       name="paymentMethod"
@@ -380,11 +429,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       value="bitcoin" 
                       checked={paymentMethod === 'bitcoin'} 
                       onChange={() => setPaymentMethod('bitcoin')} 
-                      className="mr-2"
+                      className="w-4 h-4 text-blue-600"
                     /> 
-                    Bitcoin
+                    <span className="text-gray-700 font-medium">Bitcoin (BTC)</span>
                   </label>
-                  <label className="block">
+                  <label className="flex items-center space-x-3 cursor-pointer">
                     <input 
                       id="telegram"
                       name="paymentMethod"
@@ -392,25 +441,31 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       value="telegram" 
                       checked={paymentMethod === 'telegram'} 
                       onChange={() => setPaymentMethod('telegram')} 
-                      className="mr-2"
+                      className="w-4 h-4 text-blue-600"
                     /> 
-                    Telegram
+                    <span className="text-gray-700 font-medium">Telegram</span>
                   </label>
                 </div>
               </div>
-              {error && <p className="text-red-500 mt-2">{error}</p>}
-              <div className="mt-4 flex space-x-2">
+
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-600">{error}</p>
+                </div>
+              )}
+
+              <div className="flex space-x-4 pt-4">
                 <button 
                   type="submit" 
                   disabled={isLoading} 
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                  className="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isLoading ? 'Processing...' : 'Proceed to Payment'}
                 </button>
                 <button 
                   type="button" 
                   onClick={handleClose} 
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                  className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -419,45 +474,73 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           </>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Confirm Bitcoin Payment</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold text-gray-800">Bitcoin Payment</h2>
               <button 
                 onClick={handleClose}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
+                className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
                 aria-label="Close modal"
               >
                 ×
               </button>
             </div>
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">Send the exact amount below and enter your transaction ID to confirm payment.</p>
+            <div className="mb-6">
+              <p className="text-gray-600">Send the exact amount below and enter your transaction ID to confirm payment.</p>
             </div>
-            <div className="mb-4 p-4 bg-orange-50 border border-orange-200 rounded">
-              <p className="mb-2">Send exactly <strong>{btcAmount.toFixed(8)} BTC</strong></p>
-              <p className="mb-2">To address: <strong className="font-mono text-sm break-all">{myAddress}</strong></p>
-              <p className="text-sm text-gray-600">Total: ${calculateTotalUSD().toFixed(2)} USD</p>
+            
+            <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6 mb-6">
+              <div className="text-center mb-4">
+                <h3 className="text-xl font-bold text-orange-800 mb-2">₿ Payment Details</h3>
+                <div className="bg-white rounded-lg p-4 border border-orange-200">
+                  <p className="text-sm text-gray-600 mb-2">Send exactly</p>
+                  <p className="text-2xl font-bold text-orange-600 mb-4">{btcAmount.toFixed(8)} BTC</p>
+                  <p className="text-sm text-gray-600 mb-2">To address:</p>
+                  <p className="font-mono text-sm bg-gray-100 p-3 rounded border break-all">{myAddress}</p>
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-semibold text-orange-800">
+                  Total: ${calculateTotalUSD().toFixed(2)} USD
+                </p>
+              </div>
             </div>
-            <input 
-              id="txId"
-              name="txId"
-              type="text" 
-              value={txId} 
-              onChange={(e) => setTxId(e.target.value)} 
-              placeholder="Enter Transaction ID after sending Bitcoin" 
-              className="w-full border rounded p-2 mb-4" 
-            />
-            {error && <p className="text-red-500 mb-2">{error}</p>}
-            <div className="flex space-x-2">
+
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Transaction ID
+              </label>
+              <input 
+                id="txId"
+                name="txId"
+                type="text" 
+                value={txId} 
+                onChange={(e) => setTxId(e.target.value)} 
+                placeholder="Enter Transaction ID after sending Bitcoin" 
+                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono"
+                required
+              />
+              <p className="text-sm text-gray-500 mt-2">
+                Enter the transaction ID from your Bitcoin wallet after sending the payment.
+              </p>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <p className="text-red-600">{error}</p>
+              </div>
+            )}
+
+            <div className="flex space-x-4">
               <button 
                 onClick={handleConfirm} 
                 disabled={isLoading} 
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+                className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isLoading ? 'Verifying...' : 'Confirm Payment'}
               </button>
               <button 
                 onClick={() => setStep(1)} 
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+                className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Back
               </button>
