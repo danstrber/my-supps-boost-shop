@@ -48,13 +48,13 @@ const CartModal = ({
   if (cartItems.length === 0) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md" aria-describedby="empty-cart-description">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
               Cart
             </DialogTitle>
-            <DialogDescription id="empty-cart-description">
+            <DialogDescription>
               Your shopping cart is currently empty.
             </DialogDescription>
           </DialogHeader>
@@ -116,7 +116,7 @@ const CartModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="cart-modal-description">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span className="flex items-center">
@@ -127,7 +127,7 @@ const CartModal = ({
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
-            <DialogDescription id="cart-modal-description">
+            <DialogDescription>
               Review your items and proceed to checkout when ready.
             </DialogDescription>
           </DialogHeader>

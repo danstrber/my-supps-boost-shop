@@ -81,8 +81,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     console.log('📝 Starting order creation in Supabase');
     console.log('👤 User auth_id:', userProfile?.auth_id);
 
-    // Test authentication first
-    console.log('🧪 Testing authentication...');
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     console.log('🧪 Auth check result:', { user: user?.id, authError });
     
@@ -100,8 +98,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       console.error('❌ User ID mismatch:', { authenticated: user.id, profile: userProfile?.auth_id });
       throw new Error('User authentication mismatch');
     }
-    
-    console.log('✅ Authentication verified');
 
     try {
       console.log('🔄 Making Supabase insert request...');
@@ -170,6 +166,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const handleProceed = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🚀 Form submitted, processing...');
     setError(null);
     setIsLoading(true);
 
@@ -180,14 +177,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
+      console.log('✅ Form validation passed');
+
       if (paymentMethod === 'bitcoin') {
+        console.log('💰 Processing Bitcoin payment...');
         const totalUSD = calculateTotalUSD();
         const { btc: { currentPrice } } = await fetchCryptoPrice();
         const btcAmount = totalUSD / currentPrice;
         setBtcAmount(btcAmount);
+        console.log('🎯 Moving to step 2 for Bitcoin payment');
         setStep(2);
       } else if (paymentMethod === 'telegram') {
-        // Redirect to Telegram for payment
+        console.log('📱 Processing Telegram payment...');
         window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
         toast({
           title: 'Telegram Payment',
@@ -196,6 +197,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         onClose();
       }
     } catch (err: any) {
+      console.error('❌ Error in handleProceed:', err);
       setError(err.message);
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
@@ -267,6 +269,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               >
                 ×
               </button>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">Please fill out your shipping information to complete your order.</p>
             </div>
             <form onSubmit={handleProceed}>
               <div className="space-y-4">
@@ -423,6 +428,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               >
                 ×
               </button>
+            </div>
+            <div className="mb-4">
+              <p className="text-sm text-gray-600">Send the exact amount below and enter your transaction ID to confirm payment.</p>
             </div>
             <div className="mb-4 p-4 bg-orange-50 border border-orange-200 rounded">
               <p className="mb-2">Send exactly <strong>{btcAmount.toFixed(8)} BTC</strong></p>
