@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -279,34 +280,34 @@ const PaymentModal = ({
   };
 
   const sendOrderNotifications = async (orderData: any) => {
-    console.log('📧 Sending order notifications...');
+    console.log('📧 Sending order notifications via Formspree...');
     
     try {
-      const { error } = await supabase.functions.invoke('send-order-email', {
-        body: {
-          customerEmail: formData.email,
-          customerName: formData.fullName,
-          items: cartItems.map(item => ({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity
-          })),
-          originalTotal: orderTotal,
-          discountAmount: discount,
-          shippingFee: shippingFee,
-          finalTotal: finalTotal,
-          paymentMethod: paymentMethod,
-          paymentDetails: orderData.payment_details,
-          orderId: orderData.id
-        }
+      const formData = new FormData();
+      formData.append('customerEmail', formData.email);
+      formData.append('customerName', formData.fullName);
+      formData.append('items', JSON.stringify(cartItems));
+      formData.append('originalTotal', orderTotal.toString());
+      formData.append('discountAmount', discount.toString());
+      formData.append('shippingFee', shippingFee.toString());
+      formData.append('finalTotal', finalTotal.toString());
+      formData.append('paymentMethod', paymentMethod);
+      formData.append('txId', txid || 'N/A');
+      formData.append('address', `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}, ${formData.country}`);
+      formData.append('phone', formData.phone);
+      formData.append('_subject', `New Order from ${formData.fullName}`);
+      formData.append('_cc', 'christhomaso083@proton.me');
+
+      const response = await fetch('https://formspree.io/f/mqaqvlye', {
+        method: 'POST',
+        body: formData,
       });
 
-      if (error) {
-        console.error('❌ Notification error:', error);
-      } else {
-        console.log('✅ Notifications sent successfully');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      console.log('✅ Order notifications sent successfully');
     } catch (error) {
       console.error('❌ Notification sending failed:', error);
     }
@@ -408,8 +409,8 @@ const PaymentModal = ({
       if (!formData.fullName || !formData.email || !formData.address || 
           !formData.city || !formData.country || !formData.phone || !formData.zipCode) {
         toast({
-          title: t.missingInformation,
-          description: t.fillAllFields,
+          title: t.missingInformation || 'Missing Information',
+          description: t.fillAllFields || 'Please fill all fields',
           variant: "destructive"
         });
         return;
@@ -595,14 +596,14 @@ const PaymentModal = ({
                 }}
               >
                 <p className="text-green-700 text-sm font-medium">
-                  {t.wantCheaper}
+                  {t.wantCheaper || 'Want cheaper prices? Build your discount through referrals!'}
                 </p>
               </div>
 
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
                   <div className="text-base font-semibold text-gray-800 mb-3">
-                    {t.paymentMethod}
+                    {t.paymentMethod || 'Payment Method'}
                   </div>
                   <div className="space-y-3">
                     <div 
@@ -626,7 +627,7 @@ const PaymentModal = ({
                           />
                           <label htmlFor="payment-telegram" className="font-medium cursor-pointer">💬 Telegram</label>
                           <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                            {t.recommended}
+                            {t.recommended || 'Recommended'}
                           </span>
                         </div>
                       </div>
@@ -699,9 +700,9 @@ const PaymentModal = ({
                 >
                   {loading ? (language === 'en' ? 'Processing...' : 'Procesando...') : 
                    paymentExpired ? (language === 'en' ? 'Payment Expired' : 'Pago Expirado') :
-                   paymentMethod === 'telegram' ? t.joinTelegram : 
-                   !showBitcoinDetails ? t.continueToPayment :
-                   t.completeOrder}
+                   paymentMethod === 'telegram' ? t.joinTelegram || 'Join Telegram' : 
+                   !showBitcoinDetails ? t.continueToPayment || 'Continue to Payment' :
+                   t.completeOrder || 'Complete Order'}
                 </Button>
               </form>
             </>
