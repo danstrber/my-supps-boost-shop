@@ -97,7 +97,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
   };
 
   const sortedOrders = [...orders].sort((a, b) => {
-    let aValue: any, b = any;
+    let aValue: any, bValue: any;
     
     switch (sortField) {
       case 'date':
