@@ -44,9 +44,9 @@ const ProductGrid = ({
   ];
   
   return (
-    <div className="space-y-6">
-      {/* Coaching Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 text-center">
+    <div className="space-y-8">
+      {/* Coaching Section - Moved to Top with better spacing */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-6 text-center shadow-lg">
         <div className="flex items-center justify-center mb-3">
           <MessageCircle className="h-6 w-6 mr-2" />
           <h2 className="text-xl font-bold">
@@ -128,7 +128,8 @@ const ProductGrid = ({
                       {t.featured}
                     </span>
                   )}
-                  {product.labTestFile && (
+                  {/* Only show lab test tag for products that actually have lab tests */}
+                  {product.labTestFile && ['clenbuterol', 'superdrol'].includes(product.id) && (
                     <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
                       {t.labTested}
                     </span>
@@ -160,7 +161,7 @@ const ProductGrid = ({
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
+                    <span>{product.specifications[language].capsulesPerBottle}</span>
                   </div>
                 </div>
                 

@@ -1,7 +1,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { createOrder, updateUserSpending } from '@/lib/purchase-tracking';
@@ -11,6 +12,7 @@ import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
 import BitcoinPaymentDetails from '@/components/payment/BitcoinPaymentDetails';
 import PaymentTimer from '@/components/payment/PaymentTimer';
 import TelegramPaymentModal from '@/components/payment/TelegramPaymentModal';
+import BitcoinTutorial from '@/components/payment/BitcoinTutorial';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -58,6 +60,7 @@ const PaymentModal = ({
   });
   const [bitcoinAddress, setBitcoinAddress] = useState('');
   const [bitcoinAmount, setBitcoinAmount] = useState(0);
+  const [txid, setTxid] = useState('');
   const [paymentTimer, setPaymentTimer] = useState(30 * 60);
   const [telegramModalOpen, setTelegramModalOpen] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -65,6 +68,9 @@ const PaymentModal = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const timerRef = useRef<NodeJS.Timeout>();
+
+  // Use correct BTC address
+  const BITCOIN_ADDRESS = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
 
   useEffect(() => {
     if (step === 'bitcoin' && paymentTimer > 0) {
@@ -88,17 +94,16 @@ const PaymentModal = ({
 
   const generateBitcoinPayment = async () => {
     try {
-      const mockAddress = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
-      const usdToBtc = 0.000023;
+      const usdToBtc = 0.000023; // Mock rate
       const btcAmount = total * usdToBtc;
 
-      setBitcoinAddress(mockAddress);
+      setBitcoinAddress(BITCOIN_ADDRESS);
       setBitcoinAmount(btcAmount);
       setPaymentTimer(30 * 60);
       setStep('bitcoin');
 
       console.log('Bitcoin payment generated:', {
-        address: mockAddress,
+        address: BITCOIN_ADDRESS,
         amount: btcAmount,
         totalUsd: total
       });
@@ -132,6 +137,15 @@ const PaymentModal = ({
       return;
     }
 
+    if (paymentMethod === 'bitcoin' && !txid.trim()) {
+      toast({
+        title: "Transaction ID Required",
+        description: "Please enter your Bitcoin transaction ID to complete the payment",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setProcessing(true);
     console.log('Processing payment completion...');
 
@@ -157,7 +171,8 @@ const PaymentModal = ({
           shipping_info: shippingInfo,
           ...(paymentMethod === 'bitcoin' && {
             bitcoin_address: bitcoinAddress,
-            bitcoin_amount: bitcoinAmount
+            bitcoin_amount: bitcoinAmount,
+            transaction_id: txid
           })
         },
         status: 'pending'
@@ -173,7 +188,7 @@ const PaymentModal = ({
 
       toast({
         title: "Order Placed Successfully!",
-        description: `Order #${order.id.slice(0, 8)} has been submitted. You will receive an email confirmation shortly.`,
+        description: `Order #${order.id.slice(0, 8)} has been submitted. You will receive confirmation shortly.`,
       });
 
       onPaymentSuccess();
@@ -201,6 +216,7 @@ const PaymentModal = ({
     setPaymentMethod(null);
     setBitcoinAddress('');
     setBitcoinAmount(0);
+    setTxid('');
   };
 
   const handleShippingSubmit = (field: string, value: string) => {
@@ -234,6 +250,7 @@ const PaymentModal = ({
     setPaymentMethod(null);
     setBitcoinAddress('');
     setBitcoinAmount(0);
+    setTxid('');
     setPaymentTimer(30 * 60);
     onClose();
   };
@@ -241,48 +258,56 @@ const PaymentModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-2xl font-bold">
               {step === 'shipping' && 'Shipping Information'}
-              {step === 'payment' && 'Payment Method'}
+              {step === 'payment' && 'Choose Payment Method'}
               {step === 'bitcoin' && 'Bitcoin Payment'}
               {step === 'processing' && 'Processing Payment'}
             </DialogTitle>
+            <DialogDescription>
+              {step === 'shipping' && 'Please provide your shipping details'}
+              {step === 'payment' && 'Select your preferred payment method'}
+              {step === 'bitcoin' && 'Complete your Bitcoin payment'}
+              {step === 'processing' && 'Please wait while we process your order'}
+            </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
               {step === 'shipping' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <ShippingForm 
                     formData={shippingInfo}
                     onInputChange={handleShippingSubmit}
                     language="en"
                   />
-                  <Button onClick={handleShippingFormSubmit} className="w-full">
-                    Continue to Payment
+                  <Button onClick={handleShippingFormSubmit} className="w-full py-3 text-lg">
+                    Continue to Payment →
                   </Button>
                 </div>
               )}
 
               {step === 'payment' && (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <PaymentMethodInfo paymentMethod="telegram" />
                   <PaymentMethodInfo paymentMethod="bitcoin" />
-                  <div className="flex gap-4">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button 
                       onClick={() => handlePaymentMethodSelect('telegram')}
-                      className="flex-1"
+                      className="py-4 text-lg bg-blue-600 hover:bg-blue-700"
+                      size="lg"
                     >
-                      Pay with Telegram
+                      💬 Pay with Telegram
                     </Button>
                     <Button 
                       onClick={() => handlePaymentMethodSelect('bitcoin')}
-                      className="flex-1"
-                      variant="outline"
+                      className="py-4 text-lg bg-orange-600 hover:bg-orange-700"
+                      size="lg"
                     >
-                      Pay with Bitcoin
+                      ₿ Pay with Bitcoin
                     </Button>
                   </div>
                 </div>
@@ -294,64 +319,85 @@ const PaymentModal = ({
                     onExpired={handlePaymentTimeout}
                     language="en"
                   />
+                  
+                  <BitcoinTutorial language="en" />
+                  
                   <BitcoinPaymentDetails 
                     amount={total}
                     walletAddress={bitcoinAddress}
-                    txid=""
-                    onTxidChange={() => {}}
+                    txid={txid}
+                    onTxidChange={setTxid}
                     language="en"
                   />
+                  
+                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-2">Enter Transaction ID</h4>
+                    <Input
+                      value={txid}
+                      onChange={(e) => setTxid(e.target.value)}
+                      placeholder="Paste your Bitcoin transaction ID here..."
+                      className="w-full"
+                    />
+                    <p className="text-sm text-yellow-700 mt-2">
+                      After sending Bitcoin, copy the transaction ID from your wallet and paste it above.
+                    </p>
+                  </div>
+                  
                   <Button 
                     onClick={handlePaymentComplete}
-                    className="w-full"
-                    disabled={processing}
+                    className="w-full py-3 text-lg"
+                    disabled={processing || !txid.trim()}
                   >
-                    {processing ? 'Processing...' : 'Complete Payment'}
+                    {processing ? 'Processing...' : 'Complete Bitcoin Payment'}
                   </Button>
                 </div>
               )}
 
               {step === 'processing' && (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-lg">Processing your payment...</p>
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-6"></div>
+                  <h3 className="text-2xl font-semibold mb-4">Processing your payment...</h3>
+                  <p className="text-gray-600">Please don't close this window while we process your order.</p>
                 </div>
               )}
             </div>
 
             <div className="lg:col-span-1">
-              <OrderSummary 
-                cartItems={cartItems.map(item => ({
-                  product: {
-                    id: item.id,
-                    name: item.name,
-                    price: item.price
-                  },
-                  quantity: item.quantity
-                }))}
-                orderTotal={subtotal}
-                discount={discount}
-                shippingFee={shippingFee}
-                finalTotal={total}
-              />
+              <div className="sticky top-4">
+                <OrderSummary 
+                  cartItems={cartItems.map(item => ({
+                    product: {
+                      id: item.id,
+                      name: item.name,
+                      price: item.price
+                    },
+                    quantity: item.quantity
+                  }))}
+                  orderTotal={subtotal}
+                  discount={discount}
+                  shippingFee={shippingFee}
+                  finalTotal={total}
+                />
+              </div>
             </div>
           </div>
 
-          {step === 'payment' && (
-            <div className="flex justify-between pt-4">
-              <Button variant="outline" onClick={() => setStep('shipping')}>
-                Back to Shipping
+          {/* Navigation buttons */}
+          <div className="flex justify-between pt-6 border-t">
+            {step === 'payment' && (
+              <Button variant="outline" onClick={() => setStep('shipping')} className="px-6">
+                ← Back to Shipping
               </Button>
-            </div>
-          )}
+            )}
 
-          {step === 'bitcoin' && (
-            <div className="flex justify-between pt-4">
-              <Button variant="outline" onClick={() => setStep('payment')}>
-                Back to Payment
+            {step === 'bitcoin' && (
+              <Button variant="outline" onClick={() => setStep('payment')} className="px-6">
+                ← Back to Payment
               </Button>
-            </div>
-          )}
+            )}
+            
+            <div className="flex-1"></div>
+          </div>
         </DialogContent>
       </Dialog>
 

@@ -31,20 +31,18 @@ const EmailConfirmationView = ({
         }
       </p>
       
-      {/* New junk/spam warning */}
-      <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
-        <p className="text-yellow-800 text-sm">
-          <strong>
-            {language === 'en' 
-              ? "⚠️ Don't forget to check your spam/junk folder!"
-              : "⚠️ ¡No olvides revisar tu carpeta de spam/correo no deseado!"
-            }
-          </strong>
+      {/* Enhanced junk/spam warning */}
+      <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+        <p className="text-yellow-800 text-sm font-semibold mb-2">
+          {language === 'en' 
+            ? "⚠️ IMPORTANT: Check your spam/junk folder!"
+            : "⚠️ IMPORTANTE: ¡Revisa tu carpeta de spam/correo no deseado!"
+          }
         </p>
-        <p className="text-yellow-700 text-xs mt-1">
+        <p className="text-yellow-700 text-xs">
           {language === 'en'
-            ? "Sometimes verification emails end up there."
-            : "A veces los emails de verificación terminan ahí."
+            ? "Verification emails sometimes end up in spam folders. If you don't see it in your inbox within 5 minutes, please check your spam/junk folder."
+            : "Los emails de verificación a veces terminan en carpetas de spam. Si no lo ves en tu bandeja de entrada en 5 minutos, por favor revisa tu carpeta de spam/correo no deseado."
           }
         </p>
       </div>

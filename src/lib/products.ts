@@ -74,7 +74,7 @@ export const products: Product[] = [
   {
     id: 'enclo',
     name: 'Enclomiphene',
-    price: 49.99,
+    price: 40.00,
     image: '/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png',
     description: {
       en: 'Premium Enclomiphene for natural testosterone support and PCT.',
@@ -82,7 +82,7 @@ export const products: Product[] = [
     },
     ingredients: 'Enclomiphene Citrate 25mg per capsule',
     dosage: '25mg daily',
-    capsules: 60,
+    capsules: 50,
     featured: true,
     labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
     inStock: true,
@@ -90,13 +90,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '60 capsules',
+        capsulesPerBottle: '50 capsules',
         typicalCycleLength: '4-6 weeks',
         potencyLevel: 'Moderate'
       },
       es: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '60 cápsulas',
+        capsulesPerBottle: '50 cápsulas',
         typicalCycleLength: '4-6 semanas',
         potencyLevel: 'Moderado'
       }
@@ -144,7 +144,7 @@ export const products: Product[] = [
   {
     id: 'rad140',
     name: 'RAD-140 (Testolone)',
-    price: 79.99,
+    price: 55.00,
     image: '/lovable-uploads/9ac178e7-36d1-4738-ac66-d1e3917e7ec5.png',
     description: {
       en: 'Powerful RAD-140 SARM for lean muscle gains and strength.',
@@ -152,7 +152,7 @@ export const products: Product[] = [
     },
     ingredients: 'RAD-140 (Testolone) 10mg per capsule',
     dosage: '10-20mg daily',
-    capsules: 60,
+    capsules: 50,
     featured: true,
     labTestFile: '/lovable-uploads/561ffbe1-f890-47ce-a601-f590a96593e0.png',
     inStock: true,
@@ -160,13 +160,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '60 capsules',
+        capsulesPerBottle: '50 capsules',
         typicalCycleLength: '8-12 weeks',
         potencyLevel: 'High'
       },
       es: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '60 cápsulas',
+        capsulesPerBottle: '50 cápsulas',
         typicalCycleLength: '8-12 semanas',
         potencyLevel: 'Alto'
       }
@@ -214,29 +214,29 @@ export const products: Product[] = [
   {
     id: 'mk677',
     name: 'MK-677 (Ibutamoren)',
-    price: 69.99,
+    price: 40.00,
     image: '/lovable-uploads/6c2dcc9f-c88a-4d00-9ab5-1572b72da530.png',
     description: {
       en: 'Premium MK-677 for enhanced growth hormone and recovery.',
       es: 'MK-677 premium para hormona de crecimiento mejorada y recuperación.'
     },
-    ingredients: 'MK-677 (Ibutamoren) 25mg per capsule',
-    dosage: '25mg daily',
-    capsules: 60,
+    ingredients: 'MK-677 (Ibutamoren) 10mg per capsule',
+    dosage: '10-25mg daily',
+    capsules: 50,
     featured: true,
     labTestFile: '/lovable-uploads/7698b7f4-aef8-4e6a-a8da-ad22e5909715.png',
     inStock: true,
     categories: ['sarms', 'recovery', 'oral'],
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '60 capsules',
+        dosePerCapsule: '10mg',
+        capsulesPerBottle: '50 capsules',
         typicalCycleLength: '12-24 weeks',
         potencyLevel: 'Moderate'
       },
       es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '60 cápsulas',
+        dosePerCapsule: '10mg',
+        capsulesPerBottle: '50 cápsulas',
         typicalCycleLength: '12-24 semanas',
         potencyLevel: 'Moderado'
       }
@@ -284,27 +284,27 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin',
-    price: 39.99,
-    image: '',
+    price: 25.00,
+    image: '/lovable-uploads/dcea32d8-541f-45c9-b1bf-f74a0c97c0bb.png',
     description: {
       en: 'Essential Aromasin (Exemestane) for estrogen control during cycles.',
       es: 'Aromasin esencial (Exemestano) para control de estrógenos durante ciclos.'
     },
     ingredients: 'Exemestane 25mg per capsule',
     dosage: '12.5-25mg daily',
-    capsules: 60,
+    capsules: 10,
     inStock: true,
     categories: ['aromatase-inhibitor', 'oral'],
     specifications: {
       en: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '60 capsules',
+        capsulesPerBottle: '10 capsules',
         typicalCycleLength: 'Throughout cycle',
         potencyLevel: 'High'
       },
       es: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '60 cápsulas',
+        capsulesPerBottle: '10 cápsulas',
         typicalCycleLength: 'Durante todo el ciclo',
         potencyLevel: 'Alto'
       }
@@ -352,7 +352,7 @@ export const products: Product[] = [
   {
     id: 'clenbuterol',
     name: 'Clenbuterol',
-    price: 59.99,
+    price: 35.00,
     image: '/lovable-uploads/eba9e12b-46c3-4087-b249-0766d5bd34bb.png',
     description: {
       en: 'Effective Clenbuterol for fat burning and improved cardiovascular performance.',
@@ -360,21 +360,21 @@ export const products: Product[] = [
     },
     ingredients: 'Clenbuterol HCl 40mcg per capsule',
     dosage: '20-120mcg daily (pyramid dosing)',
-    capsules: 100,
+    capsules: 50,
     featured: true,
-    labTestFile: '/lovable-uploads/561ffbe1-f890-47ce-a601-f590a96593e0.png',
+    labTestFile: '/lovable-uploads/096e40d17-f8c0-404b-af96-b7cadb9b096e.png',
     inStock: true,
     categories: ['cutting', 'oral'],
     specifications: {
       en: {
         dosePerCapsule: '40mcg',
-        capsulesPerBottle: '100 capsules',
+        capsulesPerBottle: '50 capsules',
         typicalCycleLength: '2-4 weeks',
         potencyLevel: 'High'
       },
       es: {
         dosePerCapsule: '40mcg',
-        capsulesPerBottle: '100 cápsulas',
+        capsulesPerBottle: '50 cápsulas',
         typicalCycleLength: '2-4 semanas',
         potencyLevel: 'Alto'
       }
@@ -422,7 +422,7 @@ export const products: Product[] = [
   {
     id: 'superdrol',
     name: 'Superdrol',
-    price: 89.99,
+    price: 25.00,
     image: '/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png',
     description: {
       en: 'Powerful Superdrol for rapid muscle gains and strength.',
@@ -430,21 +430,21 @@ export const products: Product[] = [
     },
     ingredients: 'Methasterone 10mg per capsule',
     dosage: '10-20mg daily',
-    capsules: 60,
+    capsules: 20,
     featured: true,
-    labTestFile: '/lovable-uploads/561ffbe1-f890-47ce-a601-f590a96593e0.png',
+    labTestFile: '/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png',
     inStock: true,
     categories: ['steroids', 'bulking', 'oral'],
     specifications: {
       en: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '60 capsules',
+        capsulesPerBottle: '20 capsules',
         typicalCycleLength: '4-6 weeks',
         potencyLevel: 'Very High'
       },
       es: {
         dosePerCapsule: '10mg',
-        capsulesPerBottle: '60 cápsulas',
+        capsulesPerBottle: '20 cápsulas',
         typicalCycleLength: '4-6 semanas',
         potencyLevel: 'Muy Alto'
       }

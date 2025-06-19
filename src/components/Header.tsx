@@ -34,7 +34,12 @@ const Header = ({
     <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-4">
+            <img 
+              src="/lovable-uploads/fc2fad1d-20dd-4b74-b5e3-07f81414d651.png" 
+              alt="MySupps Logo" 
+              className="h-10 w-auto"
+            />
             <button
               onClick={() => onPageChange('home')}
               className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
@@ -107,21 +112,20 @@ const Header = ({
           </nav>
 
           <div className="flex items-center space-x-4">
-            {/* Enhanced Language Button with Flag */}
+            {/* Enhanced Language Button with Real Flag Emojis */}
             <button
               onClick={() => onLanguageChange(language === 'en' ? 'es' : 'en')}
               className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 shadow-sm hover:shadow-md"
             >
               <div className="flex items-center space-x-1.5">
                 <Flag className="h-4 w-4 text-blue-600" />
-                <span className="text-lg" role="img" aria-label={language === 'en' ? 'US flag' : 'Spanish flag'}>
+                <span className="text-xl" role="img" aria-label={language === 'en' ? 'US flag' : 'Spanish flag'}>
                   {language === 'en' ? '🇺🇸' : '🇪🇸'}
                 </span>
               </div>
               <span className="text-sm font-semibold text-blue-700">
                 {language === 'en' ? 'EN' : 'ES'}
               </span>
-              <Globe className="h-3 w-3 text-blue-500" />
             </button>
 
             <button
@@ -156,12 +160,20 @@ const Header = ({
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => onAuthAction('login')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                Login
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => onAuthAction('signup')}
+                  className="text-blue-600 hover:text-blue-700 transition-colors font-medium"
+                >
+                  Sign Up
+                </button>
+                <button
+                  onClick={() => onAuthAction('login')}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Login
+                </button>
+              </div>
             )}
           </div>
         </div>
