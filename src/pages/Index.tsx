@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import ProductGrid from '@/components/ProductGrid';
@@ -35,6 +34,7 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account'>('home');
   const [referralCount, setReferralCount] = useState(0);
   const [detectedReferralCode, setDetectedReferralCode] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Custom hooks
   const { userProfile, isAuthenticated, loading, handleAuthAction } = useAuth();
@@ -123,9 +123,26 @@ const Index = () => {
     }
   }, [isAuthenticated]);
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.categories.includes(selectedCategory));
+  const filteredProducts = useMemo(() => {
+    let filtered = products;
+    
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(product => product.category === selectedCategory);
+    }
+    
+    if (searchQuery) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (typeof product.description === 'string' 
+          ? product.description.toLowerCase().includes(searchQuery.toLowerCase())
+          : product.description.en.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            product.description.es.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    return filtered;
+  }, [selectedCategory, searchQuery]);
 
   const handleAuthModalAction = (action: 'login' | 'signup' | 'logout') => {
     if (action === 'logout') {

@@ -9,14 +9,10 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import OrderHistory from '@/components/OrderHistory';
 import ReferralSection from '@/components/ReferralSection';
-import TwoFactorSettings from '@/components/TwoFactorSettings';
-
-interface AccountPageProps {
-  language: 'en' | 'es';
-}
+import Two
 
 const AccountPage = ({ language }: AccountPageProps) => {
-  const { user, logout } = useAuth();
+  const { userProfile, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
 
   const text = {
@@ -56,7 +52,7 @@ const AccountPage = ({ language }: AccountPageProps) => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -84,8 +80,8 @@ const AccountPage = ({ language }: AccountPageProps) => {
                     <User className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">{user?.user_metadata?.name || user?.email}</p>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
+                    <p className="font-medium text-sm">{userProfile?.name || userProfile?.email}</p>
+                    <p className="text-xs text-gray-500">{userProfile?.email}</p>
                   </div>
                 </div>
               </CardHeader>
@@ -127,7 +123,7 @@ const AccountPage = ({ language }: AccountPageProps) => {
                       <Input
                         id="email"
                         type="email"
-                        value={user?.email || ''}
+                        value={userProfile?.email || ''}
                         disabled
                         className="bg-gray-50"
                       />
@@ -137,7 +133,7 @@ const AccountPage = ({ language }: AccountPageProps) => {
                       <Input
                         id="name"
                         type="text"
-                        value={user?.user_metadata?.name || ''}
+                        value={userProfile?.name || ''}
                         placeholder="Enter your full name"
                       />
                     </div>
@@ -154,11 +150,18 @@ const AccountPage = ({ language }: AccountPageProps) => {
             )}
 
             {activeTab === 'referrals' && (
-              <ReferralSection language={language} />
+              <ReferralSection 
+                language={language} 
+                userProfile={userProfile}
+                referralCount={0}
+              />
             )}
 
             {activeTab === 'security' && (
-              <TwoFactorSettings language={language} />
+              <TwoFactorSettings 
+                language={language}
+                userProfile={userProfile}
+              />
             )}
           </div>
         </div>

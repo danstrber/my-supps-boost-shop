@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, Copy, Check, AlertCircle, Clock, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,7 +53,7 @@ const PaymentModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [bitcoinAddress, setBitcoinAddress] = useState('bc1qxy2kgdygjrsqtzq2yr8yr3ylk69swq2x83kppa');
-  const { user } = useAuth();
+  const { userProfile } = useAuth();
 
   const text = {
     en: {
@@ -123,7 +122,7 @@ const PaymentModal = ({
   };
 
   const handleSubmitOrder = async () => {
-    if (!user?.id) {
+    if (!userProfile?.auth_id) {
       console.error('User not authenticated');
       return;
     }
@@ -154,7 +153,7 @@ const PaymentModal = ({
         console.log('✅ Bitcoin transaction verified successfully!');
         
         const orderData = {
-          user_id: user.id,
+          user_id: userProfile.auth_id,
           items: JSON.stringify(cartItems),
           original_total: orderTotal,
           discount_amount: discount,
@@ -194,8 +193,8 @@ const PaymentModal = ({
         console.log('📧 Sending confirmation email...');
         try {
           const emailData = {
-            customerEmail: user.email || '',
-            customerName: user.user_metadata?.name || user.email || 'Customer',
+            customerEmail: userProfile.email || '',
+            customerName: userProfile.name || userProfile.email || 'Customer',
             items: cartItems.map(item => ({
               id: item.product.id,
               name: item.product.name,
@@ -261,7 +260,6 @@ const PaymentModal = ({
       );
 
       if (verificationResult.isValid) {
-        // If retry succeeds, create the order
         await handleSubmitOrder();
       } else {
         setVerificationError(verificationResult.errorMessage || 'Verification failed');

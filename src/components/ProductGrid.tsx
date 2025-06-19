@@ -85,23 +85,25 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {product.description[language]}
+                  {typeof product.description === 'string' ? product.description : product.description[language]}
                 </p>
 
                 {/* Dose and Capsule Info */}
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Pill className="h-3 w-3" />
-                    <span>{product.specifications[language].dosePerCapsule}</span>
+                {product.specifications && (
+                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Pill className="h-3 w-3" />
+                      <span>{product.specifications[language].dosePerCapsule}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="h-3 w-3 bg-green-500 rounded-full" />
+                      <span>{product.specifications[language].capsulesPerBottle} caps</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
-                  </div>
-                </div>
+                )}
                 
                 <div className="flex flex-wrap gap-1">
-                  {product.categories.slice(0, 2).map((category) => (
+                  {product.categories?.slice(0, 2).map((category) => (
                     <span
                       key={category}
                       className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium"
@@ -109,7 +111,7 @@ const ProductGrid = ({
                       {category.replace('-', ' ')}
                     </span>
                   ))}
-                  {product.categories.length > 2 && (
+                  {product.categories && product.categories.length > 2 && (
                     <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
                       +{product.categories.length - 2}
                     </span>
