@@ -1,46 +1,64 @@
 
 import React from 'react';
-import { translations } from '@/lib/translations';
+import { AlertCircle, CheckCircle, Shield, Clock } from 'lucide-react';
 
 interface BitcoinTutorialProps {
-  language: 'en' | 'es';
+  language: string;
 }
 
 const BitcoinTutorial = ({ language }: BitcoinTutorialProps) => {
-  const t = translations[language];
-
   return (
-    <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-      <h4 className="font-semibold text-gray-800 mb-3">{t.bitcoinTutorial}</h4>
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+      <div className="flex items-center space-x-2 mb-4">
+        <AlertCircle className="h-5 w-5 text-blue-600" />
+        <h3 className="text-lg font-semibold text-blue-900">Bitcoin Payment Guide</h3>
+      </div>
       
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
-          <h5 className="font-medium text-blue-800 mb-2">{t.bitcoinEasy}</h5>
-          <ul className="text-blue-700 text-xs space-y-1">
-            {t.bitcoinEasySteps.map((step, index) => (
-              <li key={index}>{step}</li>
-            ))}
-          </ul>
-          <div className="mt-2 space-y-1">
-            <a href="https://coinbase.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs underline block">• Coinbase.com</a>
-            <a href="https://kraken.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs underline block">• Kraken.com</a>
-            <a href="https://binance.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs underline block">• Binance.com</a>
+      <div className="space-y-4">
+        <div className="bg-white rounded-lg p-4 border border-blue-100">
+          <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
+            <Shield className="h-4 w-4 mr-2" />
+            KYC vs Non-KYC Bitcoin Purchase
+          </h4>
+          <div className="text-sm text-blue-800 space-y-2">
+            <p><strong>KYC Exchanges (Easier):</strong> Coinbase, Binance, Kraken - require ID verification but offer easy purchasing with credit/debit cards.</p>
+            <p><strong>Non-KYC Options (More Private):</strong> Bisq, LocalBitcoins, Bitcoin ATMs - more anonymous but may require cash or bank transfers.</p>
           </div>
         </div>
 
-        <div className="bg-purple-50 border border-purple-200 p-3 rounded-lg">
-          <h5 className="font-medium text-purple-800 mb-2">
-            🔒 {language === 'en' ? 'Anonymous Bitcoin Payment Tips' : 'Consejos de Pago Anónimo con Bitcoin'}
-          </h5>
-          <ul className="text-purple-700 text-xs space-y-1">
-            <li>• {language === 'en' ? 'Use privacy wallets (Wasabi, Samourai)' : 'Usa billeteras de privacidad (Wasabi, Samourai)'}</li>
-            <li>• {language === 'en' ? 'Send from fresh, unlinked addresses' : 'Envía desde direcciones nuevas no vinculadas'}</li>
-            <li>• {language === 'en' ? 'No ID verification - completely anonymous' : 'Sin verificación de ID - completamente anónimo'}</li>
+        <div className="bg-white rounded-lg p-4 border border-blue-100">
+          <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Step-by-Step Process
+          </h4>
+          <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+            <li>Buy Bitcoin from your preferred exchange</li>
+            <li>Transfer Bitcoin to your personal wallet (recommended for privacy)</li>
+            <li>Copy our payment address exactly</li>
+            <li>Send the exact Bitcoin amount shown</li>
+            <li>Copy the transaction ID from your wallet</li>
+            <li>Paste the transaction ID in the next step</li>
+          </ol>
+        </div>
+
+        <div className="bg-white rounded-lg p-4 border border-blue-100">
+          <h4 className="font-semibold text-blue-900 mb-2 flex items-center">
+            <Clock className="h-4 w-4 mr-2" />
+            Important Notes
+          </h4>
+          <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <li>Bitcoin transactions can take 10-60 minutes to confirm</li>
+            <li>Send the EXACT amount shown - do not round up or down</li>
+            <li>Double-check the payment address before sending</li>
+            <li>Keep your transaction ID - you'll need it for verification</li>
+            <li>We manually verify all Bitcoin payments within 24 hours</li>
           </ul>
-          <div className="mt-2 space-y-1">
-            <a href="https://localcoinswap.com" target="_blank" rel="noopener noreferrer" className="text-purple-600 text-xs underline block">• LocalCoinSwap.com</a>
-            <a href="https://bisq.network" target="_blank" rel="noopener noreferrer" className="text-purple-600 text-xs underline block">• Bisq.network</a>
-          </div>
+        </div>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+          <p className="text-sm text-yellow-800">
+            <strong>Security Tip:</strong> For maximum privacy, use a VPN and avoid linking your Bitcoin purchase to personal information.
+          </p>
         </div>
       </div>
     </div>

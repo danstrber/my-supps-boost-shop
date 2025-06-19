@@ -155,9 +155,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       }
       
       console.log('✅ Order email sent successfully');
+      return true;
     } catch (error) {
       console.error('❌ Email sending failed:', error);
-      // Don't throw here - email failure shouldn't stop the order
+      return false;
     }
   };
 
@@ -246,26 +247,39 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       console.log('🔄 About to create order with data:', orderData);
       const createdOrder = await createOrderInDatabase(orderData);
-      console.log('✅ Order created with ID:', createdOrder.id);
+      console.log('✅ Order created successfully with ID:', createdOrder.id);
       
       console.log('📧 Sending Bitcoin order email...');
-      await sendOrderEmail(orderData);
-      console.log('✅ Email sent successfully');
+      const emailSent = await sendOrderEmail(orderData);
+      
+      if (emailSent) {
+        console.log('✅ Email sent successfully');
+      } else {
+        console.log('⚠️ Email sending failed, but order was created');
+      }
       
       // Clear cart and close modal
       onOrderSuccess();
       onClose();
       
+      // Generate short order ID for display
+      const shortOrderId = createdOrder.id.slice(-8).toUpperCase();
+      
       toast({
         title: '🎉 Order Placed Successfully!',
-        description: `Your order #${createdOrder.id.slice(-8)} has been submitted. We will verify payment and process your order within 24 hours.`,
-        duration: 8000,
+        description: `Your order #${shortOrderId} has been submitted. We will verify your Bitcoin payment and process your order within 24 hours. ${emailSent ? 'Confirmation email sent!' : 'Please save your order ID for reference.'}`,
+        duration: 10000,
       });
       
     } catch (err: any) {
       console.error('❌ Error in handleConfirm:', err);
       setError(err.message);
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+      toast({ 
+        title: 'Order Failed', 
+        description: `Failed to create order: ${err.message}. Please try again or contact support.`, 
+        variant: 'destructive',
+        duration: 8000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -350,7 +364,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <p className="text-red-600">{error}</p>
+                    <p className="text-red-600 font-medium">❌ Error: {error}</p>
+                    <p className="text-red-500 text-sm mt-1">Please try again or contact support if the problem persists.</p>
                   </div>
                 )}
 
@@ -413,7 +428,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   name="txId"
                   type="text" 
                   value={txId} 
-                  onChange={(e) => setTxId(e.target.value)} 
+                  onChange={(e) => setTxId(e.target.value)}
                   placeholder="Enter Transaction ID after sending Bitcoin" 
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono"
                   required
@@ -425,7 +440,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                  <p className="text-red-600">{error}</p>
+                  <p className="text-red-600 font-medium">❌ Error: {error}</p>
+                  <p className="text-red-500 text-sm mt-1">Please check your transaction ID and try again.</p>
                 </div>
               )}
 
@@ -435,7 +451,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   disabled={isLoading || !txId} 
                   className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isLoading ? 'Processing...' : 'Submit Order'}
+                  {isLoading ? 'Creating Order...' : 'Submit Order'}
                 </button>
                 <button 
                   onClick={() => setStep(1)} 
