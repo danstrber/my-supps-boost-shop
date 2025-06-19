@@ -13,9 +13,19 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   referralCode?: string;
+  initialMode?: 'login' | 'signup';
+  language?: 'en' | 'es';
+  onSignupSuccess?: () => void;
 }
 
-const AuthModal = ({ isOpen, onClose, referralCode }: AuthModalProps) => {
+const AuthModal = ({ 
+  isOpen, 
+  onClose, 
+  referralCode, 
+  initialMode = 'login',
+  language = 'en',
+  onSignupSuccess 
+}: AuthModalProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
@@ -65,6 +75,10 @@ const AuthModal = ({ isOpen, onClose, referralCode }: AuthModalProps) => {
           title: "Success!",
           description: "Account created successfully! Please check your email to verify your account.",
         });
+
+        if (onSignupSuccess) {
+          onSignupSuccess();
+        }
       } else {
         console.log('Login successful');
         toast({
@@ -119,7 +133,7 @@ const AuthModal = ({ isOpen, onClose, referralCode }: AuthModalProps) => {
           <DialogTitle>Welcome to SteroidShop</DialogTitle>
         </DialogHeader>
         
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs defaultValue={initialMode} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -166,7 +180,8 @@ const AuthModal = ({ isOpen, onClose, referralCode }: AuthModalProps) => {
             <GoogleSignInButton 
               onClick={() => handleGoogleSubmit('login')}
               disabled={loading}
-              text="Login with Google"
+              language={language}
+              mode="login"
             />
           </TabsContent>
           
@@ -231,7 +246,8 @@ const AuthModal = ({ isOpen, onClose, referralCode }: AuthModalProps) => {
             <GoogleSignInButton 
               onClick={() => handleGoogleSubmit('signup')}
               disabled={loading}
-              text="Sign up with Google"
+              language={language}
+              mode="signup"
             />
           </TabsContent>
         </Tabs>

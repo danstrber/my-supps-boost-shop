@@ -48,7 +48,8 @@ const PaymentModal = ({
     city: '',
     state: '',
     zipCode: '',
-    country: ''
+    country: '',
+    phone: ''
   });
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
@@ -221,12 +222,14 @@ const PaymentModal = ({
     setBitcoinAmount('');
   };
 
-  const handleShippingSubmit = (info: typeof shippingInfo) => {
-    console.log('Shipping info submitted:', info);
-    setShippingInfo(info);
+  const handleShippingSubmit = (field: string, value: string) => {
+    setShippingInfo(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleShippingFormSubmit = () => {
     setCustomerInfo({
-      fullName: info.fullName,
-      email: info.email,
+      fullName: shippingInfo.fullName,
+      email: shippingInfo.email,
       telegram: ''
     });
     setStep('payment');
@@ -270,19 +273,46 @@ const PaymentModal = ({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               {step === 'shipping' && (
-                <ShippingForm onSubmit={handleShippingSubmit} />
+                <div className="space-y-4">
+                  <ShippingForm 
+                    formData={shippingInfo}
+                    onInputChange={handleShippingSubmit}
+                    language="en"
+                  />
+                  <Button onClick={handleShippingFormSubmit} className="w-full">
+                    Continue to Payment
+                  </Button>
+                </div>
               )}
 
               {step === 'payment' && (
-                <PaymentMethodInfo 
-                  onSelectMethod={handlePaymentMethodSelect}
-                  selectedMethod={paymentMethod}
-                />
+                <div className="space-y-4">
+                  <PaymentMethodInfo paymentMethod="telegram" />
+                  <PaymentMethodInfo paymentMethod="bitcoin" />
+                  <div className="flex gap-4">
+                    <Button 
+                      onClick={() => handlePaymentMethodSelect('telegram')}
+                      className="flex-1"
+                    >
+                      Pay with Telegram
+                    </Button>
+                    <Button 
+                      onClick={() => handlePaymentMethodSelect('bitcoin')}
+                      className="flex-1"
+                      variant="outline"
+                    >
+                      Pay with Bitcoin
+                    </Button>
+                  </div>
+                </div>
               )}
 
               {step === 'bitcoin' && (
                 <div className="space-y-6">
-                  <PaymentTimer timeLeft={paymentTimer} />
+                  <PaymentTimer 
+                    onExpired={handlePaymentTimeout}
+                    language="en"
+                  />
                   <BitcoinPaymentDetails 
                     address={bitcoinAddress}
                     amount={bitcoinAmount}
@@ -302,11 +332,18 @@ const PaymentModal = ({
 
             <div className="lg:col-span-1">
               <OrderSummary 
-                items={cartItems}
-                subtotal={subtotal}
+                cartItems={cartItems.map(item => ({
+                  product: {
+                    id: item.id,
+                    name: item.name,
+                    price: item.price
+                  },
+                  quantity: item.quantity
+                }))}
+                orderTotal={subtotal}
                 discount={discount}
                 shippingFee={shippingFee}
-                total={total}
+                finalTotal={total}
               />
             </div>
           </div>
@@ -332,7 +369,7 @@ const PaymentModal = ({
       <TelegramPaymentModal
         isOpen={telegramModalOpen}
         onClose={() => setTelegramModalOpen(false)}
-        onComplete={handleTelegramComplete}
+        language="en"
         orderTotal={total}
       />
     </>
