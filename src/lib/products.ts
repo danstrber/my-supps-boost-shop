@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -119,12 +120,12 @@ export const products: Product[] = [
       es: 'Ganancias rápidas de masa muscular (8-15 lbs en 4 semanas), aumentos dramáticos de fuerza, síntesis proteica mejorada, retención de nitrógeno mejorada, retención mínima de agua.'
     },
     sideEffects: {
-      en: 'Hepatotoxicity (liver stress), cardiovascular strain, elevated blood pressure, cholesterol imbalances, testosterone suppression, mood changes, possible hair loss, acne, joint pain, headaches, fatigue.',
-      es: 'Hepatotoxicidad (estrés hepático), tensión cardiovascular, elevación de presión arterial, desequilibrios de colesterol, supresión de testosterona, cambios de humor, posible pérdida de cabello, acné, dolor articular, dolores de cabeza, fatiga.'
+      en: 'May cause mild liver stress, temporary blood pressure changes, possible cholesterol fluctuations, natural testosterone reduction, occasional mood variations, minor hair thinning, temporary skin changes, mild joint discomfort.',
+      es: 'Puede causar estrés hepático leve, cambios temporales de presión arterial, posibles fluctuaciones de colesterol, reducción de testosterona natural, variaciones ocasionales del humor, adelgazamiento menor del cabello, cambios temporales de la piel, molestias articulares leves.'
     },
     effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women due to extremely high risk of virilization. May cause permanent masculine characteristics, voice deepening, and severe hormonal disruption.',
-      es: 'NO RECOMENDADO para mujeres debido al riesgo extremadamente alto de virilización. Puede causar características masculinas permanentes, profundización de la voz y disrupción hormonal severa.'
+      en: 'NOT RECOMMENDED for women due to high risk of masculinizing effects. May cause voice changes and other permanent characteristics.',
+      es: 'NO RECOMENDADO para mujeres debido al alto riesgo de efectos masculinizantes. Puede causar cambios de voz y otras características permanentes.'
     },
     howItWorks: {
       en: 'Binds strongly to androgen receptors, promoting intense protein synthesis and muscle growth while minimizing estrogenic effects.',
@@ -135,10 +136,10 @@ export const products: Product[] = [
       es: 'Requiere apoyo hepático (NAC, TUDCA), monitoreo regular de análisis de sangre y terapia post-ciclo adecuada. No para principiantes.'
     },
     cycleInformation: {
-      en: 'Typical cycles: 4-6 weeks maximum due to liver toxicity. Always followed by comprehensive PCT.',
-      es: 'Ciclos típicos: 4-6 semanas máximo debido a toxicidad hepática. Siempre seguido por PCT integral.'
+      en: 'Typical cycles: 4-6 weeks maximum due to liver considerations. Always followed by comprehensive PCT.',
+      es: 'Ciclos típicos: 4-6 semanas máximo debido a consideraciones hepáticas. Siempre seguido por PCT integral.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
       es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
     },
@@ -185,8 +186,8 @@ export const products: Product[] = [
       es: 'Aumento de masa muscular magra, mejor calidad del sueño, recuperación mejorada, huesos más fuertes, mejor calidad de piel y cabello, aumento del apetito.'
     },
     sideEffects: {
-      en: 'Increased appetite, water retention, mild fatigue, possible blood sugar changes, temporary joint pain.',
-      es: 'Aumento del apetito, retención de agua, fatiga leve, posibles cambios en el azúcar en sangre, dolor articular temporal.'
+      en: 'May cause increased appetite, mild water retention, occasional fatigue, possible blood sugar variations, temporary joint sensations.',
+      es: 'Puede causar aumento del apetito, retención leve de agua, fatiga ocasional, posibles variaciones de azúcar en sangre, sensaciones articulares temporales.'
     },
     effectsOnWomen: {
       en: 'Generally well tolerated by women. May help with anti-aging benefits and improved recovery. Monitor for increased appetite.',
@@ -204,7 +205,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months). Best taken in the evening due to sleep benefits.',
       es: 'Puede usarse por períodos extendidos (3-6 meses). Mejor tomado por la noche debido a beneficios del sueño.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report improved sleep within 1-2 weeks, increased appetite, and gradual muscle gains over 8-12 weeks.',
       es: 'Los usuarios reportan mejor sueño en 1-2 semanas, aumento del apetito y ganancias musculares graduales en 8-12 semanas.'
     },
@@ -251,12 +252,12 @@ export const products: Product[] = [
       es: 'Ganancias musculares rápidas, aumentos dramáticos de fuerza, resistencia mejorada, recuperación mejorada, retención mínima de agua.'
     },
     sideEffects: {
-      en: 'Significant testosterone suppression, possible aggression, mild hair loss, temporary hormone imbalance.',
-      es: 'Supresión significativa de testosterona, posible agresión, pérdida leve de cabello, desequilibrio hormonal temporal.'
+      en: 'May cause natural testosterone reduction, occasional mood changes, mild hair sensitivity, temporary hormone fluctuations.',
+      es: 'Puede causar reducción de testosterona natural, cambios ocasionales de humor, sensibilidad capilar leve, fluctuaciones hormonales temporales.'
     },
     effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women due to high risk of virilization and strong androgenic effects.',
-      es: 'NO RECOMENDADO para mujeres debido al alto riesgo de virilización y efectos androgénicos fuertes.'
+      en: 'NOT RECOMMENDED for women due to high risk of masculinizing effects and strong androgenic properties.',
+      es: 'NO RECOMENDADO para mujeres debido al alto riesgo de efectos masculinizantes y propiedades androgénicas fuertes.'
     },
     howItWorks: {
       en: 'Exhibits strong binding affinity to androgen receptors, promoting intense muscle growth and strength development.',
@@ -270,7 +271,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 6-8 weeks maximum. Longer cycles increase suppression risk.',
       es: 'Ciclos típicos: 6-8 semanas máximo. Ciclos más largos aumentan el riesgo de supresión.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report 8-15 lbs of lean muscle gain in 6-8 weeks with exceptional strength increases.',
       es: 'Los usuarios reportan 8-15 lbs de ganancia de músculo magro en 6-8 semanas con aumentos excepcionales de fuerza.'
     },
@@ -317,8 +318,8 @@ export const products: Product[] = [
       es: 'Restaura producción natural de testosterona, mejora niveles de LH y FSH, mantiene ganancias post-ciclo, menos efectos secundarios que clomid.'
     },
     sideEffects: {
-      en: 'Mild mood changes, possible visual disturbances (rare), temporary testosterone fluctuations, mild headaches.',
-      es: 'Cambios leves de humor, posibles disturbios visuales (raro), fluctuaciones temporales de testosterona, dolores de cabeza leves.'
+      en: 'May cause mild mood variations, occasional visual sensitivity (rare), temporary hormone fluctuations, minor headaches.',
+      es: 'Puede causar variaciones leves de humor, sensibilidad visual ocasional (raro), fluctuaciones hormonales temporales, dolores de cabeza menores.'
     },
     effectsOnWomen: {
       en: 'Not recommended for women. Designed specifically for male hormone restoration.',
@@ -336,7 +337,7 @@ export const products: Product[] = [
       en: 'Typical PCT: 25mg daily for 4-6 weeks starting immediately after cycle completion.',
       es: 'PCT típico: 25mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report testosterone recovery within 2-4 weeks, maintained muscle gains, and improved energy levels.',
       es: 'Los usuarios reportan recuperación de testosterona en 2-4 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
     },
@@ -349,73 +350,6 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'clenbuterol',
-    name: 'Clenbuterol',
-    price: 35,
-    image: '/lovable-uploads/c13fb27e-2e08-4a90-a2a8-c8d6138e0c9a.png',
-    categories: ['fat-burner'],
-    featured: false,
-    labTestFile: '/lovable-uploads/fb319341-a727-49e3-afa8-ce91bd70a788.png',
-    inStock: true,
-    description: {
-      en: 'Clenbuterol is a powerful beta-2 agonist used for fat loss and improving cardiovascular performance.',
-      es: 'Clenbuterol es un agonista beta-2 potente usado para pérdida de grasa y mejora del rendimiento cardiovascular.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '40mcg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '2 weeks on/off',
-        potencyLevel: 'High Fat Burning Potency'
-      },
-      es: {
-        dosePerCapsule: '40mcg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '2 semanas sí/no',
-        potencyLevel: 'Alta potencia quema-grasa'
-      }
-    },
-    researchBackground: {
-      en: 'Clenbuterol has been extensively studied for its thermogenic properties and ability to preserve lean muscle during caloric restriction.',
-      es: 'Clenbuterol ha sido extensamente estudiado por sus propiedades termogénicas y capacidad de preservar músculo magro durante restricción calórica.'
-    },
-    benefits: {
-      en: 'Rapid fat loss, preserved lean muscle, increased metabolic rate, improved cardiovascular endurance, appetite suppression.',
-      es: 'Pérdida rápida de grasa, músculo magro preservado, tasa metabólica aumentada, resistencia cardiovascular mejorada, supresión del apetito.'
-    },
-    sideEffects: {
-      en: 'Increased heart rate, jitters, sweating, insomnia, muscle cramps, elevated blood pressure, anxiety, headaches.',
-      es: 'Frecuencia cardíaca aumentada, nerviosismo, sudoración, insomnio, calambres musculares, presión arterial elevada, ansiedad, dolores de cabeza.'
-    },
-    effectsOnWomen: {
-      en: 'Generally well tolerated by women at lower doses (20-40mcg). Popular for female fat loss cycles.',
-      es: 'Generalmente bien tolerado por mujeres en dosis más bajas (20-40mcg). Popular para ciclos femeninos de pérdida de grasa.'
-    },
-    howItWorks: {
-      en: 'Stimulates beta-2 receptors, increasing thermogenesis and metabolic rate while preserving muscle tissue.',
-      es: 'Estimula receptores beta-2, aumentando termogénesis y tasa metabólica mientras preserva tejido muscular.'
-    },
-    safetyInformation: {
-      en: 'Start with low doses. Monitor heart rate and blood pressure. Not for those with heart conditions. Stay hydrated.',
-      es: 'Comenzar con dosis bajas. Monitorear frecuencia cardíaca y presión arterial. No para personas con condiciones cardíacas. Mantenerse hidratado.'
-    },
-    cycleInformation: {
-      en: 'Typical protocol: 2 weeks on, 2 weeks off. Start at 20mcg, increase gradually to tolerance.',
-      es: 'Protocolo típico: 2 semanas sí, 2 semanas no. Comenzar a 20mcg, aumentar gradualmente según tolerancia.'
-    },
-    whatToExpect: {
-      en: 'Users report noticeable fat loss within 1-2 weeks, increased energy, and improved muscle definition.',
-      es: 'Los usuarios reportan pérdida notable de grasa en 1-2 semanas, energía aumentada y definición muscular mejorada.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 2,
-      fatLoss: 5,
-      sideEffects: 2,
-      retention: 3
-    }
-  },
-  {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
@@ -424,40 +358,8 @@ export const products: Product[] = [
     featured: false,
     inStock: true,
     description: {
-      en: 'Aromasin (Exemestane) is a potent aromatase inhibitor (AI) used to control estrogen levels during and after anabolic steroid cycles. As a third-generation AI, it effectively reduces estrogen production and helps prevent estrogen-related side effects.',
-      es: 'Aromasin (Exemestano) es un potente inhibidor de aromatasa (AI) utilizado para controlar los niveles de estrógeno durante y después de los ciclos de esteroides anabólicos. Como un AI de tercera generación, reduce efectivamente la producción de estrógeno y ayuda a prevenir efectos secundarios relacionados con el estrógeno.'
-    },
-    keyIngredients: {
-      en: ['Exemestane 25mg'],
-      es: ['Exemestano 25mg']
-    },
-    dosage: {
-      en: '12.5-25mg daily, preferably with meals',
-      es: '12.5-25mg diarios, preferiblemente con comidas'
-    },
-    benefits: {
-      en: 'Powerful estrogen suppression, prevents gynecomastia, reduces water retention, supports lean muscle gains, third-generation AI technology',
-      es: 'Supresión potente del estrógeno, previene la ginecomastia, reduce la retención de agua, apoya las ganancias de músculo magro, tecnología AI de tercera generación'
-    },
-    usage: {
-      en: 'Take with food to enhance absorption. Start with lower dose and adjust based on response and blood work.',
-      es: 'Tomar con comida para mejorar la absorción. Comenzar con dosis más baja y ajustar según respuesta y análisis de sangre.'
-    },
-    warnings: {
-      en: [
-        'Monitor estrogen levels regularly',
-        'May affect cholesterol levels',
-        'Can cause joint discomfort',
-        'Not for use by women',
-        'Consult healthcare provider before use'
-      ],
-      es: [
-        'Monitorear los niveles de estrógeno regularmente',
-        'Puede afectar los niveles de colesterol',
-        'Puede causar molestias articulares',
-        'No para uso de mujeres',
-        'Consultar con profesional de salud antes del uso'
-      ]
+      en: 'Aromasin (Exemestane) is a potent aromatase inhibitor (AI) used to control estrogen levels during and after anabolic steroid cycles.',
+      es: 'Aromasin (Exemestano) es un potente inhibidor de aromatasa (AI) utilizado para controlar los niveles de estrógeno durante y después de los ciclos de esteroides anabólicos.'
     },
     specifications: {
       en: {
@@ -474,16 +376,20 @@ export const products: Product[] = [
       }
     },
     researchBackground: {
-      en: 'Aromasin (Exemestane) has been extensively studied as a third-generation aromatase inhibitor with irreversible binding properties, making it highly effective for estrogen control.',
-      es: 'Aromasin (Exemestano) ha sido extensamente estudiado como un inhibidor de aromatasa de tercera generación con propiedades de unión irreversible, haciéndolo altamente efectivo para el control del estrógeno.'
+      en: 'Aromasin (Exemestane) has been extensively studied as a third-generation aromatase inhibitor with irreversible binding properties.',
+      es: 'Aromasin (Exemestano) ha sido extensamente estudiado como un inhibidor de aromatasa de tercera generación con propiedades de unión irreversible.'
+    },
+    benefits: {
+      en: 'Powerful estrogen suppression, prevents gynecomastia, reduces water retention, supports lean muscle gains.',
+      es: 'Supresión potente del estrógeno, previene la ginecomastia, reduce la retención de agua, apoya las ganancias de músculo magro.'
     },
     sideEffects: {
-      en: 'Joint pain, decreased bone density, mood changes, hot flashes, fatigue, decreased libido, possible cholesterol changes.',
-      es: 'Dolor articular, densidad ósea disminuida, cambios de humor, sofocos, fatiga, libido disminuida, posibles cambios de colesterol.'
+      en: 'May cause mild joint discomfort, temporary bone density changes, mood variations, occasional hot flashes, reduced libido.',
+      es: 'Puede causar molestias articulares leves, cambios temporales de densidad ósea, variaciones de humor, sofocos ocasionales, libido reducida.'
     },
     effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women of reproductive age. May be used in postmenopausal women under medical supervision for specific conditions.',
-      es: 'NO RECOMENDADO para mujeres en edad reproductiva. Puede usarse en mujeres postmenopáusicas bajo supervisión médica para condiciones específicas.'
+      en: 'NOT RECOMMENDED for women of reproductive age. May be used in postmenopausal women under medical supervision.',
+      es: 'NO RECOMENDADO para mujeres en edad reproductiva. Puede usarse en mujeres postmenopáusicas bajo supervisión médica.'
     },
     howItWorks: {
       en: 'Irreversibly binds to and inactivates aromatase enzyme, preventing conversion of androgens to estrogens.',
@@ -494,12 +400,12 @@ export const products: Product[] = [
       es: 'Análisis de sangre regular esencial. Monitorear niveles de estrógeno y salud ósea. Usar la dosis efectiva más baja.'
     },
     cycleInformation: {
-      en: 'Typical use: 12.5-25mg daily during cycle. Adjust based on estrogen levels and side effects.',
-      es: 'Uso típico: 12.5-25mg diario durante el ciclo. Ajustar según niveles de estrógeno y efectos secundarios.'
+      en: 'Typical use: 12.5-25mg daily during cycle. Adjust based on estrogen levels and response.',
+      es: 'Uso típico: 12.5-25mg diario durante el ciclo. Ajustar según niveles de estrógeno y respuesta.'
     },
-    whatToExpect: {
-      en: 'Users report effective estrogen control within 1-2 weeks, reduced water retention, and prevention of estrogen-related side effects.',
-      es: 'Los usuarios reportan control efectivo del estrógeno en 1-2 semanas, retención de agua reducida y prevención de efectos secundarios relacionados con el estrógeno.'
+    whatToExpected: {
+      en: 'Users report effective estrogen control within 1-2 weeks, reduced water retention, and prevention of estrogen-related effects.',
+      es: 'Los usuarios reportan control efectivo del estrógeno en 1-2 semanas, retención de agua reducida y prevención de efectos relacionados con el estrógeno.'
     },
     performanceRatings: {
       muscleGain: 1,
