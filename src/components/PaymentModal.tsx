@@ -57,7 +57,7 @@ const PaymentModal = ({
     telegram: ''
   });
   const [bitcoinAddress, setBitcoinAddress] = useState('');
-  const [bitcoinAmount, setBitcoinAmount] = useState('');
+  const [bitcoinAmount, setBitcoinAmount] = useState(0);
   const [paymentTimer, setPaymentTimer] = useState(30 * 60);
   const [telegramModalOpen, setTelegramModalOpen] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -90,7 +90,7 @@ const PaymentModal = ({
     try {
       const mockAddress = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
       const usdToBtc = 0.000023;
-      const btcAmount = (total * usdToBtc).toFixed(8);
+      const btcAmount = total * usdToBtc;
 
       setBitcoinAddress(mockAddress);
       setBitcoinAmount(btcAmount);
@@ -219,7 +219,7 @@ const PaymentModal = ({
     setStep('payment');
     setPaymentMethod(null);
     setBitcoinAddress('');
-    setBitcoinAmount('');
+    setBitcoinAmount(0);
   };
 
   const handleShippingSubmit = (field: string, value: string) => {
@@ -252,7 +252,7 @@ const PaymentModal = ({
     setStep('shipping');
     setPaymentMethod(null);
     setBitcoinAddress('');
-    setBitcoinAmount('');
+    setBitcoinAmount(0);
     setPaymentTimer(30 * 60);
     onClose();
   };
@@ -314,11 +314,19 @@ const PaymentModal = ({
                     language="en"
                   />
                   <BitcoinPaymentDetails 
-                    address={bitcoinAddress}
-                    amount={bitcoinAmount}
-                    onPaymentComplete={handlePaymentComplete}
-                    processing={processing}
+                    amount={total}
+                    walletAddress={bitcoinAddress}
+                    txid=""
+                    onTxidChange={() => {}}
+                    language="en"
                   />
+                  <Button 
+                    onClick={handlePaymentComplete}
+                    className="w-full"
+                    disabled={processing}
+                  >
+                    {processing ? 'Processing...' : 'Complete Payment'}
+                  </Button>
                 </div>
               )}
 
