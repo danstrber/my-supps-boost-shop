@@ -419,26 +419,65 @@ export const products: Product[] = [
     name: 'Aromasin (Exemestane)',
     price: 45,
     image: '',
-    category: 'pct',
-    description: 'Aromasin (Exemestane) is a potent aromatase inhibitor used in post cycle therapy.',
-    benefits: [
-      'Blocks estrogen production',
-      'Prevents gynecomastia',
-      'Maintains testosterone levels',
-      'Reduces water retention'
-    ],
-    dosage: '12.5-25mg daily',
-    sideEffects: [
-      'Joint pain',
-      'Fatigue',
-      'Hot flashes',
-      'Decreased bone density'
-    ],
-    whatToExpect: [
-      'Reduced estrogen levels within days',
-      'Prevention of estrogenic side effects',
-      'Maintained muscle hardness',
-      'Improved recovery'
-    ]
+    categories: ['pct'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Aromasin (Exemestane) is a potent aromatase inhibitor used in post cycle therapy.',
+      es: 'Aromasin (Exemestane) es un potente inhibidor de aromatasa usado en terapia post ciclo.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '12.5mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 weeks PCT',
+        potencyLevel: 'High Aromatase Inhibition'
+      },
+      es: {
+        dosePerCapsule: '12.5mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 semanas PCT',
+        potencyLevel: 'Alta inhibición de aromatasa'
+      }
+    },
+    researchBackground: {
+      en: 'Aromasin has been extensively studied as an aromatase inhibitor for controlling estrogen levels during and after anabolic cycles.',
+      es: 'Aromasin ha sido extensamente estudiado como inhibidor de aromatasa para controlar niveles de estrógeno durante y después de ciclos anabólicos.'
+    },
+    benefits: {
+      en: 'Blocks estrogen production, prevents gynecomastia, maintains testosterone levels, reduces water retention.',
+      es: 'Bloquea producción de estrógeno, previene ginecomastia, mantiene niveles de testosterona, reduce retención de agua.'
+    },
+    sideEffects: {
+      en: 'May cause joint pain, fatigue, hot flashes, decreased bone density.',
+      es: 'Puede causar dolor articular, fatiga, sofocos, disminución de densidad ósea.'
+    },
+    effectsOnWomen: {
+      en: 'Not recommended for women as it can severely suppress estrogen levels.',
+      es: 'No recomendado para mujeres ya que puede suprimir severamente los niveles de estrógeno.'
+    },
+    howItWorks: {
+      en: 'Permanently binds to and inactivates aromatase enzyme, preventing conversion of testosterone to estrogen.',
+      es: 'Se une permanentemente e inactiva la enzima aromatasa, previniendo la conversión de testosterona a estrógeno.'
+    },
+    safetyInformation: {
+      en: 'Monitor estrogen levels regularly. Use only as needed to control estrogen-related side effects.',
+      es: 'Monitorear niveles de estrógeno regularmente. Usar solo según necesario para controlar efectos secundarios relacionados con estrógeno.'
+    },
+    cycleInformation: {
+      en: 'Typical use: 12.5mg every other day or as needed based on blood work.',
+      es: 'Uso típico: 12.5mg cada dos días o según necesario basado en análisis de sangre.'
+    },
+    whatToExpect: {
+      en: 'Users report reduced estrogen levels within days, prevention of estrogenic side effects, maintained muscle hardness, improved recovery.',
+      es: 'Los usuarios reportan niveles de estrógeno reducidos en días, prevención de efectos secundarios estrogénicos, dureza muscular mantenida, recuperación mejorada.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 2,
+      sideEffects: 3,
+      retention: 4
+    }
   }
 ];

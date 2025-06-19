@@ -1,7 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, Calendar, DollarSign } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Package, Calendar, DollarSign, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface Order {
   id: string;
@@ -20,13 +22,19 @@ interface OrderHistoryProps {
   orders: Order[];
 }
 
+type SortField = 'date' | 'total' | 'status' | 'id';
+type SortDirection = 'asc' | 'desc';
+
 const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
   const text = {
     en: {
       title: 'Order History',
       noOrders: 'No orders found',
       noOrdersDesc: 'You haven\'t placed any orders yet.',
-      orderNumber: 'Order',
+      orderNumber: 'Order #',
       status: 'Status',
       total: 'Total',
       date: 'Date',
@@ -40,7 +48,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
       title: 'Historial de Pedidos',
       noOrders: 'No se encontraron pedidos',
       noOrdersDesc: 'Aún no has realizado ningún pedido.',
-      orderNumber: 'Pedido',
+      orderNumber: 'Pedido #',
       status: 'Estado',
       total: 'Total',
       date: 'Fecha',
@@ -56,11 +64,11 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'text-yellow-600 bg-yellow-100';
-      case 'confirmed': return 'text-blue-600 bg-blue-100';
-      case 'shipped': return 'text-purple-600 bg-purple-100';
-      case 'delivered': return 'text-green-600 bg-green-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'pending': return 'text-yellow-700 bg-yellow-100 border-yellow-200';
+      case 'confirmed': return 'text-blue-700 bg-blue-100 border-blue-200';
+      case 'shipped': return 'text-purple-700 bg-purple-100 border-purple-200';
+      case 'delivered': return 'text-green-700 bg-green-100 border-green-200';
+      default: return 'text-gray-700 bg-gray-100 border-gray-200';
     }
   };
 
@@ -74,57 +82,157 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
     }
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return <ArrowUpDown className="h-4 w-4" />;
+    return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
+  };
+
+  const sortedOrders = [...orders].sort((a, b) => {
+    let aValue: any, b = any;
+    
+    switch (sortField) {
+      case 'date':
+        aValue = new Date(a.date);
+        bValue = new Date(b.date);
+        break;
+      case 'total':
+        aValue = a.total;
+        bValue = b.total;
+        break;
+      case 'status':
+        aValue = a.status;
+        bValue = b.status;
+        break;
+      case 'id':
+        aValue = a.id;
+        bValue = b.id;
+        break;
+      default:
+        return 0;
+    }
+
+    if (sortDirection === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Package className="h-5 w-5 mr-2" />
+    <Card className="shadow-lg">
+      <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+        <CardTitle className="flex items-center text-xl">
+          <Package className="h-6 w-6 mr-3 text-blue-600" />
           {t.title}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {orders.length === 0 ? (
-          <div className="text-center py-8">
-            <Package className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t.noOrders}</h3>
-            <p className="text-gray-500">{t.noOrdersDesc}</p>
+          <div className="text-center py-12 px-4">
+            <Package className="h-16 w-16 mx-auto text-gray-400 mb-6" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">{t.noOrders}</h3>
+            <p className="text-gray-500 text-lg">{t.noOrdersDesc}</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {orders.map((order) => (
-              <div key={order.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
-                  <div className="flex items-center space-x-3 mb-2 sm:mb-0">
-                    <span className="font-mono text-sm font-medium">#{order.id}</span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                      {getStatusText(order.status)}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-4 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      {order.date}
-                    </div>
-                    <div className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-1" />
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="font-semibold">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSort('id')}
+                      className="flex items-center space-x-1 hover:bg-gray-100"
+                    >
+                      <span>{t.orderNumber}</span>
+                      {getSortIcon('id')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="font-semibold">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSort('date')}
+                      className="flex items-center space-x-1 hover:bg-gray-100"
+                    >
+                      <Calendar className="h-4 w-4" />
+                      <span>{t.date}</span>
+                      {getSortIcon('date')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="font-semibold">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSort('status')}
+                      className="flex items-center space-x-1 hover:bg-gray-100"
+                    >
+                      <span>{t.status}</span>
+                      {getSortIcon('status')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="font-semibold">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSort('total')}
+                      className="flex items-center space-x-1 hover:bg-gray-100"
+                    >
+                      <DollarSign className="h-4 w-4" />
+                      <span>{t.total}</span>
+                      {getSortIcon('total')}
+                    </Button>
+                  </TableHead>
+                  <TableHead className="font-semibold">{t.items}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sortedOrders.map((order, index) => (
+                  <TableRow key={order.id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
+                    <TableCell className="font-mono text-sm font-medium">
+                      #{order.id}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {new Date(order.date).toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                        {getStatusText(order.status)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="font-semibold text-green-600 text-lg">
                       ${order.total.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="border-t pt-3">
-                  <p className="text-sm text-gray-600 mb-2">{t.items}:</p>
-                  <div className="space-y-1">
-                    {order.items.map((item, index) => (
-                      <div key={index} className="flex justify-between items-center text-sm">
-                        <span>{item.name} × {item.quantity}</span>
-                        <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1 max-w-xs">
+                        {order.items.map((item, itemIndex) => (
+                          <div key={itemIndex} className="text-sm">
+                            <div className="font-medium text-gray-900 truncate">{item.name}</div>
+                            <div className="text-gray-500">
+                              Qty: {item.quantity} × ${item.price} = ${(item.price * item.quantity).toFixed(2)}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         )}
       </CardContent>
