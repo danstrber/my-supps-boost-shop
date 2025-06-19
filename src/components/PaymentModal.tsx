@@ -6,6 +6,7 @@ import ShippingForm from './payment/ShippingForm';
 import BitcoinTutorial from './payment/BitcoinTutorial';
 import OrderSuccessModal from './OrderSuccessModal';
 import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
+import { useOrderHistory } from '@/hooks/useOrderHistory';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -15,6 +16,17 @@ interface PaymentModalProps {
   userDiscount: number;
   userProfile: any;
   onOrderSuccess: () => void;
+}
+
+interface ShippingData {
+  fullName: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country: string;
+  phone: string;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -27,6 +39,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   onOrderSuccess,
 }) => {
   const { toast } = useToast();
+  const { addOrder } = useOrderHistory();
   const [step, setStep] = useState(1);
   const [txId, setTxId] = useState('');
   const [btcAmount, setBtcAmount] = useState(0);
@@ -35,7 +48,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState('');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ShippingData>({
     fullName: userProfile?.name || '',
     email: userProfile?.email || '',
     address: '',
@@ -120,35 +133,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const sendCustomerConfirmationEmail = async (orderData: any) => {
     console.log('📧 Sending customer confirmation email...');
     try {
-      // Format items for customer email
-      const itemsList = orderData.items.map((item: any) => 
-        `• ${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
-      ).join('\n');
-
-      const response = await fetch('https://formspree.io/f/mqaqvlye', {
+      // Use the new email service
+      const response = await fetch('/supabase/functions/v1/send-order-email', {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
         },
-        body: JSON.stringify({
-          customerEmail: orderData.customerEmail,
-          customerName: orderData.customerName,
-          orderId: orderData.orderId,
-          orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
-          itemsList: itemsList,
-          shippingAddress: orderData.shippingAddress,
-          deliveryInfo: `📦 DELIVERY INFORMATION:
-• Estimated delivery: 7-14 business days worldwide
-• Tracking number provided within 24-48 hours
-• All packages shipped discreetly
-• Contact us on Telegram for faster updates: https://t.me/DANSTRBER
-
-📱 JOIN OUR TELEGRAM: https://t.me/DANSTRBER
-For fastest support and order updates!`,
-          _subject: `✅ Order Confirmed #${orderData.orderId} - Your Purchase is Successful!`,
-          _replyto: 'christhomaso083@proton.me'
-        }),
+        body: JSON.stringify(orderData)
       });
       
       if (!response.ok) {
@@ -327,17 +319,36 @@ For fastest support and order updates!`,
 
       // ONLY process orders if verification is successful
       if (verificationResult.isValid) {
-        console.log('✅ Transaction verified! Processing order via Formspree...');
+        console.log('✅ Transaction verified! Processing order...');
         
         try {
           // Send order collection email
           await sendOrderEmailFormspree(orderData);
-          console.log('✅ Order processed via Formspree successfully');
+          console.log('✅ Order processed successfully');
           
           // Send customer confirmation email (non-blocking)
           sendCustomerConfirmationEmail(orderData).catch(err => 
             console.warn('⚠️ Customer confirmation email failed but order is still successful:', err)
           );
+
+          // Add order to history
+          await addOrder({
+            order_id: orderId,
+            customer_email: formData.email,
+            customer_name: formData.fullName,
+            items: orderItems,
+            original_total: originalTotal,
+            discount_amount: discountAmount,
+            shipping_fee: shippingFee,
+            final_total: finalTotal,
+            payment_method: 'Bitcoin (BTC)',
+            tx_id: txId,
+            bitcoin_amount: btcAmount.toString(),
+            shipping_address: orderData.shippingAddress,
+            phone: formData.phone,
+            order_date: new Date().toISOString(),
+            verification_status: 'verified'
+          });
           
         } catch (emailError) {
           console.error('❌ Email sending failed - ORDER NOT PROCESSED:', emailError);

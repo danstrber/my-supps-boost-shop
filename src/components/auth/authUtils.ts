@@ -37,8 +37,12 @@ export const handleEmailAuth = async (
       };
     }
 
+    // Generate login intent ID for session linking
+    const loginIntentId = crypto.randomUUID();
+    localStorage.setItem('loginIntentId', loginIntentId);
+
     // Build metadata object
-    const metadata: any = {};
+    const metadata: any = { loginIntentId };
     if (username?.trim()) {
       metadata.name = username.trim();
     }
@@ -50,7 +54,7 @@ export const handleEmailAuth = async (
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?intent=${loginIntentId}`,
         data: metadata
       }
     });
@@ -87,8 +91,12 @@ export const handleGoogleAuth = async (mode: 'login' | 'signup', referralCode?: 
     hasReferralCode: !!referralCode 
   });
 
+  // Generate login intent ID for session linking
+  const loginIntentId = crypto.randomUUID();
+  localStorage.setItem('loginIntentId', loginIntentId);
+
   const oauthOptions: any = {
-    redirectTo: `${window.location.origin}/`,
+    redirectTo: `${window.location.origin}/auth/callback?intent=${loginIntentId}`,
     queryParams: {}
   };
 
@@ -96,6 +104,9 @@ export const handleGoogleAuth = async (mode: 'login' | 'signup', referralCode?: 
     oauthOptions.queryParams.referred_by = referralCode.trim();
     console.log('Adding referral code to Google auth:', referralCode.trim());
   }
+
+  // Add login intent to query params for session linking
+  oauthOptions.queryParams.loginIntentId = loginIntentId;
 
   console.log('Google auth options:', JSON.stringify(oauthOptions, null, 2));
 

@@ -45,142 +45,273 @@ const handler = async (req: Request): Promise<Response> => {
     const orderData: OrderEmailRequest = await req.json();
     console.log("Processing order email for:", orderData.customerEmail);
 
-    // Create order summary HTML
+    // Create order summary HTML with improved styling
     const itemsHtml = orderData.items.map(item => `
       <tr style="border-bottom: 1px solid #e5e7eb;">
-        <td style="padding: 12px; text-align: left;">${item.name}</td>
-        <td style="padding: 12px; text-align: center;">${item.quantity}</td>
-        <td style="padding: 12px; text-align: right;">$${item.price.toFixed(2)}</td>
-        <td style="padding: 12px; text-align: right; font-weight: bold;">$${(item.price * item.quantity).toFixed(2)}</td>
+        <td style="padding: 16px 12px; text-align: left; font-weight: 500;">${item.name}</td>
+        <td style="padding: 16px 12px; text-align: center; color: #6b7280;">${item.quantity}</td>
+        <td style="padding: 16px 12px; text-align: right; color: #6b7280;">$${item.price.toFixed(2)}</td>
+        <td style="padding: 16px 12px; text-align: right; font-weight: 600; color: #059669;">$${(item.price * item.quantity).toFixed(2)}</td>
       </tr>
     `).join('');
 
     const customerEmailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-        <div style="background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 30px; text-align: center;">
-          <h1 style="margin: 0; font-size: 28px; font-weight: bold;">Order ${orderData.verificationStatus === 'verified' ? 'Confirmed' : 'Received'}! 🎉</h1>
-          <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">Thank you for your order, ${orderData.customerName}!</p>
-          <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 8px; margin-top: 20px;">
-            <p style="margin: 0; font-size: 18px; font-weight: bold;">Order ID: #${orderData.orderId}</p>
-          </div>
-        </div>
-        
-        <div style="padding: 30px;">
-          <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-            <h2 style="color: #374151; margin: 0 0 15px 0; font-size: 20px;">Order Summary</h2>
-            <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden;">
-              <thead>
-                <tr style="background: #f3f4f6;">
-                  <th style="padding: 12px; text-align: left; font-weight: 600; color: #374151;">Product</th>
-                  <th style="padding: 12px; text-align: center; font-weight: 600; color: #374151;">Qty</th>
-                  <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151;">Price</th>
-                  <th style="padding: 12px; text-align: right; font-weight: 600; color: #374151;">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${itemsHtml}
-              </tbody>
-            </table>
-          </div>
-
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-            <h3 style="color: #166534; margin: 0 0 15px 0; font-size: 18px;">Payment Summary</h3>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #374151;">Subtotal:</span>
-              <span style="color: #374151; font-weight: 600;">$${orderData.originalTotal.toFixed(2)}</span>
-            </div>
-            ${orderData.discountAmount > 0 ? `
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #dc2626;">Discount:</span>
-              <span style="color: #dc2626; font-weight: 600;">-$${orderData.discountAmount.toFixed(2)}</span>
-            </div>
-            ` : ''}
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span style="color: #374151;">Shipping:</span>
-              <span style="color: #374151; font-weight: 600;">${orderData.shippingFee === 0 ? 'Free' : `$${orderData.shippingFee.toFixed(2)}`}</span>
-            </div>
-            <hr style="border: none; border-top: 2px solid #bbf7d0; margin: 15px 0;">
-            <div style="display: flex; justify-content: space-between;">
-              <span style="color: #166534; font-size: 18px; font-weight: bold;">Final Total:</span>
-              <span style="color: #166534; font-size: 18px; font-weight: bold;">$${orderData.finalTotal.toFixed(2)}</span>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Order ${orderData.verificationStatus === 'verified' ? 'Confirmed' : 'Received'}</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); margin-top: 20px; margin-bottom: 20px;">
+          
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #059669, #10b981); color: white; padding: 40px 30px; text-align: center;">
+            <div style="font-size: 48px; margin-bottom: 16px;">🎉</div>
+            <h1 style="margin: 0; font-size: 32px; font-weight: bold; line-height: 1.2;">
+              Order ${orderData.verificationStatus === 'verified' ? 'Confirmed!' : 'Received!'}
+            </h1>
+            <p style="margin: 16px 0 0 0; font-size: 18px; opacity: 0.95;">
+              Thank you for your order, ${orderData.customerName}!
+            </p>
+            <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 12px; margin-top: 24px; border: 2px solid rgba(255,255,255,0.2);">
+              <p style="margin: 0; font-size: 16px; font-weight: 500; opacity: 0.9;">Order Number</p>
+              <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: bold; font-family: monospace; letter-spacing: 1px;">
+                #${orderData.orderId}
+              </p>
             </div>
           </div>
+          
+          <!-- Content -->
+          <div style="padding: 40px 30px;">
+            
+            <!-- Order Summary Section -->
+            <div style="margin-bottom: 32px;">
+              <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 32px; height: 32px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                  <span style="color: white; font-size: 16px; font-weight: bold;">📦</span>
+                </div>
+                <h2 style="margin: 0; color: #1f2937; font-size: 24px; font-weight: 700;">Order Summary</h2>
+              </div>
+              
+              <div style="background: #f9fafb; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr style="background: #374151; color: white;">
+                      <th style="padding: 16px 12px; text-align: left; font-weight: 600; font-size: 14px;">Product</th>
+                      <th style="padding: 16px 12px; text-align: center; font-weight: 600; font-size: 14px;">Qty</th>
+                      <th style="padding: 16px 12px; text-align: right; font-weight: 600; font-size: 14px;">Price</th>
+                      <th style="padding: 16px 12px; text-align: right; font-weight: 600; font-size: 14px;">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody style="background: white;">
+                    ${itemsHtml}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-            <h3 style="color: #1e40af; margin: 0 0 10px 0; font-size: 16px;">Payment Method: ${orderData.paymentMethod}</h3>
-            ${orderData.paymentMethod === 'telegram' ? 
-              '<p style="color: #374151; margin: 0;">Complete your payment in our Telegram group as instructed.</p>' :
-              `<p style="color: #374151; margin: 0 0 10px 0;">Your ${orderData.verificationStatus === 'verified' ? 'payment has been verified and processed successfully' : 'payment is being verified'}.</p>
-               ${orderData.txId ? `<p style="color: #6b7280; margin: 0; font-size: 14px; font-family: monospace;">Transaction ID: ${orderData.txId}</p>` : ''}
-               ${orderData.bitcoinAmount ? `<p style="color: #6b7280; margin: 0; font-size: 14px;">Bitcoin Amount: ${orderData.bitcoinAmount} BTC</p>` : ''}`
-            }
+            <!-- Payment Summary Section -->
+            <div style="margin-bottom: 32px;">
+              <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 32px; height: 32px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                  <span style="color: white; font-size: 16px; font-weight: bold;">💳</span>
+                </div>
+                <h2 style="margin: 0; color: #1f2937; font-size: 24px; font-weight: 700;">Payment Summary</h2>
+              </div>
+              
+              <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 24px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px;">
+                  <span style="color: #374151; font-size: 16px;">Subtotal:</span>
+                  <span style="color: #374151; font-weight: 600; font-size: 16px;">$${orderData.originalTotal.toFixed(2)}</span>
+                </div>
+                ${orderData.discountAmount > 0 ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px;">
+                  <span style="color: #dc2626; font-size: 16px;">Discount:</span>
+                  <span style="color: #dc2626; font-weight: 600; font-size: 16px;">-$${orderData.discountAmount.toFixed(2)}</span>
+                </div>
+                ` : ''}
+                <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px;">
+                  <span style="color: #374151; font-size: 16px;">Shipping:</span>
+                  <span style="color: #374151; font-weight: 600; font-size: 16px;">${orderData.shippingFee === 0 ? 'Free' : `$${orderData.shippingFee.toFixed(2)}`}</span>
+                </div>
+                <hr style="border: none; border-top: 2px solid #bbf7d0; margin: 16px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="color: #166534; font-size: 20px; font-weight: bold;">Total Paid:</span>
+                  <span style="color: #166534; font-size: 24px; font-weight: bold;">$${orderData.finalTotal.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Details Section -->
+            <div style="margin-bottom: 32px;">
+              <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 32px; height: 32px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                  <span style="color: white; font-size: 16px; font-weight: bold;">💰</span>
+                </div>
+                <h2 style="margin: 0; color: #1f2937; font-size: 24px; font-weight: 700;">Payment Information</h2>
+              </div>
+              
+              <div style="background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 24px;">
+                <div style="margin-bottom: 16px;">
+                  <span style="color: #1e40af; font-weight: 600; font-size: 18px;">Payment Method:</span>
+                  <span style="color: #374151; font-size: 18px; margin-left: 8px;">${orderData.paymentMethod}</span>
+                </div>
+                ${orderData.paymentMethod === 'telegram' ? 
+                  '<p style="color: #374151; margin: 12px 0 0 0; font-size: 16px;">Complete your payment in our Telegram group as instructed.</p>' :
+                  `<div>
+                    <p style="color: #374151; margin: 0 0 12px 0; font-size: 16px;">
+                      Status: <strong>${orderData.verificationStatus === 'verified' ? 'Payment Verified ✅' : 'Payment Being Verified ⏳'}</strong>
+                    </p>
+                    ${orderData.txId ? `<p style="color: #6b7280; margin: 8px 0; font-size: 14px; font-family: monospace; word-break: break-all;">Transaction ID: ${orderData.txId}</p>` : ''}
+                    ${orderData.bitcoinAmount ? `<p style="color: #6b7280; margin: 8px 0; font-size: 14px;">Bitcoin Amount: ${orderData.bitcoinAmount} BTC</p>` : ''}
+                  </div>`
+                }
+              </div>
+            </div>
+
+            <!-- Delivery Information Section -->
+            <div style="margin-bottom: 32px;">
+              <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <div style="width: 32px; height: 32px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                  <span style="color: white; font-size: 16px; font-weight: bold;">🚚</span>
+                </div>
+                <h2 style="margin: 0; color: #1f2937; font-size: 24px; font-weight: 700;">Delivery Information</h2>
+              </div>
+              
+              <div style="background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 24px;">
+                <div style="margin-bottom: 16px;">
+                  <h4 style="margin: 0 0 8px 0; color: #374151; font-size: 16px; font-weight: 600;">Shipping Address:</h4>
+                  <div style="color: #6b7280; font-size: 16px; line-height: 1.6;">
+                    <p style="margin: 0; font-weight: 600; color: #374151;">${orderData.customerName}</p>
+                    <p style="margin: 4px 0 0 0;">${orderData.shippingAddress}</p>
+                    <p style="margin: 8px 0 0 0;"><strong>Phone:</strong> ${orderData.phone}</p>
+                  </div>
+                </div>
+                
+                <div style="background: #ecfdf5; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-top: 16px;">
+                  <h4 style="margin: 0 0 12px 0; color: #166534; font-size: 16px; font-weight: 600;">📦 Delivery Timeline:</h4>
+                  <ul style="margin: 0; padding-left: 20px; color: #166534; font-size: 14px; line-height: 1.6;">
+                    <li><strong>Processing:</strong> 1-2 business days</li>
+                    <li><strong>Shipping:</strong> 7-14 business days worldwide</li>
+                    <li><strong>Tracking:</strong> Provided within 24-48 hours of shipment</li>
+                    <li><strong>Packaging:</strong> Discreet and secure</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Support Section -->
+            <div style="text-align: center; padding: 32px 24px; background: #f9fafb; border-radius: 12px; border: 2px solid #e5e7eb;">
+              <h3 style="margin: 0 0 16px 0; color: #374151; font-size: 20px; font-weight: 600;">Need Help?</h3>
+              <p style="color: #6b7280; margin: 0 0 20px 0; font-size: 16px;">Our support team is here to assist you</p>
+              
+              <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
+                <a href="mailto:christhomaso083@proton.me" style="display: inline-block; background: #059669; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                  📧 Email Support
+                </a>
+                <a href="https://t.me/DANSTRBER" style="display: inline-block; background: #0088cc; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px;">
+                  💬 Telegram Support
+                </a>
+              </div>
+            </div>
           </div>
-
-          <div style="background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-            <h3 style="color: #374151; margin: 0 0 10px 0; font-size: 16px;">Shipping Address</h3>
-            <p style="color: #6b7280; margin: 0 0 5px 0;">${orderData.customerName}</p>
-            <p style="color: #6b7280; margin: 0 0 5px 0;">${orderData.shippingAddress}</p>
-            <p style="color: #6b7280; margin: 0;">Phone: ${orderData.phone}</p>
-          </div>
-
-          <div style="text-center; padding: 20px; background: #f9fafb; border-radius: 8px;">
-            <p style="color: #6b7280; margin: 0 0 15px 0;">Questions about your order?</p>
-            <p style="color: #374151; margin: 0;">
-              Email: <a href="mailto:christhomaso083@proton.me" style="color: #059669; text-decoration: none;">christhomaso083@proton.me</a><br>
-              Telegram: <a href="https://t.me/DANSTRBER" style="color: #059669; text-decoration: none;">@DANSTRBER</a>
+          
+          <!-- Footer -->
+          <div style="background: #374151; color: #d1d5db; text-align: center; padding: 24px;">
+            <p style="margin: 0; font-size: 14px;">
+              © 2024 MySupps - Premium Supplements & Research Chemicals
+            </p>
+            <p style="margin: 8px 0 0 0; font-size: 12px; opacity: 0.8;">
+              This email was sent regarding your order #${orderData.orderId}
             </p>
           </div>
         </div>
-      </div>
+      </body>
+      </html>
     `;
 
     const adminEmailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h1 style="color: #dc2626; font-size: 24px;">🚨 NEW ORDER ${orderData.verificationStatus === 'verified' ? 'CONFIRMED' : 'RECEIVED'}</h1>
-        
-        <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h2 style="color: #374151; margin: 0 0 15px 0;">Customer Information</h2>
-          <p><strong>Order ID:</strong> #${orderData.orderId}</p>
-          <p><strong>Name:</strong> ${orderData.customerName}</p>
-          <p><strong>Email:</strong> ${orderData.customerEmail}</p>
-          <p><strong>Phone:</strong> ${orderData.phone}</p>
-          <p><strong>Payment Method:</strong> ${orderData.paymentMethod}</p>
-          <p><strong>Order Date:</strong> ${orderData.orderDate}</p>
-          <p><strong>Verification Status:</strong> ${orderData.verificationStatus}</p>
-          ${orderData.txId ? `<p><strong>Transaction ID:</strong> ${orderData.txId}</p>` : ''}
-          ${orderData.bitcoinAmount ? `<p><strong>Bitcoin Amount:</strong> ${orderData.bitcoinAmount} BTC</p>` : ''}
-        </div>
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>New Order Alert</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc;">
+        <div style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-top: 20px;">
+          
+          <!-- Alert Header -->
+          <div style="background: ${orderData.verificationStatus === 'verified' ? '#dc2626' : '#f59e0b'}; color: white; padding: 24px; text-align: center;">
+            <h1 style="margin: 0; font-size: 24px; font-weight: bold;">
+              🚨 NEW ORDER ${orderData.verificationStatus === 'verified' ? 'CONFIRMED' : 'RECEIVED'}
+            </h1>
+            <p style="margin: 8px 0 0 0; font-size: 16px;">Order #${orderData.orderId}</p>
+          </div>
+          
+          <!-- Order Details -->
+          <div style="padding: 24px;">
+            
+            <!-- Customer Info -->
+            <div style="background: #f3f4f6; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h2 style="color: #374151; margin: 0 0 16px 0; font-size: 18px;">Customer Information</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr><td style="padding: 4px 0; font-weight: 600;">Name:</td><td style="padding: 4px 0;">${orderData.customerName}</td></tr>
+                <tr><td style="padding: 4px 0; font-weight: 600;">Email:</td><td style="padding: 4px 0;">${orderData.customerEmail}</td></tr>
+                <tr><td style="padding: 4px 0; font-weight: 600;">Phone:</td><td style="padding: 4px 0;">${orderData.phone}</td></tr>
+                <tr><td style="padding: 4px 0; font-weight: 600;">Order Date:</td><td style="padding: 4px 0;">${orderData.orderDate}</td></tr>
+                <tr><td style="padding: 4px 0; font-weight: 600;">Payment Method:</td><td style="padding: 4px 0;">${orderData.paymentMethod}</td></tr>
+                <tr><td style="padding: 4px 0; font-weight: 600;">Status:</td><td style="padding: 4px 0;"><strong>${orderData.verificationStatus.toUpperCase()}</strong></td></tr>
+                ${orderData.txId ? `<tr><td style="padding: 4px 0; font-weight: 600;">TX ID:</td><td style="padding: 4px 0; font-family: monospace; font-size: 12px; word-break: break-all;">${orderData.txId}</td></tr>` : ''}
+                ${orderData.bitcoinAmount ? `<tr><td style="padding: 4px 0; font-weight: 600;">BTC Amount:</td><td style="padding: 4px 0;">${orderData.bitcoinAmount} BTC</td></tr>` : ''}
+              </table>
+            </div>
 
-        <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h2 style="color: #166534; margin: 0 0 15px 0;">Shipping Address</h2>
-          <p style="margin: 0; white-space: pre-line;">${orderData.shippingAddress}</p>
-        </div>
+            <!-- Shipping Address -->
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h2 style="color: #166534; margin: 0 0 12px 0; font-size: 18px;">🚚 Shipping Address</h2>
+              <div style="font-family: monospace; background: white; padding: 12px; border-radius: 6px; border: 1px solid #d1d5db;">
+                <pre style="margin: 0; white-space: pre-wrap; font-size: 14px; line-height: 1.4;">${orderData.shippingAddress}</pre>
+              </div>
+            </div>
 
-        <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <h2 style="color: #166534; margin: 0 0 15px 0;">Order Details</h2>
-          <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-              <tr style="background: #e5e7eb;">
-                <th style="padding: 10px; text-align: left;">Product</th>
-                <th style="padding: 10px; text-align: center;">Qty</th>
-                <th style="padding: 10px; text-align: right;">Price</th>
-                <th style="padding: 10px; text-align: right;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsHtml}
-            </tbody>
-          </table>
-        </div>
+            <!-- Order Items -->
+            <div style="background: #f0fdf4; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+              <h2 style="color: #166534; margin: 0 0 16px 0; font-size: 18px;">📦 Order Items</h2>
+              <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 6px; overflow: hidden;">
+                <thead>
+                  <tr style="background: #e5e7eb;">
+                    <th style="padding: 12px; text-align: left; font-size: 14px;">Product</th>
+                    <th style="padding: 12px; text-align: center; font-size: 14px;">Qty</th>
+                    <th style="padding: 12px; text-align: right; font-size: 14px;">Price</th>
+                    <th style="padding: 12px; text-align: right; font-size: 14px;">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHtml}
+                </tbody>
+              </table>
+            </div>
 
-        <div style="background: #fef3c7; padding: 20px; border-radius: 8px;">
-          <h2 style="color: #92400e; margin: 0 0 15px 0;">Payment Summary</h2>
-          <p>Subtotal: $${orderData.originalTotal.toFixed(2)}</p>
-          ${orderData.discountAmount > 0 ? `<p>Discount: -$${orderData.discountAmount.toFixed(2)}</p>` : ''}
-          <p>Shipping: ${orderData.shippingFee === 0 ? 'Free' : `$${orderData.shippingFee.toFixed(2)}`}</p>
-          <p><strong>Final Total: $${orderData.finalTotal.toFixed(2)}</strong></p>
+            <!-- Payment Summary -->
+            <div style="background: #fef3c7; border: 1px solid #fbbf24; padding: 20px; border-radius: 8px;">
+              <h2 style="color: #92400e; margin: 0 0 16px 0; font-size: 18px;">💰 Payment Summary</h2>
+              <table style="width: 100%; font-size: 16px;">
+                <tr><td style="padding: 4px 0;">Subtotal:</td><td style="padding: 4px 0; text-align: right;">$${orderData.originalTotal.toFixed(2)}</td></tr>
+                ${orderData.discountAmount > 0 ? `<tr><td style="padding: 4px 0; color: #dc2626;">Discount:</td><td style="padding: 4px 0; text-align: right; color: #dc2626;">-$${orderData.discountAmount.toFixed(2)}</td></tr>` : ''}
+                <tr><td style="padding: 4px 0;">Shipping:</td><td style="padding: 4px 0; text-align: right;">${orderData.shippingFee === 0 ? 'Free' : `$${orderData.shippingFee.toFixed(2)}`}</td></tr>
+                <tr style="border-top: 2px solid #fbbf24; font-weight: bold; font-size: 18px;">
+                  <td style="padding: 12px 0 4px 0;">TOTAL:</td>
+                  <td style="padding: 12px 0 4px 0; text-align: right;">$${orderData.finalTotal.toFixed(2)}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
         </div>
-      </div>
+      </body>
+      </html>
     `;
 
     // Send customer confirmation
