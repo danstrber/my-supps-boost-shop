@@ -28,7 +28,7 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
   return (
     <div className="flex items-center space-x-4 p-4 border rounded-lg">
       <img
-        src={product.images?.[0] || product.image || '/placeholder.svg'}
+        src={product.image}
         alt={product.name}
         className="w-16 h-16 object-cover rounded-lg"
       />

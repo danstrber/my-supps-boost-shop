@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { MessageCircle, Shield, Clock, Users } from 'lucide-react';
 
 interface TelegramPaymentModalProps {
   isOpen: boolean;
@@ -17,68 +18,86 @@ const TelegramPaymentModal = ({ isOpen, onClose, language }: TelegramPaymentModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md" aria-describedby="telegram-payment-description">
+      <DialogContent className="sm:max-w-md" aria-describedby="telegram-payment-description">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-blue-600 mb-4">
-            💬 {language === 'en' ? 'Telegram Payment' : 'Pago por Telegram'}
+          <DialogTitle className="flex items-center justify-center text-2xl font-bold text-blue-600 mb-4">
+            <MessageCircle className="h-8 w-8 mr-3" />
+            {language === 'en' ? 'Telegram Payment' : 'Pago por Telegram'}
           </DialogTitle>
-          <DialogDescription id="telegram-payment-description">
-            {language === 'en' 
-              ? 'Complete your order through our secure Telegram channel for the best experience.'
-              : 'Completa tu pedido a través de nuestro canal seguro de Telegram para la mejor experiencia.'}
-          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-6">
-          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-            <h3 className="font-semibold text-blue-800 mb-3">
-              {language === 'en' ? 'Why Choose Telegram?' : '¿Por Qué Elegir Telegram?'}
+        <div id="telegram-payment-description" className="space-y-6">
+          <div className="text-center">
+            <div className="text-6xl mb-4">💬</div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              {language === 'en' ? 'Why Choose Telegram?' : '¿Por qué elegir Telegram?'}
             </h3>
-            <ul className="space-y-2 text-blue-700 text-sm">
-              <li className="flex items-center">
-                <span className="text-green-600 mr-2">✅</span>
-                {language === 'en' ? 'Anonymous ordering possible' : 'Pedidos anónimos posibles'}
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-600 mr-2">✅</span>
-                {language === 'en' ? 'Direct communication with support' : 'Comunicación directa con soporte'}
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-600 mr-2">✅</span>
-                {language === 'en' ? 'Real-time order tracking' : 'Seguimiento de pedidos en tiempo real'}
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-600 mr-2">✅</span>
-                {language === 'en' ? 'Expert coaching available' : 'Asesoramiento experto disponible'}
-              </li>
-              <li className="flex items-center">
-                <span className="text-green-600 mr-2">✅</span>
-                {language === 'en' ? 'Faster processing' : 'Procesamiento más rápido'}
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-            <p className="text-yellow-800 text-sm">
+            <p className="text-gray-600">
               {language === 'en' 
-                ? '💡 Simply join our Telegram group and send your order details. Our team will guide you through the payment process step by step.'
-                : '💡 Simplemente únete a nuestro grupo de Telegram y envía los detalles de tu pedido. Nuestro equipo te guiará paso a paso en el proceso de pago.'}
+                ? 'Experience the fastest and most secure way to complete your order'
+                : 'Experimenta la forma más rápida y segura de completar tu pedido'}
             </p>
           </div>
 
-          <div className="flex space-x-3">
-            <Button
+          <div className="space-y-4">
+            <div className="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+              <Shield className="h-5 w-5 text-blue-600 mt-1" />
+              <div>
+                <h4 className="font-medium text-blue-800">
+                  {language === 'en' ? 'Secure & Anonymous' : 'Seguro y Anónimo'}
+                </h4>
+                <p className="text-blue-700 text-sm">
+                  {language === 'en' 
+                    ? 'Complete privacy protection with encrypted communication'
+                    : 'Protección completa de privacidad con comunicación encriptada'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+              <Clock className="h-5 w-5 text-green-600 mt-1" />
+              <div>
+                <h4 className="font-medium text-green-800">
+                  {language === 'en' ? 'Instant Processing' : 'Procesamiento Instantáneo'}
+                </h4>
+                <p className="text-green-700 text-sm">
+                  {language === 'en' 
+                    ? 'Orders processed immediately with real-time updates'
+                    : 'Pedidos procesados inmediatamente con actualizaciones en tiempo real'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg">
+              <Users className="h-5 w-5 text-purple-600 mt-1" />
+              <div>
+                <h4 className="font-medium text-purple-800">
+                  {language === 'en' ? '24/7 Support' : 'Soporte 24/7'}
+                </h4>
+                <p className="text-purple-700 text-sm">
+                  {language === 'en' 
+                    ? 'Direct communication with our team for instant support'
+                    : 'Comunicación directa con nuestro equipo para soporte instantáneo'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Button 
               onClick={handleTelegramRedirect}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
             >
-              💬 {language === 'en' ? 'Join Telegram Group' : 'Unirse al Grupo'}
+              <MessageCircle className="h-5 w-5 mr-2" />
+              {language === 'en' ? 'Continue with Telegram' : 'Continuar con Telegram'}
             </Button>
-            <Button
+            
+            <Button 
               onClick={onClose}
               variant="outline"
-              className="px-6"
+              className="w-full"
             >
-              {language === 'en' ? 'Cancel' : 'Cancelar'}
+              {language === 'en' ? 'Back to Payment Options' : 'Volver a Opciones de Pago'}
             </Button>
           </div>
         </div>

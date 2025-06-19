@@ -26,13 +26,6 @@ const ProductGrid = ({
 }: ProductGridProps) => {
   const t = translations[language];
   
-  // Helper function to get localized text
-  const getLocalizedText = (field: any) => {
-    if (typeof field === 'string') return field;
-    if (typeof field === 'object' && field) return field[language] || field.en || '';
-    return '';
-  };
-  
   return (
     <div className="space-y-6">
       {/* Sign In Button for non-authenticated users */}
@@ -61,7 +54,7 @@ const ProductGrid = ({
             <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
               <div className="relative mb-4">
                 <img
-                  src={product.images?.[0] || product.image || '/placeholder.svg'}
+                  src={product.image}
                   alt={product.name}
                   className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
@@ -92,22 +85,20 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {getLocalizedText(product.description)}
+                  {product.description[language]}
                 </p>
 
                 {/* Dose and Capsule Info */}
-                {product.specifications && (
-                  <div className="flex items-center gap-3 text-xs text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Pill className="h-3 w-3" />
-                      <span>{product.specifications[language]?.dosePerCapsule || 'N/A'}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="h-3 w-3 bg-green-500 rounded-full" />
-                      <span>{product.specifications[language]?.capsulesPerBottle || 'N/A'} caps</span>
-                    </div>
+                <div className="flex items-center gap-3 text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Pill className="h-3 w-3" />
+                    <span>{product.specifications[language].dosePerCapsule}</span>
                   </div>
-                )}
+                  <div className="flex items-center gap-1">
+                    <div className="h-3 w-3 bg-green-500 rounded-full" />
+                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
+                  </div>
+                </div>
                 
                 <div className="flex flex-wrap gap-1">
                   {product.categories.slice(0, 2).map((category) => (
