@@ -69,26 +69,28 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     console.log('📝 Starting order creation in Supabase');
     console.log('👤 User auth_id:', userProfile?.auth_id);
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    console.log('🧪 Auth check result:', { user: user?.id, authError });
-    
-    if (authError) {
-      console.error('❌ Auth error:', authError);
-      throw new Error(`Authentication error: ${authError.message}`);
-    }
-    
-    if (!user) {
-      console.error('❌ No authenticated user found');
-      throw new Error('User not authenticated');
-    }
-    
-    if (user.id !== userProfile?.auth_id) {
-      console.error('❌ User ID mismatch:', { authenticated: user.id, profile: userProfile?.auth_id });
-      throw new Error('User authentication mismatch');
-    }
-
     try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      console.log('🧪 Auth check result:', { user: user?.id, authError });
+      
+      if (authError) {
+        console.error('❌ Auth error:', authError);
+        throw new Error(`Authentication error: ${authError.message}`);
+      }
+      
+      if (!user) {
+        console.error('❌ No authenticated user found');
+        throw new Error('User not authenticated');
+      }
+      
+      if (user.id !== userProfile?.auth_id) {
+        console.error('❌ User ID mismatch:', { authenticated: user.id, profile: userProfile?.auth_id });
+        throw new Error('User authentication mismatch');
+      }
+
       console.log('🔄 Making Supabase insert request...');
+      console.log('📊 Order data to insert:', orderData);
+      
       const { data, error } = await supabase
         .from('orders')
         .insert([orderData])
@@ -117,32 +119,37 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const sendOrderEmail = async (orderData: any) => {
     console.log('📧 Sending order email via Formspree...');
-    const emailFormData = new URLSearchParams();
-    emailFormData.append('customerEmail', orderData.payment_details.email);
-    emailFormData.append('customerName', orderData.payment_details.fullName);
-    emailFormData.append('items', JSON.stringify(orderData.items));
-    emailFormData.append('originalTotal', orderData.original_total.toString());
-    emailFormData.append('discountAmount', orderData.discount_amount.toString());
-    emailFormData.append('shippingFee', orderData.shipping_fee.toString());
-    emailFormData.append('finalTotal', (orderData.original_total - orderData.discount_amount + orderData.shipping_fee).toString());
-    emailFormData.append('paymentMethod', orderData.payment_method);
-    emailFormData.append('txId', orderData.payment_details.txId || '');
-    emailFormData.append('address', `${orderData.payment_details.address}, ${orderData.payment_details.city}, ${orderData.payment_details.state} ${orderData.payment_details.zipCode}, ${orderData.payment_details.country}`);
-    emailFormData.append('phone', orderData.payment_details.phone);
-    emailFormData.append('_subject', `New Order from ${orderData.payment_details.fullName}`);
-    emailFormData.append('_cc', 'christhomaso083@proton.me');
+    try {
+      const emailFormData = new URLSearchParams();
+      emailFormData.append('customerEmail', orderData.payment_details.email);
+      emailFormData.append('customerName', orderData.payment_details.fullName);
+      emailFormData.append('items', JSON.stringify(orderData.items));
+      emailFormData.append('originalTotal', orderData.original_total.toString());
+      emailFormData.append('discountAmount', orderData.discount_amount.toString());
+      emailFormData.append('shippingFee', orderData.shipping_fee.toString());
+      emailFormData.append('finalTotal', (orderData.original_total - orderData.discount_amount + orderData.shipping_fee).toString());
+      emailFormData.append('paymentMethod', orderData.payment_method);
+      emailFormData.append('txId', orderData.payment_details.txId || '');
+      emailFormData.append('address', `${orderData.payment_details.address}, ${orderData.payment_details.city}, ${orderData.payment_details.state} ${orderData.payment_details.zipCode}, ${orderData.payment_details.country}`);
+      emailFormData.append('phone', orderData.payment_details.phone);
+      emailFormData.append('_subject', `New Order from ${orderData.payment_details.fullName}`);
+      emailFormData.append('_cc', 'christhomaso083@proton.me');
 
-    const response = await fetch('https://formspree.io/f/mqaqvlye', {
-      method: 'POST',
-      body: emailFormData,
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Email failed with status: ${response.status}`);
+      const response = await fetch('https://formspree.io/f/mqaqvlye', {
+        method: 'POST',
+        body: emailFormData,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Email failed with status: ${response.status}`);
+      }
+      
+      console.log('✅ Order email sent successfully');
+    } catch (error) {
+      console.error('❌ Email sending failed:', error);
+      // Don't throw here - email failure shouldn't stop the order
     }
-    
-    console.log('✅ Order email sent successfully');
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -161,6 +168,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setIsLoading(true);
 
     try {
+      // Validate form data
       if (!formData.fullName || !formData.email || !formData.address || !formData.city || !formData.state || !formData.zipCode || !formData.country || !formData.phone) {
         throw new Error('All fields are required');
       }
@@ -201,13 +209,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         console.log('📧 Sending Telegram order email...');
         await sendOrderEmail(orderData);
         
-        console.log('✅ Telegram order processed successfully');
+        console.log('✅ Telegram order processed successfully, Order ID:', createdOrder.id);
         setShowTelegramModal(true);
         
         // Show success message
         toast({
           title: 'Order Submitted!',
-          description: 'Your order has been submitted. Please complete payment via Telegram.',
+          description: `Your order #${createdOrder.id.slice(-8)} has been submitted. Please complete payment via Telegram.`,
         });
       }
     } catch (err: any) {
@@ -242,20 +250,23 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       };
 
       console.log('💾 Creating Bitcoin order in database...');
-      await createOrderInDatabase(orderData);
+      const createdOrder = await createOrderInDatabase(orderData);
       
       console.log('📧 Sending Bitcoin order email...');
       await sendOrderEmail(orderData);
+      
+      console.log('✅ Bitcoin order processed successfully, Order ID:', createdOrder.id);
       
       onOrderSuccess();
       onClose();
       
       toast({
         title: 'Order Placed!',
-        description: 'Your order has been submitted successfully. We will verify payment and process your order.',
+        description: `Your order #${createdOrder.id.slice(-8)} has been submitted successfully. We will verify payment and process your order.`,
       });
       
     } catch (err: any) {
+      console.error('❌ Error in handleConfirm:', err);
       setError(err.message);
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {

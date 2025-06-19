@@ -93,6 +93,7 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           onChange={(e) => onInputChange('fullName', e.target.value)}
           required
           autoComplete="name"
+          placeholder="Enter your full name"
         />
       </div>
 
@@ -106,6 +107,7 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           onChange={(e) => onInputChange('email', e.target.value)}
           required
           autoComplete="email"
+          placeholder="Enter your email address"
         />
       </div>
 
@@ -119,6 +121,7 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           onChange={(e) => onInputChange('address', e.target.value)}
           required
           autoComplete="street-address"
+          placeholder="Enter your street address"
         />
       </div>
 
@@ -133,6 +136,7 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
             onChange={(e) => onInputChange('city', e.target.value)}
             required
             autoComplete="address-level2"
+            placeholder="Enter your city"
           />
         </div>
         <div>
@@ -145,6 +149,7 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
             onChange={(e) => onInputChange('state', e.target.value)}
             required
             autoComplete="address-level1"
+            placeholder="Enter your state/province"
           />
         </div>
       </div>
@@ -160,6 +165,7 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
             onChange={(e) => onInputChange('zipCode', e.target.value)}
             required
             autoComplete="postal-code"
+            placeholder="Enter your ZIP/postal code"
           />
         </div>
         <div className="relative">

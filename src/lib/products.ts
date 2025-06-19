@@ -139,7 +139,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 4-6 weeks maximum due to liver considerations. Always followed by comprehensive PCT.',
       es: 'Ciclos típicos: 4-6 semanas máximo debido a consideraciones hepáticas. Siempre seguido por PCT integral.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
       es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
     },
@@ -205,7 +205,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months). Best taken in the evening due to sleep benefits.',
       es: 'Puede usarse por períodos extendidos (3-6 meses). Mejor tomado por la noche debido a beneficios del sueño.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report improved sleep within 1-2 weeks, increased appetite, and gradual muscle gains over 8-12 weeks.',
       es: 'Los usuarios reportan mejor sueño en 1-2 semanas, aumento del apetito y ganancias musculares graduales en 8-12 semanas.'
     },
@@ -271,7 +271,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 6-8 weeks maximum. Longer cycles increase suppression risk.',
       es: 'Ciclos típicos: 6-8 semanas máximo. Ciclos más largos aumentan el riesgo de supresión.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report 8-15 lbs of lean muscle gain in 6-8 weeks with exceptional strength increases.',
       es: 'Los usuarios reportan 8-15 lbs de ganancia de músculo magro en 6-8 semanas con aumentos excepcionales de fuerza.'
     },
@@ -297,13 +297,13 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '12.5mg',
         capsulesPerBottle: '25',
         typicalCycleLength: '4-6 weeks PCT',
         potencyLevel: 'Moderate Testosterone Stimulation'
       },
       es: {
-        dosePerCapsule: '25mg',
+        dosePerCapsule: '12.5mg',
         capsulesPerBottle: '25',
         typicalCycleLength: '4-6 semanas PCT',
         potencyLevel: 'Estimulación moderada de testosterona'
@@ -334,10 +334,10 @@ export const products: Product[] = [
       es: 'Generalmente bien tolerado. Monitorear niveles hormonales durante PCT. Usar según indicado para terapia post-ciclo.'
     },
     cycleInformation: {
-      en: 'Typical PCT: 25mg daily for 4-6 weeks starting immediately after cycle completion.',
-      es: 'PCT típico: 25mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
+      en: 'Typical PCT: 12.5mg daily for 4-6 weeks starting immediately after cycle completion.',
+      es: 'PCT típico: 12.5mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report testosterone recovery within 2-4 weeks, maintained muscle gains, and improved energy levels.',
       es: 'Los usuarios reportan recuperación de testosterona en 2-4 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
     },
@@ -403,7 +403,7 @@ export const products: Product[] = [
       en: 'Typical use: 12.5-25mg daily during cycle. Adjust based on estrogen levels and response.',
       es: 'Uso típico: 12.5-25mg diario durante el ciclo. Ajustar según niveles de estrógeno y respuesta.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report effective estrogen control within 1-2 weeks, reduced water retention, and prevention of estrogen-related effects.',
       es: 'Los usuarios reportan control efectivo del estrógeno en 1-2 semanas, retención de agua reducida y prevención de efectos relacionados con el estrógeno.'
     },
