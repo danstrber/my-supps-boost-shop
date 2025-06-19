@@ -1,10 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Eye, Pill, User, MessageCircle, Filter } from 'lucide-react';
+import { ShoppingCart, Eye, Pill, User } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
-import CoachingModal from '@/components/CoachingModal';
 
 interface ProductGridProps {
   products: Product[];
@@ -26,50 +25,9 @@ const ProductGrid = ({
   onAuthAction
 }: ProductGridProps) => {
   const t = translations[language];
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isCoachingModalOpen, setIsCoachingModalOpen] = useState(false);
-  
-  // Filter products by category
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
-    : products.filter(product => product.categories.includes(selectedCategory));
-
-  const categories = [
-    { id: 'all', label: language === 'en' ? 'All Products' : 'Todos los Productos' },
-    { id: 'sarms', label: 'SARMs' },
-    { id: 'steroids', label: language === 'en' ? 'Steroids' : 'Esteroides' },
-    { id: 'pct', label: 'PCT' },
-    { id: 'cutting', label: language === 'en' ? 'Cutting' : 'Corte' },
-    { id: 'bulking', label: language === 'en' ? 'Bulking' : 'Volumen' }
-  ];
   
   return (
-    <div className="space-y-8">
-      {/* Category Filter */}
-      <div className="bg-white rounded-lg p-4 shadow-sm border">
-        <div className="flex items-center mb-3">
-          <Filter className="h-5 w-5 mr-2 text-gray-600" />
-          <h3 className="font-semibold text-gray-800">
-            {language === 'en' ? 'Filter by Category' : 'Filtrar por Categoría'}
-          </h3>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedCategory === category.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <div className="space-y-6">
       {/* Sign In Button for non-authenticated users */}
       {!isAuthenticated && onAuthAction && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
@@ -89,7 +47,7 @@ const ProductGrid = ({
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {filteredProducts.map((product) => {
+        {products.map((product) => {
           if (!product) return null;
           
           return (
@@ -106,8 +64,7 @@ const ProductGrid = ({
                       {t.featured}
                     </span>
                   )}
-                  {/* Only show lab test tag for products that have lab tests (Clen and Superdrol) */}
-                  {product.labTestFile && ['clenbuterol', 'superdrol'].includes(product.id) && (
+                  {product.labTestFile && (
                     <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
                       {t.labTested}
                     </span>
@@ -139,7 +96,7 @@ const ProductGrid = ({
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle}</span>
+                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
                   </div>
                 </div>
                 
@@ -193,11 +150,6 @@ const ProductGrid = ({
           );
         })}
       </div>
-
-      <CoachingModal
-        isOpen={isCoachingModalOpen}
-        onClose={() => setIsCoachingModalOpen(false)}
-      />
     </div>
   );
 };

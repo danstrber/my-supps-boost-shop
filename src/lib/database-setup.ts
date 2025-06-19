@@ -5,19 +5,17 @@ export const setupDatabase = async () => {
   try {
     console.log('Checking database setup...');
     
-    // Test database connection by checking if we can query the users table
-    const { data, error } = await supabase
-      .from('users')
-      .select('count')
-      .limit(1);
+    // Test if the generate_referral_code function exists by trying to call it
+    const { data, error } = await supabase.rpc('generate_referral_code');
     
     if (error) {
-      console.error('Database setup check failed:', error);
+      console.error('Database function error:', error);
+      console.log('You may need to run the migration to create the generate_referral_code function');
       return false;
+    } else {
+      console.log('Database functions are working correctly, generated code:', data);
+      return true;
     }
-    
-    console.log('Database setup verified successfully');
-    return true;
     
   } catch (error) {
     console.error('Database setup error:', error);

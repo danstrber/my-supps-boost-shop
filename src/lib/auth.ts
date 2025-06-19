@@ -104,7 +104,21 @@ export const getCurrentUser = async (): Promise<{ user: User | null; profile: Us
 
     console.log('Found authenticated user:', user.id);
 
-    const profile = await getUserProfile(user.id);
+    // Wait a bit for the trigger to complete if this is a new user
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const { data: profile, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      return { user, profile: null };
+    }
+
+    console.log('User profile found:', profile);
     return { user, profile };
   } catch (error) {
     console.error('Error in getCurrentUser:', error);
@@ -116,19 +130,19 @@ export const getUserProfile = async (authId: string): Promise<UserProfile | null
   try {
     console.log('Fetching user profile for:', authId);
     
-    const { data, error } = await supabase
+    const { data: profile, error } = await supabase
       .from('users')
       .select('*')
       .eq('auth_id', authId)
-      .single();
-    
+      .maybeSingle();
+
     if (error) {
       console.error('Error fetching user profile:', error);
       return null;
     }
-    
-    console.log('User profile fetched successfully:', data);
-    return data;
+
+    console.log('User profile found:', profile);
+    return profile;
   } catch (error) {
     console.error('Error in getUserProfile:', error);
     return null;
@@ -139,27 +153,17 @@ export const getUserDiscount = async (authId: string): Promise<number> => {
   try {
     console.log('Calculating user discount for:', authId);
     
-    const profile = await getUserProfile(authId);
-    if (!profile) return 0;
-    
-    // Calculate discount based on spending and referrals
-    const spendingDiscount = profile.referred_by 
-      ? Math.floor(profile.total_spending / 50) * 7  // 7% per $50 for referred users
-      : Math.floor(profile.total_spending / 50) * 3; // 3% per $50 for normal users
-    
-    // Add first referral bonus
-    const firstReferralBonus = profile.referred_by ? 10 : 0;
-    
-    const totalDiscount = Math.min(spendingDiscount + firstReferralBonus, 32);
-    
-    console.log('User discount calculated:', {
-      profile,
-      spendingDiscount,
-      firstReferralBonus,
-      totalDiscount
+    const { data, error } = await supabase.rpc('calculate_user_discount', {
+      user_auth_id: authId
     });
-    
-    return totalDiscount;
+
+    if (error) {
+      console.error('Error calculating discount:', error);
+      return 0;
+    }
+
+    console.log('User discount calculated:', data);
+    return data || 0;
   } catch (error) {
     console.error('Error in getUserDiscount:', error);
     return 0;

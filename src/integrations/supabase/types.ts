@@ -11,7 +11,7 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
-          created_at: string | null
+          created_at: string
           discount_amount: number | null
           final_total: number
           id: string
@@ -21,11 +21,10 @@ export type Database = {
           payment_method: string
           shipping_fee: number | null
           status: string | null
-          updated_at: string | null
           user_id: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           discount_amount?: number | null
           final_total: number
           id?: string
@@ -35,11 +34,10 @@ export type Database = {
           payment_method: string
           shipping_fee?: number | null
           status?: string | null
-          updated_at?: string | null
           user_id: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           discount_amount?: number | null
           final_total?: number
           id?: string
@@ -49,15 +47,58 @@ export type Database = {
           payment_method?: string
           shipping_fee?: number | null
           status?: string | null
-          updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["auth_id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       users: {
         Row: {
           auth_id: string
-          created_at: string | null
+          created_at: string
           email: string | null
           id: string
           name: string | null
@@ -65,23 +106,23 @@ export type Database = {
           referred_by: string | null
           referred_spending: number | null
           total_spending: number | null
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           auth_id: string
-          created_at?: string | null
+          created_at?: string
           email?: string | null
           id?: string
           name?: string | null
-          referral_code?: string
+          referral_code: string
           referred_by?: string | null
           referred_spending?: number | null
           total_spending?: number | null
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           auth_id?: string
-          created_at?: string | null
+          created_at?: string
           email?: string | null
           id?: string
           name?: string | null
@@ -89,22 +130,30 @@ export type Database = {
           referred_by?: string | null
           referred_spending?: number | null
           total_spending?: number | null
-          updated_at?: string | null
+          updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["referral_code"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      calculate_user_discount: {
+        Args: { user_auth_id: string }
+        Returns: number
+      }
       generate_referral_code: {
         Args: Record<PropertyKey, never>
         Returns: string
-      }
-      increment_user_spending: {
-        Args: { user_auth_id: string; amount_to_add: number }
-        Returns: boolean
       }
     }
     Enums: {

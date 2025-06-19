@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -124,15 +123,6 @@ const CartModal = ({
     alert('Order placed successfully!');
   };
 
-  // Convert cart items to payment modal format
-  const paymentCartItems = cartItems.map(({ product, quantity }) => ({
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    quantity,
-    image: product.image
-  }));
-
   return (
     <>
       <Dialog open={isOpen && !isPaymentModalOpen} onOpenChange={onClose}>
@@ -209,12 +199,11 @@ const CartModal = ({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={handlePaymentModalClose}
-        cartItems={paymentCartItems}
-        subtotal={subtotal}
-        discount={discountAmount}
-        shippingFee={shippingFee}
-        total={finalTotal}
-        onPaymentSuccess={handleOrderSuccess}
+        cart={cart}
+        products={products}
+        userDiscount={discountAmount}
+        userProfile={userProfile}
+        onOrderSuccess={handleOrderSuccess}
       />
     </>
   );

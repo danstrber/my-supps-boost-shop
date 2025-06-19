@@ -25,9 +25,9 @@ export const cancelPendingPurchase = (orderId: string): void => {
   console.log('🗑️ Pending purchase cancelled:', orderId);
 };
 
-// Direct order creation function with database integration
+// Direct order creation function for better reliability
 export const createOrder = async (orderData: any) => {
-  console.log('🚀 Creating order in database:', orderData);
+  console.log('🚀 Creating order directly:', orderData);
   
   try {
     const { data, error } = await supabase
@@ -35,12 +35,16 @@ export const createOrder = async (orderData: any) => {
       .insert([orderData])
       .select()
       .single();
-    
+
     if (error) {
-      console.error('💥 Order creation failed:', error);
-      throw new Error('Failed to create order: ' + error.message);
+      console.error('❌ Database error:', error);
+      throw new Error(`Database error: ${error.message}`);
     }
-    
+
+    if (!data) {
+      throw new Error('No order data returned from database');
+    }
+
     console.log('✅ Order created successfully:', data);
     return data;
   } catch (error) {
@@ -49,22 +53,35 @@ export const createOrder = async (orderData: any) => {
   }
 };
 
-// Update user spending with database integration
+// Update user spending with better error handling
 export const updateUserSpending = async (userId: string, amount: number) => {
   console.log('💰 Updating user spending:', { userId, amount });
   
   try {
-    const { data, error } = await supabase.rpc('increment_user_spending', {
-      user_auth_id: userId,
-      amount_to_add: amount
-    });
-    
-    if (error) {
-      console.error('❌ Error updating user spending:', error);
+    const { data: userData, error: fetchError } = await supabase
+      .from('users')
+      .select('total_spending')
+      .eq('auth_id', userId)
+      .single();
+
+    if (fetchError) {
+      console.error('❌ Error fetching user data:', fetchError);
       return false;
     }
+
+    const newTotalSpending = (userData.total_spending || 0) + amount;
     
-    console.log('✅ User spending updated successfully:', data);
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({ total_spending: newTotalSpending })
+      .eq('auth_id', userId);
+
+    if (updateError) {
+      console.error('❌ Error updating user spending:', updateError);
+      return false;
+    }
+
+    console.log('✅ User spending updated successfully');
     return true;
   } catch (error) {
     console.error('❌ Error in spending update:', error);

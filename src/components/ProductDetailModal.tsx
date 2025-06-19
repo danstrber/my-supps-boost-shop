@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -170,7 +169,7 @@ const ProductDetailModal = ({
                     <Timer className="h-4 w-4 text-purple-600" />
                     <div>
                       <span className="text-gray-600 text-xs block">{l.cycleLength}</span>
-                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleLength.slice(0, 15)}...</span>
+                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleLength}</span>
                     </div>
                   </div>
                   <div className="bg-white p-2 rounded flex items-center gap-2">
@@ -273,7 +272,7 @@ const ProductDetailModal = ({
                           <Star
                             key={i}
                             className={`h-3 w-3 ${
-                              i < (value as number) ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                              i < value ? 'text-yellow-500 fill-current' : 'text-gray-300'
                             }`}
                           />
                         ))}
@@ -321,7 +320,7 @@ const ProductDetailModal = ({
         </DialogContent>
       </Dialog>
 
-      {/* Full-size Image Modal */}
+      {/* Full-size Image Modal - Add DialogDescription here too */}
       <Dialog open={imageModalOpen} onOpenChange={setImageModalOpen}>
         <DialogContent className="sm:max-w-4xl p-0 bg-black/95">
           <DialogHeader className="sr-only">

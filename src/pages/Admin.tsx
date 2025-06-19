@@ -31,32 +31,20 @@ const Admin = () => {
 
   const fetchOrders = async () => {
     try {
-      console.log('Fetching orders from database...');
       const { data, error } = await supabase
         .from('orders')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching orders:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch orders: " + error.message,
-          variant: "destructive"
-        });
-        setOrders([]);
-      } else {
-        console.log('Orders fetched successfully:', data);
-        setOrders(data || []);
-      }
+      if (error) throw error;
+      setOrders(data || []);
     } catch (error: any) {
-      console.error('Exception fetching orders:', error);
+      console.error('Error fetching orders:', error);
       toast({
         title: "Error",
         description: "Failed to fetch orders",
         variant: "destructive"
       });
-      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -64,31 +52,44 @@ const Admin = () => {
 
   const handleConfirmOrder = async (orderId: string) => {
     try {
-      console.log('Confirming order:', orderId);
-      
+      // Update order status in database
       const { error } = await supabase
         .from('orders')
-        .update({ 
-          status: 'confirmed',
-          updated_at: new Date().toISOString()
-        })
+        .update({ status: 'confirmed' })
         .eq('id', orderId);
 
-      if (error) {
-        console.error('Error confirming order:', error);
-        throw new Error('Failed to confirm order: ' + error.message);
+      if (error) throw error;
+
+      // Get order details to update user spending
+      const { data: orderData, error: fetchError } = await supabase
+        .from('orders')
+        .select('user_id, final_total')
+        .eq('id', orderId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching order data:', fetchError);
+        toast({
+          title: "Warning",
+          description: "Order confirmed but couldn't update user spending"
+        });
+        return;
       }
 
-      // Find the order to get user info for spending update
-      const order = orders.find(o => o.id === orderId);
-      if (order) {
-        await updateUserSpending(order.user_id, order.final_total);
+      // Update user spending
+      const success = await updateUserSpending(orderData.user_id, orderData.final_total);
+      
+      if (success) {
+        toast({
+          title: "Success",
+          description: "Order confirmed and user spending updated!"
+        });
+      } else {
+        toast({
+          title: "Warning",
+          description: "Order confirmed but spending update failed"
+        });
       }
-
-      toast({
-        title: "Success",
-        description: "Order confirmed successfully"
-      });
       
       fetchOrders(); // Refresh the list
     } catch (error: any) {
@@ -103,24 +104,16 @@ const Admin = () => {
 
   const handleRejectOrder = async (orderId: string) => {
     try {
-      console.log('Rejecting order:', orderId);
-
       const { error } = await supabase
         .from('orders')
-        .update({ 
-          status: 'rejected',
-          updated_at: new Date().toISOString()
-        })
+        .update({ status: 'rejected' })
         .eq('id', orderId);
 
-      if (error) {
-        console.error('Error rejecting order:', error);
-        throw new Error('Failed to reject order: ' + error.message);
-      }
+      if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Order rejected successfully"
+        description: "Order rejected"
       });
       fetchOrders();
     } catch (error: any) {

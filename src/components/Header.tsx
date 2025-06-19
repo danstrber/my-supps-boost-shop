@@ -1,249 +1,211 @@
 
 import React, { useState } from 'react';
-import { ShoppingCart } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu, X, Globe } from 'lucide-react';
 import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
   language: 'en' | 'es';
   onLanguageChange: (language: 'en' | 'es') => void;
-  onPageChange: (page: string) => void;
-  currentPage: string;
   cartItemCount: number;
-  onCartOpen: () => void;
-  onMenuToggle: () => void;
   isAuthenticated: boolean;
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
-  sidebarOpen: boolean;
+  onCartOpen: () => void;
+  onMenuToggle: () => void;
+  currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account';
+  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
+  sidebarOpen?: boolean;
 }
 
-const Header = ({ 
+const Header = ({
   language,
   onLanguageChange,
-  onPageChange, 
-  currentPage, 
-  cartItemCount, 
-  onCartOpen,
-  onMenuToggle,
+  cartItemCount,
   isAuthenticated,
   onAuthAction,
-  sidebarOpen
+  onCartOpen,
+  onMenuToggle,
+  currentPage,
+  onPageChange,
+  sidebarOpen = false
 }: HeaderProps) => {
-  const { user, signOut } = useAuth();
-  const [isCoachingModalOpen, setIsCoachingModalOpen] = useState(false);
-
-  const handleLogout = async () => {
-    await signOut();
-    onAuthAction('logout');
-  };
+  const [coachingModalOpen, setCoachingModalOpen] = useState(false);
 
   return (
     <>
-      {/* Expert Guidance Banner */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-4">
+      <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-xl font-bold">
-                💬 {language === 'en' ? 'Need Expert Guidance?' : '¿Necesitas Orientación Experta?'}
-              </span>
-              <span className="text-sm opacity-90">
-                {language === 'en' 
-                  ? 'Get personalized coaching, custom cycles, and 24/7 support from our experts!'
-                  : '¡Obtén coaching personalizado, ciclos a medida y soporte 24/7 de nuestros expertos!'}
-              </span>
-            </div>
-            <Button
-              onClick={() => setIsCoachingModalOpen(true)}
-              className="bg-white text-green-600 hover:bg-gray-100 font-semibold px-6 py-2 rounded-lg"
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Hamburger Menu */}
+            <div 
+              className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-center items-center"
+              onClick={onMenuToggle}
+              data-hamburger
             >
-              {language === 'en' ? 'Get Coaching' : 'Obtener Coaching'}
-            </Button>
-          </div>
-        </div>
-      </div>
+              {sidebarOpen ? (
+                <X className="h-6 w-6 text-gray-800" />
+              ) : (
+                <>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300 mt-1"></div>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300 mt-1"></div>
+                </>
+              )}
+            </div>
 
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            {/* Logo on the left */}
-            <div className="flex items-center">
+            {/* Logo with new image */}
+            <div 
+              className="flex items-center cursor-pointer ml-16" 
+              onClick={() => onPageChange('home')}
+            >
               <img 
-                src="/lovable-uploads/9db98b42-91b1-4223-8f41-e3180fda882b.png" 
-                alt="MySupps" 
-                className="h-12 w-auto"
+                src="/lovable-uploads/7eaf0b79-d90d-4ac9-a577-b5a57d1272f1.png" 
+                alt="MySupps Logo" 
+                className="h-8 md:h-10 w-auto"
               />
             </div>
 
-            {/* Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <button
-                onClick={() => onPageChange('home')}
-                className={`${
-                  currentPage === 'home'
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-700 hover:text-green-600'
-                } pb-2 transition-colors font-medium`}
+            {/* Right side - responsive layout */}
+            <div className="flex items-center space-x-1 md:space-x-2">
+              {/* Premium Coaching Button - hidden on mobile */}
+              <Button
+                onClick={() => setCoachingModalOpen(true)}
+                className="hidden sm:flex bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-orange-400 transform hover:scale-105 transition-all duration-200 text-xs md:text-base"
               >
-                Products
-              </button>
-              <button
-                onClick={() => onPageChange('about')}
-                className={`${
-                  currentPage === 'about'
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-700 hover:text-green-600'
-                } pb-2 transition-colors font-medium`}
-              >
-                About
-              </button>
-              <button
-                onClick={() => onPageChange('contact')}
-                className={`${
-                  currentPage === 'contact'
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-700 hover:text-green-600'
-                } pb-2 transition-colors font-medium`}
-              >
-                Contact
-              </button>
-              <button
-                onClick={() => onPageChange('delivery')}
-                className={`${
-                  currentPage === 'delivery'
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-700 hover:text-green-600'
-                } pb-2 transition-colors font-medium`}
-              >
-                Delivery
-              </button>
-              <button
-                onClick={() => onPageChange('payment')}
-                className={`${
-                  currentPage === 'payment'
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-700 hover:text-green-600'
-                } pb-2 transition-colors font-medium`}
-              >
-                Payment
-              </button>
-              <button
-                onClick={() => onPageChange('lab-testing')}
-                className={`${
-                  currentPage === 'lab-testing'
-                    ? 'text-green-600 border-b-2 border-green-600'
-                    : 'text-gray-700 hover:text-green-600'
-                } pb-2 transition-colors font-medium`}
-              >
-                Lab Testing
-              </button>
-            </nav>
+                <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                <span className="hidden md:inline">🏆 PREMIUM COACHING</span>
+                <span className="md:hidden">🏆 COACH</span>
+              </Button>
 
-            {/* Right side controls */}
-            <div className="flex items-center space-x-6">
-              {/* Language Selector with Real Flag Emojis */}
-              <button
-                onClick={() => onLanguageChange(language === 'en' ? 'es' : 'en')}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200 hover:from-green-100 hover:to-green-200 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                <span className="text-xl">
-                  {language === 'en' ? '🇺🇸' : '🇪🇸'}
-                </span>
-                <span className="text-sm font-semibold text-green-700">
-                  {language === 'en' ? 'EN' : 'ES'}
-                </span>
-              </button>
+              {/* Enhanced Language Selector */}
+              <div className="flex items-center space-x-2 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 hover:bg-gray-100 transition-colors">
+                <Globe className="h-4 w-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700 hidden sm:inline">Language</span>
+                <div className="flex items-center space-x-1">
+                  <span className="text-lg">{language === 'en' ? '🇺🇸' : '🇪🇸'}</span>
+                  <Select value={language} onValueChange={onLanguageChange}>
+                    <SelectTrigger className="w-16 border-0 p-0 h-auto bg-transparent">
+                      <SelectValue className="text-sm font-medium">
+                        {language === 'en' ?  'EN' : 'ES'}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en" className="flex items-center space-x-2">
+                        <span>🇺🇸 EN</span>
+                      </SelectItem>
+                      <SelectItem value="es" className="flex items-center space-x-2">
+                        <span>🇪🇸 ES</span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
 
-              {/* Cart */}
-              <button
+              {/* Auth Buttons */}
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    variant="outline"
+                    onClick={() => onPageChange('account')}
+                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-2 md:px-3 py-2"
+                  >
+                    <UserCircle className="h-4 w-4 md:mr-1" />
+                    <span className="hidden lg:inline">{language === 'en' ? 'Account' : 'Cuenta'}</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => onAuthAction('logout')}
+                    className="hidden md:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-2 md:px-3 py-2"
+                  >
+                    <LogOut className="h-4 w-4 md:mr-1" />
+                    <span className="hidden lg:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex space-x-1">
+                  <Button
+                    variant="outline"
+                    onClick={() => onAuthAction('login')}
+                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-2 md:px-3 py-2"
+                  >
+                    <User className="h-4 w-4 md:mr-1" />
+                    <span className="hidden md:inline">{language === 'en' ? 'Sign In' : 'Iniciar'}</span>
+                  </Button>
+                  <Button
+                    onClick={() => onAuthAction('signup')}
+                    className="bg-green-600 hover:bg-green-700 text-white border border-green-600 rounded-lg px-2 md:px-3 py-2 font-medium"
+                  >
+                    <span className="hidden sm:inline">{language === 'en' ? 'Sign Up' : 'Registro'}</span>
+                    <span className="sm:hidden">{language === 'en' ? 'Join' : 'Unirse'}</span>
+                  </Button>
+                </div>
+              )}
+
+              {/* Cart Button */}
+              <Button
+                variant="outline"
                 onClick={onCartOpen}
-                className="relative p-2 text-gray-700 hover:text-green-600 transition-colors"
+                className="relative border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg p-2"
               >
-                <ShoppingCart className="h-6 w-6" />
+                <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center font-semibold">
+                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
                     {cartItemCount}
                   </span>
                 )}
-              </button>
+              </Button>
+            </div>
+          </div>
+        </div>
 
-              {/* Auth buttons */}
-              {user ? (
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => onPageChange('account')}
-                    className={`${
-                      currentPage === 'account'
-                        ? 'text-green-600'
-                        : 'text-gray-700 hover:text-green-600'
-                    } transition-colors font-medium px-4 py-2`}
-                  >
-                    Account
-                  </button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <button className="text-gray-700 hover:text-red-600 transition-colors font-medium px-4 py-2">
-                        Logout
-                      </button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {language === 'en' ? 'Are you sure you want to logout?' : '¿Estás seguro de que quieres cerrar sesión?'}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {language === 'en' 
-                            ? 'You will be signed out of your account and will need to login again to access your information.'
-                            : 'Se cerrará tu sesión y necesitarás iniciar sesión nuevamente para acceder a tu información.'}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          {language === 'en' ? 'Cancel' : 'Cancelar'}
-                        </AlertDialogCancel>
-                        <AlertDialogAction onClick={handleLogout}>
-                          {language === 'en' ? 'Logout' : 'Cerrar Sesión'}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-3">
-                  <button
-                    onClick={() => onAuthAction('signup')}
-                    className="text-green-600 hover:text-green-700 transition-colors font-medium px-4 py-2"
-                  >
-                    Sign Up
-                  </button>
-                  <button
-                    onClick={() => onAuthAction('login')}
-                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                  >
-                    Login
-                  </button>
-                </div>
-              )}
+        {/* GREEN SECTION */}
+        <div className="bg-green-600 text-white py-1 md:py-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center items-center space-x-3 md:space-x-12 text-xs md:text-base font-medium overflow-x-auto">
+              <button 
+                onClick={() => onPageChange('home')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>🏠</span>
+                <span>{language === 'en' ? 'HOME' : 'INICIO'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('labtesting')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>🔬</span>
+                <span>{language === 'en' ? 'VERIFICATION' : 'VERIFICACIÓN'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('delivery')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>🚚</span>
+                <span>{language === 'en' ? 'SHIPPING' : 'ENVÍO'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('payment')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>💳</span>
+                <span>{language === 'en' ? 'CRYPTO' : 'CRIPTO'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('contact')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>📞</span>
+                <span>{language === 'en' ? 'TELEGRAM' : 'TELEGRAM'}</span>
+              </button>
             </div>
           </div>
         </div>
       </header>
 
-      <CoachingModal
-        isOpen={isCoachingModalOpen}
-        onClose={() => setIsCoachingModalOpen(false)}
+      <CoachingModal 
+        isOpen={coachingModalOpen} 
+        onClose={() => setCoachingModalOpen(false)} 
       />
     </>
   );

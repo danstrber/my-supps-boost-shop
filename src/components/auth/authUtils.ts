@@ -18,8 +18,24 @@ export const handleEmailAuth = async (
   if (mode === 'signup') {
     console.log('Attempting auth signup with metadata...');
 
-    // Temporarily skip database check until migration runs
-    console.log('Database migration not yet run, skipping duplicate email check');
+    // Check for duplicate email first
+    const { data: existingUser, error: checkError } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (checkError) {
+      console.error('Error checking for existing user:', checkError);
+      return { data: null, error: { message: 'Error checking account status' } };
+    }
+
+    if (existingUser) {
+      return { 
+        data: null, 
+        error: { message: 'This email is already in use.' } 
+      };
+    }
 
     // Build metadata object
     const metadata: any = {};
