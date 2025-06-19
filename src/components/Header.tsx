@@ -4,13 +4,30 @@ import { ShoppingCart, Globe } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface HeaderProps {
+  language: 'en' | 'es';
+  onLanguageChange: (language: 'en' | 'es') => void;
   onPageChange: (page: string) => void;
   currentPage: string;
   cartItemCount: number;
   onCartOpen: () => void;
+  onMenuToggle: () => void;
+  isAuthenticated: boolean;
+  onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
+  sidebarOpen: boolean;
 }
 
-const Header = ({ onPageChange, currentPage, cartItemCount, onCartOpen }: HeaderProps) => {
+const Header = ({ 
+  language,
+  onLanguageChange,
+  onPageChange, 
+  currentPage, 
+  cartItemCount, 
+  onCartOpen,
+  onMenuToggle,
+  isAuthenticated,
+  onAuthAction,
+  sidebarOpen
+}: HeaderProps) => {
   const { user, signOut } = useAuth();
 
   return (
@@ -132,7 +149,7 @@ const Header = ({ onPageChange, currentPage, cartItemCount, onCartOpen }: Header
               </div>
             ) : (
               <button
-                onClick={() => onPageChange('auth')}
+                onClick={() => onAuthAction('login')}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
                 Login

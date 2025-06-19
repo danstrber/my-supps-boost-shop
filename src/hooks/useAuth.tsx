@@ -1,20 +1,24 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 import { UserProfile } from '@/lib/auth';
 
 interface AuthContextType {
+  user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
   refreshProfile: () => Promise<void>;
   isAuthenticated: boolean;
   userDiscount: number;
   handleAuthAction: (action: 'login' | 'signup' | 'logout') => void;
+  signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -24,19 +28,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('fetchUserProfile called for userId:', userId);
       
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('auth_id', userId)
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        return null;
-      }
-
-      console.log('User profile fetched:', data);
-      return data as UserProfile;
+      // Temporarily disable database calls until migration runs
+      console.log('Database migration not yet run, skipping profile fetch');
+      return null;
     } catch (error) {
       console.error('Exception in fetchUserProfile:', error);
       return null;
@@ -47,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       console.log('refreshProfile called');
       const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
       if (user) {
         const profile = await fetchUserProfile(user.id);
         setUserProfile(profile);
@@ -59,15 +54,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
-    console.log('handleAuthAction called with:', action);
-    if (action === 'logout') {
-      supabase.auth.signOut();
+  const signOut = async () => {
+    console.log('Starting signout process...');
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Signout error:', error);
+    } else {
+      console.log('Signout successful');
+      setUser(null);
       setUserProfile(null);
     }
   };
 
-  const isAuthenticated = !!userProfile;
+  const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
+    console.log('handleAuthAction called with:', action);
+    if (action === 'logout') {
+      signOut();
+    }
+  };
+
+  const isAuthenticated = !!user;
   
   const userDiscount = userProfile ? Math.min(
     (userProfile.referred_by ? 
@@ -101,21 +107,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (session?.user) {
-          console.log('Fetching profile for user:', session.user.id);
+          console.log('Setting user from session:', session.user.id);
+          setUser(session.user);
           const profile = await fetchUserProfile(session.user.id);
           if (!cleanup) {
             console.log('Setting user profile:', profile?.id);
             setUserProfile(profile);
           }
         } else {
-          console.log('No session, setting userProfile to null');
+          console.log('No session, setting user to null');
           if (!cleanup) {
+            setUser(null);
             setUserProfile(null);
           }
         }
       } catch (error) {
         console.error('Error in initialize:', error);
         if (!cleanup) {
+          setUser(null);
           setUserProfile(null);
         }
       } finally {
@@ -126,7 +135,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     };
 
-    // Initialize first, then set up listener
     initialize().then(() => {
       if (cleanup) return;
       
@@ -139,27 +147,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           
           try {
             if (session?.user) {
-              console.log('Auth change - fetching profile for:', session.user.id);
+              console.log('Auth change - setting user:', session.user.id);
+              setUser(session.user);
               const profile = await fetchUserProfile(session.user.id);
               if (!cleanup) {
                 setUserProfile(profile);
               }
             } else {
-              console.log('Auth change - no user, clearing profile');
+              console.log('Auth change - no user, clearing data');
               if (!cleanup) {
+                setUser(null);
                 setUserProfile(null);
               }
             }
           } catch (error) {
             console.error('Error in auth state change handler:', error);
             if (!cleanup) {
+              setUser(null);
               setUserProfile(null);
             }
           }
         }
       );
 
-      // Store subscription for cleanup
       return () => {
         console.log('Auth listener cleanup');
         subscription.unsubscribe();
@@ -173,12 +183,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const contextValue: AuthContextType = {
+    user,
     userProfile, 
     loading, 
     refreshProfile, 
     isAuthenticated, 
     userDiscount, 
-    handleAuthAction
+    handleAuthAction,
+    signOut
   };
 
   console.log('AuthProvider rendering with loading:', loading);
