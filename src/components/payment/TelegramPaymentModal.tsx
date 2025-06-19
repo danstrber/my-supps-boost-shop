@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { MessageCircle, Shield, Clock, Users } from 'lucide-react';
 
@@ -18,15 +18,21 @@ const TelegramPaymentModal = ({ isOpen, onClose, language }: TelegramPaymentModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md" aria-describedby="telegram-payment-description">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-center text-2xl font-bold text-blue-600 mb-4">
             <MessageCircle className="h-8 w-8 mr-3" />
             {language === 'en' ? 'Telegram Payment' : 'Pago por Telegram'}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            {language === 'en' 
+              ? 'Complete your payment through Telegram for the fastest and most secure experience'
+              : 'Completa tu pago a través de Telegram para la experiencia más rápida y segura'
+            }
+          </DialogDescription>
         </DialogHeader>
         
-        <div id="telegram-payment-description" className="space-y-6">
+        <div className="space-y-6">
           <div className="text-center">
             <div className="text-6xl mb-4">💬</div>
             <h3 className="text-xl font-semibold text-gray-800 mb-2">
