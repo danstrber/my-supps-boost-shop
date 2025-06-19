@@ -18,7 +18,7 @@ export const useCart = () => {
         // Ensure all values are valid numbers and remove any invalid entries
         const validCart: Record<string, number> = {};
         Object.entries(parsedCart).forEach(([key, value]) => {
-          if (typeof value === 'number' && value > 0 && !isNaN(value)) {
+          if (typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
             validCart[key] = Math.max(1, Math.floor(value)); // Ensure positive integers
           }
         });
@@ -41,22 +41,40 @@ export const useCart = () => {
 
   // Calculate cart item count properly - only count valid positive quantities
   const cartItemCount = Object.values(cart).reduce((total, quantity) => {
-    const validQuantity = typeof quantity === 'number' && quantity > 0 && !isNaN(quantity) ? Math.floor(quantity) : 0;
+    const validQuantity = typeof quantity === 'number' && quantity > 0 && !isNaN(quantity) && isFinite(quantity) ? Math.floor(quantity) : 0;
     return total + validQuantity;
   }, 0);
 
-  console.log('🧮 Cart calculation:', { cart, cartItemCount, values: Object.values(cart) });
+  console.log('🧮 Cart calculation debug:', { 
+    cart, 
+    cartItemCount, 
+    values: Object.values(cart),
+    entries: Object.entries(cart),
+    validEntries: Object.entries(cart).filter(([_, qty]) => typeof qty === 'number' && qty > 0 && !isNaN(qty) && isFinite(qty))
+  });
 
   const handleAddToCart = (product: Product) => {
     setCart(prev => {
       const currentQuantity = prev[product.id] || 0;
       const newQuantity = currentQuantity + 1;
       console.log('➕ Adding to cart:', { productId: product.id, currentQuantity, newQuantity });
-      return {
+      
+      const newCart = {
         ...prev,
         [product.id]: newQuantity
       };
+      
+      // Clean up any invalid entries while we're at it
+      const cleanCart: Record<string, number> = {};
+      Object.entries(newCart).forEach(([key, value]) => {
+        if (typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
+          cleanCart[key] = Math.floor(value);
+        }
+      });
+      
+      return cleanCart;
     });
+    
     toast({
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
@@ -65,7 +83,8 @@ export const useCart = () => {
 
   const handleUpdateCart = (productId: string, quantity: number) => {
     console.log('🔄 Updating cart:', { productId, quantity });
-    if (quantity <= 0) {
+    
+    if (quantity <= 0 || !isFinite(quantity) || isNaN(quantity)) {
       setCart(prev => {
         const newCart = { ...prev };
         delete newCart[productId];
@@ -74,11 +93,12 @@ export const useCart = () => {
       });
     } else {
       setCart(prev => {
+        const cleanQuantity = Math.max(1, Math.floor(quantity)); // Ensure positive integer
         const newCart = {
           ...prev,
-          [productId]: Math.max(1, Math.floor(quantity)) // Ensure positive integer
+          [productId]: cleanQuantity
         };
-        console.log('📝 Updating cart quantity:', { productId, quantity, newCart });
+        console.log('📝 Updating cart quantity:', { productId, quantity, cleanQuantity, newCart });
         return newCart;
       });
     }
