@@ -2,7 +2,7 @@
 import { Product } from './types';
 
 export const products: Product[] = [
-  // RAD-140 - moved to top
+  // RAD-140 - moved to top with correct image
   {
     id: "2",
     name: "RAD-140 (Testolone)",
@@ -34,7 +34,7 @@ export const products: Product[] = [
     featured: true,
     inStock: true
   },
-  // MK-677 - moved to top
+  // MK-677 - moved to top with correct image
   {
     id: "mk677",
     name: "MK-677 (Ibutamoren)",
@@ -66,7 +66,7 @@ export const products: Product[] = [
     featured: true,
     inStock: true
   },
-  // Superdrol - moved to top
+  // Superdrol - moved to top with correct image
   {
     id: "superdrol",
     name: "Superdrol",
@@ -91,7 +91,7 @@ export const products: Product[] = [
         benefits: ["Crecimiento muscular rápido", "Ganancias dramáticas de fuerza", "Vascularidad mejorada", "Dureza muscular mejorada"]
       }
     },
-    whatToExpect: {
+    whatToExpected: {
       en: "Rapid strength and size gains within 1-2 weeks. Significant muscle hardness and definition improvements.",
       es: "Ganancias rápidas de fuerza y tamaño en 1-2 semanas. Mejoras significativas en dureza y definición muscular."
     },
@@ -99,7 +99,7 @@ export const products: Product[] = [
     featured: true,
     inStock: true
   },
-  // Clenbuterol
+  // Clenbuterol with correct image
   {
     id: "clenbuterol",
     name: "Clenbuterol",
@@ -132,7 +132,7 @@ export const products: Product[] = [
     featured: true,
     inStock: true
   },
-  // Enclomiphene - fixed dosage
+  // Enclomiphene - fixed dosage and correct image
   {
     id: "enclomiphene",
     name: "Enclomiphene Citrate",
@@ -164,12 +164,12 @@ export const products: Product[] = [
     featured: false,
     inStock: true
   },
-  // Aromasin - removed image reference
+  // Aromasin - removed image
   {
     id: "aromasin",
     name: "Aromasin (Exemestane)",
     price: 25,
-    image: "", // Removed image
+    image: "",
     description: {
       en: "Potent aromatase inhibitor for estrogen control during and after cycles.",
       es: "Inhibidor potente de aromatasa para control de estrógeno durante y después de ciclos."

@@ -52,7 +52,7 @@ const Header = ({
   return (
     <>
       {/* Expert Guidance Banner */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4">
+      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -67,7 +67,7 @@ const Header = ({
             </div>
             <Button
               onClick={() => setIsCoachingModalOpen(true)}
-              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-6 py-2 rounded-lg"
+              className="bg-white text-green-600 hover:bg-gray-100 font-semibold px-6 py-2 rounded-lg"
             >
               {language === 'en' ? 'Get Coaching' : 'Obtener Coaching'}
             </Button>
@@ -93,8 +93,8 @@ const Header = ({
                 onClick={() => onPageChange('home')}
                 className={`${
                   currentPage === 'home'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-700 hover:text-green-600'
                 } pb-2 transition-colors font-medium`}
               >
                 Products
@@ -103,8 +103,8 @@ const Header = ({
                 onClick={() => onPageChange('about')}
                 className={`${
                   currentPage === 'about'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-700 hover:text-green-600'
                 } pb-2 transition-colors font-medium`}
               >
                 About
@@ -113,8 +113,8 @@ const Header = ({
                 onClick={() => onPageChange('contact')}
                 className={`${
                   currentPage === 'contact'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-700 hover:text-green-600'
                 } pb-2 transition-colors font-medium`}
               >
                 Contact
@@ -123,8 +123,8 @@ const Header = ({
                 onClick={() => onPageChange('delivery')}
                 className={`${
                   currentPage === 'delivery'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-700 hover:text-green-600'
                 } pb-2 transition-colors font-medium`}
               >
                 Delivery
@@ -133,8 +133,8 @@ const Header = ({
                 onClick={() => onPageChange('payment')}
                 className={`${
                   currentPage === 'payment'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-700 hover:text-green-600'
                 } pb-2 transition-colors font-medium`}
               >
                 Payment
@@ -143,8 +143,8 @@ const Header = ({
                 onClick={() => onPageChange('lab-testing')}
                 className={`${
                   currentPage === 'lab-testing'
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600'
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-700 hover:text-green-600'
                 } pb-2 transition-colors font-medium`}
               >
                 Lab Testing
@@ -156,12 +156,12 @@ const Header = ({
               {/* Language Selector with Real Flag Emojis */}
               <button
                 onClick={() => onLanguageChange(language === 'en' ? 'es' : 'en')}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 shadow-sm hover:shadow-md"
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border border-green-200 hover:from-green-100 hover:to-green-200 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <span className="text-xl">
                   {language === 'en' ? '🇺🇸' : '🇪🇸'}
                 </span>
-                <span className="text-sm font-semibold text-blue-700">
+                <span className="text-sm font-semibold text-green-700">
                   {language === 'en' ? 'EN' : 'ES'}
                 </span>
               </button>
@@ -169,7 +169,7 @@ const Header = ({
               {/* Cart */}
               <button
                 onClick={onCartOpen}
-                className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
+                className="relative p-2 text-gray-700 hover:text-green-600 transition-colors"
               >
                 <ShoppingCart className="h-6 w-6" />
                 {cartItemCount > 0 && (
@@ -186,8 +186,8 @@ const Header = ({
                     onClick={() => onPageChange('account')}
                     className={`${
                       currentPage === 'account'
-                        ? 'text-blue-600'
-                        : 'text-gray-700 hover:text-blue-600'
+                        ? 'text-green-600'
+                        : 'text-gray-700 hover:text-green-600'
                     } transition-colors font-medium px-4 py-2`}
                   >
                     Account
@@ -224,13 +224,13 @@ const Header = ({
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => onAuthAction('signup')}
-                    className="text-blue-600 hover:text-blue-700 transition-colors font-medium px-4 py-2"
+                    className="text-green-600 hover:text-green-700 transition-colors font-medium px-4 py-2"
                   >
                     Sign Up
                   </button>
                   <button
                     onClick={() => onAuthAction('login')}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors font-medium"
                   >
                     Login
                   </button>
