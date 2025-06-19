@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -414,5 +413,32 @@ export const products: Product[] = [
       sideEffects: 3,
       retention: 3
     }
+  },
+  {
+    id: 'aromasin',
+    name: 'Aromasin (Exemestane)',
+    price: 45,
+    image: '',
+    category: 'pct',
+    description: 'Aromasin (Exemestane) is a potent aromatase inhibitor used in post cycle therapy.',
+    benefits: [
+      'Blocks estrogen production',
+      'Prevents gynecomastia',
+      'Maintains testosterone levels',
+      'Reduces water retention'
+    ],
+    dosage: '12.5-25mg daily',
+    sideEffects: [
+      'Joint pain',
+      'Fatigue',
+      'Hot flashes',
+      'Decreased bone density'
+    ],
+    whatToExpect: [
+      'Reduced estrogen levels within days',
+      'Prevention of estrogenic side effects',
+      'Maintained muscle hardness',
+      'Improved recovery'
+    ]
   }
 ];
