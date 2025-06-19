@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { ShippingForm } from '@/components/payment/ShippingForm';
-import { OrderSummary } from '@/components/payment/OrderSummary';
-import { PaymentMethodInfo } from '@/components/payment/PaymentMethodInfo';
-import { PaymentTimer } from '@/components/payment/PaymentTimer';
+import ShippingForm from '@/components/payment/ShippingForm';
+import OrderSummary from '@/components/payment/OrderSummary';
+import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
+import PaymentTimer from '@/components/payment/PaymentTimer';
 import { bitcoinVerification } from '@/lib/bitcoinVerification';
 import { useOrderHistory } from '@/hooks/useOrderHistory';
 
@@ -76,6 +76,7 @@ const PaymentModal = ({
   const [transactionId, setTransactionId] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   
+  const { toast } = useToast();
   const { addOrder } = useOrderHistory();
 
   const sendOrderToFormspree = async (orderData: any): Promise<boolean> => {
@@ -85,7 +86,7 @@ const PaymentModal = ({
       // Organize items for better readability
       const organizedItems = orderData.items
         .filter((item: any) => item.name !== 'Unknown' && item.price > 0)
-        .map((item: any) => `• ${item.name} - Qty: ${item.quantity} × $${item.price} = $${item.total.toFixed(2)}`)
+        .map((item: any) => `${item.name} - Qty: ${item.quantity} × $${item.price} = $${item.total.toFixed(2)}`)
         .join('\n');
 
       const customerEmailContent = `
@@ -94,41 +95,44 @@ const PaymentModal = ({
 Order ID: ${orderData.orderId}
 Date: ${new Date(orderData.orderDate).toLocaleDateString()}
 
-📦 ITEMS ORDERED:
+📦 YOUR ORDER:
 ${organizedItems}
 
-💰 PRICING:
+💰 PRICING BREAKDOWN:
 Subtotal: $${orderData.originalTotal.toFixed(2)}
-Discount: ${userDiscount}% (-$${(orderData.originalTotal * userDiscount / 100).toFixed(2)})
-Shipping: $${orderData.shippingFee}
-Final Total: $${orderData.finalTotal.toFixed(2)}
+${userDiscount > 0 ? `Discount (${userDiscount}%): -$${(orderData.originalTotal * userDiscount / 100).toFixed(2)}\n` : ''}Shipping: $${orderData.shippingFee.toFixed(2)}
+TOTAL: $${orderData.finalTotal.toFixed(2)}
 
-💳 Payment: ${orderData.paymentMethod}
+💳 Payment Method: ${orderData.paymentMethod}
 📍 Shipping Address: ${orderData.shippingAddress}
 
 ${orderData.telegramInfo}
 
-Thank you for your order! We'll process it soon and keep you updated.
+Thank you for your order! We'll process it and contact you soon.
       `;
 
       const deliveryEmailContent = `
-📬 NEW ORDER RECEIVED
+📬 NEW ORDER - DELIVERY REQUIRED
 
 Order ID: ${orderData.orderId}
 Customer: ${orderData.fullName}
 Email: ${orderData.email}
 Phone: ${orderData.phone || 'Not provided'}
 
-📦 ITEMS:
+📦 ITEMS TO DELIVER:
 ${organizedItems}
 
-💰 TOTAL: $${orderData.finalTotal.toFixed(2)}
-Payment: ${orderData.paymentMethod}
+💰 ORDER VALUE: $${orderData.finalTotal.toFixed(2)}
+Payment Method: ${orderData.paymentMethod}
 
 📍 DELIVERY ADDRESS:
-${orderData.shippingAddress}
+${orderData.fullName}
+${orderData.address}
+${orderData.city}, ${orderData.state} ${orderData.postalCode}
+${orderData.country}
+Phone: ${orderData.phone || 'N/A'}
 
-Process this order and update customer via Telegram if provided.
+⚡ ACTION REQUIRED: Process and ship this order
       `;
 
       // Send customer confirmation
@@ -143,13 +147,13 @@ Process this order and update customer via Telegram if provided.
         }),
       });
 
-      // Send delivery notification
+      // Send delivery notification to business
       const deliveryResponse = await fetch('https://formspree.io/f/xrbgoddw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: 'delivery@mkbooster.com',
-          subject: `New Order - ${orderData.orderId}`,
+          subject: `DELIVERY REQUIRED - Order ${orderData.orderId}`,
           message: deliveryEmailContent,
           _reply_to: orderData.email
         }),
@@ -215,23 +219,16 @@ Process this order and update customer via Telegram if provided.
     }
 
     if (currentStep === 2) {
+      // Address confirmation step
+      setCurrentStep(3);
+      return;
+    }
+
+    if (currentStep === 3) {
       // Payment processing step
       setIsProcessing(true);
       
       console.log('🚀 Form submitted, processing...');
-      console.log('Form data:', shippingData);
-
-      if (!shippingData.fullName || !shippingData.email || !shippingData.address || !shippingData.city || !shippingData.country) {
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields.",
-          variant: "destructive",
-        });
-        setIsProcessing(false);
-        return;
-      }
-
-      console.log('✅ Form validation passed');
 
       if (selectedPaymentMethod === 'bitcoin') {
         console.log('💰 Processing Bitcoin payment...');
@@ -246,14 +243,14 @@ Process this order and update customer via Telegram if provided.
           return;
         }
 
-        console.log('🎯 Moving to step 3 for Bitcoin verification');
-        setCurrentStep(3);
+        console.log('🎯 Moving to step 4 for Bitcoin verification');
+        setCurrentStep(4);
         setIsProcessing(false);
         return;
       }
     }
 
-    if (currentStep === 3) {
+    if (currentStep === 4) {
       // Bitcoin verification step
       console.log('🔍 Starting Bitcoin transaction verification...');
       
@@ -267,13 +264,21 @@ Process this order and update customer via Telegram if provided.
         console.log('🔍 Verification result:', verificationResult);
 
         if (verificationResult.isValid) {
-          console.log('✅ Transaction verified! Processing order via Formspree first...');
+          console.log('✅ Transaction verified! Processing order via Formspree...');
           
           // Create comprehensive order data
           const orderData = {
             orderId: `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
             orderDate: new Date().toLocaleString(),
-            ...shippingData,
+            fullName: shippingData.fullName,
+            email: shippingData.email,
+            phone: shippingData.phone,
+            address: shippingData.address,
+            city: shippingData.city,
+            state: shippingData.state,
+            postalCode: shippingData.postalCode,
+            country: shippingData.country,
+            shippingAddress: `${shippingData.address}, ${shippingData.city}, ${shippingData.state} ${shippingData.postalCode}, ${shippingData.country}`,
             items: cart.map(item => {
               const product = products.find(p => p.id === item.id);
               return {
@@ -298,7 +303,7 @@ Process this order and update customer via Telegram if provided.
 We'll contact you there for order updates and support!`
           };
 
-          console.log('📧 Sending order email via Formspree (primary)...');
+          console.log('📧 Sending order email via Formspree...');
           const formspreeSuccess = await sendOrderToFormspree(orderData);
 
           if (formspreeSuccess) {
@@ -332,29 +337,32 @@ We'll contact you there for order updates and support!`
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             {currentStep === 1 && 'Shipping Information'}
-            {currentStep === 2 && 'Confirm Your Order'}
-            {currentStep === 3 && 'Payment Verification'}
+            {currentStep === 2 && 'Confirm Your Address'}
+            {currentStep === 3 && 'Choose Payment Method'}
+            {currentStep === 4 && 'Payment Verification'}
           </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {currentStep === 1 && (
             <ShippingForm
-              shippingData={shippingData}
-              onShippingDataChange={setShippingData}
+              formData={shippingData}
+              onInputChange={(field, value) => setShippingData(prev => ({ ...prev, [field]: value }))}
+              language="en"
             />
           )}
 
           {currentStep === 2 && (
             <div className="space-y-6">
-              {/* Order confirmation step */}
+              {/* Address confirmation step */}
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                 <h3 className="font-semibold text-blue-900 mb-2">📍 Confirm Your Shipping Address</h3>
                 <div className="text-blue-800">
                   <p><strong>{shippingData.fullName}</strong></p>
+                  <p>{shippingData.email}</p>
                   <p>{shippingData.address}</p>
-                  <p>{shippingData.city}, {shippingData.state}</p>
-                  <p>{shippingData.postalCode} {shippingData.country}</p>
+                  <p>{shippingData.city}, {shippingData.state} {shippingData.postalCode}</p>
+                  <p>{shippingData.country}</p>
                   {shippingData.phone && <p>📞 {shippingData.phone}</p>}
                 </div>
                 <Button
@@ -367,28 +375,65 @@ We'll contact you there for order updates and support!`
                   ✏️ Edit Address
                 </Button>
               </div>
-
-              <OrderSummary 
-                cart={cart}
-                products={products}
-                subtotal={subtotal}
-                userDiscount={userDiscount}
-                shippingFee={shippingFee}
-                total={total}
-              />
-              
-              <PaymentMethodInfo
-                selectedMethod={selectedPaymentMethod}
-                onMethodChange={setSelectedPaymentMethod}
-                bitcoinAddress={BITCOIN_ADDRESS}
-                total={total}
-              />
             </div>
           )}
 
           {currentStep === 3 && (
             <div className="space-y-6">
-              <PaymentTimer />
+              <OrderSummary 
+                cartItems={cart.map(item => {
+                  const product = products.find(p => p.id === item.id);
+                  return {
+                    product: {
+                      id: item.id,
+                      name: product?.name || 'Unknown',
+                      price: product?.price || 0
+                    },
+                    quantity: item.quantity
+                  };
+                })}
+                orderTotal={subtotal}
+                discount={subtotal * (userDiscount / 100)}
+                shippingFee={shippingFee}
+                finalTotal={total}
+              />
+              
+              <PaymentMethodInfo
+                paymentMethod={selectedPaymentMethod as 'telegram' | 'bitcoin'}
+              />
+
+              <div className="space-y-4">
+                <div className="flex space-x-4">
+                  <Button
+                    type="button"
+                    variant={selectedPaymentMethod === 'telegram' ? 'default' : 'outline'}
+                    onClick={() => setSelectedPaymentMethod('telegram')}
+                    className="flex-1"
+                  >
+                    💬 Telegram Order
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={selectedPaymentMethod === 'bitcoin' ? 'default' : 'outline'}
+                    onClick={() => setSelectedPaymentMethod('bitcoin')}
+                    className="flex-1"
+                  >
+                    ₿ Bitcoin Payment
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <PaymentTimer onExpired={() => {}} language="en" />
+              
+              <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+                <h3 className="font-semibold text-orange-800 mb-2">₿ Bitcoin Payment Details</h3>
+                <p className="text-orange-700 text-sm mb-2">Send exactly: <strong>${total.toFixed(2)} USD in Bitcoin</strong></p>
+                <p className="text-orange-700 text-sm mb-2">To address: <code className="bg-orange-100 px-2 py-1 rounded">{BITCOIN_ADDRESS}</code></p>
+              </div>
               
               <div className="space-y-4">
                 <Label htmlFor="txId">Bitcoin Transaction ID</Label>
@@ -429,7 +474,8 @@ We'll contact you there for order updates and support!`
             >
               {isProcessing ? 'Processing...' : 
                currentStep === 1 ? 'Continue' :
-               currentStep === 2 ? 'Proceed to Payment' :
+               currentStep === 2 ? 'Confirm Address' :
+               currentStep === 3 ? 'Proceed to Payment' :
                'Verify & Complete Order'}
             </Button>
           </div>

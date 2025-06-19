@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -123,6 +124,20 @@ const CartModal = ({
     alert('Order placed successfully!');
   };
 
+  // Convert cart to CartItem array format for PaymentModal
+  const cartItemsForPayment = Object.entries(cart).map(([productId, quantity]) => ({
+    id: productId,
+    quantity: quantity
+  }));
+
+  // Convert products to include imageUrl for PaymentModal
+  const productsForPayment = products.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    imageUrl: product.image // Map 'image' to 'imageUrl'
+  }));
+
   return (
     <>
       <Dialog open={isOpen && !isPaymentModalOpen} onOpenChange={onClose}>
@@ -199,11 +214,14 @@ const CartModal = ({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={handlePaymentModalClose}
-        cart={cart}
-        products={products}
+        cart={cartItemsForPayment}
+        products={productsForPayment}
+        subtotal={subtotal}
         userDiscount={discountAmount}
+        shippingFee={shippingFee}
+        total={finalTotal}
         userProfile={userProfile}
-        onOrderSuccess={handleOrderSuccess}
+        onOrderComplete={handleOrderSuccess}
       />
     </>
   );
