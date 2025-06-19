@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu, X, Globe } from 'lucide-react';
 import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
@@ -77,16 +78,21 @@ const Header = ({
                 <span className="md:hidden">🏆 COACH</span>
               </Button>
 
-              {/* Language Selector */}
-              <Select value={language} onValueChange={onLanguageChange}>
-                <SelectTrigger className="w-14 md:w-20 border border-gray-300 rounded-lg">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">EN</SelectItem>
-                  <SelectItem value="es">ES</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Language Selector with flag and text */}
+              <div className="flex items-center space-x-1 border border-gray-300 rounded-lg px-2 py-1">
+                <Globe className="h-4 w-4 text-gray-600" />
+                <span className="text-sm text-gray-600 hidden sm:inline">Language</span>
+                <span className="text-lg">{language === 'en' ? '🇺🇸' : '🇪🇸'}</span>
+                <Select value={language} onValueChange={onLanguageChange}>
+                  <SelectTrigger className="w-12 border-0 p-0 h-auto">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">EN</SelectItem>
+                    <SelectItem value="es">ES</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               {/* Auth Buttons */}
               {isAuthenticated ? (

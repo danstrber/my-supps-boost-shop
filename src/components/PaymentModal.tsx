@@ -5,6 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
 import TelegramPaymentModal from './payment/TelegramPaymentModal';
 import ShippingForm from './payment/ShippingForm';
+import BitcoinTutorial from './payment/BitcoinTutorial';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -91,9 +92,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       console.log('🔄 Making Supabase insert request...');
       
+      // Calculate final_total properly
+      const calculatedFinalTotal = orderData.original_total - orderData.discount_amount + orderData.shipping_fee;
+      const finalOrderData = {
+        ...orderData,
+        final_total: calculatedFinalTotal
+      };
+      
+      console.log('📊 Final order data with calculated total:', finalOrderData);
+      
       const { data, error } = await supabase
         .from('orders')
-        .insert([orderData])
+        .insert([finalOrderData])
         .select('*')
         .single();
       
@@ -187,7 +197,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         setStep(2);
       } else if (paymentMethod === 'telegram') {
         console.log('📱 Processing Telegram payment...');
-        // Just show the Telegram modal - no order creation
         setShowTelegramModal(true);
         
         toast({
@@ -228,6 +237,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         status: 'pending'
       };
 
+      console.log('🔄 About to create order with data:', orderData);
       const createdOrder = await createOrderInDatabase(orderData);
       console.log('✅ Order created with ID:', createdOrder.id);
       
@@ -239,8 +249,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       onClose();
       
       toast({
-        title: 'Order Placed!',
-        description: `Your order #${createdOrder.id.slice(-8)} has been submitted successfully. We will verify payment and process your order.`,
+        title: 'Order Placed Successfully!',
+        description: `Your order #${createdOrder.id.slice(-8)} has been submitted. We will verify payment and process your order.`,
       });
       
     } catch (err: any) {
@@ -323,6 +333,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     </label>
                   </div>
                 </div>
+
+                {paymentMethod === 'bitcoin' && (
+                  <BitcoinTutorial language="en" />
+                )}
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4">
