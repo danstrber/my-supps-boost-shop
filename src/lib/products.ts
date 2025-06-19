@@ -419,7 +419,7 @@ export const products: Product[] = [
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 35,
-    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
+    image: '/lovable-uploads/d5851462-b099-4caa-a871-81e3e14b8717.png',
     categories: ['fat-burner'],
     featured: false,
     inStock: true,
@@ -430,13 +430,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '40mcg',
-        capsulesPerBottle: '100',
+        capsulesPerBottle: '5',
         typicalCycleLength: '2-4 weeks',
         potencyLevel: 'High Fat Burning Potency'
       },
       es: {
         dosePerCapsule: '40mcg',
-        capsulesPerBottle: '100',
+        capsulesPerBottle: '5',
         typicalCycleLength: '2-4 semanas',
         potencyLevel: 'Alta potencia quema grasa'
       }
