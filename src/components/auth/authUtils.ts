@@ -50,6 +50,7 @@ export const handleEmailAuth = async (
       email,
       password,
       options: {
+        // This ensures users are automatically logged in after email verification
         emailRedirectTo: `${window.location.origin}/`,
         data: metadata
       }
@@ -88,6 +89,7 @@ export const handleGoogleAuth = async (mode: 'login' | 'signup', referralCode?: 
   });
 
   const oauthOptions: any = {
+    // Auto-login after OAuth verification
     redirectTo: `${window.location.origin}/`,
     queryParams: {}
   };
