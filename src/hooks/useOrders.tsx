@@ -33,7 +33,7 @@ export const useOrders = () => {
   const { toast } = useToast();
 
   const fetchOrders = async () => {
-    if (!user) {
+    if (!user?.id) {
       setLoading(false);
       return;
     }
@@ -64,9 +64,9 @@ export const useOrders = () => {
         id: order.id,
         date: order.created_at,
         total: order.final_total,
-        status: order.status || 'pending',
-        verification_status: order.verification_status || 'pending',
-        items: Array.isArray(order.items) ? order.items : [],
+        status: (order.status || 'pending') as 'pending' | 'confirmed' | 'shipped' | 'delivered',
+        verification_status: (order.verification_status || 'pending') as 'pending' | 'verified' | 'failed',
+        items: Array.isArray(order.items) ? JSON.parse(order.items as string) : [],
         transaction_hash: order.transaction_hash,
         bitcoin_address: order.bitcoin_address,
         bitcoin_amount: order.bitcoin_amount

@@ -1,263 +1,170 @@
-import React, { useState, useEffect } from 'react';
-import Header from '@/components/Header';
-import Sidebar from '@/components/Sidebar';
-import { useAuth } from '@/hooks/useAuth';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
+import { User, Mail, Shield, LogOut, Package } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
-import { User, DollarSign, Calendar } from 'lucide-react';
+import OrderHistory from '@/components/OrderHistory';
 import ReferralSection from '@/components/ReferralSection';
 import TwoFactorSettings from '@/components/TwoFactorSettings';
-import OrderHistory from '@/components/OrderHistory';
-import CartModal from '@/components/CartModal';
-import { products } from '@/lib/products';
-import { useCart } from '@/hooks/useCart';
 
-interface AccountProps {
+interface AccountPageProps {
   language: 'en' | 'es';
-  onLanguageChange: (lang: 'en' | 'es') => void;
-  cartItemCount: number;
-  isAuthenticated: boolean;
-  onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
-  onCartOpen: () => void;
-  onMenuToggle: () => void;
-  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
-  sidebarOpen: boolean;
 }
 
-const Account = ({ 
-  language, 
-  onLanguageChange, 
-  cartItemCount, 
-  isAuthenticated, 
-  onAuthAction, 
-  onCartOpen,
-  onMenuToggle,
-  onPageChange,
-  sidebarOpen
-}: AccountProps) => {
-  const { userProfile, loading } = useAuth();
-  const { cart, handleUpdateCart } = useCart();
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const { toast } = useToast();
+const AccountPage = ({ language }: AccountPageProps) => {
+  const { user, logout } = useAuth();
+  const [activeTab, setActiveTab] = useState('profile');
 
-  // Calculate user discount based on the rules
-  const calculateUserDiscount = () => {
-    if (!userProfile) return 0;
-    
-    // Check if user has made referrals
-    const referralCount = 0; // This would come from actual referral data
-    const isReferrer = referralCount > 0;
-    
-    // First referral bonus
-    const firstReferralBonus = userProfile.referred_by ? 10 : 0;
-    
-    // Referral discount: 2.5% per referral
-    const referralDiscount = referralCount * 2.5;
-    
-    // Spending discount based on user type
-    const spendingDiscount = isReferrer
-      ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50
-      : userProfile.referred_by 
-        ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (max at $150)
-        : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // Standard users: 2.5% per $50
-    
-    // Referred spending discount for referrers
-    const referredSpendingDiscount = isReferrer
-      ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 5, Math.floor(150 / 50) * 5)
-      : 0;
-    
-    // Total discount capped at 32%
-    return Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
+  const text = {
+    en: {
+      title: 'My Account',
+      profile: 'Profile',
+      orders: 'Orders',
+      referrals: 'Referrals',
+      security: 'Security',
+      personalInfo: 'Personal Information',
+      email: 'Email',
+      name: 'Full Name',
+      updateProfile: 'Update Profile',
+      logout: 'Logout',
+      orderHistory: 'Order History',
+      referralProgram: 'Referral Program',
+      securitySettings: 'Security Settings'
+    },
+    es: {
+      title: 'Mi Cuenta',
+      profile: 'Perfil',
+      orders: 'Pedidos',
+      referrals: 'Referencias',
+      security: 'Seguridad',
+      personalInfo: 'Información Personal',
+      email: 'Email',
+      name: 'Nombre Completo',
+      updateProfile: 'Actualizar Perfil',
+      logout: 'Cerrar Sesión',
+      orderHistory: 'Historial de Pedidos',
+      referralProgram: 'Programa de Referencias',
+      securitySettings: 'Configuración de Seguridad'
+    }
   };
 
-  const userDiscount = calculateUserDiscount();
+  const t = text[language];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Please log in to access your account</h1>
-          <Button onClick={() => onAuthAction('login')}>Login</Button>
-        </div>
-      </div>
-    );
-  }
-
-  // Mock orders data (replace with actual API call)
-  useEffect(() => {
-    // This would normally fetch from your database
-    const mockOrders = [
-      {
-        id: 'ORD-1234567890-123',
-        date: '2024-01-15',
-        total: 142.50,
-        status: 'delivered',
-        items: [
-          { name: 'MK-677 (Ibutamoren)', quantity: 1, price: 45 },
-          { name: 'Clenbuterol', quantity: 2, price: 45 }
-        ]
-      },
-      {
-        id: 'ORD-1234567891-124',
-        date: '2024-01-10',
-        total: 97.50,
-        status: 'pending',
-        items: [
-          { name: 'Aromasin (Exemestane)', quantity: 1, price: 45 },
-          { name: 'MK-677 (Ibutamoren)', quantity: 1, price: 45 }
-        ]
-      }
-    ];
-    setOrders(mockOrders);
-  }, []);
+  const tabs = [
+    { id: 'profile', label: t.profile, icon: User },
+    { id: 'orders', label: t.orders, icon: Package },
+    { id: 'referrals', label: t.referrals, icon: User },
+    { id: 'security', label: t.security, icon: Shield }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header
-        language={language}
-        onLanguageChange={onLanguageChange}
-        cartItemCount={cartItemCount}
-        isAuthenticated={isAuthenticated}
-        onAuthAction={onAuthAction}
-        onCartOpen={() => setIsCartOpen(true)}
-        onMenuToggle={onMenuToggle}
-        currentPage="account"
-        onPageChange={onPageChange}
-        sidebarOpen={sidebarOpen}
-      />
-
-      <Sidebar
-        language={language}
-        isOpen={sidebarOpen}
-        selectedCategory="all"
-        onCategoryChange={() => {}}
-        userProfile={userProfile}
-        referralCount={0}
-        onClose={() => {}}
-      />
-
-      <div className="pt-32 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">
-            {language === 'en' ? 'My Account' : 'Mi Cuenta'}
-          </h1>
-
-          {/* User Profile Card */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <User className="h-5 w-5 mr-2" />
-                {language === 'en' ? 'Profile Information' : 'Información del Perfil'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">
-                    {language === 'en' ? 'Name' : 'Nombre'}
-                  </Label>
-                  <Input
-                    id="name"
-                    value={userProfile.name || ''}
-                    readOnly
-                    className="bg-gray-100"
-                  />
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">{t.title}</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <User className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{user?.user_metadata?.name || user?.email}</p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="email">
-                    {language === 'en' ? 'Email' : 'Correo'}
-                  </Label>
-                  <Input
-                    id="email"
-                    value={userProfile.email || ''}
-                    readOnly
-                    className="bg-gray-100"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Order History */}
-          <div className="mb-6">
-            <OrderHistory language={language} orders={orders} />
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {tabs.map((tab) => (
+                  <Button
+                    key={tab.id}
+                    variant={activeTab === tab.id ? "default" : "ghost"}
+                    onClick={() => setActiveTab(tab.id)}
+                    className="w-full justify-start"
+                  >
+                    <tab.icon className="h-4 w-4 mr-2" />
+                    {tab.label}
+                  </Button>
+                ))}
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t.logout}
+                </Button>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Two-Factor Authentication Settings */}
-          <div className="mb-6">
-            <TwoFactorSettings language={language} userProfile={userProfile} />
-          </div>
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            {activeTab === 'profile' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t.personalInfo}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="email">{t.email}</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={user?.email || ''}
+                        disabled
+                        className="bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="name">{t.name}</Label>
+                      <Input
+                        id="name"
+                        type="text"
+                        value={user?.user_metadata?.name || ''}
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+                  </div>
+                  <Button className="bg-green-600 hover:bg-green-700">
+                    {t.updateProfile}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
-          {/* Referral Section */}
-          <ReferralSection
-            userProfile={userProfile}
-            language={language}
-            referralCount={0}
-            onPageChange={onPageChange}
-          />
-          
-          {/* Account Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-            <Card>
-              <CardContent className="p-4 text-center">
-                <DollarSign className="h-8 w-8 mx-auto mb-2 text-green-600" />
-                <div className="text-2xl font-bold">{userDiscount}%</div>
-                <div className="text-sm text-gray-600">
-                  {language === 'en' ? 'Current Discount' : 'Descuento Actual'}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4 text-center">
-                <DollarSign className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-                <div className="text-2xl font-bold">${userProfile.total_spending.toFixed(2)}</div>
-                <div className="text-sm text-gray-600">
-                  {language === 'en' ? 'Total Spent' : 'Total Gastado'}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4 text-center">
-                <Calendar className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-                <div className="text-lg font-bold">
-                  {new Date(userProfile.created_at).toLocaleDateString()}
-                </div>
-                <div className="text-sm text-gray-600">
-                  {language === 'en' ? 'Member Since' : 'Miembro Desde'}
-                </div>
-              </CardContent>
-            </Card>
+            {activeTab === 'orders' && (
+              <OrderHistory language={language} />
+            )}
+
+            {activeTab === 'referrals' && (
+              <ReferralSection language={language} />
+            )}
+
+            {activeTab === 'security' && (
+              <TwoFactorSettings language={language} />
+            )}
           </div>
         </div>
       </div>
-
-      <CartModal
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
-        cart={cart}
-        products={products}
-        onUpdateCart={handleUpdateCart}
-        userDiscount={userDiscount}
-        isAuthenticated={isAuthenticated}
-        userProfile={userProfile}
-      />
     </div>
   );
 };
 
-export default Account;
+export default AccountPage;
