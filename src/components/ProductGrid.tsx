@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Eye, Pill, User, MessageCircle, Filter } from 'lucide-react';
@@ -44,28 +45,6 @@ const ProductGrid = ({
   
   return (
     <div className="space-y-8">
-      {/* Coaching Section - Moved to Top with better spacing */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl p-8 text-center shadow-lg">
-        <div className="flex items-center justify-center mb-4">
-          <MessageCircle className="h-8 w-8 mr-3" />
-          <h2 className="text-2xl font-bold">
-            {language === 'en' ? 'Need Expert Guidance?' : '¿Necesitas Orientación Experta?'}
-          </h2>
-        </div>
-        <p className="text-xl mb-6 opacity-90">
-          {language === 'en' 
-            ? 'Get personalized coaching, custom cycles, and 24/7 support from our experts!'
-            : '¡Obtén coaching personalizado, ciclos a medida y soporte 24/7 de nuestros expertos!'}
-        </p>
-        <Button
-          onClick={() => setIsCoachingModalOpen(true)}
-          className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-3 text-lg"
-        >
-          <MessageCircle className="h-5 w-5 mr-2" />
-          {language === 'en' ? 'Get Coaching' : 'Obtener Coaching'}
-        </Button>
-      </div>
-
       {/* Category Filter */}
       <div className="bg-white rounded-lg p-4 shadow-sm border">
         <div className="flex items-center mb-3">

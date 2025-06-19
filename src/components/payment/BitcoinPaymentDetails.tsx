@@ -123,7 +123,7 @@ const BitcoinPaymentDetails = ({
 
           <div>
             <Label htmlFor="transaction-id" className="text-sm font-medium text-gray-700 mb-2 block">
-              {language === 'en' ? 'Transaction ID (Required)' : 'ID de Transacción (Requerido)'}
+              {language === 'en' ? 'Enter Transaction ID' : 'Ingresa ID de Transacción'}
             </Label>
             <Input
               id="transaction-id"
@@ -132,14 +132,14 @@ const BitcoinPaymentDetails = ({
               value={txid}
               onChange={(e) => onTxidChange(e.target.value)}
               className="w-full"
-              placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
+              placeholder={language === 'en' ? 'Paste your Bitcoin transaction ID here...' : 'Pega tu ID de transacción Bitcoin aquí...'}
               required
               aria-describedby="transaction-id-description"
             />
             <p id="transaction-id-description" className="text-sm text-gray-600 mt-2">
               {language === 'en' 
-                ? 'Enter the transaction ID from your Bitcoin wallet after sending payment'
-                : 'Ingresa el ID de transacción de tu billetera Bitcoin después de enviar el pago'}
+                ? 'After sending Bitcoin, copy the transaction ID from your wallet and paste it above.'
+                : 'Después de enviar Bitcoin, copia el ID de transacción de tu billetera y pégalo arriba.'}
             </p>
           </div>
         </div>

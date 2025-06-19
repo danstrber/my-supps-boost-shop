@@ -68,7 +68,7 @@ const PaymentModal = ({
   const { toast } = useToast();
   const timerRef = useRef<NodeJS.Timeout>();
 
-  // Use correct BTC address
+  // Use the correct BTC address
   const BITCOIN_ADDRESS = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
   useEffect(() => {
@@ -195,12 +195,16 @@ const PaymentModal = ({
           formData.append('order_details', JSON.stringify(cartItems));
           formData.append('shipping_info', JSON.stringify(shippingInfo));
 
-          await fetch('https://formspree.io/f/mqaqvlye', {
+          const formspreeResponse = await fetch('https://formspree.io/f/mqaqvlye', {
             method: 'POST',
             body: formData
           });
 
-          console.log('Order sent to Formspree successfully');
+          if (formspreeResponse.ok) {
+            console.log('Order sent to Formspree successfully');
+          } else {
+            console.error('Formspree submission failed:', formspreeResponse.statusText);
+          }
         } catch (formspreeError) {
           console.error('Error sending to Formspree:', formspreeError);
         }
@@ -219,8 +223,8 @@ const PaymentModal = ({
     } catch (error: any) {
       console.error('Payment completion error:', error);
       toast({
-        title: "Error",
-        description: error.message || "Failed to process payment. Please try again.",
+        title: "Payment Failed",
+        description: error.message || "Failed to process payment. Please try again or contact support.",
         variant: "destructive"
       });
     } finally {
@@ -281,7 +285,7 @@ const PaymentModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto" aria-describedby="payment-modal-description">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
               {step === 'shipping' && 'Shipping Information'}
@@ -289,7 +293,7 @@ const PaymentModal = ({
               {step === 'bitcoin' && 'Bitcoin Payment'}
               {step === 'processing' && 'Processing Payment'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription id="payment-modal-description">
               {step === 'shipping' && 'Please provide your shipping details'}
               {step === 'payment' && 'Select your preferred payment method'}
               {step === 'bitcoin' && 'Complete your Bitcoin payment'}
@@ -314,28 +318,30 @@ const PaymentModal = ({
 
               {step === 'payment' && (
                 <div className="space-y-6">
-                  <div className="grid grid-cols-1 gap-6">
-                    <PaymentMethodInfo paymentMethod="telegram" />
-                    <PaymentMethodInfo paymentMethod="bitcoin" />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Button 
-                      onClick={() => handlePaymentMethodSelect('telegram')}
-                      className="py-6 text-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-3"
-                      size="lg"
-                    >
-                      <span className="text-2xl">💬</span>
-                      <span>Pay with Telegram</span>
-                    </Button>
-                    <Button 
-                      onClick={() => handlePaymentMethodSelect('bitcoin')}
-                      className="py-6 text-lg bg-orange-600 hover:bg-orange-700 flex items-center justify-center space-x-3"
-                      size="lg"
-                    >
-                      <span className="text-2xl">₿</span>
-                      <span>Pay with Bitcoin</span>
-                    </Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <PaymentMethodInfo paymentMethod="telegram" />
+                      <Button 
+                        onClick={() => handlePaymentMethodSelect('telegram')}
+                        className="w-full py-6 text-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-3"
+                        size="lg"
+                      >
+                        <span className="text-2xl">💬</span>
+                        <span>Join Telegram</span>
+                      </Button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <PaymentMethodInfo paymentMethod="bitcoin" />
+                      <Button 
+                        onClick={() => handlePaymentMethodSelect('bitcoin')}
+                        className="w-full py-6 text-lg bg-orange-600 hover:bg-orange-700 flex items-center justify-center space-x-3"
+                        size="lg"
+                      >
+                        <span className="text-2xl">₿</span>
+                        <span>Pay with Bitcoin</span>
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
