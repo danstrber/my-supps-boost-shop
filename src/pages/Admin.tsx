@@ -31,13 +31,9 @@ const Admin = () => {
 
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOrders(data || []);
+      // Temporarily skip database operation until migration runs
+      console.log('Database migration not yet run, skipping orders fetch');
+      setOrders([]);
     } catch (error: any) {
       console.error('Error fetching orders:', error);
       toast({
@@ -52,44 +48,13 @@ const Admin = () => {
 
   const handleConfirmOrder = async (orderId: string) => {
     try {
-      // Update order status in database
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: 'confirmed' })
-        .eq('id', orderId);
-
-      if (error) throw error;
-
-      // Get order details to update user spending
-      const { data: orderData, error: fetchError } = await supabase
-        .from('orders')
-        .select('user_id, final_total')
-        .eq('id', orderId)
-        .single();
-
-      if (fetchError) {
-        console.error('Error fetching order data:', fetchError);
-        toast({
-          title: "Warning",
-          description: "Order confirmed but couldn't update user spending"
-        });
-        return;
-      }
-
-      // Update user spending
-      const success = await updateUserSpending(orderData.user_id, orderData.final_total);
+      // Temporarily skip database operation until migration runs
+      console.log('Database migration not yet run, skipping order confirmation');
       
-      if (success) {
-        toast({
-          title: "Success",
-          description: "Order confirmed and user spending updated!"
-        });
-      } else {
-        toast({
-          title: "Warning",
-          description: "Order confirmed but spending update failed"
-        });
-      }
+      toast({
+        title: "Success",
+        description: "Order confirmed (mock operation until database is ready)"
+      });
       
       fetchOrders(); // Refresh the list
     } catch (error: any) {
@@ -104,16 +69,12 @@ const Admin = () => {
 
   const handleRejectOrder = async (orderId: string) => {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: 'rejected' })
-        .eq('id', orderId);
-
-      if (error) throw error;
+      // Temporarily skip database operation until migration runs
+      console.log('Database migration not yet run, skipping order rejection');
 
       toast({
         title: "Success",
-        description: "Order rejected"
+        description: "Order rejected (mock operation until database is ready)"
       });
       fetchOrders();
     } catch (error: any) {
@@ -169,7 +130,7 @@ const Admin = () => {
         <div className="space-y-6">
           {orders.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No orders found
+              No orders found (database migration not yet run)
             </div>
           ) : (
             orders.map((order) => (

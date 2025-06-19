@@ -1,340 +1,240 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 import { handleEmailAuth, handleGoogleAuth } from '@/components/auth/authUtils';
-import EmailConfirmationView from '@/components/auth/EmailConfirmationView';
-import AuthForm from '@/components/auth/AuthForm';
-import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  initialMode?: 'login' | 'signup';
-  referralCode?: string | null;
-  language: 'en' | 'es';
-  onSignupSuccess?: () => void;
-  onTermsClick?: () => void;
+  referralCode?: string;
 }
 
-// Phantom wallet interface
-declare global {
-  interface Window {
-    phantom?: {
-      solana?: {
-        isPhantom?: boolean;
-        connect: () => Promise<{ publicKey: { toString: () => string } }>;
-        disconnect: () => Promise<void>;
-        isConnected: boolean;
-      };
-    };
-  }
-}
-
-const AuthModal = ({ 
-  isOpen, 
-  onClose, 
-  initialMode = 'login', 
-  referralCode, 
-  language, 
-  onSignupSuccess,
-  onTermsClick
-}: AuthModalProps) => {
-  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email' | 'forgot-password'>(initialMode);
+const AuthModal = ({ isOpen, onClose, referralCode }: AuthModalProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    setMode(initialMode);
-  }, [initialMode]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setMode(initialMode);
-      setEmail('');
-      setPassword('');
-      setName('');
-      setEmailSent(false);
-      setLoading(false);
-      setAcceptedTerms(false);
-    }
-  }, [isOpen, initialMode]);
-
-  const checkForDuplicateEmail = async (email: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
-      
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking duplicate email:', error);
-        return false;
-      }
-      
-      return !!data;
-    } catch (error) {
-      console.error('Error in checkForDuplicateEmail:', error);
-      return false;
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      if (mode === 'signup') {
-        const emailExists = await checkForDuplicateEmail(email);
-        if (emailExists) {
-          toast({
-            title: language === 'en' ? "Email already in use" : "Correo ya en uso",
-            description: language === 'en' 
-              ? "An account with this email already exists. Please use a different email or try signing in."
-              : "Ya existe una cuenta con este correo. Por favor usa un correo diferente o intenta iniciar sesión.",
-            variant: "destructive",
-          });
-          setLoading(false);
-          return;
-        }
-
-        if (!acceptedTerms) {
-          toast({
-            title: language === 'en' ? "Terms required" : "Términos requeridos",
-            description: language === 'en' 
-              ? "Please accept the Terms of Service to continue."
-              : "Por favor acepta los Términos de Servicio para continuar.",
-            variant: "destructive",
-          });
-          setLoading(false);
-          return;
-        }
-
-        console.log('Starting signup process with referral code:', referralCode);
-        const { error } = await handleEmailAuth('signup', email, password, name, referralCode);
-        
-        if (error) {
-          console.error('Signup error:', error);
-          toast({
-            title: language === 'en' ? "Error" : "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else {
-          console.log('Signup successful, email confirmation required');
-          setEmailSent(true);
-          setMode('confirm-email');
-          toast({
-            title: language === 'en' ? "Check your email!" : "¡Revisa tu correo!",
-            description: language === 'en' 
-              ? "We've sent you a confirmation link. Please check your email (including junk/spam folder) and click the link to complete your registration."
-              : "Te hemos enviado un enlace de confirmación. Por favor revisa tu correo (incluyendo carpeta de spam/correo no deseado) y haz clic en el enlace para completar tu registro.",
-          });
-          if (onSignupSuccess) {
-            onSignupSuccess();
-          }
-        }
-      } else if (mode === 'login') {
-        const { data, error } = await handleEmailAuth('login', email, password);
-        
-        if (error) {
-          console.error('Login error:', error);
-          toast({
-            title: language === 'en' ? "Error" : "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        } else if (data?.user) {
-          toast({
-            title: language === 'en' ? "Welcome back!" : "¡Bienvenido de vuelta!",
-            description: language === 'en' ? "You have been signed in successfully." : "Has iniciado sesión exitosamente.",
-          });
-          onClose();
-        }
-      }
-    } catch (error) {
-      console.error('Auth error:', error);
+  const handleSubmit = async (mode: 'login' | 'signup') => {
+    if (!email || !password) {
       toast({
-        title: language === 'en' ? "Error" : "Error",
-        description: language === 'en' ? "An unexpected error occurred" : "Ocurrió un error inesperado",
-        variant: "destructive",
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
       });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    if (mode === 'confirm-email' || mode === 'forgot-password') {
       return;
     }
 
     setLoading(true);
-    try {
-      const { error } = await handleGoogleAuth(mode, referralCode);
-      if (error) {
-        toast({
-          title: language === 'en' ? "Error" : "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Google auth error:', error);
-      toast({
-        title: language === 'en' ? "Error" : "Error",
-        description: language === 'en' ? "Failed to sign in with Google" : "Error al iniciar sesión con Google",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log(`Starting ${mode} for:`, email);
 
-  const connectPhantomWallet = async () => {
     try {
-      if (!window.phantom?.solana) {
+      const { data, error } = await handleEmailAuth(
+        mode,
+        email,
+        password,
+        username,
+        referralCode
+      );
+
+      if (error) {
+        console.error(`${mode} error:`, error);
         toast({
-          title: language === 'en' ? "Phantom Wallet Not Found" : "Phantom Wallet No Encontrado",
-          description: language === 'en' 
-            ? "Please install Phantom wallet to connect with Solana."
-            : "Por favor instala Phantom wallet para conectar con Solana.",
-          variant: "destructive",
+          title: "Error",
+          description: error.message || `Failed to ${mode}`,
+          variant: "destructive"
         });
         return;
       }
 
-      const response = await window.phantom.solana.connect();
-      const publicKey = response.publicKey.toString();
-      
-      toast({
-        title: language === 'en' ? "Wallet Connected" : "Wallet Conectado",
-        description: language === 'en' 
-          ? `Connected: ${publicKey.slice(0, 8)}...${publicKey.slice(-8)}`
-          : `Conectado: ${publicKey.slice(0, 8)}...${publicKey.slice(-8)}`,
-      });
-    } catch (error) {
-      console.error('Phantom wallet connection error:', error);
-      toast({
-        title: language === 'en' ? "Connection Failed" : "Conexión Fallida",
-        description: language === 'en' 
-          ? "Failed to connect to Phantom wallet."
-          : "No se pudo conectar a Phantom wallet.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const resendConfirmation = async () => {
-    setLoading(true);
-    try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`
-        }
-      });
-      
-      if (error) {
+      if (mode === 'signup') {
+        // Check if user exists in our database after signup
+        console.log('Signup successful, checking if user exists in database...');
+        
+        // Temporarily skip database check until migration runs
+        console.log('Database migration not yet run, skipping user check');
+        
         toast({
-          title: language === 'en' ? "Error" : "Error",
-          description: error.message,
-          variant: "destructive",
+          title: "Success!",
+          description: "Account created successfully! Please check your email to verify your account.",
         });
       } else {
+        console.log('Login successful');
         toast({
-          title: language === 'en' ? "Email sent!" : "¡Correo enviado!",
-          description: language === 'en' 
-            ? "We've sent you another confirmation email. Please check your junk/spam folder too."
-            : "Te hemos enviado otro correo de confirmación. Por favor revisa también tu carpeta de spam/correo no deseado.",
+          title: "Success!",
+          description: "Logged in successfully!",
         });
       }
+
+      onClose();
     } catch (error) {
-      console.error('Resend error:', error);
+      console.error(`${mode} exception:`, error);
+      toast({
+        title: "Error",
+        description: `An unexpected error occurred during ${mode}`,
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  if (mode === 'confirm-email') {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {language === 'en' ? 'Email Confirmation Required' : 'Confirmación de Correo Requerida'}
-            </DialogTitle>
-          </DialogHeader>
-          <EmailConfirmationView
-            email={email}
-            onResendConfirmation={resendConfirmation}
-            resendLoading={loading}
-            language={language}
-          />
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  if (mode === 'forgot-password') {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {language === 'en' ? 'Reset Password' : 'Restablecer Contraseña'}
-            </DialogTitle>
-          </DialogHeader>
-          <ForgotPasswordForm
-            language={language}
-            onBack={() => setMode('login')}
-          />
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  const handleGoogleSubmit = async (mode: 'login' | 'signup') => {
+    setLoading(true);
+    
+    try {
+      const { error } = await handleGoogleAuth(mode, referralCode);
+      
+      if (error) {
+        console.error(`Google ${mode} error:`, error);
+        toast({
+          title: "Error",
+          description: error.message || `Failed to ${mode} with Google`,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error(`Google ${mode} exception:`, error);
+      toast({
+        title: "Error",
+        description: `An unexpected error occurred with Google ${mode}`,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {mode === 'login' 
-              ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
-              : (language === 'en' ? 'Sign Up' : 'Registrarse')}
-          </DialogTitle>
+          <DialogTitle>Welcome to SteroidShop</DialogTitle>
         </DialogHeader>
-        <AuthForm
-          mode={mode}
-          email={email}
-          password={password}
-          name={name}
-          loading={loading}
-          showPassword={showPassword}
-          acceptedTerms={acceptedTerms}
-          referralCode={referralCode}
-          language={language}
-          onEmailChange={setEmail}
-          onPasswordChange={setPassword}
-          onNameChange={setName}
-          onShowPasswordToggle={() => setShowPassword(!showPassword)}
-          onTermsChange={setAcceptedTerms}
-          onSubmit={handleSubmit}
-          onGoogleSignIn={handleGoogleSignIn}
-          onPhantomConnect={connectPhantomWallet}
-          onModeSwitch={() => setMode(mode === 'login' ? 'signup' : 'login')}
-          onTermsClick={onTermsClick}
-          onForgotPassword={() => setMode('forgot-password')}
-        />
+        
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="login" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input
+                id="login-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="login-password">Password</Label>
+              <Input
+                id="login-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+              />
+            </div>
+            <Button 
+              onClick={() => handleSubmit('login')} 
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </Button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+            
+            <GoogleSignInButton 
+              onClick={() => handleGoogleSubmit('login')}
+              disabled={loading}
+              text="Login with Google"
+            />
+          </TabsContent>
+          
+          <TabsContent value="signup" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="signup-username">Username (Optional)</Label>
+              <Input
+                id="signup-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Choose a username"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-email">Email</Label>
+              <Input
+                id="signup-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-password">Password</Label>
+              <Input
+                id="signup-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Create a password"
+              />
+            </div>
+            {referralCode && (
+              <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-800">
+                  🎉 You're signing up with referral code: <strong>{referralCode}</strong>
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  You'll get special discounts on your purchases!
+                </p>
+              </div>
+            )}
+            <Button 
+              onClick={() => handleSubmit('signup')} 
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? 'Creating account...' : 'Create Account'}
+            </Button>
+            
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+            
+            <GoogleSignInButton 
+              onClick={() => handleGoogleSubmit('signup')}
+              disabled={loading}
+              text="Sign up with Google"
+            />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

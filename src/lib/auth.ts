@@ -104,22 +104,9 @@ export const getCurrentUser = async (): Promise<{ user: User | null; profile: Us
 
     console.log('Found authenticated user:', user.id);
 
-    // Wait a bit for the trigger to complete if this is a new user
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const { data: profile, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      return { user, profile: null };
-    }
-
-    console.log('User profile found:', profile);
-    return { user, profile };
+    // Temporarily skip database operations until migration runs
+    console.log('Database migration not yet run, skipping profile fetch');
+    return { user, profile: null };
   } catch (error) {
     console.error('Error in getCurrentUser:', error);
     return { user: null, profile: null };
@@ -130,19 +117,9 @@ export const getUserProfile = async (authId: string): Promise<UserProfile | null
   try {
     console.log('Fetching user profile for:', authId);
     
-    const { data: profile, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('auth_id', authId)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
-
-    console.log('User profile found:', profile);
-    return profile;
+    // Temporarily skip database operations until migration runs
+    console.log('Database migration not yet run, skipping profile fetch');
+    return null;
   } catch (error) {
     console.error('Error in getUserProfile:', error);
     return null;
@@ -153,17 +130,9 @@ export const getUserDiscount = async (authId: string): Promise<number> => {
   try {
     console.log('Calculating user discount for:', authId);
     
-    const { data, error } = await supabase.rpc('calculate_user_discount', {
-      user_auth_id: authId
-    });
-
-    if (error) {
-      console.error('Error calculating discount:', error);
-      return 0;
-    }
-
-    console.log('User discount calculated:', data);
-    return data || 0;
+    // Temporarily skip database operations until migration runs
+    console.log('Database migration not yet run, skipping discount calculation');
+    return 0;
   } catch (error) {
     console.error('Error in getUserDiscount:', error);
     return 0;
