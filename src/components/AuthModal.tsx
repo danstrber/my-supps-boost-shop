@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -5,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { handleEmailAuth, handleGoogleAuth } from '@/components/auth/authUtils';
 import EmailConfirmationView from '@/components/auth/EmailConfirmationView';
 import AuthForm from '@/components/auth/AuthForm';
+import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -39,7 +41,7 @@ const AuthModal = ({
   onSignupSuccess,
   onTermsClick
 }: AuthModalProps) => {
-  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email'>(initialMode);
+  const [mode, setMode] = useState<'login' | 'signup' | 'confirm-email' | 'forgot-password'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -171,8 +173,7 @@ const AuthModal = ({
   };
 
   const handleGoogleSignIn = async () => {
-    // Only allow Google sign in for login and signup modes, not confirm-email
-    if (mode === 'confirm-email') {
+    if (mode === 'confirm-email' || mode === 'forgot-password') {
       return;
     }
 
@@ -284,6 +285,24 @@ const AuthModal = ({
     );
   }
 
+  if (mode === 'forgot-password') {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {language === 'en' ? 'Reset Password' : 'Restablecer Contraseña'}
+            </DialogTitle>
+          </DialogHeader>
+          <ForgotPasswordForm
+            language={language}
+            onBack={() => setMode('login')}
+          />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -314,6 +333,7 @@ const AuthModal = ({
           onPhantomConnect={connectPhantomWallet}
           onModeSwitch={() => setMode(mode === 'login' ? 'signup' : 'login')}
           onTermsClick={onTermsClick}
+          onForgotPassword={() => setMode('forgot-password')}
         />
       </DialogContent>
     </Dialog>

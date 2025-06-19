@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Eye, EyeOff, Wallet } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import GoogleSignInButton from './GoogleSignInButton';
 
 interface AuthFormProps {
@@ -27,6 +27,7 @@ interface AuthFormProps {
   onPhantomConnect: () => void;
   onModeSwitch: () => void;
   onTermsClick?: () => void;
+  onForgotPassword?: () => void;
 }
 
 const AuthForm = ({
@@ -48,112 +49,134 @@ const AuthForm = ({
   onGoogleSignIn,
   onPhantomConnect,
   onModeSwitch,
-  onTermsClick
+  onTermsClick,
+  onForgotPassword
 }: AuthFormProps) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      {mode === 'signup' && (
+    <div className="space-y-6">
+      <form onSubmit={onSubmit} className="space-y-4">
+        {mode === 'signup' && (
+          <div>
+            <Label htmlFor="auth-name">
+              {language === 'en' ? 'Full Name' : 'Nombre Completo'}
+            </Label>
+            <Input
+              id="auth-name"
+              name="fullName"
+              type="text"
+              value={name}
+              onChange={(e) => onNameChange(e.target.value)}
+              placeholder={language === 'en' ? 'Enter your full name' : 'Ingresa tu nombre completo'}
+              autoComplete="name"
+              className="mt-1"
+            />
+          </div>
+        )}
+
         <div>
-          <Label htmlFor="name">
-            {language === 'en' ? 'Name' : 'Nombre'}
+          <Label htmlFor="auth-email">
+            {language === 'en' ? 'Email Address' : 'Correo Electrónico'}
           </Label>
           <Input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
+            id="auth-email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            placeholder={language === 'en' ? 'Enter your email' : 'Ingresa tu correo'}
             required
-            disabled={loading}
+            autoComplete="email"
+            className="mt-1"
           />
         </div>
-      )}
-      <div>
-        <Label htmlFor="email">
-          {language === 'en' ? 'Email' : 'Correo'}
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => onEmailChange(e.target.value)}
-          required
-          disabled={loading}
-        />
-      </div>
-      <div>
-        <Label htmlFor="password">
-          {language === 'en' ? 'Password' : 'Contraseña'}
-        </Label>
-        <div className="relative">
-          <Input
-            id="password"
-            type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => onPasswordChange(e.target.value)}
-            required
-            disabled={loading}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-            onClick={onShowPasswordToggle}
-            disabled={loading}
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
-      
-      {referralCode && mode === 'signup' && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-700">
-            {language === 'en' 
-              ? `Using referral code: ${referralCode}` 
-              : `Usando código de referido: ${referralCode}`}
-          </p>
-        </div>
-      )}
 
-      {mode === 'signup' && (
-        <div className="flex items-start space-x-2">
-          <Checkbox
-            id="terms"
-            checked={acceptedTerms}
-            onCheckedChange={(checked) => onTermsChange(!!checked)}
-            disabled={loading}
-          />
-          <div className="text-sm leading-5">
-            <Label htmlFor="terms" className="cursor-pointer">
+        <div>
+          <Label htmlFor="auth-password">
+            {language === 'en' ? 'Password' : 'Contraseña'}
+          </Label>
+          <div className="relative mt-1">
+            <Input
+              id="auth-password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => onPasswordChange(e.target.value)}
+              placeholder={language === 'en' ? 'Enter your password' : 'Ingresa tu contraseña'}
+              required
+              autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={onShowPasswordToggle}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4 text-gray-400" />
+              ) : (
+                <Eye className="h-4 w-4 text-gray-400" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {mode === 'login' && onForgotPassword && (
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={onForgotPassword}
+              className="text-sm text-blue-600 hover:text-blue-500"
+            >
+              {language === 'en' ? 'Forgot password?' : '¿Olvidaste tu contraseña?'}
+            </button>
+          </div>
+        )}
+
+        {referralCode && (
+          <div className="bg-green-50 border border-green-200 p-3 rounded-lg">
+            <p className="text-green-700 text-sm">
+              {language === 'en' 
+                ? `You're signing up with referral code: ${referralCode}`
+                : `Te estás registrando con el código de referido: ${referralCode}`}
+            </p>
+          </div>
+        )}
+
+        {mode === 'signup' && (
+          <div className="flex items-start space-x-2">
+            <Checkbox
+              id="terms-checkbox"
+              checked={acceptedTerms}
+              onCheckedChange={onTermsChange}
+              className="mt-1"
+            />
+            <Label htmlFor="terms-checkbox" className="text-sm text-gray-600 leading-5">
               {language === 'en' ? 'I agree to the ' : 'Acepto los '}
               <button
                 type="button"
                 onClick={onTermsClick}
-                className="text-blue-600 hover:text-blue-800 underline"
-                disabled={loading}
+                className="text-blue-600 hover:text-blue-500 underline"
               >
                 {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
               </button>
-              {language === 'en' ? ' and Privacy Policy' : ' y Política de Privacidad'}
             </Label>
           </div>
-        </div>
-      )}
+        )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? 
-          (language === 'en' ? 'Loading...' : 'Cargando...') : 
-          (mode === 'login' 
-            ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
-            : (language === 'en' ? 'Sign Up' : 'Registrarse')
-          )
-        }
-      </Button>
+        <Button 
+          type="submit" 
+          disabled={loading || (mode === 'signup' && !acceptedTerms)} 
+          className="w-full"
+        >
+          {loading 
+            ? (language === 'en' ? 'Processing...' : 'Procesando...')
+            : mode === 'login' 
+              ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
+              : (language === 'en' ? 'Sign Up' : 'Registrarse')
+          }
+        </Button>
+      </form>
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
@@ -166,38 +189,41 @@ const AuthForm = ({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <GoogleSignInButton 
           onClick={onGoogleSignIn} 
-          loading={loading} 
+          disabled={loading}
+          language={language}
+          mode={mode}
         />
         
         <Button
           type="button"
-          variant="outline"
           onClick={onPhantomConnect}
-          className="w-full"
           disabled={loading}
+          variant="outline"
+          className="w-full flex items-center justify-center space-x-2"
         >
-          <Wallet className="h-4 w-4 mr-2" />
-          {language === 'en' ? 'Connect Phantom Wallet' : 'Conectar Phantom Wallet'}
+          <span>👻</span>
+          <span>
+            {language === 'en' ? 'Connect Phantom Wallet' : 'Conectar Phantom Wallet'}
+          </span>
         </Button>
       </div>
 
       <div className="text-center">
-        <Button
+        <button
           type="button"
-          variant="link"
           onClick={onModeSwitch}
-          disabled={loading}
+          className="text-sm text-blue-600 hover:text-blue-500"
         >
           {mode === 'login' 
             ? (language === 'en' ? "Don't have an account? Sign up" : "¿No tienes cuenta? Regístrate")
-            : (language === 'en' ? "Already have an account? Sign in" : "¿Ya tienes cuenta? Inicia sesión")
+            : (language === 'en' ? 'Already have an account? Sign in' : '¿Ya tienes cuenta? Inicia sesión')
           }
-        </Button>
+        </button>
       </div>
-    </form>
+    </div>
   );
 };
 
