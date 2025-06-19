@@ -21,7 +21,7 @@ const Header = ({
   language, 
   onLanguageChange 
 }: HeaderProps) => {
-  const { userProfile, logout } = useAuth();
+  const { userProfile, handleAuthAction } = useAuth();
 
   return (
     <header className="bg-white shadow-sm border-b sticky top-0 z-40">
@@ -54,7 +54,7 @@ const Header = ({
               <span className="text-xl">
                 {language === 'en' ? '🇺🇸' : '🇪🇸'}
               </span>
-              <span className="hidden sm:inline">
+              <span className="text-sm font-medium">
                 {language === 'en' ? 'English' : 'Español'}
               </span>
             </Button>
@@ -83,14 +83,14 @@ const Header = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={logout}
+                  onClick={() => handleAuthAction('logout')}
                 >
                   Logout
                 </Button>
               </div>
             ) : (
               <Button
-                variant="outline"
+                variant="outline" 
                 size="sm"
                 onClick={() => onAuthAction('login')}
               >
