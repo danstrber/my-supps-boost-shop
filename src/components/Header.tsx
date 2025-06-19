@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ShoppingCart, Globe } from 'lucide-react';
+import { ShoppingCart, Globe, Flag } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 interface HeaderProps {
@@ -39,7 +39,7 @@ const Header = ({
               onClick={() => onPageChange('home')}
               className="text-xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
             >
-              SteroidShop
+              MySupps
             </button>
           </div>
 
@@ -107,14 +107,22 @@ const Header = ({
           </nav>
 
           <div className="flex items-center space-x-4">
-            {/* Enhanced Language Button */}
-            <div className="flex items-center space-x-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors cursor-pointer">
+            {/* Enhanced Language Button with Flag */}
+            <button
+              onClick={() => onLanguageChange(language === 'en' ? 'es' : 'en')}
+              className="flex items-center space-x-2 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 hover:from-blue-100 hover:to-indigo-100 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
               <div className="flex items-center space-x-1.5">
-                <span className="text-lg" role="img" aria-label="US flag">🇺🇸</span>
-                <Globe className="h-4 w-4 text-gray-600" />
+                <Flag className="h-4 w-4 text-blue-600" />
+                <span className="text-lg" role="img" aria-label={language === 'en' ? 'US flag' : 'Spanish flag'}>
+                  {language === 'en' ? '🇺🇸' : '🇪🇸'}
+                </span>
               </div>
-              <span className="text-sm font-medium text-gray-700">EN</span>
-            </div>
+              <span className="text-sm font-semibold text-blue-700">
+                {language === 'en' ? 'EN' : 'ES'}
+              </span>
+              <Globe className="h-3 w-3 text-blue-500" />
+            </button>
 
             <button
               onClick={onCartOpen}

@@ -54,15 +54,10 @@ export const updateUserSpending = async (userId: string, amount: number) => {
   console.log('💰 Updating user spending:', { userId, amount });
   
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .update({ 
-        total_spending: supabase.sql`total_spending + ${amount}`,
-        updated_at: new Date().toISOString()
-      })
-      .eq('auth_id', userId)
-      .select()
-      .single();
+    const { data, error } = await supabase.rpc('increment_user_spending', {
+      user_auth_id: userId,
+      amount_to_add: amount
+    });
     
     if (error) {
       console.error('❌ Error updating user spending:', error);
