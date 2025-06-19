@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -204,7 +205,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months). Best taken in the evening due to sleep benefits.',
       es: 'Puede usarse por períodos extendidos (3-6 meses). Mejor tomado por la noche debido a beneficios del sueño.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report improved sleep within 1-2 weeks, increased appetite, and gradual muscle gains over 8-12 weeks.',
       es: 'Los usuarios reportan mejor sueño en 1-2 semanas, aumento del apetito y ganancias musculares graduales en 8-12 semanas.'
     },
@@ -346,72 +347,6 @@ export const products: Product[] = [
       fatLoss: 1,
       sideEffects: 4,
       retention: 5
-    }
-  },
-  {
-    id: 'aromasin',
-    name: 'Aromasin (Exemestane)',
-    price: 25,
-    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
-    categories: ['pct', 'ai'],
-    featured: false,
-    inStock: true,
-    description: {
-      en: 'Aromasin (Exemestane) is a potent aromatase inhibitor (AI) used to control estrogen levels during and after anabolic steroid cycles.',
-      es: 'Aromasin (Exemestano) es un potente inhibidor de aromatasa (AI) utilizado para controlar los niveles de estrógeno durante y después de los ciclos de esteroides anabólicos.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: '4-8 weeks',
-        potencyLevel: 'High Aromatase Inhibition'
-      },
-      es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: '4-8 semanas',
-        potencyLevel: 'Alta inhibición de aromatasa'
-      }
-    },
-    researchBackground: {
-      en: 'Aromasin (Exemestane) has been extensively studied as a third-generation aromatase inhibitor with irreversible binding properties.',
-      es: 'Aromasin (Exemestano) ha sido extensamente estudiado como un inhibidor de aromatasa de tercera generación con propiedades de unión irreversible.'
-    },
-    benefits: {
-      en: 'Powerful estrogen suppression, prevents gynecomastia, reduces water retention, supports lean muscle gains.',
-      es: 'Supresión potente del estrógeno, previene la ginecomastia, reduce la retención de agua, apoya las ganancias de músculo magro.'
-    },
-    sideEffects: {
-      en: 'May cause mild joint discomfort, temporary bone density changes, mood variations, occasional hot flashes, reduced libido.',
-      es: 'Puede causar molestias articulares leves, cambios temporales de densidad ósea, variaciones de humor, sofocos ocasionales, libido reducida.'
-    },
-    effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women of reproductive age. May be used in postmenopausal women under medical supervision.',
-      es: 'NO RECOMENDADO para mujeres en edad reproductiva. Puede usarse en mujeres postmenopáusicas bajo supervisión médica.'
-    },
-    howItWorks: {
-      en: 'Irreversibly binds to and inactivates aromatase enzyme, preventing conversion of androgens to estrogens.',
-      es: 'Se une irreversiblemente e inactiva la enzima aromatasa, previniendo la conversión de andrógenos a estrógenos.'
-    },
-    safetyInformation: {
-      en: 'Regular blood work essential. Monitor estrogen levels and bone health. Use lowest effective dose.',
-      es: 'Análisis de sangre regular esencial. Monitorear niveles de estrógeno y salud ósea. Usar la dosis efectiva más baja.'
-    },
-    cycleInformation: {
-      en: 'Typical use: 12.5-25mg daily during cycle. Adjust based on estrogen levels and response.',
-      es: 'Uso típico: 12.5-25mg diario durante el ciclo. Ajustar según niveles de estrógeno y respuesta.'
-    },
-    whatToExpect: {
-      en: 'Users report effective estrogen control within 1-2 weeks, reduced water retention, and prevention of estrogen-related effects.',
-      es: 'Los usuarios reportan control efectivo del estrógeno en 1-2 semanas, retención de agua reducida y prevención de efectos relacionados con el estrógeno.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 1,
-      fatLoss: 2,
-      sideEffects: 3,
-      retention: 4
     }
   },
   {
