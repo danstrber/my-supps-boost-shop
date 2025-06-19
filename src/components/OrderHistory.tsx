@@ -2,22 +2,30 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Package, Calendar, DollarSign, ArrowUpDown, ArrowUp, ArrowDown, RefreshCw, ExternalLink, Copy } from 'lucide-react';
+import { Package, Calendar, DollarSign, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useOrders } from '@/hooks/useOrders';
-import { useToast } from '@/hooks/use-toast';
+
+interface Order {
+  id: string;
+  date: string;
+  total: number;
+  status: 'pending' | 'confirmed' | 'shipped' | 'delivered';
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
+}
 
 interface OrderHistoryProps {
   language: 'en' | 'es';
+  orders: Order[];
 }
 
 type SortField = 'date' | 'total' | 'status' | 'id';
 type SortDirection = 'asc' | 'desc';
 
-const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
-  const { orders, loading, error, refetch } = useOrders();
-  const { toast } = useToast();
+const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -31,21 +39,10 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
       total: 'Total',
       date: 'Date',
       items: 'Items',
-      verification: 'Verification',
-      transaction: 'Transaction',
-      refresh: 'Refresh',
-      copy: 'Copy',
-      copied: 'Copied!',
-      viewTransaction: 'View on Blockchain',
-      // Status translations
       pending: 'Pending Payment',
-      confirmed: 'Payment Confirmed', 
+      confirmed: 'Payment Confirmed',
       shipped: 'Shipped',
-      delivered: 'Delivered',
-      // Verification status
-      verified: 'Verified',
-      failed: 'Failed',
-      pendingVerification: 'Pending'
+      delivered: 'Delivered'
     },
     es: {
       title: 'Historial de Pedidos',
@@ -56,21 +53,10 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
       total: 'Total',
       date: 'Fecha',
       items: 'Artículos',
-      verification: 'Verificación',
-      transaction: 'Transacción',
-      refresh: 'Actualizar',
-      copy: 'Copiar',
-      copied: '¡Copiado!',
-      viewTransaction: 'Ver en Blockchain',
-      // Status translations
       pending: 'Pago Pendiente',
       confirmed: 'Pago Confirmado',
       shipped: 'Enviado',
-      delivered: 'Entregado',
-      // Verification status
-      verified: 'Verificado',
-      failed: 'Fallido',
-      pendingVerification: 'Pendiente'
+      delivered: 'Entregado'
     }
   };
 
@@ -78,20 +64,11 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'confirmed': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'shipped': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'delivered': return 'bg-green-100 text-green-800 border-green-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getVerificationColor = (status: string) => {
-    switch (status) {
-      case 'verified': return 'bg-green-100 text-green-800 border-green-200';
-      case 'failed': return 'bg-red-100 text-red-800 border-red-200';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'pending': return 'text-yellow-700 bg-yellow-100 border-yellow-200';
+      case 'confirmed': return 'text-blue-700 bg-blue-100 border-blue-200';
+      case 'shipped': return 'text-purple-700 bg-purple-100 border-purple-200';
+      case 'delivered': return 'text-green-700 bg-green-100 border-green-200';
+      default: return 'text-gray-700 bg-gray-100 border-gray-200';
     }
   };
 
@@ -102,28 +79,6 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
       case 'shipped': return t.shipped;
       case 'delivered': return t.delivered;
       default: return status;
-    }
-  };
-
-  const getVerificationText = (status: string) => {
-    switch (status) {
-      case 'verified': return t.verified;
-      case 'failed': return t.failed;
-      case 'pending': return t.pendingVerification;
-      default: return status;
-    }
-  };
-
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast({
-        title: t.copied,
-        description: text,
-        duration: 2000,
-      });
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
     }
   };
 
@@ -172,41 +127,13 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
     }
   });
 
-  if (loading) {
-    return (
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center text-xl">
-            <Package className="h-6 w-6 mr-3 text-blue-600" />
-            {t.title}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center py-8">
-            <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="shadow-lg">
       <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center text-xl">
-            <Package className="h-6 w-6 mr-3 text-blue-600" />
-            {t.title}
-          </CardTitle>
-          <Button
-            onClick={refetch}
-            variant="outline"
-            size="sm"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            {t.refresh}
-          </Button>
-        </div>
+        <CardTitle className="flex items-center text-xl">
+          <Package className="h-6 w-6 mr-3 text-blue-600" />
+          {t.title}
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         {orders.length === 0 ? (
@@ -220,7 +147,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="font-semibold min-w-[120px]">
+                  <TableHead className="font-semibold">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -231,7 +158,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
                       {getSortIcon('id')}
                     </Button>
                   </TableHead>
-                  <TableHead className="font-semibold min-w-[120px]">
+                  <TableHead className="font-semibold">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -243,7 +170,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
                       {getSortIcon('date')}
                     </Button>
                   </TableHead>
-                  <TableHead className="font-semibold min-w-[120px]">
+                  <TableHead className="font-semibold">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -254,8 +181,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
                       {getSortIcon('status')}
                     </Button>
                   </TableHead>
-                  <TableHead className="font-semibold min-w-[100px]">{t.verification}</TableHead>
-                  <TableHead className="font-semibold min-w-[100px]">
+                  <TableHead className="font-semibold">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -267,34 +193,26 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
                       {getSortIcon('total')}
                     </Button>
                   </TableHead>
-                  <TableHead className="font-semibold min-w-[200px]">{t.items}</TableHead>
-                  <TableHead className="font-semibold min-w-[150px]">{t.transaction}</TableHead>
+                  <TableHead className="font-semibold">{t.items}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sortedOrders.map((order, index) => (
                   <TableRow key={order.id} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-25'}`}>
                     <TableCell className="font-mono text-sm font-medium">
-                      #{order.id.slice(0, 8)}...
+                      #{order.id}
                     </TableCell>
                     <TableCell className="text-sm">
                       {new Date(order.date).toLocaleDateString(language === 'en' ? 'en-US' : 'es-ES', {
                         year: 'numeric',
                         month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
+                        day: 'numeric'
                       })}
                     </TableCell>
                     <TableCell>
-                      <Badge className={`${getStatusColor(order.status)} border`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={`${getVerificationColor(order.verification_status)} border`}>
-                        {getVerificationText(order.verification_status)}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell className="font-semibold text-green-600 text-lg">
                       ${order.total.toFixed(2)}
@@ -303,41 +221,13 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
                       <div className="space-y-1 max-w-xs">
                         {order.items.map((item, itemIndex) => (
                           <div key={itemIndex} className="text-sm">
-                            <div className="font-medium text-gray-900 truncate">{item.product.name}</div>
+                            <div className="font-medium text-gray-900 truncate">{item.name}</div>
                             <div className="text-gray-500">
-                              Qty: {item.quantity} × ${item.product.price} = ${(item.product.price * item.quantity).toFixed(2)}
+                              Qty: {item.quantity} × ${item.price} = ${(item.price * item.quantity).toFixed(2)}
                             </div>
                           </div>
                         ))}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {order.transaction_hash ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <code className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
-                              {order.transaction_hash.slice(0, 12)}...
-                            </code>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => copyToClipboard(order.transaction_hash!)}
-                            >
-                              <Copy className="h-3 w-3" />
-                            </Button>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => window.open(`https://blockstream.info/tx/${order.transaction_hash}`, '_blank')}
-                          >
-                            <ExternalLink className="h-3 w-3 mr-1" />
-                            {t.viewTransaction}
-                          </Button>
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm">-</span>
-                      )}
                     </TableCell>
                   </TableRow>
                 ))}
