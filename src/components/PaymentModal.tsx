@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -76,7 +75,43 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const sendOrderEmail = async (orderData: any) => {
-    console.log('📧 Sending order email via Formspree...');
+    console.log('📧 Sending order email via Supabase Edge Function...');
+    try {
+      const { data, error } = await supabase.functions.invoke('send-order-email', {
+        body: {
+          customerEmail: orderData.customerEmail,
+          customerName: orderData.customerName,
+          orderId: orderData.orderId,
+          items: orderData.items,
+          originalTotal: orderData.originalTotal,
+          discountAmount: orderData.discountAmount,
+          shippingFee: orderData.shippingFee,
+          finalTotal: orderData.finalTotal,
+          paymentMethod: orderData.paymentMethod,
+          txId: orderData.txId || '',
+          shippingAddress: orderData.shippingAddress,
+          phone: orderData.phone,
+          orderDate: orderData.orderDate,
+          verificationStatus: orderData.verificationStatus || 'pending',
+          bitcoinAmount: orderData.bitcoinAmount || '',
+        }
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
+      console.log('✅ Order email sent successfully via Edge Function:', data);
+      return true;
+    } catch (error) {
+      console.error('❌ Email sending failed:', error);
+      // Fallback to Formspree if Edge Function fails
+      return await sendOrderEmailFormspree(orderData);
+    }
+  };
+
+  const sendOrderEmailFormspree = async (orderData: any) => {
+    console.log('📧 Falling back to Formspree...');
     try {
       const telegramInfo = `
 
@@ -118,10 +153,10 @@ We'll contact you there for order updates and support!`;
         throw new Error(`Email failed with status: ${response.status}`);
       }
       
-      console.log('✅ Order email sent successfully');
+      console.log('✅ Order email sent successfully via Formspree');
       return true;
     } catch (error) {
-      console.error('❌ Email sending failed:', error);
+      console.error('❌ Formspree email sending failed:', error);
       throw error;
     }
   };
@@ -129,11 +164,16 @@ We'll contact you there for order updates and support!`;
   const saveOrderToDatabase = async (orderData: any) => {
     console.log('💾 Saving order to Supabase...');
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
       const { data, error } = await supabase
         .from('orders')
         .insert({
-          id: orderData.orderId,
-          user_id: supabase.auth.getUser().then(u => u.data.user?.id),
+          user_id: user.id,
           items: orderData.items,
           original_total: orderData.originalTotal,
           discount_amount: orderData.discountAmount,
@@ -151,7 +191,8 @@ We'll contact you there for order updates and support!`;
             customerName: orderData.customerName,
             customerEmail: orderData.customerEmail,
             shippingAddress: orderData.shippingAddress,
-            phone: orderData.phone
+            phone: orderData.phone,
+            orderId: orderData.orderId
           }
         });
 
@@ -345,12 +386,12 @@ We'll contact you there for order updates and support!`;
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             {step === 1 ? (
-              <>
+              <div className="p-4 sm:p-8">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-3xl font-bold text-gray-800">Complete Your Purchase</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Complete Your Purchase</h2>
                   <button 
                     onClick={handleClose}
                     className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
@@ -371,7 +412,7 @@ We'll contact you there for order updates and support!`;
                     language="en"
                   />
 
-                  <div className="bg-gray-50 p-6 rounded-lg">
+                  <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
                     <div className="space-y-3">
                       <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
@@ -407,11 +448,11 @@ We'll contact you there for order updates and support!`;
 
                   {error && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-600">{error}</p>
+                      <p className="text-red-600 text-sm">{error}</p>
                     </div>
                   )}
 
-                  <div className="flex space-x-4 pt-4">
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
                     <button 
                       type="submit" 
                       disabled={isLoading} 
@@ -428,11 +469,11 @@ We'll contact you there for order updates and support!`;
                     </button>
                   </div>
                 </form>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="p-4 sm:p-8">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-3xl font-bold text-gray-800">Bitcoin Payment</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Bitcoin Payment</h2>
                   <button 
                     onClick={handleClose}
                     className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
@@ -444,14 +485,14 @@ We'll contact you there for order updates and support!`;
                 
                 <PaymentTimer onExpired={() => setStep(1)} language="en" />
                 
-                <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-6 mb-6 mt-6">
+                <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 mb-6 mt-6">
                   <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold text-orange-800 mb-2">₿ Payment Details</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-orange-800 mb-2">₿ Payment Details</h3>
                     <div className="bg-white rounded-lg p-4 border border-orange-200">
                       <p className="text-sm text-gray-600 mb-2">Send exactly</p>
-                      <p className="text-2xl font-bold text-orange-600 mb-4">{btcAmount.toFixed(8)} BTC</p>
+                      <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-4 break-all">{btcAmount.toFixed(8)} BTC</p>
                       <p className="text-sm text-gray-600 mb-2">To address:</p>
-                      <p className="font-mono text-sm bg-gray-100 p-3 rounded border break-all">{myAddress}</p>
+                      <p className="font-mono text-xs sm:text-sm bg-gray-100 p-3 rounded border break-all">{myAddress}</p>
                     </div>
                   </div>
                   <div className="text-center">
@@ -463,7 +504,7 @@ We'll contact you there for order updates and support!`;
 
                 <div className="mb-6">
                   <label htmlFor="txId" className="block text-sm font-medium text-gray-700 mb-2">
-                    Transaction ID (Required for Automatic Verification)
+                    🔍 Transaction ID (Auto-Verification Enabled)
                   </label>
                   <input 
                     id="txId"
@@ -471,12 +512,12 @@ We'll contact you there for order updates and support!`;
                     type="text" 
                     value={txId} 
                     onChange={(e) => setTxId(e.target.value)} 
-                    placeholder="Enter Transaction ID after sending Bitcoin" 
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono"
+                    placeholder="Enter Bitcoin Transaction ID (64 characters)" 
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-sm"
                     required
                   />
-                  <p className="text-sm text-gray-500 mt-2">
-                    🔍 We'll automatically verify your payment on the Bitcoin blockchain. Orders are only confirmed after successful verification.
+                  <p className="text-xs sm:text-sm text-gray-500 mt-2">
+                    🔍 We'll automatically verify your payment on the Bitcoin blockchain. Orders are confirmed instantly after successful verification.
                   </p>
                 </div>
 
@@ -484,19 +525,19 @@ We'll contact you there for order updates and support!`;
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <div className="flex items-center space-x-3">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <p className="text-blue-800 font-medium">🔍 Verifying your Bitcoin transaction...</p>
+                      <p className="text-blue-800 font-medium">🔍 Verifying Bitcoin transaction...</p>
                     </div>
-                    <p className="text-sm text-blue-600 mt-2">This may take a few moments while we check the blockchain.</p>
+                    <p className="text-sm text-blue-600 mt-2">Checking blockchain for transaction confirmation...</p>
                   </div>
                 )}
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <p className="text-red-600">{error}</p>
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
                 )}
 
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                   <button 
                     onClick={handleConfirm} 
                     disabled={isLoading || !txId || isVerifying} 
@@ -512,7 +553,7 @@ We'll contact you there for order updates and support!`;
                     Back
                   </button>
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
