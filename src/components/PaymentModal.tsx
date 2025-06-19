@@ -68,6 +68,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const createOrderInDatabase = async (orderData: any) => {
     console.log('📝 Starting order creation in Supabase');
     console.log('👤 User auth_id:', userProfile?.auth_id);
+    console.log('📊 Order data to insert:', orderData);
 
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -89,7 +90,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       }
 
       console.log('🔄 Making Supabase insert request...');
-      console.log('📊 Order data to insert:', orderData);
       
       const { data, error } = await supabase
         .from('orders')
@@ -187,35 +187,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         setStep(2);
       } else if (paymentMethod === 'telegram') {
         console.log('📱 Processing Telegram payment...');
-        
-        // Create order data for Telegram payment
-        const orderData = {
-          user_id: userProfile?.auth_id,
-          items: Object.entries(cart).map(([id, qty]) => {
-            const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
-            return { id, name: p.name, price: p.price, quantity: qty };
-          }),
-          original_total: calculateTotalUSD() - 7.5,
-          discount_amount: userDiscount,
-          shipping_fee: 7.5,
-          payment_method: 'telegram',
-          payment_details: { ...formData },
-          status: 'pending'
-        };
-
-        console.log('💾 Creating Telegram order in database...');
-        const createdOrder = await createOrderInDatabase(orderData);
-        
-        console.log('📧 Sending Telegram order email...');
-        await sendOrderEmail(orderData);
-        
-        console.log('✅ Telegram order processed successfully, Order ID:', createdOrder.id);
+        // Just show the Telegram modal - no order creation
         setShowTelegramModal(true);
         
-        // Show success message
         toast({
-          title: 'Order Submitted!',
-          description: `Your order #${createdOrder.id.slice(-8)} has been submitted. Please complete payment via Telegram.`,
+          title: 'Telegram Payment',
+          description: 'Please join our Telegram group to complete your order.',
         });
       }
     } catch (err: any) {
@@ -235,6 +212,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       if (!txId) throw new Error('Transaction ID is required');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
+      console.log('💾 Creating Bitcoin order in database...');
+
       const orderData = {
         user_id: userProfile?.auth_id,
         items: Object.entries(cart).map(([id, qty]) => {
@@ -249,13 +228,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         status: 'pending'
       };
 
-      console.log('💾 Creating Bitcoin order in database...');
       const createdOrder = await createOrderInDatabase(orderData);
+      console.log('✅ Order created with ID:', createdOrder.id);
       
       console.log('📧 Sending Bitcoin order email...');
       await sendOrderEmail(orderData);
-      
-      console.log('✅ Bitcoin order processed successfully, Order ID:', createdOrder.id);
+      console.log('✅ Email sent successfully');
       
       onOrderSuccess();
       onClose();
@@ -283,7 +261,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const handleTelegramModalClose = () => {
     setShowTelegramModal(false);
-    onOrderSuccess();
     onClose();
   };
 

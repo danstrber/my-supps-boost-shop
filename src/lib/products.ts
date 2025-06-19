@@ -120,8 +120,8 @@ export const products: Product[] = [
       es: 'Ganancias rápidas de masa muscular (8-15 lbs en 4 semanas), aumentos dramáticos de fuerza, síntesis proteica mejorada, retención de nitrógeno mejorada, retención mínima de agua.'
     },
     sideEffects: {
-      en: 'May cause mild liver stress, temporary blood pressure changes, possible cholesterol fluctuations, natural testosterone reduction, occasional mood variations, minor hair thinning, temporary skin changes, mild joint discomfort.',
-      es: 'Puede causar estrés hepático leve, cambios temporales de presión arterial, posibles fluctuaciones de colesterol, reducción de testosterona natural, variaciones ocasionales del humor, adelgazamiento menor del cabello, cambios temporales de la piel, molestias articulares leves.'
+      en: 'May cause mild liver stress, temporary blood pressure changes, possible cholesterol fluctuations, natural testosterone reduction, occasional mood variations, minor hair sensitivity, temporary skin changes, mild joint discomfort.',
+      es: 'Puede causar estrés hepático leve, cambios temporales de presión arterial, posibles fluctuaciones de colesterol, reducción de testosterona natural, variaciones ocasionales del humor, sensibilidad capilar menor, cambios temporales de la piel, molestias articulares leves.'
     },
     effectsOnWomen: {
       en: 'NOT RECOMMENDED for women due to high risk of masculinizing effects. May cause voice changes and other permanent characteristics.',
@@ -413,6 +413,72 @@ export const products: Product[] = [
       fatLoss: 2,
       sideEffects: 3,
       retention: 4
+    }
+  },
+  {
+    id: 'clenbuterol',
+    name: 'Clenbuterol',
+    price: 35,
+    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
+    categories: ['fat-burner'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Clenbuterol is a powerful beta-2 agonist used primarily for fat loss and improved cardiovascular performance.',
+      es: 'Clenbuterol es un potente agonista beta-2 utilizado principalmente para la pérdida de grasa y mejora del rendimiento cardiovascular.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '40mcg',
+        capsulesPerBottle: '100',
+        typicalCycleLength: '2-4 weeks',
+        potencyLevel: 'High Fat Burning Potency'
+      },
+      es: {
+        dosePerCapsule: '40mcg',
+        capsulesPerBottle: '100',
+        typicalCycleLength: '2-4 semanas',
+        potencyLevel: 'Alta potencia quema grasa'
+      }
+    },
+    researchBackground: {
+      en: 'Clenbuterol has been extensively researched for its thermogenic properties and ability to preserve lean muscle during caloric restriction.',
+      es: 'Clenbuterol ha sido extensamente investigado por sus propiedades termogénicas y capacidad de preservar músculo magro durante restricción calórica.'
+    },
+    benefits: {
+      en: 'Rapid fat loss, increased metabolic rate, preserved muscle mass during cutting, enhanced cardiovascular performance, improved oxygen delivery.',
+      es: 'Pérdida rápida de grasa, aumento de tasa metabólica, masa muscular preservada durante definición, rendimiento cardiovascular mejorado, entrega de oxígeno mejorada.'
+    },
+    sideEffects: {
+      en: 'May cause mild tremors, occasional heart palpitations, increased sweating, temporary sleep disruption, mild anxiety, elevated heart rate.',
+      es: 'Puede causar temblores leves, palpitaciones cardíacas ocasionales, aumento de sudoración, disrupción temporal del sueño, ansiedad leve, frecuencia cardíaca elevada.'
+    },
+    effectsOnWomen: {
+      en: 'Generally well tolerated by women. Lower doses recommended. May help with fat loss without masculinizing effects.',
+      es: 'Generalmente bien tolerado por mujeres. Dosis más bajas recomendadas. Puede ayudar con pérdida de grasa sin efectos masculinizantes.'
+    },
+    howItWorks: {
+      en: 'Stimulates beta-2 receptors to increase thermogenesis and fat oxidation while preserving lean muscle tissue.',
+      es: 'Estimula receptores beta-2 para aumentar termogénesis y oxidación de grasa mientras preserva tejido muscular magro.'
+    },
+    safetyInformation: {
+      en: 'Monitor heart rate and blood pressure. Start with low doses. Cycle on/off to prevent tolerance. Stay hydrated.',
+      es: 'Monitorear frecuencia cardíaca y presión arterial. Comenzar con dosis bajas. Ciclar para prevenir tolerancia. Mantenerse hidratado.'
+    },
+    cycleInformation: {
+      en: 'Typical cycles: 2 weeks on, 2 weeks off. Start at 20mcg daily, gradually increase as tolerated.',
+      es: 'Ciclos típicos: 2 semanas activo, 2 semanas descanso. Comenzar con 20mcg diario, aumentar gradualmente según tolerancia.'
+    },
+    whatToExpect: {
+      en: 'Users report noticeable fat loss within 1-2 weeks, increased energy, and improved muscle definition.',
+      es: 'Los usuarios reportan pérdida notable de grasa en 1-2 semanas, energía aumentada y definición muscular mejorada.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 2,
+      fatLoss: 5,
+      sideEffects: 3,
+      retention: 3
     }
   }
 ];

@@ -41,8 +41,11 @@ export const useCart = () => {
 
   // Calculate cart item count properly - only count valid positive quantities
   const cartItemCount = Object.values(cart).reduce((total, quantity) => {
-    const validQuantity = typeof quantity === 'number' && quantity > 0 && !isNaN(quantity) && isFinite(quantity) ? Math.floor(quantity) : 0;
-    return total + validQuantity;
+    // Make sure quantity is a valid positive number
+    if (typeof quantity === 'number' && quantity > 0 && !isNaN(quantity) && isFinite(quantity)) {
+      return total + Math.floor(quantity);
+    }
+    return total;
   }, 0);
 
   console.log('🧮 Cart calculation debug:', { 
