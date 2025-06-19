@@ -9,10 +9,14 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import OrderHistory from '@/components/OrderHistory';
 import ReferralSection from '@/components/ReferralSection';
-import Two
+import TwoFactorSettings from '@/components/TwoFactorSettings';
+
+interface AccountPageProps {
+  language: 'en' | 'es';
+}
 
 const AccountPage = ({ language }: AccountPageProps) => {
-  const { userProfile, signOut } = useAuth();
+  const { userProfile, handleAuthAction } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
 
   const text = {
@@ -52,7 +56,7 @@ const AccountPage = ({ language }: AccountPageProps) => {
 
   const handleLogout = async () => {
     try {
-      await signOut();
+      await handleAuthAction('logout');
     } catch (error) {
       console.error('Logout error:', error);
     }
