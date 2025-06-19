@@ -1,512 +1,274 @@
+
 export interface Product {
   id: string;
   name: string;
   price: number;
-  image: string;
+  images: string[];
+  description: string;
+  sideEffects: string;
+  dosage: string;
   categories: string[];
-  description: {
-    en: string;
-    es: string;
-  };
-  specifications: {
-    en: {
-      dosePerCapsule: string;
-      capsulesPerBottle: string;
-      typicalCycleLength: string;
-      potencyLevel: string;
-    };
-    es: {
-      dosePerCapsule: string;
-      capsulesPerBottle: string;
-      typicalCycleLength: string;
-      potencyLevel: string;
-    };
-  };
-  researchBackground: {
-    en: string;
-    es: string;
-  };
-  benefits: {
-    en: string;
-    es: string;
-  };
-  sideEffects: {
-    en: string;
-    es: string;
-  };
-  effectsOnWomen: {
-    en: string;
-    es: string;
-  };
-  howItWorks: {
-    en: string;
-    es: string;
-  };
-  safetyInformation: {
-    en: string;
-    es: string;
-  };
-  cycleInformation: {
-    en: string;
-    es: string;
-  };
-  whatToExpect: {
-    en: string;
-    es: string;
-  };
-  performanceRatings: {
-    muscleGain: number;
-    strength: number;
-    fatLoss: number;
-    sideEffects: number;
-    retention: number;
-  };
-  featured?: boolean;
-  labTestFile?: string;
-  inStock?: boolean;
-  keyIngredients?: {
-    en: string[];
-    es: string[];
-  };
-  dosage?: {
-    en: string;
-    es: string;
-  };
-  usage?: {
-    en: string;
-    es: string;
-  };
-  warnings?: {
-    en: string[];
-    es: string[];
-  };
 }
 
 export const products: Product[] = [
   {
-    id: 'superdrol',
-    name: 'Superdrol',
+    id: "1",
+    name: "Ostarine (MK-2866)",
+    price: 15,
+    images: ["/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png"],
+    description: "One of the most researched SARMs with potential for muscle growth and bone health support.",
+    sideEffects: "Generally well-tolerated. Some users may experience mild testosterone suppression with extended use. Regular monitoring recommended.",
+    dosage: "Typical range: 10-25mg daily. Start with lower doses and assess tolerance.",
+    categories: ["sarms", "beginner"]
+  },
+  {
+    id: "2", 
+    name: "Ligandrol (LGD-4033)",
+    price: 20,
+    images: ["/lovable-uploads/03872941-927f-4c0f-bbdc-f29c84db2e6c.png"],
+    description: "Popular for its potential muscle-building properties and strength enhancement.",
+    sideEffects: "May cause mild testosterone suppression. Some users report temporary water retention. Post-cycle support may be beneficial.",
+    dosage: "Typical range: 5-10mg daily. Conservative approach recommended for beginners.",
+    categories: ["sarms", "intermediate"]
+  },
+  {
+    id: "3",
+    name: "Cardarine (GW-501516)",
+    price: 18,
+    images: ["/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png"],
+    description: "Known for potential endurance and metabolic benefits.",
+    sideEffects: "Generally well-tolerated in short-term use. Long-term effects not fully established. Use with caution.",
+    dosage: "Typical range: 10-20mg daily. Cycling recommended.",
+    categories: ["sarms", "cutting"]
+  },
+  {
+    id: "4",
+    name: "Andarine (S4)",
+    price: 16,
+    images: ["/lovable-uploads/1bf4f1ae-fdea-4150-a6f0-d7624092d03b.png"],
+    description: "Research compound with potential for body composition improvements.",
+    sideEffects: "May cause temporary vision effects (yellow tint) in some users. Generally reversible upon discontinuation.",
+    dosage: "Typical range: 25-50mg daily in divided doses. Monitor for vision changes.",
+    categories: ["sarms", "cutting"]
+  },
+  {
+    id: "5",
+    name: "RAD-140 (Testolone)",
+    price: 22,
+    images: ["/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png"],
+    description: "Potent research compound with strong anabolic potential.",
+    sideEffects: "May cause moderate testosterone suppression. Some users report mild aggression or mood changes.",
+    dosage: "Typical range: 10-20mg daily. More experienced users only.",
+    categories: ["sarms", "advanced"]
+  },
+  {
+    id: "6",
+    name: "YK-11",
     price: 25,
-    image: '/lovable-uploads/03872941-927f-4c0f-bbdc-f29c84db2e6c.png',
-    categories: ['oral-steroids'],
-    featured: true,
-    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
-    inStock: true,
-    description: {
-      en: 'Superdrol (Metasterone) is a powerful oral anabolic compound known for rapid muscle gains and strength increases.',
-      es: 'Superdrol (Metasterona) es un compuesto anabólico oral potente conocido por ganancias rápidas de músculo y aumentos de fuerza.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '20',
-        typicalCycleLength: '4-6 weeks maximum',
-        potencyLevel: 'Very High Anabolic Potency'
-      },
-      es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '20',
-        typicalCycleLength: '4-6 semanas máximo',
-        potencyLevel: 'Potencia anabólica muy alta'
-      }
-    },
-    researchBackground: {
-      en: 'Superdrol (Metasterone) has been extensively studied for its potent anabolic properties and rapid muscle-building capabilities in research settings.',
-      es: 'Superdrol (Metasterona) ha sido extensamente estudiado por sus propiedades anabólicas potentes y capacidades rápidas de construcción muscular en entornos de investigación.'
-    },
-    benefits: {
-      en: 'Rapid muscle mass gains (8-15 lbs in 4 weeks), dramatic strength increases, enhanced protein synthesis, improved nitrogen retention, minimal water retention.',
-      es: 'Ganancias rápidas de masa muscular (8-15 lbs en 4 semanas), aumentos dramáticos de fuerza, síntesis proteica mejorada, retención de nitrógeno mejorada, retención mínima de agua.'
-    },
-    sideEffects: {
-      en: 'Hepatotoxicity (liver stress), cardiovascular strain, elevated blood pressure, cholesterol imbalances, testosterone suppression, mood changes, possible hair loss, acne, joint pain, headaches, fatigue.',
-      es: 'Hepatotoxicidad (estrés hepático), tensión cardiovascular, elevación de presión arterial, desequilibrios de colesterol, supresión de testosterona, cambios de humor, posible pérdida de cabello, acné, dolor articular, dolores de cabeza, fatiga.'
-    },
-    effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women due to extremely high risk of virilization. May cause permanent masculine characteristics, voice deepening, and severe hormonal disruption.',
-      es: 'NO RECOMENDADO para mujeres debido al riesgo extremadamente alto de virilización. Puede causar características masculinas permanentes, profundización de la voz y disrupción hormonal severa.'
-    },
-    howItWorks: {
-      en: 'Binds strongly to androgen receptors, promoting intense protein synthesis and muscle growth while minimizing estrogenic effects.',
-      es: 'Se une fuertemente a los receptores de andrógenos, promoviendo síntesis proteica intensa y crecimiento muscular mientras minimiza efectos estrogénicos.'
-    },
-    safetyInformation: {
-      en: 'Requires liver support (NAC, TUDCA), regular blood work monitoring, and proper post-cycle therapy. Not for beginners.',
-      es: 'Requiere apoyo hepático (NAC, TUDCA), monitoreo regular de análisis de sangre y terapia post-ciclo adecuada. No para principiantes.'
-    },
-    cycleInformation: {
-      en: 'Typical cycles: 4-6 weeks maximum due to liver toxicity. Always followed by comprehensive PCT.',
-      es: 'Ciclos típicos: 4-6 semanas máximo debido a toxicidad hepática. Siempre seguido por PCT integral.'
-    },
-    whatToExpect: {
-      en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
-      es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
-    },
-    performanceRatings: {
-      muscleGain: 5,
-      strength: 5,
-      fatLoss: 3,
-      sideEffects: 2,
-      retention: 4
-    }
+    images: ["/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png"],
+    description: "Unique compound with myostatin inhibition properties.",
+    sideEffects: "Limited research available. May cause testosterone suppression. Liver function monitoring advised.",
+    dosage: "Typical range: 5-10mg daily. Advanced users only due to limited research.",
+    categories: ["sarms", "advanced"]
   },
   {
-    id: 'mk677',
-    name: 'MK-677 (Ibutamoren)',
-    price: 40,
-    image: '/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png',
-    categories: ['growth-hormone'],
-    featured: true,
-    inStock: true,
-    description: {
-      en: 'MK-677 is a growth hormone secretagogue that stimulates natural growth hormone and IGF-1 production.',
-      es: 'MK-677 es un secretagogo de hormona del crecimiento que estimula la producción natural de hormona del crecimiento e IGF-1.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '8-12 weeks',
-        potencyLevel: 'High Growth Hormone Release'
-      },
-      es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '8-12 semanas',
-        potencyLevel: 'Alta liberación de hormona del crecimiento'
-      }
-    },
-    researchBackground: {
-      en: 'MK-677 has been extensively studied for its ability to increase growth hormone levels, improve sleep quality, and enhance recovery.',
-      es: 'MK-677 ha sido extensamente estudiado por su capacidad de aumentar los niveles de hormona del crecimiento, mejorar la calidad del sueño y mejorar la recuperación.'
-    },
-    benefits: {
-      en: 'Increased lean muscle mass, improved sleep quality, enhanced recovery, stronger bones, better skin and hair quality, increased appetite.',
-      es: 'Aumento de masa muscular magra, mejor calidad del sueño, recuperación mejorada, huesos más fuertes, mejor calidad de piel y cabello, aumento del apetito.'
-    },
-    sideEffects: {
-      en: 'Increased appetite, water retention, mild fatigue, possible blood sugar changes, temporary joint pain.',
-      es: 'Aumento del apetito, retención de agua, fatiga leve, posibles cambios en el azúcar en sangre, dolor articular temporal.'
-    },
-    effectsOnWomen: {
-      en: 'Generally well tolerated by women. May help with anti-aging benefits and improved recovery. Monitor for increased appetite.',
-      es: 'Generalmente bien tolerado por mujeres. Puede ayudar con beneficios anti-envejecimiento y recuperación mejorada. Monitorear aumento del apetito.'
-    },
-    howItWorks: {
-      en: 'Mimics ghrelin to stimulate growth hormone release from the pituitary gland, increasing IGF-1 levels naturally.',
-      es: 'Imita la grelina para estimular la liberación de hormona del crecimiento de la glándula pituitaria, aumentando los niveles de IGF-1 naturalmente.'
-    },
-    safetyInformation: {
-      en: 'Generally safe for long-term use. Monitor blood sugar levels. Take with food to reduce stomach upset.',
-      es: 'Generalmente seguro para uso a largo plazo. Monitorear niveles de azúcar en sangre. Tomar con comida para reducir malestar estomacal.'
-    },
-    cycleInformation: {
-      en: 'Can be used for extended periods (3-6 months). Best taken in the evening due to sleep benefits.',
-      es: 'Puede usarse por períodos extendidos (3-6 meses). Mejor tomado por la noche debido a beneficios del sueño.'
-    },
-    whatToExpect: {
-      en: 'Users report improved sleep within 1-2 weeks, increased appetite, and gradual muscle gains over 8-12 weeks.',
-      es: 'Los usuarios reportan mejor sueño en 1-2 semanas, aumento del apetito y ganancias musculares graduales en 8-12 semanas.'
-    },
-    performanceRatings: {
-      muscleGain: 3,
-      strength: 2,
-      fatLoss: 2,
-      sideEffects: 4,
-      retention: 5
-    }
+    id: "mk677",
+    name: "MK-677 (Ibutamoren)",
+    price: 30,
+    images: ["/lovable-uploads/3676fa98-6e90-442a-99d8-ce8d8d9bef23.png"],
+    description: "Growth hormone secretagogue with potential for recovery and sleep benefits.",
+    sideEffects: "May cause increased appetite, mild water retention, or temporary insulin sensitivity changes.",
+    dosage: "Typical range: 10-25mg daily, preferably before bed.",
+    categories: ["growth-hormone", "recovery"]
   },
   {
-    id: 'rad140',
-    name: 'RAD-140 (Testolone)',
-    price: 55,
-    image: '/lovable-uploads/81518186-f1a6-4b15-a733-1307a6f1f474.png',
-    categories: ['sarms'],
-    featured: false,
-    inStock: true,
-    description: {
-      en: 'RAD-140 is considered one of the most powerful SARMs for muscle building and strength enhancement.',
-      es: 'RAD-140 es considerado uno de los SARMs más potentes para construcción muscular y mejora de fuerza.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '6-8 weeks',
-        potencyLevel: 'Very High Anabolic Activity'
-      },
-      es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '6-8 semanas',
-        potencyLevel: 'Actividad anabólica muy alta'
-      }
-    },
-    researchBackground: {
-      en: 'RAD-140 was developed as a potential treatment for muscle wasting and breast cancer, showing strong anabolic effects.',
-      es: 'RAD-140 fue desarrollado como un tratamiento potencial para el desgaste muscular y cáncer de mama, mostrando efectos anabólicos fuertes.'
-    },
-    benefits: {
-      en: 'Rapid muscle gains, dramatic strength increases, enhanced endurance, improved recovery, minimal water retention.',
-      es: 'Ganancias musculares rápidas, aumentos dramáticos de fuerza, resistencia mejorada, recuperación mejorada, retención mínima de agua.'
-    },
-    sideEffects: {
-      en: 'Significant testosterone suppression, possible aggression, mild hair loss, temporary hormone imbalance.',
-      es: 'Supresión significativa de testosterona, posible agresión, pérdida leve de cabello, desequilibrio hormonal temporal.'
-    },
-    effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women due to high risk of virilization and strong androgenic effects.',
-      es: 'NO RECOMENDADO para mujeres debido al alto riesgo de virilización y efectos androgénicos fuertes.'
-    },
-    howItWorks: {
-      en: 'Exhibits strong binding affinity to androgen receptors, promoting intense muscle growth and strength development.',
-      es: 'Exhibe fuerte afinidad de unión a los receptores de andrógenos, promoviendo crecimiento muscular intenso y desarrollo de fuerza.'
-    },
-    safetyInformation: {
-      en: 'Requires comprehensive PCT. Regular blood work essential. Only for experienced users.',
-      es: 'Requiere PCT integral. Análisis de sangre regular esencial. Solo para usuarios experimentados.'
-    },
-    cycleInformation: {
-      en: 'Typical cycles: 6-8 weeks maximum. Longer cycles increase suppression risk.',
-      es: 'Ciclos típicos: 6-8 semanas máximo. Ciclos más largos aumentan el riesgo de supresión.'
-    },
-    whatToExpect: {
-      en: 'Users report 8-15 lbs of lean muscle gain in 6-8 weeks with exceptional strength increases.',
-      es: 'Los usuarios reportan 8-15 lbs de ganancia de músculo magro en 6-8 semanas con aumentos excepcionales de fuerza.'
-    },
-    performanceRatings: {
-      muscleGain: 5,
-      strength: 5,
-      fatLoss: 3,
-      sideEffects: 2,
-      retention: 4
-    }
-  },
-  {
-    id: 'enclomiphene',
-    name: 'Enclomiphene Citrate',
-    price: 25,
-    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
-    categories: ['pct', 'testosterone-booster'],
-    featured: false,
-    inStock: true,
-    description: {
-      en: 'Enclomiphene is a selective estrogen receptor modulator (SERM) used for post-cycle therapy and natural testosterone restoration.',
-      es: 'Enclomifeno es un modulador selectivo del receptor de estrógeno (SERM) usado para terapia post-ciclo y restauración natural de testosterona.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '25',
-        typicalCycleLength: '4-6 weeks PCT',
-        potencyLevel: 'Moderate Testosterone Stimulation'
-      },
-      es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '25',
-        typicalCycleLength: '4-6 semanas PCT',
-        potencyLevel: 'Estimulación moderada de testosterona'
-      }
-    },
-    researchBackground: {
-      en: 'Enclomiphene is the active isomer of clomiphene, specifically developed for male hormone therapy with fewer side effects.',
-      es: 'Enclomifeno es el isómero activo del clomifeno, específicamente desarrollado para terapia hormonal masculina con menos efectos secundarios.'
-    },
-    benefits: {
-      en: 'Restores natural testosterone production, improves LH and FSH levels, maintains gains post-cycle, fewer side effects than clomid.',
-      es: 'Restaura producción natural de testosterona, mejora niveles de LH y FSH, mantiene ganancias post-ciclo, menos efectos secundarios que clomid.'
-    },
-    sideEffects: {
-      en: 'Mild mood changes, possible visual disturbances (rare), temporary testosterone fluctuations, mild headaches.',
-      es: 'Cambios leves de humor, posibles disturbios visuales (raro), fluctuaciones temporales de testosterona, dolores de cabeza leves.'
-    },
-    effectsOnWomen: {
-      en: 'Not recommended for women. Designed specifically for male hormone restoration.',
-      es: 'No recomendado para mujeres. Diseñado específicamente para restauración hormonal masculina.'
-    },
-    howItWorks: {
-      en: 'Blocks estrogen receptors in the hypothalamus, stimulating LH and FSH release to restore natural testosterone production.',
-      es: 'Bloquea receptores de estrógeno en el hipotálamo, estimulando la liberación de LH y FSH para restaurar la producción natural de testosterona.'
-    },
-    safetyInformation: {
-      en: 'Generally well tolerated. Monitor hormone levels during PCT. Use as directed for post-cycle therapy.',
-      es: 'Generalmente bien tolerado. Monitorear niveles hormonales durante PCT. Usar según indicado para terapia post-ciclo.'
-    },
-    cycleInformation: {
-      en: 'Typical PCT: 25mg daily for 4-6 weeks starting immediately after cycle completion.',
-      es: 'PCT típico: 25mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
-    },
-    whatToExpect: {
-      en: 'Users report testosterone recovery within 2-4 weeks, maintained muscle gains, and improved energy levels.',
-      es: 'Los usuarios reportan recuperación de testosterona en 2-4 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 1,
-      fatLoss: 1,
-      sideEffects: 4,
-      retention: 5
-    }
-  },
-  {
-    id: 'clenbuterol',
-    name: 'Clenbuterol',
+    id: "superdrol",
+    name: "Superdrol",
     price: 35,
-    image: '/lovable-uploads/c13fb27e-2e08-4a90-a2a8-c8d6138e0c9a.png',
-    categories: ['fat-burner'],
-    featured: false,
-    labTestFile: '/lovable-uploads/fb319341-a727-49e3-afa8-ce91bd70a788.png',
-    inStock: true,
-    description: {
-      en: 'Clenbuterol is a powerful beta-2 agonist used for fat loss and improving cardiovascular performance.',
-      es: 'Clenbuterol es un agonista beta-2 potente usado para pérdida de grasa y mejora del rendimiento cardiovascular.'
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '40mcg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '2 weeks on/off',
-        potencyLevel: 'High Fat Burning Potency'
-      },
-      es: {
-        dosePerCapsule: '40mcg',
-        capsulesPerBottle: '50',
-        typicalCycleLength: '2 semanas sí/no',
-        potencyLevel: 'Alta potencia quema-grasa'
-      }
-    },
-    researchBackground: {
-      en: 'Clenbuterol has been extensively studied for its thermogenic properties and ability to preserve lean muscle during caloric restriction.',
-      es: 'Clenbuterol ha sido extensamente estudiado por sus propiedades termogénicas y capacidad de preservar músculo magro durante restricción calórica.'
-    },
-    benefits: {
-      en: 'Rapid fat loss, preserved lean muscle, increased metabolic rate, improved cardiovascular endurance, appetite suppression.',
-      es: 'Pérdida rápida de grasa, músculo magro preservado, tasa metabólica aumentada, resistencia cardiovascular mejorada, supresión del apetito.'
-    },
-    sideEffects: {
-      en: 'Increased heart rate, jitters, sweating, insomnia, muscle cramps, elevated blood pressure, anxiety, headaches.',
-      es: 'Frecuencia cardíaca aumentada, nerviosismo, sudoración, insomnio, calambres musculares, presión arterial elevada, ansiedad, dolores de cabeza.'
-    },
-    effectsOnWomen: {
-      en: 'Generally well tolerated by women at lower doses (20-40mcg). Popular for female fat loss cycles.',
-      es: 'Generalmente bien tolerado por mujeres en dosis más bajas (20-40mcg). Popular para ciclos femeninos de pérdida de grasa.'
-    },
-    howItWorks: {
-      en: 'Stimulates beta-2 receptors, increasing thermogenesis and metabolic rate while preserving muscle tissue.',
-      es: 'Estimula receptores beta-2, aumentando termogénesis y tasa metabólica mientras preserva tejido muscular.'
-    },
-    safetyInformation: {
-      en: 'Start with low doses. Monitor heart rate and blood pressure. Not for those with heart conditions. Stay hydrated.',
-      es: 'Comenzar con dosis bajas. Monitorear frecuencia cardíaca y presión arterial. No para personas con condiciones cardíacas. Mantenerse hidratado.'
-    },
-    cycleInformation: {
-      en: 'Typical protocol: 2 weeks on, 2 weeks off. Start at 20mcg, increase gradually to tolerance.',
-      es: 'Protocolo típico: 2 semanas sí, 2 semanas no. Comenzar a 20mcg, aumentar gradualmente según tolerancia.'
-    },
-    whatToExpect: {
-      en: 'Users report noticeable fat loss within 1-2 weeks, increased energy, and improved muscle definition.',
-      es: 'Los usuarios reportan pérdida notable de grasa en 1-2 semanas, energía aumentada y definición muscular mejorada.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 2,
-      fatLoss: 5,
-      sideEffects: 2,
-      retention: 3
-    }
+    images: ["/lovable-uploads/3d1bbbbd-6bf6-479b-9030-d3c83459de3b.png"],
+    description: "Potent oral compound for experienced users seeking significant gains.",
+    sideEffects: "May cause liver stress, blood pressure changes, and hormonal suppression. Regular health monitoring essential.",
+    dosage: "Typical range: 10-20mg daily. Short cycles recommended. Experienced users only.",
+    categories: ["prohormones", "advanced"]
   },
   {
-    id: 'aromasin',
-    name: 'Aromasin (Exemestane)',
-    price: 25,
-    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
-    categories: ['pct', 'ai'],
-    featured: false,
-    inStock: true,
-    description: {
-      en: 'Aromasin (Exemestane) is a potent aromatase inhibitor (AI) used to control estrogen levels during and after anabolic steroid cycles. As a third-generation AI, it effectively reduces estrogen production and helps prevent estrogen-related side effects.',
-      es: 'Aromasin (Exemestano) es un potente inhibidor de aromatasa (AI) utilizado para controlar los niveles de estrógeno durante y después de los ciclos de esteroides anabólicos. Como un AI de tercera generación, reduce efectivamente la producción de estrógeno y ayuda a prevenir efectos secundarios relacionados con el estrógeno.'
-    },
-    keyIngredients: {
-      en: ['Exemestane 25mg'],
-      es: ['Exemestano 25mg']
-    },
-    dosage: {
-      en: '12.5-25mg daily, preferably with meals',
-      es: '12.5-25mg diarios, preferiblemente con comidas'
-    },
-    benefits: {
-      en: 'Powerful estrogen suppression, prevents gynecomastia, reduces water retention, supports lean muscle gains, third-generation AI technology',
-      es: 'Supresión potente del estrógeno, previene la ginecomastia, reduce la retención de agua, apoya las ganancias de músculo magro, tecnología AI de tercera generación'
-    },
-    usage: {
-      en: 'Take with food to enhance absorption. Start with lower dose and adjust based on response and blood work.',
-      es: 'Tomar con comida para mejorar la absorción. Comenzar con dosis más baja y ajustar según respuesta y análisis de sangre.'
-    },
-    warnings: {
-      en: [
-        'Monitor estrogen levels regularly',
-        'May affect cholesterol levels',
-        'Can cause joint discomfort',
-        'Not for use by women',
-        'Consult healthcare provider before use'
-      ],
-      es: [
-        'Monitorear los niveles de estrógeno regularmente',
-        'Puede afectar los niveles de colesterol',
-        'Puede causar molestias articulares',
-        'No para uso de mujeres',
-        'Consultar con profesional de salud antes del uso'
-      ]
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: '4-8 weeks',
-        potencyLevel: 'High Aromatase Inhibition'
-      },
-      es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10',
-        typicalCycleLength: '4-8 semanas',
-        potencyLevel: 'Alta inhibición de aromatasa'
-      }
-    },
-    researchBackground: {
-      en: 'Aromasin (Exemestane) has been extensively studied as a third-generation aromatase inhibitor with irreversible binding properties, making it highly effective for estrogen control.',
-      es: 'Aromasin (Exemestano) ha sido extensamente estudiado como un inhibidor de aromatasa de tercera generación con propiedades de unión irreversible, haciéndolo altamente efectivo para el control del estrógeno.'
-    },
-    sideEffects: {
-      en: 'Joint pain, decreased bone density, mood changes, hot flashes, fatigue, decreased libido, possible cholesterol changes.',
-      es: 'Dolor articular, densidad ósea disminuida, cambios de humor, sofocos, fatiga, libido disminuida, posibles cambios de colesterol.'
-    },
-    effectsOnWomen: {
-      en: 'NOT RECOMMENDED for women of reproductive age. May be used in postmenopausal women under medical supervision for specific conditions.',
-      es: 'NO RECOMENDADO para mujeres en edad reproductiva. Puede usarse en mujeres postmenopáusicas bajo supervisión médica para condiciones específicas.'
-    },
-    howItWorks: {
-      en: 'Irreversibly binds to and inactivates aromatase enzyme, preventing conversion of androgens to estrogens.',
-      es: 'Se une irreversiblemente e inactiva la enzima aromatasa, previniendo la conversión de andrógenos a estrógenos.'
-    },
-    safetyInformation: {
-      en: 'Regular blood work essential. Monitor estrogen levels and bone health. Use lowest effective dose.',
-      es: 'Análisis de sangre regular esencial. Monitorear niveles de estrógeno y salud ósea. Usar la dosis efectiva más baja.'
-    },
-    cycleInformation: {
-      en: 'Typical use: 12.5-25mg daily during cycle. Adjust based on estrogen levels and side effects.',
-      es: 'Uso típico: 12.5-25mg diario durante el ciclo. Ajustar según niveles de estrógeno y efectos secundarios.'
-    },
-    whatToExpect: {
-      en: 'Users report effective estrogen control within 1-2 weeks, reduced water retention, and prevention of estrogen-related side effects.',
-      es: 'Los usuarios reportan control efectivo del estrógeno en 1-2 semanas, retención de agua reducida y prevención de efectos secundarios relacionados con el estrógeno.'
-    },
-    performanceRatings: {
-      muscleGain: 1,
-      strength: 1,
-      fatLoss: 2,
-      sideEffects: 3,
-      retention: 4
-    }
+    id: "anavar",
+    name: "Anavar",
+    price: 40,
+    images: ["/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png"],
+    description: "Well-researched compound known for lean muscle preservation.",
+    sideEffects: "Generally mild side effect profile. May cause minor liver enzyme elevation and cholesterol changes.",
+    dosage: "Typical range: 20-50mg daily. Regular health monitoring recommended.",
+    categories: ["anabolic", "cutting"]
+  },
+  {
+    id: "winstrol",
+    name: "Winstrol",
+    price: 38,
+    images: ["/lovable-uploads/561ffbe1-f890-47ce-a601-f590a96593e0.png"],
+    description: "Popular for cutting phases and athletic performance enhancement.",
+    sideEffects: "May cause joint dryness, cholesterol changes, and liver stress. Hair loss possible in predisposed individuals.",
+    dosage: "Typical range: 25-50mg daily. Joint support supplements recommended.",
+    categories: ["anabolic", "cutting"]
+  },
+  {
+    id: "dianabol",
+    name: "Dianabol",
+    price: 32,
+    images: ["/lovable-uploads/5d2b3f9c-eeb8-40cc-b547-0902cd012226.png"],
+    description: "Classic compound for rapid muscle and strength gains.",
+    sideEffects: "May cause water retention, elevated blood pressure, and liver stress. Estrogenic effects possible.",
+    dosage: "Typical range: 20-40mg daily. Liver support and cycle management essential.",
+    categories: ["anabolic", "bulking"]
+  },
+  {
+    id: "trenbolone",
+    name: "Trenbolone",
+    price: 45,
+    images: ["/lovable-uploads/6c2dcc9f-c88a-4d00-9ab5-1572b72da530.png"],
+    description: "Highly potent compound for experienced users seeking dramatic results.",
+    sideEffects: "Significant side effects possible including night sweats, mood changes, and cardiovascular stress. Advanced users only.",
+    dosage: "Typical range: 200-400mg weekly. Extensive experience and health monitoring required.",
+    categories: ["anabolic", "advanced"]
+  },
+  {
+    id: "testosterone",
+    name: "Testosterone Enanthate",
+    price: 28,
+    images: ["/lovable-uploads/71047aaf-1d52-4f01-bdb1-f051dac4a70a.png"],
+    description: "Base compound for hormone replacement and performance enhancement.",
+    sideEffects: "May cause acne, hair loss in predisposed individuals, and estrogenic effects. Regular monitoring advised.",
+    dosage: "Typical range: 250-500mg weekly. Bloodwork and cycle support recommended.",
+    categories: ["anabolic", "testosterone"]
+  },
+  {
+    id: "deca",
+    name: "Deca Durabolin",
+    price: 42,
+    images: ["/lovable-uploads/74e5658e-425e-497b-aef1-34644cbb54f1.png"],
+    description: "Long-acting compound known for joint health benefits and steady gains.",
+    sideEffects: "May cause erectile dysfunction (deca dick), prolactin elevation, and slow recovery. Long detection time.",
+    dosage: "Typical range: 300-600mg weekly. Often combined with testosterone.",
+    categories: ["anabolic", "bulking"]
+  },
+  {
+    id: "primobolan",
+    name: "Primobolan",
+    price: 50,
+    images: ["/lovable-uploads/7698b7f4-aef8-4e6a-a8da-ad22e5909715.png"],
+    description: "Mild compound favored for its safety profile and quality gains.",
+    sideEffects: "Generally mild side effect profile. May cause minor testosterone suppression and cost considerations.",
+    dosage: "Typical range: 400-800mg weekly. Longer cycles often preferred.",
+    categories: ["anabolic", "cutting"]
+  },
+  {
+    id: "equipoise",
+    name: "Equipoise",
+    price: 36,
+    images: ["/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png"],
+    description: "Steady gains compound with appetite enhancement properties.",
+    sideEffects: "May cause increased red blood cell count, anxiety in some users, and long detection time.",
+    dosage: "Typical range: 400-800mg weekly. Blood donation may be necessary.",
+    categories: ["anabolic", "lean-bulking"]
+  },
+  {
+    id: "masteron",
+    name: "Masteron",
+    price: 44,
+    images: ["/lovable-uploads/7eaf0b79-d90d-4ac9-a577-b5a57d1272f1.png"],
+    description: "Anti-estrogenic compound popular for cutting and muscle hardening.",
+    sideEffects: "May cause hair loss in predisposed individuals and androgenic effects. Generally well-tolerated.",
+    dosage: "Typical range: 300-600mg weekly. Often used in cutting phases.",
+    categories: ["anabolic", "cutting"]
+  },
+  {
+    id: "anadrol",
+    name: "Anadrol",
+    price: 34,
+    images: ["/lovable-uploads/81518186-f1a6-4b15-a733-1307a6f1f474.png"],
+    description: "Powerful oral compound for rapid mass and strength gains.",
+    sideEffects: "May cause significant water retention, liver stress, and blood pressure elevation. Short cycles recommended.",
+    dosage: "Typical range: 25-100mg daily. Liver support essential.",
+    categories: ["anabolic", "bulking"]
+  },
+  {
+    id: "turinabol",
+    name: "Turinabol",
+    price: 33,
+    images: ["/lovable-uploads/8453db63-04b8-4354-ad42-023eb4ca2627.png"],
+    description: "Oral compound known for clean, quality muscle gains.",
+    sideEffects: "May cause liver stress and cholesterol changes. Generally milder than other orals.",
+    dosage: "Typical range: 30-60mg daily. Moderate cycles recommended.",
+    categories: ["anabolic", "lean-gains"]
+  },
+  {
+    id: "halotestin",
+    name: "Halotestin",
+    price: 48,
+    images: ["/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png"],
+    description: "Extremely potent compound for strength and aggression enhancement.",
+    sideEffects: "Highly hepatotoxic and may cause significant mood changes. Very short cycles only.",
+    dosage: "Typical range: 10-40mg daily. Extreme caution and experience required.",
+    categories: ["anabolic", "strength"]
+  },
+  {
+    id: "clenbuterol",
+    name: "Clenbuterol",
+    price: 26,
+    images: ["/lovable-uploads/9ac178e7-36d1-4738-ac66-d1e3917e7ec5.png"],
+    description: "Beta-2 agonist used for fat loss and metabolic enhancement.",
+    sideEffects: "May cause jitters, increased heart rate, cramping, and sleep disruption. Cardiovascular monitoring advised.",
+    dosage: "Typical range: 20-120mcg daily in pyramid cycles. Start low and assess tolerance.",
+    categories: ["fat-loss", "cutting"]
+  },
+  {
+    id: "t3",
+    name: "T3 (Cytomel)",
+    price: 24,
+    images: ["/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png"],
+    description: "Thyroid hormone for metabolic enhancement and fat loss.",
+    sideEffects: "May cause thyroid suppression, heart palpitations, and muscle loss if overdosed. Careful dosing essential.",
+    dosage: "Typical range: 25-75mcg daily. Gradual increases and decreases recommended.",
+    categories: ["fat-loss", "thyroid"]
+  },
+  {
+    id: "hgh",
+    name: "Human Growth Hormone",
+    price: 80,
+    images: ["/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png"],
+    description: "Naturally occurring hormone for recovery, anti-aging, and body composition.",
+    sideEffects: "May cause water retention, joint pain, and carpal tunnel syndrome. Diabetes risk with long-term use.",
+    dosage: "Typical range: 2-6 IU daily. Start low and monitor blood glucose.",
+    categories: ["growth-hormone", "anti-aging"]
+  },
+  {
+    id: "insulin",
+    name: "Insulin",
+    price: 60,
+    images: ["/lovable-uploads/c13fb27e-2e08-4a90-a2a8-c8d6138e0c9a.png"],
+    description: "Powerful anabolic hormone for advanced users seeking maximum gains.",
+    sideEffects: "Potentially life-threatening hypoglycemia if misused. Requires extensive knowledge and glucose monitoring.",
+    dosage: "Highly individual. Expert guidance and glucose monitoring absolutely essential.",
+    categories: ["advanced", "anabolic"]
+  },
+  {
+    id: "igf1",
+    name: "IGF-1",
+    price: 70,
+    images: ["/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png"],
+    description: "Growth factor for muscle growth and recovery enhancement.",
+    sideEffects: "May cause hypoglycemia, organ growth concerns with long-term use, and injection site reactions.",
+    dosage: "Typical range: 50-150mcg daily post-workout. Advanced users only.",
+    categories: ["growth-hormone", "advanced"]
+  },
+  {
+    id: "peptides",
+    name: "Peptide Stack",
+    price: 55,
+    images: ["/lovable-uploads/dcea32d8-541f-45c9-b1bf-f74a0c97c0bb.png"],
+    description: "Combination of research peptides for various enhancement goals.",
+    sideEffects: "Variable depending on specific peptides. May include injection site reactions and individual sensitivities.",
+    dosage: "Highly variable based on specific peptides included. Research each component thoroughly.",
+    categories: ["peptides", "research"]
   }
 ];
