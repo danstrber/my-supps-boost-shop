@@ -8,7 +8,7 @@ import ShippingForm from '@/components/payment/ShippingForm';
 import OrderSummary from '@/components/payment/OrderSummary';
 import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
 import PaymentTimer from '@/components/payment/PaymentTimer';
-import { bitcoinVerification } from '@/lib/bitcoinVerification';
+import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
 import { useOrderHistory } from '@/hooks/useOrderHistory';
 
 interface CartItem {
@@ -32,6 +32,7 @@ interface ShippingData {
   city: string;
   state: string;
   postalCode: string;
+  zipCode: string;
   country: string;
   phone: string;
 }
@@ -69,6 +70,7 @@ const PaymentModal = ({
     city: '',
     state: '',
     postalCode: '',
+    zipCode: '',
     country: '',
     phone: '',
   });
@@ -255,10 +257,10 @@ Phone: ${orderData.phone || 'N/A'}
       console.log('🔍 Starting Bitcoin transaction verification...');
       
       try {
-        const verificationResult = await bitcoinVerification.verifyTransaction(
+        const verificationResult = await BitcoinVerificationService.verifyTransaction(
           transactionId,
-          total,
-          BITCOIN_ADDRESS
+          BITCOIN_ADDRESS,
+          total
         );
         
         console.log('🔍 Verification result:', verificationResult);
@@ -314,7 +316,7 @@ We'll contact you there for order updates and support!`
         } else {
           toast({
             title: "Payment Verification Failed",
-            description: verificationResult.error || "Could not verify your Bitcoin transaction. Please check the transaction ID and try again.",
+            description: verificationResult.errorMessage || "Could not verify your Bitcoin transaction. Please check the transaction ID and try again.",
             variant: "destructive",
           });
         }
