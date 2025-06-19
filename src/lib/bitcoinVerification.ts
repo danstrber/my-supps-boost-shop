@@ -57,11 +57,25 @@ interface BlockchainInfoResponse {
   }>;
 }
 
+export enum VerificationError {
+  INVALID_FORMAT = 'invalid_format',
+  TX_NOT_FOUND = 'tx_not_found',
+  WRONG_ADDRESS = 'wrong_address',
+  WRONG_AMOUNT = 'wrong_amount',
+  INSUFFICIENT_CONFIRMATIONS = 'insufficient_confirmations',
+  NETWORK_ERROR = 'network_error',
+  TIMEOUT_ERROR = 'timeout_error',
+  API_ERROR = 'api_error'
+}
+
 export class BitcoinVerificationService {
   private static readonly BLOCKCHAIN_INFO_API = 'https://blockchain.info/rawtx/';
   private static readonly BLOCKSTREAM_API = 'https://blockstream.info/api/tx/';
   private static readonly MIN_CONFIRMATIONS = 1;
   private static readonly TOLERANCE_SATOSHIS = 1000; // 0.00001 BTC tolerance
+  private static readonly API_TIMEOUT = 30000; // 30 seconds
+  private static readonly MAX_RETRIES = 3;
+  private static readonly RETRY_DELAY = 2000; // 2 seconds
 
   static async verifyTransaction(
     txHash: string,
@@ -71,17 +85,18 @@ export class BitcoinVerificationService {
     isValid: boolean;
     confirmations: number;
     actualAmount: number;
-    error?: string;
+    error?: VerificationError;
+    errorMessage?: string;
     details: any;
   }> {
-    console.log('🔍 Verifying Bitcoin transaction:', {
+    console.log('🔍 Starting Bitcoin transaction verification:', {
       txHash,
       expectedAddress,
       expectedAmountBTC
     });
 
     try {
-      // Clean up the transaction hash (remove any spaces/newlines)
+      // Clean up the transaction hash
       const cleanTxHash = txHash.trim().toLowerCase();
       
       if (!this.isValidTxHash(cleanTxHash)) {
@@ -89,41 +104,31 @@ export class BitcoinVerificationService {
           isValid: false,
           confirmations: 0,
           actualAmount: 0,
-          error: 'Invalid transaction hash format',
+          error: VerificationError.INVALID_FORMAT,
+          errorMessage: 'Invalid transaction ID format. Bitcoin transaction IDs must be exactly 64 hexadecimal characters.',
           details: null
         };
       }
 
-      // Try multiple APIs for redundancy
-      let transactionData = null;
-      let apiUsed = '';
-
-      try {
-        console.log('📡 Fetching from Blockchain.info API...');
-        transactionData = await this.fetchFromBlockchainInfo(cleanTxHash);
-        apiUsed = 'blockchain.info';
-      } catch (error) {
-        console.log('❌ Blockchain.info failed, trying Blockstream...');
-        try {
-          transactionData = await this.fetchFromBlockstream(cleanTxHash);
-          apiUsed = 'blockstream.info';
-        } catch (error2) {
-          console.error('❌ Both APIs failed:', error, error2);
-          return {
-            isValid: false,
-            confirmations: 0,
-            actualAmount: 0,
-            error: 'Unable to fetch transaction data from any API',
-            details: { originalError: error.message }
-          };
-        }
+      // Try fetching with retry logic
+      const transactionData = await this.fetchTransactionWithRetry(cleanTxHash);
+      
+      if (!transactionData) {
+        return {
+          isValid: false,
+          confirmations: 0,
+          actualAmount: 0,
+          error: VerificationError.TX_NOT_FOUND,
+          errorMessage: 'Transaction not found on the blockchain. Please verify your transaction ID is correct.',
+          details: null
+        };
       }
 
-      console.log('✅ Transaction data received from', apiUsed, ':', transactionData);
+      console.log('✅ Transaction data retrieved:', transactionData);
 
-      // Verify the transaction
+      // Verify the transaction details
       const verification = this.verifyTransactionData(
-        transactionData,
+        transactionData.data,
         expectedAddress,
         expectedAmountBTC
       );
@@ -131,22 +136,83 @@ export class BitcoinVerificationService {
       return {
         ...verification,
         details: {
-          apiUsed,
-          transactionData,
-          timestamp: transactionData.time
+          apiUsed: transactionData.apiUsed,
+          transactionData: transactionData.data,
+          timestamp: transactionData.data.time
         }
       };
 
     } catch (error) {
       console.error('❌ Bitcoin verification error:', error);
+      
+      if (error.name === 'TimeoutError') {
+        return {
+          isValid: false,
+          confirmations: 0,
+          actualAmount: 0,
+          error: VerificationError.TIMEOUT_ERROR,
+          errorMessage: 'Verification timed out. Please try again in a few moments.',
+          details: null
+        };
+      }
+
       return {
         isValid: false,
         confirmations: 0,
         actualAmount: 0,
-        error: error.message,
-        details: null
+        error: VerificationError.NETWORK_ERROR,
+        errorMessage: 'Network error occurred during verification. Please check your internet connection and try again.',
+        details: { originalError: error.message }
       };
     }
+  }
+
+  private static async fetchTransactionWithRetry(txHash: string, attempt = 1): Promise<{ data: any; apiUsed: string } | null> {
+    const apis = [
+      { name: 'blockchain.info', fetcher: this.fetchFromBlockchainInfo.bind(this) },
+      { name: 'blockstream.info', fetcher: this.fetchFromBlockstream.bind(this) }
+    ];
+
+    for (const api of apis) {
+      try {
+        console.log(`📡 Attempt ${attempt}: Fetching from ${api.name}...`);
+        const data = await this.timeoutPromise(
+          api.fetcher(txHash),
+          this.API_TIMEOUT,
+          `${api.name} API timeout`
+        );
+        return { data, apiUsed: api.name };
+      } catch (error) {
+        console.log(`❌ ${api.name} failed:`, error.message);
+        continue;
+      }
+    }
+
+    // Retry if we haven't exceeded max retries
+    if (attempt < this.MAX_RETRIES) {
+      console.log(`🔄 Retrying in ${this.RETRY_DELAY}ms... (Attempt ${attempt + 1}/${this.MAX_RETRIES})`);
+      await this.delay(this.RETRY_DELAY * attempt); // Exponential backoff
+      return this.fetchTransactionWithRetry(txHash, attempt + 1);
+    }
+
+    return null;
+  }
+
+  private static async timeoutPromise<T>(promise: Promise<T>, timeout: number, errorMessage: string): Promise<T> {
+    return Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          const error = new Error(errorMessage);
+          error.name = 'TimeoutError';
+          reject(error);
+        }, timeout);
+      })
+    ]);
+  }
+
+  private static delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private static async fetchFromBlockchainInfo(txHash: string): Promise<any> {
@@ -157,6 +223,9 @@ export class BitcoinVerificationService {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Transaction not found');
+      }
       throw new Error(`Blockchain.info API error: ${response.status} ${response.statusText}`);
     }
 
@@ -171,6 +240,9 @@ export class BitcoinVerificationService {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Transaction not found');
+      }
       throw new Error(`Blockstream API error: ${response.status} ${response.statusText}`);
     }
 
@@ -198,7 +270,13 @@ export class BitcoinVerificationService {
     transaction: any,
     expectedAddress: string,
     expectedAmountBTC: number
-  ): { isValid: boolean; confirmations: number; actualAmount: number; error?: string } {
+  ): { 
+    isValid: boolean; 
+    confirmations: number; 
+    actualAmount: number; 
+    error?: VerificationError;
+    errorMessage?: string;
+  } {
     const expectedSatoshis = Math.round(expectedAmountBTC * 100000000);
     
     console.log('🔍 Verifying transaction details:', {
@@ -218,7 +296,8 @@ export class BitcoinVerificationService {
         isValid: false,
         confirmations: 0,
         actualAmount: 0,
-        error: `No payment found to address ${expectedAddress}`
+        error: VerificationError.WRONG_ADDRESS,
+        errorMessage: `No payment found to the expected address. Please ensure you sent Bitcoin to the correct address: ${expectedAddress}`
       };
     }
 
@@ -239,12 +318,23 @@ export class BitcoinVerificationService {
         isValid: false,
         confirmations: 0,
         actualAmount: actualAmountBTC,
-        error: `Payment amount mismatch. Expected: ${expectedAmountBTC} BTC, Received: ${actualAmountBTC} BTC`
+        error: VerificationError.WRONG_AMOUNT,
+        errorMessage: `Payment amount mismatch. Expected: ${expectedAmountBTC.toFixed(8)} BTC, but received: ${actualAmountBTC.toFixed(8)} BTC. Please send the exact amount.`
       };
     }
 
     // Calculate confirmations (simplified - in production you'd need current block height)
     const confirmations = transaction.block_height ? 1 : 0;
+
+    if (confirmations < this.MIN_CONFIRMATIONS) {
+      return {
+        isValid: false,
+        confirmations,
+        actualAmount: actualAmountBTC,
+        error: VerificationError.INSUFFICIENT_CONFIRMATIONS,
+        errorMessage: `Transaction needs ${this.MIN_CONFIRMATIONS} confirmation(s) but only has ${confirmations}. Please wait for the transaction to be confirmed on the blockchain.`
+      };
+    }
 
     return {
       isValid: true,
@@ -256,6 +346,29 @@ export class BitcoinVerificationService {
   private static isValidTxHash(hash: string): boolean {
     // Bitcoin transaction hashes are 64 character hex strings
     return /^[a-f0-9]{64}$/i.test(hash);
+  }
+
+  static getErrorMessage(error: VerificationError): string {
+    switch (error) {
+      case VerificationError.INVALID_FORMAT:
+        return 'Invalid transaction ID format';
+      case VerificationError.TX_NOT_FOUND:
+        return 'Transaction not found on blockchain';
+      case VerificationError.WRONG_ADDRESS:
+        return 'Payment sent to wrong address';
+      case VerificationError.WRONG_AMOUNT:
+        return 'Incorrect payment amount';
+      case VerificationError.INSUFFICIENT_CONFIRMATIONS:
+        return 'Waiting for blockchain confirmation';
+      case VerificationError.NETWORK_ERROR:
+        return 'Network connection error';
+      case VerificationError.TIMEOUT_ERROR:
+        return 'Verification timed out';
+      case VerificationError.API_ERROR:
+        return 'Blockchain API error';
+      default:
+        return 'Unknown verification error';
+    }
   }
 
   static formatBitcoinAmount(satoshis: number): string {
