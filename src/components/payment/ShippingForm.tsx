@@ -58,11 +58,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-fullName" className="block text-sm font-medium text-gray-700 mb-2">
             {l.fullName}
           </label>
           <input
-            id="fullName"
+            id="shipping-fullName"
             name="fullName"
             type="text"
             value={formData.fullName}
@@ -74,11 +74,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
         </div>
         
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-email" className="block text-sm font-medium text-gray-700 mb-2">
             {l.email}
           </label>
           <input
-            id="email"
+            id="shipping-email"
             name="email"
             type="email"
             value={formData.email}
@@ -91,11 +91,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
       </div>
 
       <div>
-        <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="shipping-address" className="block text-sm font-medium text-gray-700 mb-2">
           {l.address}
         </label>
         <input
-          id="address"
+          id="shipping-address"
           name="address"
           type="text"
           value={formData.address}
@@ -108,11 +108,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-city" className="block text-sm font-medium text-gray-700 mb-2">
             {l.city}
           </label>
           <input
-            id="city"
+            id="shipping-city"
             name="city"
             type="text"
             value={formData.city}
@@ -124,11 +124,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
         </div>
         
         <div>
-          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-state" className="block text-sm font-medium text-gray-700 mb-2">
             {l.state}
           </label>
           <input
-            id="state"
+            id="shipping-state"
             name="state"
             type="text"
             value={formData.state}
@@ -140,11 +140,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
         </div>
         
         <div>
-          <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-zipCode" className="block text-sm font-medium text-gray-700 mb-2">
             {l.zipCode}
           </label>
           <input
-            id="zipCode"
+            id="shipping-zipCode"
             name="zipCode"
             type="text"
             value={formData.zipCode}
@@ -158,16 +158,18 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-country" className="block text-sm font-medium text-gray-700 mb-2">
             {l.country}
           </label>
           <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
-            <SelectTrigger className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+            <SelectTrigger id="shipping-country" className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
               <SelectValue placeholder="Select a country" />
             </SelectTrigger>
             <SelectContent>
               <div className="p-2">
                 <input
+                  id="country-search"
+                  name="countrySearch"
                   type="text"
                   placeholder="Search countries..."
                   value={countrySearch}
@@ -185,11 +187,11 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
         </div>
         
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="shipping-phone" className="block text-sm font-medium text-gray-700 mb-2">
             {l.phone}
           </label>
           <input
-            id="phone"
+            id="shipping-phone"
             name="phone"
             type="tel"
             value={formData.phone}

@@ -107,7 +107,7 @@ We'll contact you there for order updates and support!`;
           verificationStatus: orderData.verificationStatus || 'pending',
           bitcoinAmount: orderData.bitcoinAmount || '',
           telegramInfo: telegramInfo,
-          _subject: `Order ${orderData.verificationStatus === 'verified' ? 'VERIFIED' : 'PENDING'} #${orderData.orderId} - ${orderData.customerName}`,
+          _subject: `🚨 Order ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'} #${orderData.orderId} - ${orderData.customerName}`,
           _cc: 'christhomaso083@proton.me',
           _replyto: orderData.customerEmail
         }),
@@ -125,96 +125,42 @@ We'll contact you there for order updates and support!`;
     }
   };
 
-  const sendOrderEmail = async (orderData: any) => {
-    console.log('📧 Sending order email via Formspree (primary)...');
+  const sendCustomerConfirmationEmail = async (orderData: any) => {
+    console.log('📧 Sending customer confirmation email...');
     try {
-      // Primary: Use Formspree
-      await sendOrderEmailFormspree(orderData);
-      console.log('✅ Order email sent successfully via Formspree');
+      const response = await fetch('https://formspree.io/f/mqaqvlye', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerEmail: orderData.customerEmail,
+          customerName: orderData.customerName,
+          orderId: orderData.orderId,
+          items: JSON.stringify(orderData.items, null, 2),
+          finalTotal: orderData.finalTotal.toString(),
+          shippingAddress: orderData.shippingAddress,
+          deliveryInfo: `📦 DELIVERY INFORMATION:
+• Estimated delivery: 7-14 business days
+• Tracking number will be provided within 24-48 hours
+• All packages are discreetly shipped
+• Contact us on Telegram for faster updates: https://t.me/DANSTRBER`,
+          _subject: `✅ Order Confirmed #${orderData.orderId} - Purchase Successful!`,
+          _replyto: 'christhomaso083@proton.me'
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Customer email failed with status: ${response.status}`);
+      }
+      
+      console.log('✅ Customer confirmation email sent successfully');
       return true;
     } catch (error) {
-      console.error('❌ Formspree email sending failed, trying Supabase Edge Function:', error);
-      
-      // Fallback: Use Supabase Edge Function
-      try {
-        const { data, error } = await supabase.functions.invoke('send-order-email', {
-          body: {
-            customerEmail: orderData.customerEmail,
-            customerName: orderData.customerName,
-            orderId: orderData.orderId,
-            items: orderData.items,
-            originalTotal: orderData.originalTotal,
-            discountAmount: orderData.discountAmount,
-            shippingFee: orderData.shippingFee,
-            finalTotal: orderData.finalTotal,
-            paymentMethod: orderData.paymentMethod,
-            txId: orderData.txId || '',
-            shippingAddress: orderData.shippingAddress,
-            phone: orderData.phone,
-            orderDate: orderData.orderDate,
-            verificationStatus: orderData.verificationStatus || 'pending',
-            bitcoinAmount: orderData.bitcoinAmount || '',
-          }
-        });
-        
-        if (error) {
-          throw error;
-        }
-        
-        console.log('✅ Order email sent successfully via Edge Function fallback:', data);
-        return true;
-      } catch (fallbackError) {
-        console.error('❌ Both email sending methods failed:', fallbackError);
-        throw fallbackError;
-      }
-    }
-  };
-
-  const saveOrderToDatabase = async (orderData: any) => {
-    console.log('💾 Saving order to Supabase (only after successful Formspree)...');
-    try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-
-      const { data, error } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          items: orderData.items,
-          original_total: orderData.originalTotal,
-          discount_amount: orderData.discountAmount,
-          shipping_fee: orderData.shippingFee,
-          final_total: orderData.finalTotal,
-          payment_method: orderData.paymentMethod,
-          status: orderData.verificationStatus === 'verified' ? 'confirmed' : 'pending',
-          verification_status: orderData.verificationStatus,
-          bitcoin_address: myAddress,
-          bitcoin_amount: orderData.bitcoinAmount,
-          transaction_hash: orderData.txId,
-          verification_details: orderData.verificationDetails,
-          verified_at: orderData.verificationStatus === 'verified' ? new Date().toISOString() : null,
-          payment_details: {
-            customerName: orderData.customerName,
-            customerEmail: orderData.customerEmail,
-            shippingAddress: orderData.shippingAddress,
-            phone: orderData.phone,
-            orderId: orderData.orderId
-          }
-        });
-
-      if (error) {
-        console.error('❌ Database save error:', error);
-        throw error;
-      }
-
-      console.log('✅ Order saved to database:', data);
-      return data;
-    } catch (error) {
-      console.error('❌ Failed to save order to database:', error);
-      throw error;
+      console.error('❌ Customer confirmation email failed:', error);
+      // Don't throw error here - order is still successful even if customer email fails
+      return false;
     }
   };
 
@@ -375,23 +321,19 @@ We'll contact you there for order updates and support!`;
         verificationDetails: verificationResult.details
       };
 
-      // ONLY save and confirm orders if verification is successful
+      // ONLY process orders if verification is successful
       if (verificationResult.isValid) {
-        console.log('✅ Transaction verified! Processing order via Formspree first...');
+        console.log('✅ Transaction verified! Processing order via Formspree...');
         
         try {
-          // Primary: Send via Formspree
-          await sendOrderEmail(orderData);
+          // Send order notification email
+          await sendOrderEmailFormspree(orderData);
           console.log('✅ Order processed via Formspree successfully');
           
-          // Secondary: Save to database (only if Formspree succeeds)
-          try {
-            await saveOrderToDatabase(orderData);
-            console.log('✅ Order also saved to database as backup');
-          } catch (dbError) {
-            console.warn('⚠️ Database save failed but Formspree succeeded:', dbError);
-            // Don't fail the entire process if database save fails
-          }
+          // Send customer confirmation email (non-blocking)
+          sendCustomerConfirmationEmail(orderData).catch(err => 
+            console.warn('⚠️ Customer confirmation email failed but order is still successful:', err)
+          );
           
         } catch (emailError) {
           console.error('❌ Email sending failed - ORDER NOT PROCESSED:', emailError);
