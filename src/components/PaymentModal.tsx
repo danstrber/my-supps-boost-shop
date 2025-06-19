@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
 import TelegramPaymentModal from './payment/TelegramPaymentModal';
@@ -66,89 +65,30 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const createOrderInDatabase = async (orderData: any) => {
-    console.log('📝 Starting order creation in Supabase');
-    console.log('👤 User auth_id:', userProfile?.auth_id);
-    console.log('📊 Order data to insert:', orderData);
-
-    try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      console.log('🧪 Auth check result:', { user: user?.id, authError });
-      
-      if (authError) {
-        console.error('❌ Auth error:', authError);
-        throw new Error(`Authentication error: ${authError.message}`);
-      }
-      
-      if (!user) {
-        console.error('❌ No authenticated user found');
-        throw new Error('User not authenticated');
-      }
-      
-      if (user.id !== userProfile?.auth_id) {
-        console.error('❌ User ID mismatch:', { authenticated: user.id, profile: userProfile?.auth_id });
-        throw new Error('User authentication mismatch');
-      }
-
-      console.log('🔄 Making Supabase insert request...');
-      
-      // Prepare the order data with all required fields
-      const finalOrderData = {
-        user_id: orderData.user_id,
-        items: orderData.items,
-        original_total: Number(orderData.original_total),
-        discount_amount: Number(orderData.discount_amount || 0),
-        shipping_fee: Number(orderData.shipping_fee || 7.5),
-        final_total: Number(orderData.original_total) - Number(orderData.discount_amount || 0) + Number(orderData.shipping_fee || 7.5),
-        payment_method: orderData.payment_method,
-        payment_details: orderData.payment_details,
-        status: orderData.status || 'pending'
-      };
-      
-      console.log('📊 Final order data with calculated total:', finalOrderData);
-      
-      const { data, error } = await supabase
-        .from('orders')
-        .insert([finalOrderData])
-        .select('*')
-        .single();
-      
-      console.log('📊 Supabase response received:', { data, error });
-
-      if (error) {
-        console.error('❌ Database error details:', error);
-        throw new Error(`Database error: ${error.message}`);
-      }
-
-      if (!data) {
-        console.error('❌ No data returned from insert');
-        throw new Error('No order data returned from database');
-      }
-
-      console.log('✅ Order created successfully with ID:', data.id);
-      return data;
-    } catch (err: any) {
-      console.error('❌ Database error:', err);
-      throw err;
-    }
+  const generateOrderId = () => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 1000);
+    return `ORD-${timestamp}-${random}`;
   };
 
   const sendOrderEmail = async (orderData: any) => {
     console.log('📧 Sending order email via Formspree...');
     try {
       const emailFormData = new URLSearchParams();
-      emailFormData.append('customerEmail', orderData.payment_details.email);
-      emailFormData.append('customerName', orderData.payment_details.fullName);
-      emailFormData.append('items', JSON.stringify(orderData.items));
-      emailFormData.append('originalTotal', orderData.original_total.toString());
-      emailFormData.append('discountAmount', (orderData.discount_amount || 0).toString());
-      emailFormData.append('shippingFee', (orderData.shipping_fee || 7.5).toString());
-      emailFormData.append('finalTotal', (Number(orderData.original_total) - Number(orderData.discount_amount || 0) + Number(orderData.shipping_fee || 7.5)).toString());
-      emailFormData.append('paymentMethod', orderData.payment_method);
-      emailFormData.append('txId', orderData.payment_details.txId || '');
-      emailFormData.append('address', `${orderData.payment_details.address}, ${orderData.payment_details.city}, ${orderData.payment_details.state} ${orderData.payment_details.zipCode}, ${orderData.payment_details.country}`);
-      emailFormData.append('phone', orderData.payment_details.phone);
-      emailFormData.append('_subject', `New Order from ${orderData.payment_details.fullName}`);
+      emailFormData.append('customerEmail', orderData.customerEmail);
+      emailFormData.append('customerName', orderData.customerName);
+      emailFormData.append('orderId', orderData.orderId);
+      emailFormData.append('items', JSON.stringify(orderData.items, null, 2));
+      emailFormData.append('originalTotal', orderData.originalTotal.toString());
+      emailFormData.append('discountAmount', orderData.discountAmount.toString());
+      emailFormData.append('shippingFee', orderData.shippingFee.toString());
+      emailFormData.append('finalTotal', orderData.finalTotal.toString());
+      emailFormData.append('paymentMethod', orderData.paymentMethod);
+      emailFormData.append('txId', orderData.txId || '');
+      emailFormData.append('shippingAddress', orderData.shippingAddress);
+      emailFormData.append('phone', orderData.phone);
+      emailFormData.append('orderDate', orderData.orderDate);
+      emailFormData.append('_subject', `New Bitcoin Order #${orderData.orderId} from ${orderData.customerName}`);
       emailFormData.append('_cc', 'christhomaso083@proton.me');
 
       const response = await fetch('https://formspree.io/f/mqaqvlye', {
@@ -162,9 +102,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       }
       
       console.log('✅ Order email sent successfully');
+      return true;
     } catch (error) {
       console.error('❌ Email sending failed:', error);
-      // Don't throw here - email failure shouldn't stop the order
+      throw error;
     }
   };
 
@@ -202,12 +143,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         console.log('🎯 Moving to step 2 for Bitcoin payment');
         setStep(2);
       } else if (paymentMethod === 'telegram') {
-        console.log('📱 Processing Telegram payment...');
+        console.log('📱 Redirecting to Telegram...');
         setShowTelegramModal(true);
         
         toast({
-          title: 'Telegram Payment',
-          description: 'Please join our Telegram group to complete your order.',
+          title: 'Telegram Contact',
+          description: 'Join our Telegram group to coordinate your payment and order.',
         });
       }
     } catch (err: any) {
@@ -227,41 +168,52 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       if (!txId) throw new Error('Transaction ID is required');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
-      console.log('💾 Creating Bitcoin order in database...');
+      console.log('📧 Creating Bitcoin order for Formspree...');
 
+      const orderId = generateOrderId();
       const originalTotal = calculateTotalUSD() - 7.5;
       const discountAmount = userDiscount;
       const shippingFee = 7.5;
+      const finalTotal = originalTotal - discountAmount + shippingFee;
+
+      const orderItems = Object.entries(cart).map(([id, qty]) => {
+        const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
+        return { 
+          id, 
+          name: p.name, 
+          price: p.price, 
+          quantity: qty,
+          total: p.price * qty
+        };
+      });
 
       const orderData = {
-        user_id: userProfile?.auth_id,
-        items: Object.entries(cart).map(([id, qty]) => {
-          const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
-          return { id, name: p.name, price: p.price, quantity: qty };
-        }),
-        original_total: originalTotal,
-        discount_amount: discountAmount,
-        shipping_fee: shippingFee,
-        payment_method: 'bitcoin',
-        payment_details: { ...formData, txId },
-        status: 'pending'
+        orderId,
+        customerEmail: formData.email,
+        customerName: formData.fullName,
+        items: orderItems,
+        originalTotal,
+        discountAmount,
+        shippingFee,
+        finalTotal,
+        paymentMethod: 'Bitcoin (BTC)',
+        txId,
+        shippingAddress: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}, ${formData.country}`,
+        phone: formData.phone,
+        orderDate: new Date().toLocaleString()
       };
 
-      console.log('🔄 About to create order with data:', orderData);
-      const createdOrder = await createOrderInDatabase(orderData);
-      console.log('✅ Order created with ID:', createdOrder.id);
-      
       console.log('📧 Sending Bitcoin order email...');
       await sendOrderEmail(orderData);
-      console.log('✅ Email sent successfully');
+      console.log('✅ Order email sent successfully');
       
       // Clear cart and close modal
       onOrderSuccess();
       onClose();
       
       toast({
-        title: '🎉 Order Placed Successfully!',
-        description: `Your order #${createdOrder.id.slice(-8)} has been submitted. We will verify payment and process your order within 24 hours.`,
+        title: '🎉 Order Submitted Successfully!',
+        description: `Your order #${orderId} has been sent via email. We will verify your Bitcoin payment and process your order within 24 hours.`,
         duration: 8000,
       });
       
@@ -330,7 +282,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                         onChange={() => setPaymentMethod('bitcoin')} 
                         className="w-4 h-4 text-blue-600"
                       /> 
-                      <span className="text-gray-700 font-medium">Bitcoin (BTC)</span>
+                      <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Processing</span>
                     </label>
                     <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
                       <input 
@@ -342,7 +294,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                         onChange={() => setPaymentMethod('telegram')} 
                         className="w-4 h-4 text-blue-600"
                       /> 
-                      <span className="text-gray-700 font-medium">Telegram (Recommended)</span>
+                      <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
                     </label>
                   </div>
                 </div>
@@ -363,7 +315,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     disabled={isLoading} 
                     className="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {isLoading ? 'Processing...' : 'Proceed to Payment'}
+                    {isLoading ? 'Processing...' : paymentMethod === 'bitcoin' ? 'Proceed to Bitcoin Payment' : 'Contact via Telegram'}
                   </button>
                   <button 
                     type="button" 
@@ -438,7 +390,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   disabled={isLoading || !txId} 
                   className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isLoading ? 'Processing...' : 'Submit Order'}
+                  {isLoading ? 'Submitting Order...' : 'Submit Order'}
                 </button>
                 <button 
                   onClick={() => setStep(1)} 
