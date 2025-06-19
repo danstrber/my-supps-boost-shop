@@ -5,7 +5,6 @@ import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
 import TelegramPaymentModal from './payment/TelegramPaymentModal';
 import ShippingForm from './payment/ShippingForm';
-import BitcoinTutorial from './payment/BitcoinTutorial';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -92,26 +91,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       console.log('🔄 Making Supabase insert request...');
       
-      // Calculate final_total
-      const finalTotal = orderData.original_total - orderData.discount_amount + orderData.shipping_fee;
-      
-      const insertData = {
-        user_id: orderData.user_id,
-        items: orderData.items,
-        original_total: orderData.original_total,
-        discount_amount: orderData.discount_amount,
-        shipping_fee: orderData.shipping_fee,
-        final_total: finalTotal,
-        payment_method: orderData.payment_method,
-        payment_details: orderData.payment_details,
-        status: orderData.status || 'pending'
-      };
-      
-      console.log('📊 Final insert data:', insertData);
-      
       const { data, error } = await supabase
         .from('orders')
-        .insert([insertData])
+        .insert([orderData])
         .select('*')
         .single();
       
@@ -246,7 +228,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         status: 'pending'
       };
 
-      console.log('🔄 About to create order with data:', orderData);
       const createdOrder = await createOrderInDatabase(orderData);
       console.log('✅ Order created with ID:', createdOrder.id);
       
@@ -254,17 +235,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       await sendOrderEmail(orderData);
       console.log('✅ Email sent successfully');
       
-      // Clear cart and show success
       onOrderSuccess();
       onClose();
       
       toast({
-        title: 'Order Placed Successfully!',
-        description: `Your order #${createdOrder.id.slice(-8)} has been submitted. We will verify payment and process your order within 24 hours.`,
-        duration: 10000,
+        title: 'Order Placed!',
+        description: `Your order #${createdOrder.id.slice(-8)} has been submitted successfully. We will verify payment and process your order.`,
       });
-      
-      console.log('🎉 Order process completed successfully');
       
     } catch (err: any) {
       console.error('❌ Error in handleConfirm:', err);
@@ -346,11 +323,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     </label>
                   </div>
                 </div>
-
-                {/* Bitcoin Tutorial */}
-                {paymentMethod === 'bitcoin' && (
-                  <BitcoinTutorial language="en" />
-                )}
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4">

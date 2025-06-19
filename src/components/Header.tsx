@@ -1,107 +1,199 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, User, Menu, Globe } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ShoppingCart, User, LogOut, MessageCircle, Home, UserCircle, Menu, X } from 'lucide-react';
+import CoachingModal from './CoachingModal';
 
 interface HeaderProps {
-  onAuthAction: (action: 'login' | 'signup') => void;
-  onCartClick: () => void;
-  onMenuClick: () => void;
-  cartItemCount: number;
   language: 'en' | 'es';
   onLanguageChange: (language: 'en' | 'es') => void;
+  cartItemCount: number;
+  isAuthenticated: boolean;
+  onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
+  onCartOpen: () => void;
+  onMenuToggle: () => void;
+  currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account';
+  onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
+  sidebarOpen?: boolean;
 }
 
-const Header = ({ 
-  onAuthAction, 
-  onCartClick, 
-  onMenuClick, 
-  cartItemCount, 
-  language, 
-  onLanguageChange 
+const Header = ({
+  language,
+  onLanguageChange,
+  cartItemCount,
+  isAuthenticated,
+  onAuthAction,
+  onCartOpen,
+  onMenuToggle,
+  currentPage,
+  onPageChange,
+  sidebarOpen = false
 }: HeaderProps) => {
-  const { userProfile, handleAuthAction } = useAuth();
+  const [coachingModalOpen, setCoachingModalOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <button 
-              onClick={onMenuClick}
-              className="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
-              aria-label="Open menu"
+    <>
+      <header className="fixed top-0 w-full bg-white shadow-lg z-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Hamburger Menu */}
+            <div 
+              className="fixed top-4 left-4 w-8 h-6 cursor-pointer z-[1001] flex flex-col justify-center items-center"
+              onClick={onMenuToggle}
+              data-hamburger
             >
-              <Menu className="h-6 w-6" />
-            </button>
-            <div className="ml-4 md:ml-0">
-              <h1 className="text-2xl font-bold text-gray-900">SARMs Store</h1>
+              {sidebarOpen ? (
+                <X className="h-6 w-6 text-gray-800" />
+              ) : (
+                <>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300"></div>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300 mt-1"></div>
+                  <div className="w-full h-1 bg-gray-800 rounded transition-all duration-300 mt-1"></div>
+                </>
+              )}
+            </div>
+
+            {/* Logo with new image */}
+            <div 
+              className="flex items-center cursor-pointer ml-16" 
+              onClick={() => onPageChange('home')}
+            >
+              <img 
+                src="/lovable-uploads/7eaf0b79-d90d-4ac9-a577-b5a57d1272f1.png" 
+                alt="MySupps Logo" 
+                className="h-8 md:h-10 w-auto"
+              />
+            </div>
+
+            {/* Right side - responsive layout */}
+            <div className="flex items-center space-x-1 md:space-x-2">
+              {/* Premium Coaching Button - hidden on mobile */}
+              <Button
+                onClick={() => setCoachingModalOpen(true)}
+                className="hidden sm:flex bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-bold px-3 md:px-6 py-2 md:py-3 rounded-lg shadow-lg border-2 border-orange-400 transform hover:scale-105 transition-all duration-200 text-xs md:text-base"
+              >
+                <MessageCircle className="h-4 w-4 md:h-5 md:w-5 mr-1 md:mr-2" />
+                <span className="hidden md:inline">🏆 PREMIUM COACHING</span>
+                <span className="md:hidden">🏆 COACH</span>
+              </Button>
+
+              {/* Language Selector */}
+              <Select value={language} onValueChange={onLanguageChange}>
+                <SelectTrigger className="w-14 md:w-20 border border-gray-300 rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">EN</SelectItem>
+                  <SelectItem value="es">ES</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Auth Buttons */}
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-1">
+                  <Button
+                    variant="outline"
+                    onClick={() => onPageChange('account')}
+                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-2 md:px-3 py-2"
+                  >
+                    <UserCircle className="h-4 w-4 md:mr-1" />
+                    <span className="hidden lg:inline">{language === 'en' ? 'Account' : 'Cuenta'}</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => onAuthAction('logout')}
+                    className="hidden md:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-2 md:px-3 py-2"
+                  >
+                    <LogOut className="h-4 w-4 md:mr-1" />
+                    <span className="hidden lg:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex space-x-1">
+                  <Button
+                    variant="outline"
+                    onClick={() => onAuthAction('login')}
+                    className="border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg px-2 md:px-3 py-2"
+                  >
+                    <User className="h-4 w-4 md:mr-1" />
+                    <span className="hidden md:inline">{language === 'en' ? 'Sign In' : 'Iniciar'}</span>
+                  </Button>
+                  <Button
+                    onClick={() => onAuthAction('signup')}
+                    className="bg-green-600 hover:bg-green-700 text-white border border-green-600 rounded-lg px-2 md:px-3 py-2 font-medium"
+                  >
+                    <span className="hidden sm:inline">{language === 'en' ? 'Sign Up' : 'Registro'}</span>
+                    <span className="sm:hidden">{language === 'en' ? 'Join' : 'Unirse'}</span>
+                  </Button>
+                </div>
+              )}
+
+              {/* Cart Button */}
+              <Button
+                variant="outline"
+                onClick={onCartOpen}
+                className="relative border border-gray-300 hover:border-green-500 hover:text-green-600 hover:bg-green-50 rounded-lg p-2"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Button>
             </div>
           </div>
+        </div>
 
-          {/* Right side buttons */}
-          <div className="flex items-center space-x-4">
-            {/* Language Toggle */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onLanguageChange(language === 'en' ? 'es' : 'en')}
-              className="flex items-center space-x-2"
-            >
-              <Globe className="h-4 w-4" />
-              <span className="text-xl">
-                {language === 'en' ? '🇺🇸' : '🇪🇸'}
-              </span>
-              <span className="text-sm font-medium">
-                {language === 'en' ? 'English' : 'Español'}
-              </span>
-            </Button>
-
-            {/* Cart */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onCartClick}
-              className="relative"
-            >
-              <ShoppingCart className="h-4 w-4" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartItemCount}
-                </span>
-              )}
-            </Button>
-
-            {/* Auth */}
-            {userProfile ? (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700 hidden sm:inline">
-                  {userProfile.name}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleAuthAction('logout')}
-                >
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <Button
-                variant="outline" 
-                size="sm"
-                onClick={() => onAuthAction('login')}
+        {/* GREEN SECTION */}
+        <div className="bg-green-600 text-white py-1 md:py-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-center items-center space-x-3 md:space-x-12 text-xs md:text-base font-medium overflow-x-auto">
+              <button 
+                onClick={() => onPageChange('home')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
               >
-                <User className="h-4 w-4 mr-2" />
-                Sign In
-              </Button>
-            )}
+                <span>🏠</span>
+                <span>{language === 'en' ? 'HOME' : 'INICIO'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('labtesting')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>🔬</span>
+                <span>{language === 'en' ? 'VERIFICATION' : 'VERIFICACIÓN'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('delivery')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>🚚</span>
+                <span>{language === 'en' ? 'SHIPPING' : 'ENVÍO'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('payment')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>💳</span>
+                <span>{language === 'en' ? 'CRYPTO' : 'CRIPTO'}</span>
+              </button>
+              <button 
+                onClick={() => onPageChange('contact')}
+                className="flex items-center space-x-1 md:space-x-2 hover:bg-green-700 px-2 md:px-3 py-1 rounded transition-colors whitespace-nowrap"
+              >
+                <span>📞</span>
+                <span>{language === 'en' ? 'TELEGRAM' : 'TELEGRAM'}</span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      <CoachingModal 
+        isOpen={coachingModalOpen} 
+        onClose={() => setCoachingModalOpen(false)} 
+      />
+    </>
   );
 };
 
