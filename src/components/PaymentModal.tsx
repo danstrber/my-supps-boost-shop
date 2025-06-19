@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -68,7 +67,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const createOrderInDatabase = async (orderData: any) => {
     console.log('📝 Starting order creation in Supabase');
-    console.log('👤 User auth_id:', userProfile?.auth_id);
     console.log('📊 Order data to insert:', orderData);
 
     try {
@@ -84,17 +82,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         console.error('❌ No authenticated user found');
         throw new Error('User not authenticated');
       }
-      
-      if (user.id !== userProfile?.auth_id) {
-        console.error('❌ User ID mismatch:', { authenticated: user.id, profile: userProfile?.auth_id });
-        throw new Error('User authentication mismatch');
-      }
 
       console.log('🔄 Making Supabase insert request...');
       
-      // Prepare the order data with all required fields
+      // Prepare the order data with all required fields, using auth.uid() directly
       const finalOrderData = {
-        user_id: orderData.user_id,
+        user_id: user.id, // Use auth.uid() directly
         items: orderData.items,
         original_total: Number(orderData.original_total),
         discount_amount: Number(orderData.discount_amount || 0),
@@ -233,8 +226,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       const discountAmount = userDiscount;
       const shippingFee = 7.5;
 
+      // Get current user for user_id
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
       const orderData = {
-        user_id: userProfile?.auth_id,
+        user_id: user.id, // Use auth.uid() directly
         items: Object.entries(cart).map(([id, qty]) => {
           const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
           return { id, name: p.name, price: p.price, quantity: qty };
