@@ -4,7 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
 import TelegramPaymentModal from './payment/TelegramPaymentModal';
-import ShippingForm from './payment/ShippingForm';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -177,26 +176,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         setStep(2);
       } else if (paymentMethod === 'telegram') {
         console.log('📱 Processing Telegram payment...');
-        
-        // For Telegram payment, create order immediately
-        const orderData = {
-          user_id: userProfile?.auth_id,
-          items: Object.entries(cart).map(([id, qty]) => {
-            const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
-            return { id, name: p.name, price: p.price, quantity: qty };
-          }),
-          original_total: calculateTotalUSD() - 7.5,
-          discount_amount: userDiscount,
-          shipping_fee: 7.5,
-          payment_method: 'telegram',
-          payment_details: formData,
-          status: 'pending'
-        };
-
-        console.log('🔄 Creating Telegram order...');
-        await createOrderInDatabase(orderData);
-        await sendOrderEmail(orderData);
-        
         setShowTelegramModal(true);
       }
     } catch (err: any) {
@@ -228,7 +207,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         shipping_fee: 7.5,
         payment_method: paymentMethod,
         payment_details: { ...formData, txId },
-        status: 'pending'
       };
 
       await createOrderInDatabase(orderData);
@@ -255,16 +233,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     onClose();
   };
 
-  const handleTelegramClose = () => {
-    setShowTelegramModal(false);
-    onOrderSuccess();
-    onClose();
-    toast({
-      title: 'Order Submitted!',
-      description: 'Your order has been created. Please complete payment through Telegram.',
-    });
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -287,11 +255,143 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 <p className="text-gray-600">Please fill out your shipping information to complete your order.</p>
               </div>
               <form onSubmit={handleProceed} className="space-y-6">
-                <ShippingForm
-                  formData={formData}
-                  onInputChange={handleInputChange}
-                  language="en"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                      Full Name
+                    </label>
+                    <input 
+                      id="fullName"
+                      name="fullName"
+                      type="text" 
+                      value={formData.fullName} 
+                      onChange={(e) => handleInputChange('fullName', e.target.value)} 
+                      required 
+                      autoComplete="name"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input 
+                      id="email"
+                      name="email"
+                      type="email" 
+                      value={formData.email} 
+                      onChange={(e) => handleInputChange('email', e.target.value)} 
+                      required 
+                      autoComplete="email"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                    Street Address
+                  </label>
+                  <input 
+                    id="address"
+                    name="address"
+                    type="text" 
+                    value={formData.address} 
+                    onChange={(e) => handleInputChange('address', e.target.value)} 
+                    required 
+                    autoComplete="street-address"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your street address"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                      City
+                    </label>
+                    <input 
+                      id="city"
+                      name="city"
+                      type="text" 
+                      value={formData.city} 
+                      onChange={(e) => handleInputChange('city', e.target.value)} 
+                      required 
+                      autoComplete="address-level2"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="City"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                      State
+                    </label>
+                    <input 
+                      id="state"
+                      name="state"
+                      type="text" 
+                      value={formData.state} 
+                      onChange={(e) => handleInputChange('state', e.target.value)} 
+                      required 
+                      autoComplete="address-level1"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="State"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
+                      ZIP Code
+                    </label>
+                    <input 
+                      id="zipCode"
+                      name="zipCode"
+                      type="text" 
+                      value={formData.zipCode} 
+                      onChange={(e) => handleInputChange('zipCode', e.target.value)} 
+                      required 
+                      autoComplete="postal-code"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="ZIP"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+                      Country
+                    </label>
+                    <input 
+                      id="country"
+                      name="country"
+                      type="text" 
+                      value={formData.country} 
+                      onChange={(e) => handleInputChange('country', e.target.value)} 
+                      required 
+                      autoComplete="country-name"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Country"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input 
+                      id="phone"
+                      name="phone"
+                      type="tel" 
+                      value={formData.phone} 
+                      onChange={(e) => handleInputChange('phone', e.target.value)} 
+                      required 
+                      autoComplete="tel"
+                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="Phone number"
+                    />
+                  </div>
+                </div>
 
                 <div className="bg-gray-50 p-6 rounded-lg">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
@@ -426,7 +526,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       <TelegramPaymentModal 
         isOpen={showTelegramModal}
-        onClose={handleTelegramClose}
+        onClose={() => setShowTelegramModal(false)}
         language="en"
       />
     </>

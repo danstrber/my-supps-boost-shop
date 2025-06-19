@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ChevronDown } from 'lucide-react';
@@ -80,21 +80,6 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
   const filteredCountries = countries.filter(country =>
     country.toLowerCase().includes(countrySearch.toLowerCase())
   );
-
-  // Close country dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest('[data-country-dropdown]')) {
-        setCountrySearchOpen(false);
-      }
-    };
-
-    if (countrySearchOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [countrySearchOpen]);
 
   return (
     <div className="space-y-4">
@@ -177,17 +162,17 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
             autoComplete="postal-code"
           />
         </div>
-        <div className="relative" data-country-dropdown>
+        <div className="relative">
           <Label htmlFor="country">{labels[language].country}</Label>
           <div className="relative">
             <button
+              id="country"
+              name="country"
               type="button"
               className="w-full flex items-center justify-between h-10 px-3 py-2 text-left border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
               onClick={() => setCountrySearchOpen(!countrySearchOpen)}
             >
-              <span className={formData.country ? 'text-foreground' : 'text-muted-foreground'}>
-                {formData.country || 'Select country'}
-              </span>
+              <span>{formData.country || 'Select country'}</span>
               <ChevronDown className="h-4 w-4" />
             </button>
             

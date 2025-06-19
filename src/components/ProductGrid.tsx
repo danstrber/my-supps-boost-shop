@@ -26,14 +26,6 @@ const ProductGrid = ({
 }: ProductGridProps) => {
   const t = translations[language];
   
-  // Helper function to get specification value
-  const getSpecValue = (product: Product, key: string) => {
-    if (typeof product.specifications === 'object' && product.specifications !== null) {
-      return product.specifications[key] || '';
-    }
-    return '';
-  };
-  
   return (
     <div className="space-y-6">
       {/* Sign In Button for non-authenticated users */}
@@ -58,13 +50,11 @@ const ProductGrid = ({
         {products.map((product) => {
           if (!product) return null;
           
-          const mainImage = product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg';
-          
           return (
             <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
               <div className="relative mb-4">
                 <img
-                  src={mainImage}
+                  src={product.image}
                   alt={product.name}
                   className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
@@ -95,21 +85,18 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {typeof product.description === 'object' 
-                    ? product.description?.[language] || product.description?.['en'] || ''
-                    : product.description || ''
-                  }
+                  {product.description[language]}
                 </p>
 
                 {/* Dose and Capsule Info */}
                 <div className="flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Pill className="h-3 w-3" />
-                    <span>{getSpecValue(product, 'Strength') || 'N/A'}</span>
+                    <span>{product.specifications[language].dosePerCapsule}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{getSpecValue(product, 'Servings Per Container') || 'N/A'} caps</span>
+                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
                   </div>
                 </div>
                 
