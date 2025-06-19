@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -75,14 +74,14 @@ export const products: Product[] = [
     id: 'enclo',
     name: 'Enclomiphene',
     price: 40.00,
-    image: '/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png',
+    image: '/lovable-uploads/80ca5b8b-5b25-4266-a8fe-acffb838a696.png',
     description: {
       en: 'Premium Enclomiphene for natural testosterone support and PCT.',
       es: 'Enclomifeno premium para soporte natural de testosterona y PCT.'
     },
     ingredients: 'Enclomiphene Citrate 25mg per capsule',
     dosage: '25mg daily',
-    capsules: 50,
+    capsules: 25,
     featured: true,
     labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
     inStock: true,
@@ -90,13 +89,13 @@ export const products: Product[] = [
     specifications: {
       en: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '50 capsules',
+        capsulesPerBottle: '25 capsules',
         typicalCycleLength: '4-6 weeks',
         potencyLevel: 'Moderate'
       },
       es: {
         dosePerCapsule: '25mg',
-        capsulesPerBottle: '50 cápsulas',
+        capsulesPerBottle: '25 cápsulas',
         typicalCycleLength: '4-6 semanas',
         potencyLevel: 'Moderado'
       }
@@ -145,7 +144,7 @@ export const products: Product[] = [
     id: 'rad140',
     name: 'RAD-140 (Testolone)',
     price: 55.00,
-    image: '/lovable-uploads/9ac178e7-36d1-4738-ac66-d1e3917e7ec5.png',
+    image: '/lovable-uploads/6bf00b32-1fdf-426e-af4b-4eae2b29157c.png',
     description: {
       en: 'Powerful RAD-140 SARM for lean muscle gains and strength.',
       es: 'Potente SARM RAD-140 para ganancias de músculo magro y fuerza.'
@@ -215,7 +214,7 @@ export const products: Product[] = [
     id: 'mk677',
     name: 'MK-677 (Ibutamoren)',
     price: 40.00,
-    image: '/lovable-uploads/6c2dcc9f-c88a-4d00-9ab5-1572b72da530.png',
+    image: '/lovable-uploads/3a5b35d3-8bfd-47ec-acb5-94ef2faf5e92.png',
     description: {
       en: 'Premium MK-677 for enhanced growth hormone and recovery.',
       es: 'MK-677 premium para hormona de crecimiento mejorada y recuperación.'
@@ -353,7 +352,7 @@ export const products: Product[] = [
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 35.00,
-    image: '/lovable-uploads/eba9e12b-46c3-4087-b249-0766d5bd34bb.png',
+    image: '/lovable-uploads/b79007ea-2fd0-4498-b009-8e0d76ac325e.png',
     description: {
       en: 'Effective Clenbuterol for fat burning and improved cardiovascular performance.',
       es: 'Clenbuterol efectivo para quema de grasa y mejora del rendimiento cardiovascular.'
@@ -362,7 +361,7 @@ export const products: Product[] = [
     dosage: '20-120mcg daily (pyramid dosing)',
     capsules: 50,
     featured: true,
-    labTestFile: '/lovable-uploads/096e40d17-f8c0-404b-af96-b7cadb9b096e.png',
+    labTestFile: '/lovable-uploads/29f98aea-c8d6-4336-ac7d-521df4484c4a.png',
     inStock: true,
     categories: ['cutting', 'oral'],
     specifications: {
@@ -423,7 +422,7 @@ export const products: Product[] = [
     id: 'superdrol',
     name: 'Superdrol',
     price: 25.00,
-    image: '/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png',
+    image: '/lovable-uploads/71d351ff-45d9-4ad9-91bf-1e5572468693.png',
     description: {
       en: 'Powerful Superdrol for rapid muscle gains and strength.',
       es: 'Superdrol potente para ganancias rápidas de músculo y fuerza.'
@@ -432,7 +431,7 @@ export const products: Product[] = [
     dosage: '10-20mg daily',
     capsules: 20,
     featured: true,
-    labTestFile: '/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png',
+    labTestFile: '/lovable-uploads/fe9cf414-0d70-446e-8867-3150485e8cc2.png',
     inStock: true,
     categories: ['steroids', 'bulking', 'oral'],
     specifications: {
@@ -477,7 +476,7 @@ export const products: Product[] = [
       en: 'Short cycles of 4-6 weeks maximum due to toxicity.',
       es: 'Ciclos cortos de 4-6 semanas máximo debido a toxicidad.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Rapid muscle and strength gains with significant side effect potential.',
       es: 'Ganancias rápidas de músculo y fuerza con potencial significativo de efectos secundarios.'
     },

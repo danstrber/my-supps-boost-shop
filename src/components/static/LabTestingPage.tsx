@@ -24,10 +24,46 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
           </p>
         </div>
 
-        {/* Lab Test Images Section - Corrected assignments */}
+        {/* Janoshik Lab Test Images Section */}
         <div className="mb-8">
           <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-            {language === 'en' ? 'Third-Party Lab Results' : 'Resultados de Laboratorio de Terceros'}
+            {language === 'en' ? 'Janoshik Analytical Lab Results' : 'Resultados de Laboratorio Analítico Janoshik'}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-green-50 border border-green-200 p-4 rounded-lg hover:shadow-md transition-shadow">
+              <img 
+                src="/lovable-uploads/29f98aea-c8d6-4336-ac7d-521df4484c4a.png" 
+                alt="Clenbuterol Lab Test - Janoshik"
+                className="w-full rounded-lg mb-3 hover:scale-105 transition-transform cursor-pointer"
+              />
+              <h4 className="font-semibold text-green-800 mb-2">Clenbuterol 40mcg</h4>
+              <p className="text-gray-700 text-sm">
+                {language === 'en' 
+                  ? 'Purity: 64.81mcg verified | Thermogenic compound analysis'
+                  : 'Pureza: 64.81mcg verificado | Análisis de compuesto termogénico'}
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg hover:shadow-md transition-shadow">
+              <img 
+                src="/lovable-uploads/fe9cf414-0d70-446e-8867-3150485e8cc2.png" 
+                alt="Superdrol Lab Test - Janoshik"
+                className="w-full rounded-lg mb-3 hover:scale-105 transition-transform cursor-pointer"
+              />
+              <h4 className="font-semibold text-blue-800 mb-2">Superdrol (Methasterone)</h4>
+              <p className="text-gray-700 text-sm">
+                {language === 'en' 
+                  ? 'Purity: 9.67mg verified | Anabolic steroid analysis'
+                  : 'Pureza: 9.67mg verificado | Análisis de esteroide anabólico'}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Original Lab Test Images Section */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+            {language === 'en' ? 'Additional Third-Party Lab Results' : 'Resultados de Laboratorio Adicionales de Terceros'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg hover:shadow-md transition-shadow">
@@ -72,56 +108,6 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
               </p>
             </div>
 
-            <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg hover:shadow-md transition-shadow">
-              <img 
-                src="/lovable-uploads/096e40d17-f8c0-404b-af96-b7cadb9b096e.png" 
-                alt="Clenbuterol Lab Test"
-                className="w-full rounded-lg mb-3 hover:scale-105 transition-transform cursor-pointer"
-              />
-              <h4 className="font-semibold text-orange-800 mb-2">Clenbuterol HCl</h4>
-              <p className="text-gray-700 text-sm">
-                {language === 'en' 
-                  ? 'Purity: 99.1% | Thermogenic properties verified'
-                  : 'Pureza: 99.1% | Propiedades termogénicas verificadas'}
-              </p>
-            </div>
-
-            <div className="bg-red-50 border border-red-200 p-4 rounded-lg hover:shadow-md transition-shadow">
-              <img 
-                src="/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png" 
-                alt="Superdrol Lab Test"
-                className="w-full rounded-lg mb-3 hover:scale-105 transition-transform cursor-pointer"
-              />
-              <h4 className="font-semibold text-red-800 mb-2">Superdrol (Methasterone)</h4>
-              <p className="text-gray-700 text-sm">
-                {language === 'en' 
-                  ? 'Purity: 98.9% | Anabolic compound verification'
-                  : 'Pureza: 98.9% | Verificación de compuesto anabólico'}
-              </p>
-            </div>
-
-            <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-lg hover:shadow-md transition-shadow">
-              <img 
-                src="/lovable-uploads/dcea32d8-541f-45c9-b1bf-f74a0c97c0bb.png" 
-                alt="Aromasin Product"
-                className="w-full rounded-lg mb-3 hover:scale-105 transition-transform cursor-pointer"
-              />
-              <h4 className="font-semibold text-indigo-800 mb-2">Aromasin (Exemestane)</h4>
-              <p className="text-gray-700 text-sm">
-                {language === 'en' 
-                  ? 'Premium aromatase inhibitor for estrogen control'
-                  : 'Inhibidor de aromatasa premium para control de estrógenos'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Janoshik Lab Test Images Section - New additions */}
-        <div className="mb-8">
-          <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
-            {language === 'en' ? 'Janoshik Analytical Lab Results' : 'Resultados de Laboratorio Analítico Janoshik'}
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg hover:shadow-md transition-shadow">
               <img 
                 src="/lovable-uploads/81518186-f1a6-4b15-a733-1307a6f1f474.png" 
@@ -161,9 +147,7 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
                 className="w-full rounded-lg mb-3 hover:scale-105 transition-transform cursor-pointer"
               />
               <h4 className="font-semibold text-gray-800 mb-2">
-                {language
-
- === 'en' ? 'Quality Assurance' : 'Garantía de Calidad'}
+                {language === 'en' ? 'Quality Assurance' : 'Garantía de Calidad'}
               </h4>
               <p className="text-gray-700 text-sm">
                 {language === 'en' 
