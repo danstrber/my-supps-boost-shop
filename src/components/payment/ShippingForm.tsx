@@ -1,5 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { countries } from '@/lib/countries';
 
 interface ShippingFormProps {
   formData: {
@@ -17,6 +19,8 @@ interface ShippingFormProps {
 }
 
 const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) => {
+  const [countrySearch, setCountrySearch] = useState('');
+
   const labels = {
     en: {
       fullName: 'Full Name',
@@ -41,6 +45,10 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
   };
 
   const l = labels[language];
+
+  const filteredCountries = countries.filter(country =>
+    country.toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   return (
     <div className="space-y-4">
@@ -153,26 +161,27 @@ const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) 
           <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
             {l.country}
           </label>
-          <select
-            id="country"
-            name="country"
-            value={formData.country}
-            onChange={(e) => onInputChange('country', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="country"
-          >
-            <option value="United States">United States</option>
-            <option value="Canada">Canada</option>
-            <option value="United Kingdom">United Kingdom</option>
-            <option value="Australia">Australia</option>
-            <option value="Germany">Germany</option>
-            <option value="France">France</option>
-            <option value="Spain">Spain</option>
-            <option value="Italy">Italy</option>
-            <option value="Netherlands">Netherlands</option>
-            <option value="Other">Other</option>
-          </select>
+          <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
+            <SelectTrigger className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+              <SelectValue placeholder="Select a country" />
+            </SelectTrigger>
+            <SelectContent>
+              <div className="p-2">
+                <input
+                  type="text"
+                  placeholder="Search countries..."
+                  value={countrySearch}
+                  onChange={(e) => setCountrySearch(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+                />
+              </div>
+              {filteredCountries.map((country) => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         
         <div>

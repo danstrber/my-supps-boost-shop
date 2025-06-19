@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -75,44 +74,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     return `ORD-${timestamp}-${random}`;
   };
 
-  const sendOrderEmail = async (orderData: any) => {
-    console.log('📧 Sending order email via Supabase Edge Function...');
-    try {
-      const { data, error } = await supabase.functions.invoke('send-order-email', {
-        body: {
-          customerEmail: orderData.customerEmail,
-          customerName: orderData.customerName,
-          orderId: orderData.orderId,
-          items: orderData.items,
-          originalTotal: orderData.originalTotal,
-          discountAmount: orderData.discountAmount,
-          shippingFee: orderData.shippingFee,
-          finalTotal: orderData.finalTotal,
-          paymentMethod: orderData.paymentMethod,
-          txId: orderData.txId || '',
-          shippingAddress: orderData.shippingAddress,
-          phone: orderData.phone,
-          orderDate: orderData.orderDate,
-          verificationStatus: orderData.verificationStatus || 'pending',
-          bitcoinAmount: orderData.bitcoinAmount || '',
-        }
-      });
-      
-      if (error) {
-        throw error;
-      }
-      
-      console.log('✅ Order email sent successfully via Edge Function:', data);
-      return true;
-    } catch (error) {
-      console.error('❌ Email sending failed:', error);
-      // Fallback to Formspree if Edge Function fails
-      return await sendOrderEmailFormspree(orderData);
-    }
-  };
-
   const sendOrderEmailFormspree = async (orderData: any) => {
-    console.log('📧 Falling back to Formspree...');
+    console.log('📧 Sending order email via Formspree...');
     try {
       const telegramInfo = `
 
@@ -162,8 +125,53 @@ We'll contact you there for order updates and support!`;
     }
   };
 
+  const sendOrderEmail = async (orderData: any) => {
+    console.log('📧 Sending order email via Formspree (primary)...');
+    try {
+      // Primary: Use Formspree
+      await sendOrderEmailFormspree(orderData);
+      console.log('✅ Order email sent successfully via Formspree');
+      return true;
+    } catch (error) {
+      console.error('❌ Formspree email sending failed, trying Supabase Edge Function:', error);
+      
+      // Fallback: Use Supabase Edge Function
+      try {
+        const { data, error } = await supabase.functions.invoke('send-order-email', {
+          body: {
+            customerEmail: orderData.customerEmail,
+            customerName: orderData.customerName,
+            orderId: orderData.orderId,
+            items: orderData.items,
+            originalTotal: orderData.originalTotal,
+            discountAmount: orderData.discountAmount,
+            shippingFee: orderData.shippingFee,
+            finalTotal: orderData.finalTotal,
+            paymentMethod: orderData.paymentMethod,
+            txId: orderData.txId || '',
+            shippingAddress: orderData.shippingAddress,
+            phone: orderData.phone,
+            orderDate: orderData.orderDate,
+            verificationStatus: orderData.verificationStatus || 'pending',
+            bitcoinAmount: orderData.bitcoinAmount || '',
+          }
+        });
+        
+        if (error) {
+          throw error;
+        }
+        
+        console.log('✅ Order email sent successfully via Edge Function fallback:', data);
+        return true;
+      } catch (fallbackError) {
+        console.error('❌ Both email sending methods failed:', fallbackError);
+        throw fallbackError;
+      }
+    }
+  };
+
   const saveOrderToDatabase = async (orderData: any) => {
-    console.log('💾 Saving order to Supabase...');
+    console.log('💾 Saving order to Supabase (only after successful Formspree)...');
     try {
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
@@ -369,13 +377,26 @@ We'll contact you there for order updates and support!`;
 
       // ONLY save and confirm orders if verification is successful
       if (verificationResult.isValid) {
-        console.log('✅ Transaction verified! Saving and confirming order...');
+        console.log('✅ Transaction verified! Processing order via Formspree first...');
         
-        // Save to database with confirmed status
-        await saveOrderToDatabase(orderData);
-        
-        // Send confirmation email
-        await sendOrderEmail(orderData);
+        try {
+          // Primary: Send via Formspree
+          await sendOrderEmail(orderData);
+          console.log('✅ Order processed via Formspree successfully');
+          
+          // Secondary: Save to database (only if Formspree succeeds)
+          try {
+            await saveOrderToDatabase(orderData);
+            console.log('✅ Order also saved to database as backup');
+          } catch (dbError) {
+            console.warn('⚠️ Database save failed but Formspree succeeded:', dbError);
+            // Don't fail the entire process if database save fails
+          }
+          
+        } catch (emailError) {
+          console.error('❌ Email sending failed - ORDER NOT PROCESSED:', emailError);
+          throw new Error(`Order processing failed: ${emailError.message}`);
+        }
         
         toast({
           title: '✅ Payment Verified & Order Confirmed!',
@@ -394,9 +415,8 @@ We'll contact you there for order updates and support!`;
         onClose();
         
       } else {
-        console.log('❌ Transaction verification failed - ORDER NOT SAVED');
+        console.log('❌ Transaction verification failed - ORDER NOT PROCESSED');
         
-        // Do NOT save failed orders to database
         setError(
           `Payment verification failed: ${verificationResult.error}. ` +
           `Please check your transaction ID and try again, or contact support. Your order was not processed.`
@@ -404,17 +424,17 @@ We'll contact you there for order updates and support!`;
         
         toast({
           title: '❌ Payment Verification Failed',
-          description: 'Order not saved. Please verify your transaction and try again.',
+          description: 'Order not processed. Please verify your transaction and try again.',
           variant: 'destructive'
         });
       }
       
     } catch (err: any) {
       console.error('❌ Error in handleConfirm:', err);
-      setError(`Verification error: ${err.message}. Order not processed.`);
+      setError(`Processing error: ${err.message}. Order not processed.`);
       toast({ 
-        title: 'Verification Error', 
-        description: 'Order not processed due to verification error. Please try again.', 
+        title: 'Processing Error', 
+        description: 'Order not processed due to error. Please try again.', 
         variant: 'destructive' 
       });
     } finally {
