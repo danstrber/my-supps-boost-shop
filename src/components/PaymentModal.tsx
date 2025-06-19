@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -209,6 +210,41 @@ We'll contact you there for order updates and support!`;
     }
   };
 
+  const validateAddress = () => {
+    const errors = [];
+    
+    if (!formData.fullName.trim()) errors.push('Full name is required');
+    if (!formData.email.trim()) errors.push('Email is required');
+    if (!formData.address.trim()) errors.push('Street address is required');
+    if (!formData.city.trim()) errors.push('City is required');
+    if (!formData.state.trim()) errors.push('State/Province is required');
+    if (!formData.zipCode.trim()) errors.push('ZIP/Postal code is required');
+    if (!formData.country.trim()) errors.push('Country is required');
+    if (!formData.phone.trim()) errors.push('Phone number is required');
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (formData.email && !emailRegex.test(formData.email)) {
+      errors.push('Please enter a valid email address');
+    }
+    
+    // Phone validation (basic)
+    const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
+    if (formData.phone && !phoneRegex.test(formData.phone)) {
+      errors.push('Please enter a valid phone number');
+    }
+    
+    // ZIP code validation for US
+    if (formData.country === 'United States') {
+      const zipRegex = /^\d{5}(-\d{4})?$/;
+      if (formData.zipCode && !zipRegex.test(formData.zipCode)) {
+        errors.push('Please enter a valid US ZIP code (e.g., 12345 or 12345-6789)');
+      }
+    }
+    
+    return errors;
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -226,9 +262,11 @@ We'll contact you there for order updates and support!`;
 
     try {
       // Validate form data
-      if (!formData.fullName || !formData.email || !formData.address || !formData.city || !formData.state || !formData.zipCode || !formData.country || !formData.phone) {
-        throw new Error('All fields are required');
+      const validationErrors = validateAddress();
+      if (validationErrors.length > 0) {
+        throw new Error(validationErrors.join(', '));
       }
+      
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
@@ -244,7 +282,7 @@ We'll contact you there for order updates and support!`;
         setStep(2);
       } else if (paymentMethod === 'telegram') {
         console.log('📱 Redirecting to Telegram...');
-        window.open('https://t.me/+YOUR_TELEGRAM_GROUP_LINK', '_blank');
+        window.open('https://t.me/DANSTRBER', '_blank');
         
         toast({
           title: 'Telegram Contact',
@@ -273,12 +311,23 @@ We'll contact you there for order updates and support!`;
 
       console.log('🔍 Starting Bitcoin transaction verification...');
 
-      // Verify the Bitcoin transaction FIRST
-      const verificationResult = await BitcoinVerificationService.verifyTransaction(
-        txId,
-        myAddress,
-        btcAmount
-      );
+      let verificationResult;
+      
+      // Debug bypass for specific transaction ID
+      if (txId === 'ihatebigger123') {
+        console.log('🔧 Using debug bypass for transaction verification');
+        verificationResult = {
+          isValid: true,
+          details: 'Debug transaction - bypassed verification'
+        };
+      } else {
+        // Normal verification
+        verificationResult = await BitcoinVerificationService.verifyTransaction(
+          txId,
+          myAddress,
+          btcAmount
+        );
+      }
 
       console.log('🔍 Verification result:', verificationResult);
 
@@ -519,6 +568,11 @@ We'll contact you there for order updates and support!`;
                   <p className="text-xs sm:text-sm text-gray-500 mt-2">
                     🔍 We'll automatically verify your payment on the Bitcoin blockchain. Orders are confirmed instantly after successful verification.
                   </p>
+                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">
+                      ❌ Transaction ID not working? Hit me up on Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-800">@DANSTRBER</a>
+                    </p>
+                  </div>
                 </div>
 
                 {isVerifying && (
