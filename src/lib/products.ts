@@ -337,7 +337,7 @@ export const products: Product[] = [
       en: 'Used throughout anabolic steroid cycles to control estrogen.',
       es: 'Usado durante ciclos de esteroides anabólicos para controlar estrógeno.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Reduced estrogenic side effects and improved cycle results.',
       es: 'Reducción de efectos secundarios estrogénicos y mejora de resultados del ciclo.'
     },

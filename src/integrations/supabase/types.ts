@@ -102,6 +102,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      increment_user_spending: {
+        Args: { user_auth_id: string; amount_to_add: number }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
