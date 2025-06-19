@@ -1,222 +1,219 @@
-
-import { Product } from './types';
+import { Product } from '@/lib/types';
 
 export const products: Product[] = [
-  // RAD-140 - moved to top with correct image
   {
-    id: "2",
+    id: "rad-140",
     name: "RAD-140 (Testolone)",
-    price: 55,
-    image: "/lovable-uploads/b79007ea-2fd0-4498-b009-8e0d76ac325e.png",
+    price: 29.99,
+    image: "/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png",
+    labTestFile: "/lovable-uploads/71047aaf-1d52-4f01-bdb1-f051dac4a70a.png",
     description: {
-      en: "Powerful SARM for muscle growth and strength gains. Perfect for serious bodybuilders.",
-      es: "SARM potente para crecimiento muscular y ganancias de fuerza. Perfecto para culturistas serios."
+      en: "RAD-140 (Testolone) is a powerful SARM designed for serious muscle building and strength enhancement.",
+      es: "RAD-140 (Testolone) es un SARM potente diseñado para la construcción seria de músculo y el aumento de fuerza."
     },
     specifications: {
       en: {
         dosePerCapsule: "10mg per capsule",
-        capsulesPerBottle: "50 capsules per bottle",
-        suggestedUse: "1-2 capsules daily",
-        benefits: ["Rapid muscle growth", "Increased strength", "Enhanced recovery"],
+        capsulesPerBottle: "30 capsules per bottle",
+        suggestedUse: "1 capsule daily with food",
+        benefits: ["Rapid muscle growth", "Increased strength", "Enhanced endurance", "Fat loss"],
         typicalCycleLength: "8-12 weeks",
+        potencyLevel: "High"
+      },
+      es: {
+        dosePerCapsule: "10mg por cápsula",
+        capsulesPerBottle: "30 cápsulas por frasco",
+        suggestedUse: "1 cápsula diaria con comida",
+        benefits: ["Crecimiento muscular rápido", "Aumento de fuerza", "Resistencia mejorada", "Pérdida de grasa"],
+        typicalCycleLength: "8-12 semanas",
+        potencyLevel: "Alto"
+      }
+    },
+    whatToExpect: {
+      en: "Expect significant muscle gains and strength increases within 2-3 weeks. Users typically gain 8-15 lbs of lean muscle.",
+      es: "Espera ganancias musculares significativas y aumentos de fuerza dentro de 2-3 semanas. Los usuarios típicamente ganan 8-15 libras de músculo magro."
+    },
+    researchBackground: {
+      en: "RAD-140 was developed by Radius Health for treating muscle wasting conditions. Clinical studies show promising results for muscle growth without significant side effects.",
+      es: "RAD-140 fue desarrollado por Radius Health para tratar condiciones de desgaste muscular. Los estudios clínicos muestran resultados prometedores para el crecimiento muscular sin efectos secundarios significativos."
+    },
+    benefits: {
+      en: "Primary benefits include rapid muscle growth, increased strength, enhanced endurance, and accelerated fat loss while preserving muscle mass.",
+      es: "Los beneficios principales incluyen crecimiento muscular rápido, aumento de fuerza, resistencia mejorada, y pérdida de grasa acelerada mientras se preserva la masa muscular."
+    },
+    sideEffects: {
+      en: "Mild side effects may include slight testosterone suppression. PCT recommended after cycle completion.",
+      es: "Los efectos secundarios leves pueden incluir supresión ligera de testosterona. Se recomienda PCT después de completar el ciclo."
+    },
+    effectsOnWomen: {
+      en: "Women should use lower doses (5mg) to avoid virilization effects. Suitable for female athletes seeking lean gains.",
+      es: "Las mujeres deben usar dosis más bajas (5mg) para evitar efectos de virilización. Adecuado para atletas femeninas que buscan ganancias magras."
+    },
+    howItWorks: {
+      en: "RAD-140 selectively binds to androgen receptors in muscle tissue, promoting anabolic activity without affecting other organs.",
+      es: "RAD-140 se une selectivamente a los receptores de andrógenos en el tejido muscular, promoviendo actividad anabólica sin afectar otros órganos."
+    },
+    safetyInformation: {
+      en: "Generally well-tolerated when used as directed. Regular blood work recommended during longer cycles.",
+      es: "Generalmente bien tolerado cuando se usa según las instrucciones. Se recomienda análisis de sangre regulares durante ciclos más largos."
+    },
+    cycleInformation: {
+      en: "Typical cycles last 8-12 weeks. Begin with 10mg daily, may increase to 20mg for advanced users. PCT recommended.",
+      es: "Los ciclos típicos duran 8-12 semanas. Comienza con 10mg diarios, puede aumentar a 20mg para usuarios avanzados. Se recomienda PCT."
+    },
+    performanceRatings: {
+      muscleGain: 9,
+      strength: 9,
+      fatLoss: 7,
+      sideEffects: 8,
+      retention: 8
+    },
+    categories: ["SARMs", "Muscle Building", "Strength"],
+    featured: true,
+    inStock: true
+  },
+  {
+    id: "mk-677",
+    name: "MK-677 (Ibutamoren)",
+    price: 34.99,
+    image: "/lovable-uploads/80ca5b8b-5b25-4266-a8fe-acffb838a696.png",
+    labTestFile: "/lovable-uploads/77e6f089-3a81-4383-bec7-323928b8b739.png",
+    description: {
+      en: "MK-677 (Ibutamoren) is a growth hormone secretagogue that increases IGF-1 and growth hormone levels naturally.",
+      es: "MK-677 (Ibutamoren) es un secretagogo de hormona de crecimiento que aumenta los niveles de IGF-1 y hormona de crecimiento naturalmente."
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: "25mg per capsule",
+        capsulesPerBottle: "30 capsules per bottle",
+        suggestedUse: "1 capsule daily before bed",
+        benefits: ["Increased HGH", "Better sleep", "Muscle growth", "Anti-aging effects"],
+        typicalCycleLength: "12-16 weeks",
+        potencyLevel: "Moderate to High"
+      },
+      es: {
+        dosePerCapsule: "25mg por cápsula",
+        capsulesPerBottle: "30 cápsulas por frasco",
+        suggestedUse: "1 cápsula diaria antes de dormir",
+        benefits: ["Aumento de HGH", "Mejor sueño", "Crecimiento muscular", "Efectos anti-envejecimiento"],
+        typicalCycleLength: "12-16 semanas",
+        potencyLevel: "Moderado a Alto"
+      }
+    },
+    whatToExpect: {
+      en: "Improved sleep quality within days, increased appetite, gradual muscle gains, and enhanced recovery over weeks.",
+      es: "Mejora en la calidad del sueño en días, aumento del apetito, ganancias musculares graduales, y recuperación mejorada durante semanas."
+    },
+    researchBackground: {
+      en: "Developed by Lumos Pharma, MK-677 mimics ghrelin and stimulates growth hormone release without affecting cortisol levels.",
+      es: "Desarrollado por Lumos Pharma, MK-677 imita la ghrelina y estimula la liberación de hormona de crecimiento sin afectar los niveles de cortisol."
+    },
+    benefits: {
+      en: "Benefits include increased growth hormone, improved sleep quality, enhanced muscle growth, better skin and hair, and improved bone density.",
+      es: "Los beneficios incluyen aumento de hormona de crecimiento, mejor calidad del sueño, crecimiento muscular mejorado, mejor piel y cabello, y densidad ósea mejorada."
+    },
+    sideEffects: {
+      en: "May cause increased appetite, mild water retention, and occasional drowsiness. Generally well-tolerated.",
+      es: "Puede causar aumento del apetito, retención de agua leve, y somnolencia ocasional. Generalmente bien tolerado."
+    },
+    effectsOnWomen: {
+      en: "Excellent choice for women seeking anti-aging benefits, improved sleep, and gradual muscle development without hormonal disruption.",
+      es: "Excelente opción para mujeres que buscan beneficios anti-envejecimiento, mejor sueño, y desarrollo muscular gradual sin disrupción hormonal."
+    },
+    howItWorks: {
+      en: "MK-677 acts as a ghrelin receptor agonist, stimulating the pituitary gland to release more growth hormone and IGF-1.",
+      es: "MK-677 actúa como un agonista del receptor de ghrelina, estimulando la glándula pituitaria para liberar más hormona de crecimiento e IGF-1."
+    },
+    safetyInformation: {
+      en: "Long-term safety profile is favorable. May affect glucose metabolism in sensitive individuals. Monitor blood sugar if diabetic.",
+      es: "El perfil de seguridad a largo plazo es favorable. Puede afectar el metabolismo de la glucosa en individuos sensibles. Monitorear azúcar en sangre si es diabético."
+    },
+    cycleInformation: {
+      en: "Can be used continuously for 3-6 months. Take 25mg daily before bed. No PCT required as it doesn't suppress hormones.",
+      es: "Puede usarse continuamente por 3-6 meses. Tomar 25mg diarios antes de dormir. No se requiere PCT ya que no suprime hormonas."
+    },
+    performanceRatings: {
+      muscleGain: 7,
+      strength: 6,
+      fatLoss: 6,
+      sideEffects: 9,
+      retention: 9
+    },
+    categories: ["Growth Hormone", "Recovery", "Anti-Aging"],
+    featured: true,
+    inStock: true
+  },
+  {
+    id: "superdrol",
+    name: "Superdrol (Methasterone)",
+    price: 39.99,
+    image: "/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png",
+    labTestFile: "/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png",
+    description: {
+      en: "Superdrol (Methasterone) is a powerful prohormone for extreme muscle and strength gains in advanced users.",
+      es: "Superdrol (Methasterone) es una prohormona poderosa para ganancias extremas de músculo y fuerza en usuarios avanzados."
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: "10mg per capsule",
+        capsulesPerBottle: "30 capsules per bottle",
+        suggestedUse: "1-2 capsules daily with food",
+        benefits: ["Extreme muscle growth", "Massive strength gains", "Rapid results", "Enhanced pumps"],
+        typicalCycleLength: "4-6 weeks",
         potencyLevel: "Very High"
       },
       es: {
         dosePerCapsule: "10mg por cápsula",
-        capsulesPerBottle: "50 cápsulas por botella",
-        suggestedUse: "1-2 cápsulas diarias",
-        benefits: ["Crecimiento muscular rápido", "Aumento de fuerza", "Recuperación mejorada"],
-        typicalCycleLength: "8-12 semanas",
+        capsulesPerBottle: "30 cápsulas por frasco",
+        suggestedUse: "1-2 cápsulas diarias con comida",
+        benefits: ["Crecimiento muscular extremo", "Ganancias masivas de fuerza", "Resultados rápidos", "Bombeo mejorado"],
+        typicalCycleLength: "4-6 semanas",
         potencyLevel: "Muy Alto"
       }
     },
     whatToExpect: {
-      en: "Expect significant muscle gains and strength improvements within 4-6 weeks of consistent use.",
-      es: "Espera ganancias musculares significativas y mejoras de fuerza dentro de 4-6 semanas de uso consistente."
+      en: "Dramatic muscle and strength gains within 1-2 weeks. Users often gain 10-20 lbs during a cycle.",
+      es: "Ganancias dramáticas de músculo y fuerza dentro de 1-2 semanas. Los usuarios a menudo ganan 10-20 libras durante un ciclo."
     },
     researchBackground: {
-      en: "RAD-140 was developed by Radius Health as a potential treatment for muscle wasting and breast cancer. Studies show it has strong anabolic effects with minimal androgenic side effects.",
-      es: "RAD-140 fue desarrollado por Radius Health como un tratamiento potencial para el desgaste muscular y el cáncer de mama. Los estudios muestran que tiene fuertes efectos anabólicos con efectos secundarios androgénicos mínimos."
+      en: "Originally developed in the 1950s, Superdrol is a modified form of dihydrotestosterone with enhanced anabolic properties.",
+      es: "Originalmente desarrollado en los años 1950, Superdrol es una forma modificada de dihidrotestosterona con propiedades anabólicas mejoradas."
     },
     benefits: {
-      en: "Increases lean muscle mass, enhances strength and power output, improves bone density, and accelerates fat loss while preserving muscle during cutting phases.",
-      es: "Aumenta la masa muscular magra, mejora la fuerza y potencia, mejora la densidad ósea y acelera la pérdida de grasa mientras preserva el músculo durante las fases de corte."
+      en: "Provides extreme muscle growth, massive strength increases, enhanced muscle pumps, and rapid transformation results.",
+      es: "Proporciona crecimiento muscular extremo, aumentos masivos de fuerza, bombeo muscular mejorado, y resultados de transformación rápida."
     },
     sideEffects: {
-      en: "May cause mild testosterone suppression, slight hair loss in predisposed individuals, and occasional mood changes. Generally well-tolerated at recommended doses.",
-      es: "Puede causar supresión leve de testosterona, ligera pérdida de cabello en individuos predispuestos y cambios ocasionales de humor. Generalmente bien tolerado en dosis recomendadas."
+      en: "Can cause liver stress, blood pressure elevation, and hormonal suppression. Requires careful monitoring and PCT.",
+      es: "Puede causar estrés hepático, elevación de presión arterial, y supresión hormonal. Requiere monitoreo cuidadoso y PCT."
     },
     effectsOnWomen: {
-      en: "Women should use lower doses (5mg) and shorter cycles (6-8 weeks). May cause mild virilization effects at higher doses. Monitor for voice changes or excessive hair growth.",
-      es: "Las mujeres deben usar dosis más bajas (5mg) y ciclos más cortos (6-8 semanas). Puede causar efectos de virilización leves en dosis altas. Monitorear cambios de voz o crecimiento excesivo de vello."
+      en: "Not recommended for women due to high androgenic activity and risk of virilization effects.",
+      es: "No recomendado para mujeres debido a alta actividad androgénica y riesgo de efectos de virilización."
     },
     howItWorks: {
-      en: "RAD-140 selectively binds to androgen receptors in muscle and bone tissue, promoting anabolic activity while minimizing effects on other organs like the prostate.",
-      es: "RAD-140 se une selectivamente a los receptores de andrógenos en el tejido muscular y óseo, promoviendo actividad anabólica mientras minimiza efectos en otros órganos como la próstata."
+      en: "Superdrol binds strongly to androgen receptors, promoting intense protein synthesis and nitrogen retention.",
+      es: "Superdrol se une fuertemente a los receptores de andrógenos, promoviendo síntesis intensa de proteínas y retención de nitrógeno."
     },
     safetyInformation: {
-      en: "Always follow recommended dosages. Consider PCT after cycles longer than 8 weeks. Regular blood work is recommended. Not suitable for individuals under 21 or pregnant/nursing women.",
-      es: "Siempre seguir las dosis recomendadas. Considerar PCT después de ciclos más largos de 8 semanas. Se recomienda análisis de sangre regulares. No apto para menores de 21 años o mujeres embarazadas/lactantes."
+      en: "For advanced users only. Regular liver function tests required. Use liver support supplements throughout cycle.",
+      es: "Solo para usuarios avanzados. Se requieren pruebas regulares de función hepática. Usar suplementos de soporte hepático durante todo el ciclo."
     },
     cycleInformation: {
-      en: "Typical cycle: 8-12 weeks at 10-20mg daily. Beginners start with 10mg. Advanced users may use up to 20mg. Always include proper PCT and take breaks between cycles.",
-      es: "Ciclo típico: 8-12 semanas a 10-20mg diarios. Principiantes comenzar con 10mg. Usuarios avanzados pueden usar hasta 20mg. Siempre incluir PCT apropiado y descansos entre ciclos."
+      en: "Short cycles of 4-6 weeks maximum. Start with 10mg daily, maximum 20mg. Comprehensive PCT essential.",
+      es: "Ciclos cortos de máximo 4-6 semanas. Comenzar con 10mg diarios, máximo 20mg. PCT comprensivo esencial."
     },
     performanceRatings: {
-      muscleGain: 5,
-      strength: 5,
-      fatLoss: 3,
-      sideEffects: 2,
-      retention: 4
-    },
-    categories: ["sarms", "bulking", "strength"],
-    featured: true,
-    inStock: true
-  },
-  // MK-677 - moved to top with correct image
-  {
-    id: "mk677",
-    name: "MK-677 (Ibutamoren)",
-    price: 40,
-    image: "/lovable-uploads/3a5b35d3-8bfd-47ec-acb5-94ef2faf5e92.png",
-    description: {
-      en: "Growth hormone secretagogue for enhanced recovery, better sleep, and muscle growth.",
-      es: "Secretagogo de hormona de crecimiento para recuperación mejorada, mejor sueño y crecimiento muscular."
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: "10mg per capsule",
-        capsulesPerBottle: "50 capsules per bottle",
-        suggestedUse: "1 capsule daily before bed",
-        benefits: ["Enhanced recovery", "Better sleep quality", "Increased appetite", "Anti-aging effects"],
-        typicalCycleLength: "12-24 weeks",
-        potencyLevel: "Moderate"
-      },
-      es: {
-        dosePerCapsule: "10mg por cápsula",
-        capsulesPerBottle: "50 cápsulas por botella",
-        suggestedUse: "1 cápsula diaria antes de dormir",
-        benefits: ["Recuperación mejorada", "Mejor calidad de sueño", "Aumento del apetito", "Efectos anti-envejecimiento"],
-        typicalCycleLength: "12-24 semanas",
-        potencyLevel: "Moderado"
-      }
-    },
-    whatToExpect: {
-      en: "Improved sleep quality within days, enhanced recovery and gradual muscle gains over 8-12 weeks.",
-      es: "Calidad de sueño mejorada en días, recuperación mejorada y ganancias musculares graduales en 8-12 semanas."
-    },
-    researchBackground: {
-      en: "MK-677 stimulates growth hormone release by mimicking ghrelin. Originally developed for treating growth hormone deficiency and muscle wasting conditions.",
-      es: "MK-677 estimula la liberación de hormona de crecimiento imitando la grelina. Originalmente desarrollado para tratar la deficiencia de hormona de crecimiento y condiciones de desgaste muscular."
-    },
-    benefits: {
-      en: "Increases growth hormone and IGF-1 levels, improves sleep quality, enhances recovery, increases appetite, and may have anti-aging benefits.",
-      es: "Aumenta los niveles de hormona de crecimiento e IGF-1, mejora la calidad del sueño, mejora la recuperación, aumenta el apetito y puede tener beneficios anti-envejecimiento."
-    },
-    sideEffects: {
-      en: "May cause increased appetite, water retention, mild lethargy, and temporary increase in blood sugar. Generally well-tolerated with minimal side effects.",
-      es: "Puede causar aumento del apetito, retención de agua, letargo leve y aumento temporal del azúcar en sangre. Generalmente bien tolerado con efectos secundarios mínimos."
-    },
-    effectsOnWomen: {
-      en: "Safe for women at standard doses. May help with skin quality and hair health. No virilization effects reported. Ideal for recovery and anti-aging benefits.",
-      es: "Seguro para mujeres en dosis estándar. Puede ayudar con la calidad de la piel y salud del cabello. No se reportan efectos de virilización. Ideal para recuperación y beneficios anti-envejecimiento."
-    },
-    howItWorks: {
-      en: "Acts as a ghrelin receptor agonist, stimulating the release of growth hormone from the pituitary gland, leading to increased IGF-1 production.",
-      es: "Actúa como agonista del receptor de grelina, estimulando la liberación de hormona de crecimiento de la glándula pituitaria, llevando a un aumento en la producción de IGF-1."
-    },
-    safetyInformation: {
-      en: "Generally safe for long-term use. Monitor blood sugar levels if diabetic. May interact with diabetes medications. Consult healthcare provider if pregnant or nursing.",
-      es: "Generalmente seguro para uso a largo plazo. Monitorear niveles de azúcar en sangre si es diabético. Puede interactuar con medicamentos para diabetes. Consultar proveedor de salud si está embarazada o amamantando."
-    },
-    cycleInformation: {
-      en: "Can be used continuously for 3-6 months or longer. Take 10-25mg daily, preferably before bed. No PCT required as it doesn't suppress natural hormone production.",
-      es: "Puede usarse continuamente por 3-6 meses o más. Tomar 10-25mg diarios, preferiblemente antes de dormir. No se requiere PCT ya que no suprime la producción hormonal natural."
-    },
-    performanceRatings: {
-      muscleGain: 3,
-      strength: 2,
-      fatLoss: 2,
-      sideEffects: 1,
-      retention: 5
-    },
-    categories: ["sarms", "recovery", "sleep"],
-    featured: true,
-    inStock: true
-  },
-  // Superdrol - moved to top with correct image
-  {
-    id: "superdrol",
-    name: "Superdrol",
-    price: 25,
-    image: "/lovable-uploads/71d351ff-45d9-4ad9-91bf-1e5572468693.png",
-    labTestFile: "/lovable-uploads/6bf00b32-1fdf-426e-af4b-4eae2b29157c.png",
-    description: {
-      en: "Powerful anabolic compound for rapid muscle gains and strength increases. Lab tested for purity.",
-      es: "Compuesto anabólico potente para ganancias musculares rápidas y aumentos de fuerza. Probado en laboratorio para pureza."
-    },
-    specifications: {
-      en: {
-        dosePerCapsule: "10mg per capsule",
-        capsulesPerBottle: "20 capsules per bottle",
-        suggestedUse: "1-2 capsules daily with food",
-        benefits: ["Rapid muscle growth", "Dramatic strength gains", "Enhanced vascularity", "Improved muscle hardness"],
-        typicalCycleLength: "4-6 weeks",
-        potencyLevel: "Extremely High"
-      },
-      es: {
-        dosePerCapsule: "10mg por cápsula",
-        capsulesPerBottle: "20 cápsulas por botella",
-        suggestedUse: "1-2 cápsulas diarias con comida",
-        benefits: ["Crecimiento muscular rápido", "Ganancias dramáticas de fuerza", "Vascularidad mejorada", "Dureza muscular mejorada"],
-        typicalCycleLength: "4-6 semanas",
-        potencyLevel: "Extremadamente Alto"
-      }
-    },
-    whatToExpect: {
-      en: "Rapid strength and size gains within 1-2 weeks. Significant muscle hardness and definition improvements.",
-      es: "Ganancias rápidas de fuerza y tamaño en 1-2 semanas. Mejoras significativas en dureza y definición muscular."
-    },
-    researchBackground: {
-      en: "Superdrol (methasterone) is a potent oral anabolic steroid developed in the 1950s. Known for its ability to provide rapid muscle gains with minimal water retention.",
-      es: "Superdrol (metasterona) es un esteroide anabólico oral potente desarrollado en los años 1950. Conocido por su capacidad de proporcionar ganancias musculares rápidas con retención mínima de agua."
-    },
-    benefits: {
-      en: "Provides rapid muscle mass gains, dramatic strength increases, enhanced muscle hardness and definition, improved vascularity, and minimal water retention.",
-      es: "Proporciona ganancias rápidas de masa muscular, aumentos dramáticos de fuerza, dureza y definición muscular mejorada, vascularidad mejorada y retención mínima de agua."
-    },
-    sideEffects: {
-      en: "May cause liver stress, elevated blood pressure, cholesterol changes, hair loss, and acne. Requires proper cycle support and PCT. Not for beginners.",
-      es: "Puede causar estrés hepático, presión arterial elevada, cambios en el colesterol, pérdida de cabello y acné. Requiere soporte de ciclo apropiado y PCT. No para principiantes."
-    },
-    effectsOnWomen: {
-      en: "NOT RECOMMENDED for women due to high virilization risk. May cause voice deepening, body hair growth, clitoral enlargement, and other masculine characteristics.",
-      es: "NO RECOMENDADO para mujeres debido al alto riesgo de virilización. Puede causar profundización de la voz, crecimiento de vello corporal, agrandamiento del clítoris y otras características masculinas."
-    },
-    howItWorks: {
-      en: "Acts as a potent androgen receptor agonist, promoting protein synthesis and nitrogen retention while reducing cortisol effects on muscle tissue.",
-      es: "Actúa como un agonista potente del receptor de andrógenos, promoviendo la síntesis de proteínas y retención de nitrógeno mientras reduce los efectos del cortisol en el tejido muscular."
-    },
-    safetyInformation: {
-      en: "ADVANCED USERS ONLY. Requires liver support (TUDCA/NAC), blood pressure monitoring, and comprehensive PCT. Regular blood work essential. Maximum 6-week cycles.",
-      es: "SOLO USUARIOS AVANZADOS. Requiere soporte hepático (TUDCA/NAC), monitoreo de presión arterial y PCT integral. Análisis de sangre regulares esenciales. Ciclos máximos de 6 semanas."
-    },
-    cycleInformation: {
-      en: "Typical cycle: 4-6 weeks at 10-20mg daily. Always use liver support, cycle support, and comprehensive PCT. Minimum 8-week break between cycles required.",
-      es: "Ciclo típico: 4-6 semanas a 10-20mg diarios. Siempre usar soporte hepático, soporte de ciclo y PCT integral. Se requiere descanso mínimo de 8 semanas entre ciclos."
-    },
-    performanceRatings: {
-      muscleGain: 5,
-      strength: 5,
-      fatLoss: 4,
+      muscleGain: 10,
+      strength: 10,
+      fatLoss: 8,
       sideEffects: 4,
-      retention: 4
+      retention: 7
     },
-    categories: ["steroids", "bulking", "strength"],
+    categories: ["Prohormones", "Advanced", "Strength"],
     featured: true,
     inStock: true
   },
-  // Clenbuterol with correct image
   {
     id: "clenbuterol",
     name: "Clenbuterol",
@@ -288,7 +285,6 @@ export const products: Product[] = [
     featured: true,
     inStock: true
   },
-  // Enclomiphene - fixed dosage and correct image
   {
     id: "enclomiphene",
     name: "Enclomiphene Citrate",
@@ -359,7 +355,6 @@ export const products: Product[] = [
     featured: false,
     inStock: true
   },
-  // Aromasin - removed image
   {
     id: "aromasin",
     name: "Aromasin (Exemestane)",
@@ -433,3 +428,15 @@ export const products: Product[] = [
 ];
 
 export type { Product };
+
+export const getProduct = (id: string): Product | undefined => {
+  return products.find(product => product.id === id);
+};
+
+export const getFeaturedProducts = (): Product[] => {
+  return products.filter(product => product.featured);
+};
+
+export const getProductsByCategory = (category: string): Product[] => {
+  return products.filter(product => product.categories.includes(category));
+};

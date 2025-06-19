@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -126,6 +125,50 @@ const PaymentModal = ({
     }
   };
 
+  const sendToFormspree = async (orderData: any) => {
+    try {
+      console.log('📧 Sending order to Formspree...');
+      
+      const formData = new FormData();
+      formData.append('order_id', orderData.id || 'pending');
+      formData.append('user_email', user?.email || customerInfo.email);
+      formData.append('customer_name', customerInfo.fullName);
+      formData.append('payment_method', paymentMethod || 'unknown');
+      formData.append('total_amount', total.toString());
+      formData.append('order_details', JSON.stringify(cartItems, null, 2));
+      formData.append('shipping_info', JSON.stringify(shippingInfo, null, 2));
+      
+      if (paymentMethod === 'bitcoin' && txid) {
+        formData.append('transaction_id', txid);
+        formData.append('bitcoin_address', bitcoinAddress);
+      }
+      
+      if (paymentMethod === 'telegram') {
+        formData.append('telegram_username', customerInfo.telegram);
+      }
+
+      const formspreeResponse = await fetch('https://formspree.io/f/mqaqvlye', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (formspreeResponse.ok) {
+        console.log('✅ Order sent to Formspree successfully');
+        return true;
+      } else {
+        const errorText = await formspreeResponse.text();
+        console.error('❌ Formspree submission failed:', formspreeResponse.status, errorText);
+        return false;
+      }
+    } catch (formspreeError) {
+      console.error('❌ Error sending to Formspree:', formspreeError);
+      return false;
+    }
+  };
+
   const handlePaymentComplete = async () => {
     if (!user) {
       toast({
@@ -146,7 +189,7 @@ const PaymentModal = ({
     }
 
     setProcessing(true);
-    console.log('Processing payment completion...');
+    console.log('🔄 Processing payment completion...');
 
     try {
       const orderData = {
@@ -177,54 +220,41 @@ const PaymentModal = ({
         status: 'pending'
       };
 
-      console.log('Creating order with data:', orderData);
+      console.log('💾 Creating order in database...');
       const order = await createOrder(orderData);
+      console.log('✅ Order created successfully:', order);
+
+      // Send to Formspree immediately after order creation
+      console.log('📧 Sending notification email...');
+      const emailSent = await sendToFormspree({ ...orderData, id: order.id });
       
-      console.log('Order created successfully:', order);
-
-      // Send order to Formspree
-      if (paymentMethod === 'bitcoin' && txid.trim()) {
-        try {
-          const formData = new FormData();
-          formData.append('order_id', order.id);
-          formData.append('user_email', user.email || '');
-          formData.append('payment_method', 'Bitcoin');
-          formData.append('total_amount', total.toString());
-          formData.append('transaction_id', txid);
-          formData.append('bitcoin_address', bitcoinAddress);
-          formData.append('order_details', JSON.stringify(cartItems));
-          formData.append('shipping_info', JSON.stringify(shippingInfo));
-
-          const formspreeResponse = await fetch('https://formspree.io/f/mqaqvlye', {
-            method: 'POST',
-            body: formData
-          });
-
-          if (formspreeResponse.ok) {
-            console.log('Order sent to Formspree successfully');
-          } else {
-            console.error('Formspree submission failed:', formspreeResponse.statusText);
-          }
-        } catch (formspreeError) {
-          console.error('Error sending to Formspree:', formspreeError);
-        }
+      if (emailSent) {
+        console.log('✅ Email notification sent successfully');
+      } else {
+        console.log('⚠️ Email notification failed, but order was created');
       }
 
       // Update user spending
+      console.log('💰 Updating user spending...');
       await updateUserSpending(user.id, total);
 
       toast({
-        title: "Order Placed Successfully!",
+        title: "🎉 Order Placed Successfully!",
         description: `Order #${order.id.slice(0, 8)} has been submitted. You will receive confirmation shortly.`,
       });
 
       onPaymentSuccess();
       onClose();
     } catch (error: any) {
-      console.error('Payment completion error:', error);
+      console.error('💥 Payment completion error:', error);
+      
+      // Still try to send to Formspree even if database fails
+      console.log('📧 Attempting to send email despite database error...');
+      await sendToFormspree({ user_id: user.id, ...orderData });
+      
       toast({
-        title: "Payment Failed",
-        description: error.message || "Failed to process payment. Please try again or contact support.",
+        title: "⚠️ Order Processing Issue",
+        description: "There was an issue processing your order. We've been notified and will contact you shortly.",
         variant: "destructive"
       });
     } finally {
