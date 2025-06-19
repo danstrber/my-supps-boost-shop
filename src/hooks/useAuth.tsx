@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { UserProfile } from '@/lib/auth';
+import { UserProfile, getUserProfile } from '@/lib/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -27,10 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
     try {
       console.log('fetchUserProfile called for userId:', userId);
-      
-      // Temporarily disable database calls until migration runs
-      console.log('Database migration not yet run, skipping profile fetch');
-      return null;
+      return await getUserProfile(userId);
     } catch (error) {
       console.error('Exception in fetchUserProfile:', error);
       return null;

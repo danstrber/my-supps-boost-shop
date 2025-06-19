@@ -104,9 +104,8 @@ export const getCurrentUser = async (): Promise<{ user: User | null; profile: Us
 
     console.log('Found authenticated user:', user.id);
 
-    // Temporarily skip database operations until migration runs
-    console.log('Database migration not yet run, skipping profile fetch');
-    return { user, profile: null };
+    const profile = await getUserProfile(user.id);
+    return { user, profile };
   } catch (error) {
     console.error('Error in getCurrentUser:', error);
     return { user: null, profile: null };
@@ -117,9 +116,19 @@ export const getUserProfile = async (authId: string): Promise<UserProfile | null
   try {
     console.log('Fetching user profile for:', authId);
     
-    // Temporarily skip database operations until migration runs
-    console.log('Database migration not yet run, skipping profile fetch');
-    return null;
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_id', authId)
+      .single();
+    
+    if (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+    
+    console.log('User profile fetched successfully:', data);
+    return data;
   } catch (error) {
     console.error('Error in getUserProfile:', error);
     return null;
@@ -130,9 +139,27 @@ export const getUserDiscount = async (authId: string): Promise<number> => {
   try {
     console.log('Calculating user discount for:', authId);
     
-    // Temporarily skip database operations until migration runs
-    console.log('Database migration not yet run, skipping discount calculation');
-    return 0;
+    const profile = await getUserProfile(authId);
+    if (!profile) return 0;
+    
+    // Calculate discount based on spending and referrals
+    const spendingDiscount = profile.referred_by 
+      ? Math.floor(profile.total_spending / 50) * 7  // 7% per $50 for referred users
+      : Math.floor(profile.total_spending / 50) * 3; // 3% per $50 for normal users
+    
+    // Add first referral bonus
+    const firstReferralBonus = profile.referred_by ? 10 : 0;
+    
+    const totalDiscount = Math.min(spendingDiscount + firstReferralBonus, 32);
+    
+    console.log('User discount calculated:', {
+      profile,
+      spendingDiscount,
+      firstReferralBonus,
+      totalDiscount
+    });
+    
+    return totalDiscount;
   } catch (error) {
     console.error('Error in getUserDiscount:', error);
     return 0;

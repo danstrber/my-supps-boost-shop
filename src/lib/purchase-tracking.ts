@@ -25,36 +25,51 @@ export const cancelPendingPurchase = (orderId: string): void => {
   console.log('🗑️ Pending purchase cancelled:', orderId);
 };
 
-// Direct order creation function for better reliability
+// Direct order creation function with database integration
 export const createOrder = async (orderData: any) => {
-  console.log('🚀 Creating order directly:', orderData);
+  console.log('🚀 Creating order in database:', orderData);
   
   try {
-    // Temporarily skip database operation until migration runs
-    console.log('Database migration not yet run, skipping database insert');
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([orderData])
+      .select()
+      .single();
     
-    // Return mock order data for now
-    const mockOrder = {
-      id: 'temp-order-' + Date.now(),
-      ...orderData,
-      created_at: new Date().toISOString()
-    };
+    if (error) {
+      console.error('💥 Order creation failed:', error);
+      throw new Error('Failed to create order: ' + error.message);
+    }
     
-    console.log('✅ Mock order created successfully:', mockOrder);
-    return mockOrder;
+    console.log('✅ Order created successfully:', data);
+    return data;
   } catch (error) {
     console.error('💥 Order creation failed:', error);
     throw error;
   }
 };
 
-// Update user spending with better error handling
+// Update user spending with database integration
 export const updateUserSpending = async (userId: string, amount: number) => {
   console.log('💰 Updating user spending:', { userId, amount });
   
   try {
-    // Temporarily skip database operation until migration runs
-    console.log('Database migration not yet run, skipping spending update');
+    const { data, error } = await supabase
+      .from('users')
+      .update({ 
+        total_spending: supabase.sql`total_spending + ${amount}`,
+        updated_at: new Date().toISOString()
+      })
+      .eq('auth_id', userId)
+      .select()
+      .single();
+    
+    if (error) {
+      console.error('❌ Error updating user spending:', error);
+      return false;
+    }
+    
+    console.log('✅ User spending updated successfully:', data);
     return true;
   } catch (error) {
     console.error('❌ Error in spending update:', error);

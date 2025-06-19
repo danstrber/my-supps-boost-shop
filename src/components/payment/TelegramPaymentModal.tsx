@@ -10,21 +10,21 @@ interface TelegramPaymentModalProps {
   onClose: () => void;
   language: 'en' | 'es';
   orderTotal: number;
+  onComplete: (telegramInfo: { telegram: string }) => void;
 }
 
 const TelegramPaymentModal = ({ 
   isOpen, 
   onClose, 
   language,
-  orderTotal 
+  orderTotal,
+  onComplete 
 }: TelegramPaymentModalProps) => {
   const [telegram, setTelegram] = useState('');
 
   const handleSubmit = () => {
     if (telegram.trim()) {
-      // Instead of calling onComplete, we'll just close and redirect to Telegram
-      window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
-      onClose();
+      onComplete({ telegram: telegram.trim() });
     }
   };
 
@@ -34,7 +34,7 @@ const TelegramPaymentModal = ({
       description: 'Enter your Telegram username to receive order details',
       username: 'Telegram Username',
       placeholder: '@username',
-      submit: 'Continue to Telegram',
+      submit: 'Complete Order',
       total: 'Order Total'
     },
     es: {
@@ -42,7 +42,7 @@ const TelegramPaymentModal = ({
       description: 'Ingresa tu usuario de Telegram para recibir detalles del pedido',
       username: 'Usuario de Telegram',
       placeholder: '@usuario',
-      submit: 'Continuar a Telegram',
+      submit: 'Completar Pedido',
       total: 'Total del Pedido'
     }
   };
@@ -83,6 +83,20 @@ const TelegramPaymentModal = ({
           >
             {labels[language].submit}
           </Button>
+          
+          <div className="bg-blue-100 border border-blue-300 p-4 rounded-lg text-center">
+            <p className="text-blue-800 font-semibold mb-3">
+              Or join our Telegram channel directly:
+            </p>
+            <a 
+              href="https://t.me/+fDDZObF0zjI2M2Y0" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+            >
+              💬 Join Telegram Channel
+            </a>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

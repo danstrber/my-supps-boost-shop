@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
-import { createOrder } from '@/lib/purchase-tracking';
+import { createOrder, updateUserSpending } from '@/lib/purchase-tracking';
 import OrderSummary from '@/components/payment/OrderSummary';
 import ShippingForm from '@/components/payment/ShippingForm';
 import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
@@ -122,28 +122,6 @@ const PaymentModal = ({
     }
   };
 
-  const createOrderInDatabase = async (orderData: any) => {
-    console.log('Attempting to create order in database...');
-    
-    try {
-      // Temporarily skip database operation until migration runs
-      console.log('Database migration not yet run, skipping order creation');
-      
-      // Return mock order data
-      const mockOrder = {
-        id: 'temp-order-' + Date.now(),
-        ...orderData,
-        created_at: new Date().toISOString()
-      };
-      
-      console.log('Mock order created:', mockOrder);
-      return mockOrder;
-    } catch (error) {
-      console.error('Error creating order:', error);
-      throw new Error('Failed to create order');
-    }
-  };
-
   const handlePaymentComplete = async () => {
     if (!user) {
       toast({
@@ -186,9 +164,12 @@ const PaymentModal = ({
       };
 
       console.log('Creating order with data:', orderData);
-      const order = await createOrderInDatabase(orderData);
+      const order = await createOrder(orderData);
       
       console.log('Order created successfully:', order);
+
+      // Update user spending
+      await updateUserSpending(user.id, total);
 
       toast({
         title: "Order Placed Successfully!",
@@ -379,6 +360,7 @@ const PaymentModal = ({
         onClose={() => setTelegramModalOpen(false)}
         language="en"
         orderTotal={total}
+        onComplete={handleTelegramComplete}
       />
     </>
   );

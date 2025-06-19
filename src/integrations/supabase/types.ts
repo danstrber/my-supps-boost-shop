@@ -9,13 +9,99 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          created_at: string | null
+          discount_amount: number | null
+          final_total: number
+          id: string
+          items: Json
+          original_total: number
+          payment_details: Json | null
+          payment_method: string
+          shipping_fee: number | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          discount_amount?: number | null
+          final_total: number
+          id?: string
+          items: Json
+          original_total: number
+          payment_details?: Json | null
+          payment_method: string
+          shipping_fee?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          discount_amount?: number | null
+          final_total?: number
+          id?: string
+          items?: Json
+          original_total?: number
+          payment_details?: Json | null
+          payment_method?: string
+          shipping_fee?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          auth_id: string
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+          referral_code: string
+          referred_by: string | null
+          referred_spending: number | null
+          total_spending: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_id: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          referral_code?: string
+          referred_by?: string | null
+          referred_spending?: number | null
+          total_spending?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_id?: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          referral_code?: string
+          referred_by?: string | null
+          referred_spending?: number | null
+          total_spending?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_referral_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
