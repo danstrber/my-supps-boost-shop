@@ -153,7 +153,7 @@ export const products: Product[] = [
   {
     id: 'mk677',
     name: 'MK-677 (Ibutamoren)',
-    price: 40,
+    price: 45,
     image: '/lovable-uploads/b43000ed-31b9-4d86-926f-1640e6f0aa3c.png',
     categories: ['growth-hormone'],
     featured: true,
@@ -204,7 +204,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months). Best taken in the evening due to sleep benefits.',
       es: 'Puede usarse por períodos extendidos (3-6 meses). Mejor tomado por la noche debido a beneficios del sueño.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report improved sleep within 1-2 weeks, increased appetite, and gradual muscle gains over 8-12 weeks.',
       es: 'Los usuarios reportan mejor sueño en 1-2 semanas, aumento del apetito y ganancias musculares graduales en 8-12 semanas.'
     },
@@ -352,7 +352,7 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
-    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png', // Using enclomiphene image temporarily
+    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
     categories: ['pct', 'ai'],
     featured: false,
     inStock: true,
@@ -418,7 +418,7 @@ export const products: Product[] = [
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 35,
-    image: '/lovable-uploads/d5851462-b099-4caa-a871-81e3e14b8717.png',
+    image: '/lovable-uploads/9f4f9977-4f6c-4d53-ae01-a03204441df1.png',
     categories: ['fat-burner'],
     featured: false,
     inStock: true,

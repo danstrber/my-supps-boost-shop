@@ -203,9 +203,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         orderDate: new Date().toLocaleString()
       };
 
-      console.log('📧 Sending Bitcoin order email...');
+      console.log('📧 Sending Bitcoin order email via Formspree...');
       await sendOrderEmail(orderData);
-      console.log('✅ Order email sent successfully');
+      console.log('✅ Order email sent successfully via Formspree');
       
       // Clear cart and close modal
       onOrderSuccess();

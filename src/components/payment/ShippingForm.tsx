@@ -1,8 +1,5 @@
 
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ChevronDown } from 'lucide-react';
+import React from 'react';
 
 interface ShippingFormProps {
   formData: {
@@ -20,219 +17,179 @@ interface ShippingFormProps {
 }
 
 const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) => {
-  const [countrySearchOpen, setCountrySearchOpen] = useState(false);
-  const [countrySearch, setCountrySearch] = useState('');
-
   const labels = {
     en: {
       fullName: 'Full Name',
-      email: 'Email',
-      address: 'Address',
+      email: 'Email Address',
+      address: 'Street Address',
       city: 'City',
-      state: 'State',
-      zipCode: 'ZIP Code',
+      state: 'State/Province',
+      zipCode: 'ZIP/Postal Code',
       country: 'Country',
       phone: 'Phone Number'
     },
     es: {
       fullName: 'Nombre Completo',
-      email: 'Correo',
+      email: 'Dirección de Correo',
       address: 'Dirección',
       city: 'Ciudad',
-      state: 'Estado',
+      state: 'Estado/Provincia',
       zipCode: 'Código Postal',
       country: 'País',
-      phone: 'Teléfono'
+      phone: 'Número de Teléfono'
     }
   };
 
-  const countries = [
-    'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Argentina', 'Armenia', 'Australia',
-    'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium',
-    'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil',
-    'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada',
-    'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros',
-    'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti',
-    'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea',
-    'Eritrea', 'Estonia', 'Eswatini', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon',
-    'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea',
-    'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia',
-    'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan',
-    'Kenya', 'Kiribati', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho',
-    'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Madagascar', 'Malawi',
-    'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius',
-    'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco',
-    'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand',
-    'Nicaragua', 'Niger', 'Nigeria', 'North Korea', 'North Macedonia', 'Norway', 'Oman',
-    'Pakistan', 'Palau', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru',
-    'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Rwanda',
-    'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Samoa',
-    'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles',
-    'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia',
-    'South Africa', 'South Korea', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname',
-    'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand',
-    'Timor-Leste', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan',
-    'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States',
-    'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen',
-    'Zambia', 'Zimbabwe'
-  ];
-
-  const filteredCountries = countries.filter(country =>
-    country.toLowerCase().includes(countrySearch.toLowerCase())
-  );
+  const l = labels[language];
 
   return (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="fullName">{labels[language].fullName}</Label>
-        <Input
-          id="fullName"
-          name="fullName"
-          type="text"
-          value={formData.fullName}
-          onChange={(e) => onInputChange('fullName', e.target.value)}
-          required
-          autoComplete="name"
-          placeholder="Enter your full name"
-        />
+      <h3 className="text-lg font-semibold text-gray-800 mb-4">
+        {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
+      </h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.fullName}
+          </label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            value={formData.fullName}
+            onChange={(e) => onInputChange('fullName', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            required
+            autoComplete="name"
+          />
+        </div>
+        
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.email}
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => onInputChange('email', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            required
+            autoComplete="email"
+          />
+        </div>
       </div>
 
       <div>
-        <Label htmlFor="email">{labels[language].email}</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => onInputChange('email', e.target.value)}
-          required
-          autoComplete="email"
-          placeholder="Enter your email address"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="address">{labels[language].address}</Label>
-        <Input
+        <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+          {l.address}
+        </label>
+        <input
           id="address"
           name="address"
           type="text"
           value={formData.address}
           onChange={(e) => onInputChange('address', e.target.value)}
+          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           required
           autoComplete="street-address"
-          placeholder="Enter your street address"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <Label htmlFor="city">{labels[language].city}</Label>
-          <Input
+          <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.city}
+          </label>
+          <input
             id="city"
             name="city"
             type="text"
             value={formData.city}
             onChange={(e) => onInputChange('city', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             required
             autoComplete="address-level2"
-            placeholder="Enter your city"
           />
         </div>
+        
         <div>
-          <Label htmlFor="state">{labels[language].state}</Label>
-          <Input
+          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.state}
+          </label>
+          <input
             id="state"
             name="state"
             type="text"
             value={formData.state}
             onChange={(e) => onInputChange('state', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             required
             autoComplete="address-level1"
-            placeholder="Enter your state/province"
           />
         </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
+        
         <div>
-          <Label htmlFor="zipCode">{labels[language].zipCode}</Label>
-          <Input
+          <label htmlFor="zipCode" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.zipCode}
+          </label>
+          <input
             id="zipCode"
             name="zipCode"
             type="text"
             value={formData.zipCode}
             onChange={(e) => onInputChange('zipCode', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             required
             autoComplete="postal-code"
-            placeholder="Enter your ZIP/postal code"
           />
-        </div>
-        <div className="relative">
-          <Label htmlFor="country">{labels[language].country}</Label>
-          <div className="relative">
-            <button
-              id="country"
-              name="country"
-              type="button"
-              className="w-full flex items-center justify-between h-10 px-3 py-2 text-left border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              onClick={() => setCountrySearchOpen(!countrySearchOpen)}
-            >
-              <span>{formData.country || 'Select country'}</span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            
-            {countrySearchOpen && (
-              <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                <div className="p-2">
-                  <Input
-                    type="text"
-                    placeholder="Search countries..."
-                    value={countrySearch}
-                    onChange={(e) => setCountrySearch(e.target.value)}
-                    className="w-full"
-                  />
-                </div>
-                <div className="max-h-48 overflow-y-auto">
-                  {filteredCountries.map((country) => (
-                    <button
-                      key={country}
-                      type="button"
-                      className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100"
-                      onClick={() => {
-                        onInputChange('country', country);
-                        setCountrySearchOpen(false);
-                        setCountrySearch('');
-                      }}
-                    >
-                      {country}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="phone">{labels[language].phone}</Label>
-        <Input
-          id="phone"
-          name="phone"
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => onInputChange('phone', e.target.value)}
-          required
-          autoComplete="tel"
-          placeholder="+1 555-123-4567"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          {language === 'en' 
-            ? 'Please include the correct country code before your phone number'
-            : 'Por favor incluye el código de país correcto antes de tu número de teléfono'
-          }
-        </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.country}
+          </label>
+          <select
+            id="country"
+            name="country"
+            value={formData.country}
+            onChange={(e) => onInputChange('country', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            required
+            autoComplete="country"
+          >
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Australia">Australia</option>
+            <option value="Germany">Germany</option>
+            <option value="France">France</option>
+            <option value="Spain">Spain</option>
+            <option value="Italy">Italy</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+            {l.phone}
+          </label>
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => onInputChange('phone', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            required
+            autoComplete="tel"
+          />
+        </div>
       </div>
     </div>
   );
