@@ -1,9 +1,12 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
 import ShippingForm from './payment/ShippingForm';
 import BitcoinTutorial from './payment/BitcoinTutorial';
 import OrderSuccessModal from './OrderSuccessModal';
+import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -29,6 +32,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [txId, setTxId] = useState('');
   const [btcAmount, setBtcAmount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState('');
@@ -101,8 +105,10 @@ We'll contact you there for order updates and support!`;
           shippingAddress: orderData.shippingAddress,
           phone: orderData.phone,
           orderDate: orderData.orderDate,
+          verificationStatus: orderData.verificationStatus || 'pending',
+          bitcoinAmount: orderData.bitcoinAmount || '',
           telegramInfo: telegramInfo,
-          _subject: `Order Confirmation #${orderData.orderId} - Thank you ${orderData.customerName}!`,
+          _subject: `Order ${orderData.verificationStatus === 'verified' ? 'VERIFIED' : 'PENDING'} #${orderData.orderId} - ${orderData.customerName}`,
           _cc: 'christhomaso083@proton.me',
           _replyto: orderData.customerEmail
         }),
@@ -116,6 +122,48 @@ We'll contact you there for order updates and support!`;
       return true;
     } catch (error) {
       console.error('❌ Email sending failed:', error);
+      throw error;
+    }
+  };
+
+  const saveOrderToDatabase = async (orderData: any) => {
+    console.log('💾 Saving order to Supabase...');
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert({
+          id: orderData.orderId,
+          user_id: supabase.auth.getUser().then(u => u.data.user?.id),
+          items: orderData.items,
+          original_total: orderData.originalTotal,
+          discount_amount: orderData.discountAmount,
+          shipping_fee: orderData.shippingFee,
+          final_total: orderData.finalTotal,
+          payment_method: orderData.paymentMethod,
+          status: orderData.verificationStatus === 'verified' ? 'confirmed' : 'pending',
+          verification_status: orderData.verificationStatus,
+          bitcoin_address: myAddress,
+          bitcoin_amount: orderData.bitcoinAmount,
+          transaction_hash: orderData.txId,
+          verification_details: orderData.verificationDetails,
+          verified_at: orderData.verificationStatus === 'verified' ? new Date().toISOString() : null,
+          payment_details: {
+            customerName: orderData.customerName,
+            customerEmail: orderData.customerEmail,
+            shippingAddress: orderData.shippingAddress,
+            phone: orderData.phone
+          }
+        });
+
+      if (error) {
+        console.error('❌ Database save error:', error);
+        throw error;
+      }
+
+      console.log('✅ Order saved to database:', data);
+      return data;
+    } catch (error) {
+      console.error('❌ Failed to save order to database:', error);
       throw error;
     }
   };
@@ -175,13 +223,23 @@ We'll contact you there for order updates and support!`;
 
   const handleConfirm = async () => {
     setIsLoading(true);
+    setIsVerifying(true);
     setError(null);
 
     try {
       if (!txId) throw new Error('Transaction ID is required');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
-      console.log('📧 Creating Bitcoin order for Formspree...');
+      console.log('🔍 Starting Bitcoin transaction verification...');
+
+      // Verify the Bitcoin transaction
+      const verificationResult = await BitcoinVerificationService.verifyTransaction(
+        txId,
+        myAddress,
+        btcAmount
+      );
+
+      console.log('🔍 Verification result:', verificationResult);
 
       const orderId = generateOrderId();
       const originalTotal = calculateTotalUSD() - 7.5;
@@ -211,25 +269,59 @@ We'll contact you there for order updates and support!`;
         finalTotal,
         paymentMethod: 'Bitcoin (BTC)',
         txId,
+        bitcoinAmount: btcAmount,
         shippingAddress: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}, ${formData.country}`,
         phone: formData.phone,
-        orderDate: new Date().toLocaleString()
+        orderDate: new Date().toLocaleString(),
+        verificationStatus: verificationResult.isValid ? 'verified' : 'failed',
+        verificationDetails: verificationResult.details
       };
 
-      console.log('📧 Sending Bitcoin order email via Formspree...');
-      await sendOrderEmail(orderData);
-      console.log('✅ Order email sent successfully via Formspree');
-      
-      // Set order ID and show success modal
-      setCurrentOrderId(orderId);
-      setShowSuccessModal(true);
-      
-      // Clear cart and close payment modal
-      onOrderSuccess();
-      setStep(1);
-      setError(null);
-      setTxId('');
-      onClose();
+      if (verificationResult.isValid) {
+        console.log('✅ Transaction verified! Processing order...');
+        
+        // Save to database first
+        await saveOrderToDatabase(orderData);
+        
+        // Send confirmation email
+        await sendOrderEmail(orderData);
+        
+        toast({
+          title: '✅ Payment Verified!',
+          description: 'Your Bitcoin payment has been verified and your order is confirmed.',
+        });
+
+        // Set order ID and show success modal
+        setCurrentOrderId(orderId);
+        setShowSuccessModal(true);
+        
+        // Clear cart and close payment modal
+        onOrderSuccess();
+        setStep(1);
+        setError(null);
+        setTxId('');
+        onClose();
+        
+      } else {
+        console.log('❌ Transaction verification failed:', verificationResult.error);
+        
+        // Still save the order but with failed status
+        await saveOrderToDatabase(orderData);
+        
+        // Send email about failed verification
+        await sendOrderEmail(orderData);
+        
+        setError(
+          `Payment verification failed: ${verificationResult.error}. ` +
+          `Please check your transaction ID and try again, or contact support.`
+        );
+        
+        toast({
+          title: '❌ Payment Verification Failed',
+          description: verificationResult.error,
+          variant: 'destructive'
+        });
+      }
       
     } catch (err: any) {
       console.error('❌ Error in handleConfirm:', err);
@@ -237,6 +329,7 @@ We'll contact you there for order updates and support!`;
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
     } finally {
       setIsLoading(false);
+      setIsVerifying(false);
     }
   };
 
@@ -291,7 +384,7 @@ We'll contact you there for order updates and support!`;
                           onChange={() => setPaymentMethod('bitcoin')} 
                           className="w-4 h-4 text-blue-600"
                         /> 
-                        <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Processing</span>
+                        <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
                       </label>
                       <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
                         <input 
@@ -370,7 +463,7 @@ We'll contact you there for order updates and support!`;
 
                 <div className="mb-6">
                   <label htmlFor="txId" className="block text-sm font-medium text-gray-700 mb-2">
-                    Transaction ID (Required)
+                    Transaction ID (Required for Automatic Verification)
                   </label>
                   <input 
                     id="txId"
@@ -383,9 +476,19 @@ We'll contact you there for order updates and support!`;
                     required
                   />
                   <p className="text-sm text-gray-500 mt-2">
-                    Enter the transaction ID from your Bitcoin wallet after sending the payment. We'll verify it manually.
+                    🔍 We'll automatically verify your payment on the Bitcoin blockchain. Orders are only confirmed after successful verification.
                   </p>
                 </div>
+
+                {isVerifying && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                      <p className="text-blue-800 font-medium">🔍 Verifying your Bitcoin transaction...</p>
+                    </div>
+                    <p className="text-sm text-blue-600 mt-2">This may take a few moments while we check the blockchain.</p>
+                  </div>
+                )}
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
@@ -396,14 +499,15 @@ We'll contact you there for order updates and support!`;
                 <div className="flex space-x-4">
                   <button 
                     onClick={handleConfirm} 
-                    disabled={isLoading || !txId} 
+                    disabled={isLoading || !txId || isVerifying} 
                     className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
-                    {isLoading ? 'Submitting Order...' : 'Submit Order'}
+                    {isVerifying ? 'Verifying Transaction...' : isLoading ? 'Processing Order...' : 'Verify & Submit Order'}
                   </button>
                   <button 
                     onClick={() => setStep(1)} 
-                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                    disabled={isLoading || isVerifying}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
                     Back
                   </button>

@@ -11,6 +11,8 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
+          bitcoin_address: string | null
+          bitcoin_amount: number | null
           created_at: string
           discount_amount: number | null
           final_total: number
@@ -21,9 +23,15 @@ export type Database = {
           payment_method: string
           shipping_fee: number | null
           status: string | null
+          transaction_hash: string | null
           user_id: string
+          verification_details: Json | null
+          verification_status: string | null
+          verified_at: string | null
         }
         Insert: {
+          bitcoin_address?: string | null
+          bitcoin_amount?: number | null
           created_at?: string
           discount_amount?: number | null
           final_total: number
@@ -34,9 +42,15 @@ export type Database = {
           payment_method: string
           shipping_fee?: number | null
           status?: string | null
+          transaction_hash?: string | null
           user_id: string
+          verification_details?: Json | null
+          verification_status?: string | null
+          verified_at?: string | null
         }
         Update: {
+          bitcoin_address?: string | null
+          bitcoin_amount?: number | null
           created_at?: string
           discount_amount?: number | null
           final_total?: number
@@ -47,7 +61,11 @@ export type Database = {
           payment_method?: string
           shipping_fee?: number | null
           status?: string | null
+          transaction_hash?: string | null
           user_id?: string
+          verification_details?: Json | null
+          verification_status?: string | null
+          verified_at?: string | null
         }
         Relationships: [
           {
