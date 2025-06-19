@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -26,7 +27,7 @@ const ProductDetailModal = ({
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const t = translations[language];
 
-  const images = [product.image];
+  const images = product.images || ['/placeholder.svg'];
 
   const handleAddToCart = () => {
     onAddToCart(product);
@@ -101,6 +102,14 @@ const ProductDetailModal = ({
     }
   };
 
+  // Helper function to get specification value
+  const getSpecValue = (key: string) => {
+    if (typeof product.specifications === 'object' && product.specifications !== null) {
+      return product.specifications[key] || '';
+    }
+    return '';
+  };
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -155,28 +164,28 @@ const ProductDetailModal = ({
                     <Pill className="h-4 w-4 text-blue-600" />
                     <div>
                       <span className="text-gray-600 text-xs block">{l.dose}</span>
-                      <span className="font-semibold">{product.specifications[language].dosePerCapsule}</span>
+                      <span className="font-semibold">{getSpecValue('Strength')}</span>
                     </div>
                   </div>
                   <div className="bg-white p-2 rounded flex items-center gap-2">
                     <div className="h-4 w-4 bg-green-600 rounded-full" />
                     <div>
                       <span className="text-gray-600 text-xs block">{l.capsules}</span>
-                      <span className="font-semibold">{product.specifications[language].capsulesPerBottle}</span>
+                      <span className="font-semibold">{getSpecValue('Servings Per Container')}</span>
                     </div>
                   </div>
                   <div className="bg-white p-2 rounded flex items-center gap-2">
                     <Timer className="h-4 w-4 text-purple-600" />
                     <div>
                       <span className="text-gray-600 text-xs block">{l.cycleLength}</span>
-                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleLength}</span>
+                      <span className="font-semibold text-xs">8-12 weeks</span>
                     </div>
                   </div>
                   <div className="bg-white p-2 rounded flex items-center gap-2">
                     <Zap className="h-4 w-4 text-yellow-600" />
                     <div>
                       <span className="text-gray-600 text-xs block">{l.strength}</span>
-                      <span className="font-semibold text-xs">{product.specifications[language].potencyLevel.slice(0, 15)}...</span>
+                      <span className="font-semibold text-xs">High</span>
                     </div>
                   </div>
                 </div>
@@ -209,7 +218,7 @@ const ProductDetailModal = ({
                   <Info className="h-4 w-4" />
                   {l.research}
                 </h4>
-                <p className="text-blue-700 text-xs leading-relaxed">{product.researchBackground[language]}</p>
+                <p className="text-blue-700 text-xs leading-relaxed">{product.researchBackground}</p>
               </div>
 
               {/* Benefits */}
@@ -218,7 +227,17 @@ const ProductDetailModal = ({
                   <TrendingUp className="h-4 w-4" />
                   {l.benefits}
                 </h4>
-                <p className="text-green-700 text-xs leading-relaxed">{product.benefits[language]}</p>
+                <div className="text-green-700 text-xs leading-relaxed">
+                  {Array.isArray(product.benefits) ? (
+                    <ul className="list-disc list-inside space-y-1">
+                      {product.benefits.map((benefit, index) => (
+                        <li key={index}>{benefit}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>{product.benefits}</p>
+                  )}
+                </div>
               </div>
 
               {/* Side Effects */}
@@ -227,34 +246,44 @@ const ProductDetailModal = ({
                   <AlertTriangle className="h-4 w-4" />
                   {l.sideEffects}
                 </h4>
-                <p className="text-red-700 text-xs leading-relaxed">{product.sideEffects[language]}</p>
+                <p className="text-red-700 text-xs leading-relaxed">{product.sideEffects}</p>
               </div>
 
               {/* Effects on Women */}
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                 <h4 className="font-semibold text-yellow-800 mb-2">{l.effectsOnWomen}</h4>
-                <p className="text-yellow-700 text-xs leading-relaxed">{product.effectsOnWomen[language]}</p>
+                <p className="text-yellow-700 text-xs leading-relaxed">{product.effectsOnWomen}</p>
               </div>
 
               {/* How It Works */}
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                 <h4 className="font-semibold text-purple-800 mb-2">{l.howItWorks}</h4>
-                <p className="text-purple-700 text-xs leading-relaxed">{product.howItWorks[language]}</p>
+                <p className="text-purple-700 text-xs leading-relaxed">{product.howItWorks}</p>
               </div>
 
               {/* Safety */}
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                 <h4 className="font-semibold text-orange-800 mb-2">{l.safety}</h4>
-                <p className="text-orange-700 text-xs leading-relaxed">{product.safetyInformation[language]}</p>
+                <p className="text-orange-700 text-xs leading-relaxed">{product.safetyInformation}</p>
               </div>
 
               {/* Cycle Information */}
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                 <h4 className="font-semibold text-gray-800 mb-2">{l.cycle}</h4>
-                <p className="text-gray-700 text-xs leading-relaxed mb-2">{product.cycleInformation[language]}</p>
+                <p className="text-gray-700 text-xs leading-relaxed mb-2">{product.cycleInformation}</p>
                 <div className="bg-white p-2 rounded border">
                   <h5 className="font-semibold text-gray-800 mb-1 text-xs">{l.expectations}</h5>
-                  <p className="text-gray-700 text-xs">{product.whatToExpect[language]}</p>
+                  <div className="text-gray-700 text-xs">
+                    {Array.isArray(product.whatToExpected) ? (
+                      <ul className="list-disc list-inside space-y-1">
+                        {product.whatToExpected.map((expectation, index) => (
+                          <li key={index}>{expectation}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>{product.whatToExpected}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -272,7 +301,7 @@ const ProductDetailModal = ({
                           <Star
                             key={i}
                             className={`h-3 w-3 ${
-                              i < value ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                              i < Number(value) ? 'text-yellow-500 fill-current' : 'text-gray-300'
                             }`}
                           />
                         ))}

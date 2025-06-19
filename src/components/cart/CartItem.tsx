@@ -25,10 +25,12 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
   const discountAmount = itemTotal * (userDiscount / 100);
   const finalPrice = itemTotal - discountAmount;
 
+  const mainImage = product.images && product.images.length > 0 ? product.images[0] : '/placeholder.svg';
+
   return (
     <div className="flex items-center space-x-4 p-4 border rounded-lg">
       <img
-        src={product.image}
+        src={mainImage}
         alt={product.name}
         className="w-16 h-16 object-cover rounded-lg"
       />
