@@ -41,24 +41,24 @@ const BitcoinPaymentDetails = ({
 
   return (
     <div className="space-y-6">
-      <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-orange-800 mb-4">
-          {language === 'en' ? '₿ Bitcoin Payment Details' : '₿ Detalles de Pago Bitcoin'}
+      <div className="bg-orange-50 border border-orange-200 p-6 rounded-lg">
+        <h3 className="text-xl font-semibold text-orange-800 mb-6 flex items-center">
+          ₿ Bitcoin Payment Details
         </h3>
         
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <Label htmlFor="btc-amount" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="btc-amount" className="text-sm font-medium text-gray-700 mb-2 block">
               {language === 'en' ? 'Send Exact Amount' : 'Enviar Cantidad Exacta'}
             </Label>
-            <div className="flex items-center space-x-2 mt-1">
+            <div className="flex items-center space-x-3">
               <Input
                 id="btc-amount"
                 name="btc-amount"
                 type="text"
                 value={`$${amount.toFixed(2)} USD`}
                 readOnly
-                className="bg-gray-100"
+                className="bg-gray-100 font-semibold text-lg"
                 aria-describedby="btc-amount-description"
               />
               <Button
@@ -66,13 +66,13 @@ const BitcoinPaymentDetails = ({
                 variant="outline"
                 size="sm"
                 onClick={() => copyToClipboard(`$${amount.toFixed(2)}`, 'Amount')}
-                className="px-3"
+                className="px-4"
                 aria-label="Copy amount"
               >
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
-            <p id="btc-amount-description" className="text-xs text-gray-500 mt-1">
+            <p id="btc-amount-description" className="text-sm text-gray-600 mt-2">
               {language === 'en' 
                 ? 'Send the exact USD equivalent in Bitcoin to the address below'
                 : 'Envía el equivalente exacto en USD en Bitcoin a la dirección de abajo'}
@@ -80,10 +80,10 @@ const BitcoinPaymentDetails = ({
           </div>
 
           <div>
-            <Label htmlFor="wallet-address" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="wallet-address" className="text-sm font-medium text-gray-700 mb-2 block">
               {language === 'en' ? 'To Wallet Address' : 'A Dirección de Billetera'}
             </Label>
-            <div className="flex items-center space-x-2 mt-1">
+            <div className="flex items-center space-x-3">
               <Input
                 id="wallet-address"
                 name="wallet-address"
@@ -98,7 +98,7 @@ const BitcoinPaymentDetails = ({
                 variant="outline"
                 size="sm"
                 onClick={() => copyToClipboard(walletAddress, 'Address')}
-                className="px-3"
+                className="px-4"
                 aria-label="Copy wallet address"
               >
                 <Copy className="h-4 w-4" />
@@ -108,13 +108,13 @@ const BitcoinPaymentDetails = ({
                 variant="outline"
                 size="sm"
                 onClick={openBlockExplorer}
-                className="px-3"
+                className="px-4"
                 aria-label="View on block explorer"
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
             </div>
-            <p id="wallet-address-description" className="text-xs text-gray-500 mt-1">
+            <p id="wallet-address-description" className="text-sm text-gray-600 mt-2">
               {language === 'en' 
                 ? 'Bitcoin wallet address for payment'
                 : 'Dirección de billetera Bitcoin para el pago'}
@@ -122,7 +122,7 @@ const BitcoinPaymentDetails = ({
           </div>
 
           <div>
-            <Label htmlFor="transaction-id" className="text-sm font-medium text-gray-700">
+            <Label htmlFor="transaction-id" className="text-sm font-medium text-gray-700 mb-2 block">
               {language === 'en' ? 'Transaction ID (Required)' : 'ID de Transacción (Requerido)'}
             </Label>
             <Input
@@ -131,12 +131,12 @@ const BitcoinPaymentDetails = ({
               type="text"
               value={txid}
               onChange={(e) => onTxidChange(e.target.value)}
-              className="mt-1"
+              className="w-full"
               placeholder={language === 'en' ? 'Enter TX ID after sending Bitcoin' : 'Ingresa TX ID después de enviar Bitcoin'}
               required
               aria-describedby="transaction-id-description"
             />
-            <p id="transaction-id-description" className="text-xs text-gray-500 mt-1">
+            <p id="transaction-id-description" className="text-sm text-gray-600 mt-2">
               {language === 'en' 
                 ? 'Enter the transaction ID from your Bitcoin wallet after sending payment'
                 : 'Ingresa el ID de transacción de tu billetera Bitcoin después de enviar el pago'}
@@ -145,7 +145,7 @@ const BitcoinPaymentDetails = ({
         </div>
       </div>
 
-      <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+      <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
         <p className="text-red-700 text-sm font-medium">
           {language === 'en' 
             ? '⚠️ Important: Send the exact amount in Bitcoin equivalent. Orders will be processed once payment is confirmed on the blockchain.'

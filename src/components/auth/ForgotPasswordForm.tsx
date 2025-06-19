@@ -39,8 +39,8 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
         toast({
           title: language === 'en' ? 'Email Sent!' : '¡Correo Enviado!',
           description: language === 'en' 
-            ? 'Check your email for password reset instructions.' 
-            : 'Revisa tu correo para las instrucciones de restablecimiento.',
+            ? 'Check your email for password reset instructions. Also check your spam/junk folder.' 
+            : 'Revisa tu correo para las instrucciones de restablecimiento. También revisa tu carpeta de spam.',
         });
       }
     } catch (error) {
@@ -64,8 +64,8 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
         </h2>
         <p className="text-gray-600">
           {language === 'en' 
-            ? `We've sent password reset instructions to ${email}`
-            : `Hemos enviado instrucciones de restablecimiento a ${email}`}
+            ? `We've sent password reset instructions to ${email}. Please also check your spam/junk folder.`
+            : `Hemos enviado instrucciones de restablecimiento a ${email}. Por favor también revisa tu carpeta de spam.`}
         </p>
         <Button onClick={onBack} className="w-full">
           {language === 'en' ? 'Back to Login' : 'Volver al Inicio de Sesión'}

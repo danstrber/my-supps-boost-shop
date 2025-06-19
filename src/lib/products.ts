@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -70,76 +71,7 @@ export interface Product {
 }
 
 export const products: Product[] = [
-  {
-    id: 'enclo',
-    name: 'Enclomiphene',
-    price: 40.00,
-    image: '/lovable-uploads/80ca5b8b-5b25-4266-a8fe-acffb838a696.png',
-    description: {
-      en: 'Premium Enclomiphene for natural testosterone support and PCT.',
-      es: 'Enclomifeno premium para soporte natural de testosterona y PCT.'
-    },
-    ingredients: 'Enclomiphene Citrate 25mg per capsule',
-    dosage: '25mg daily',
-    capsules: 25,
-    featured: true,
-    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
-    inStock: true,
-    categories: ['pct', 'oral'],
-    specifications: {
-      en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '25 capsules',
-        typicalCycleLength: '4-6 weeks',
-        potencyLevel: 'Moderate'
-      },
-      es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '25 cápsulas',
-        typicalCycleLength: '4-6 semanas',
-        potencyLevel: 'Moderado'
-      }
-    },
-    researchBackground: {
-      en: 'Enclomiphene is a selective estrogen receptor modulator that helps restore natural testosterone production.',
-      es: 'El enclomifeno es un modulador selectivo de receptores de estrógeno que ayuda a restaurar la producción natural de testosterona.'
-    },
-    benefits: {
-      en: 'Supports natural testosterone production, improves libido, and helps with post-cycle recovery.',
-      es: 'Apoya la producción natural de testosterona, mejora la libido y ayuda con la recuperación post-ciclo.'
-    },
-    sideEffects: {
-      en: 'Mild side effects may include mood changes and hot flashes.',
-      es: 'Los efectos secundarios leves pueden incluir cambios de humor y sofocos.'
-    },
-    effectsOnWomen: {
-      en: 'May be used for fertility support in women under medical supervision.',
-      es: 'Puede usarse para apoyo de fertilidad en mujeres bajo supervisión médica.'
-    },
-    howItWorks: {
-      en: 'Blocks estrogen receptors in the brain, stimulating natural testosterone production.',
-      es: 'Bloquea los receptores de estrógeno en el cerebro, estimulando la producción natural de testosterona.'
-    },
-    safetyInformation: {
-      en: 'Monitor hormone levels during use. Consult healthcare provider if pregnant or nursing.',
-      es: 'Monitorear niveles hormonales durante el uso. Consultar proveedor de salud si está embarazada o amamantando.'
-    },
-    cycleInformation: {
-      en: 'Typically used for 4-6 weeks as part of PCT protocol.',
-      es: 'Típicamente usado por 4-6 semanas como parte del protocolo PCT.'
-    },
-    whatToExpect: {
-      en: 'Gradual improvement in energy, mood, and libido as natural testosterone levels recover.',
-      es: 'Mejora gradual en energía, estado de ánimo y libido mientras se recuperan los niveles naturales de testosterona.'
-    },
-    performanceRatings: {
-      muscleGain: 2,
-      strength: 2,
-      fatLoss: 1,
-      sideEffects: 1,
-      retention: 4
-    }
-  },
+  // Featured products first (RAD, MK, Superdrol)
   {
     id: 'rad140',
     name: 'RAD-140 (Testolone)',
@@ -281,71 +213,143 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'aromasin',
-    name: 'Aromasin',
+    id: 'superdrol',
+    name: 'Superdrol',
     price: 25.00,
-    image: '/lovable-uploads/dcea32d8-541f-45c9-b1bf-f74a0c97c0bb.png',
+    image: '/lovable-uploads/71d351ff-45d9-4ad9-91bf-1e5572468693.png',
     description: {
-      en: 'Essential Aromasin (Exemestane) for estrogen control during cycles.',
-      es: 'Aromasin esencial (Exemestano) para control de estrógenos durante ciclos.'
+      en: 'Powerful Superdrol for rapid muscle gains and strength.',
+      es: 'Superdrol potente para ganancias rápidas de músculo y fuerza.'
     },
-    ingredients: 'Exemestane 25mg per capsule',
-    dosage: '12.5-25mg daily',
-    capsules: 10,
+    ingredients: 'Methasterone 10mg per capsule',
+    dosage: '10-20mg daily',
+    capsules: 20,
+    featured: true,
+    labTestFile: '/lovable-uploads/fe9cf414-0d70-446e-8867-3150485e8cc2.png',
     inStock: true,
-    categories: ['aromatase-inhibitor', 'oral'],
+    categories: ['steroids', 'bulking', 'oral'],
     specifications: {
       en: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10 capsules',
-        typicalCycleLength: 'Throughout cycle',
-        potencyLevel: 'High'
+        dosePerCapsule: '10mg',
+        capsulesPerBottle: '20 capsules',
+        typicalCycleLength: '4-6 weeks',
+        potencyLevel: 'Very High'
       },
       es: {
-        dosePerCapsule: '25mg',
-        capsulesPerBottle: '10 cápsulas',
-        typicalCycleLength: 'Durante todo el ciclo',
-        potencyLevel: 'Alto'
+        dosePerCapsule: '10mg',
+        capsulesPerBottle: '20 cápsulas',
+        typicalCycleLength: '4-6 semanas',
+        potencyLevel: 'Muy Alto'
       }
     },
     researchBackground: {
-      en: 'Exemestane is a steroidal aromatase inhibitor used to reduce estrogen levels.',
-      es: 'El exemestano es un inhibidor esteroidal de aromatasa usado para reducir niveles de estrógeno.'
+      en: 'Superdrol is a potent oral anabolic steroid known for rapid muscle gains.',
+      es: 'Superdrol es un esteroide anabólico oral potente conocido por ganancias musculares rápidas.'
     },
     benefits: {
-      en: 'Prevents estrogen-related side effects such as gynecomastia and water retention.',
-      es: 'Previene efectos secundarios relacionados con estrógeno como ginecomastia y retención de agua.'
+      en: 'Rapid muscle mass increase, strength gains, and improved nitrogen retention.',
+      es: 'Aumento rápido de masa muscular, ganancias de fuerza y mejor retención de nitrógeno.'
     },
     sideEffects: {
-      en: 'Possible joint pain, fatigue, and hormonal imbalances.',
-      es: 'Posible dolor articular, fatiga y desequilibrios hormonales.'
+      en: 'High liver toxicity, blood pressure elevation, and hormonal suppression.',
+      es: 'Alta toxicidad hepática, elevación de presión arterial y supresión hormonal.'
     },
     effectsOnWomen: {
-      en: 'Used in postmenopausal women for breast cancer treatment.',
-      es: 'Usado en mujeres posmenopáusicas para tratamiento de cáncer de mama.'
+      en: 'Not recommended due to high virilization risk.',
+      es: 'No recomendado debido al alto riesgo de virilización.'
     },
     howItWorks: {
-      en: 'Irreversibly binds to aromatase enzyme, reducing estrogen synthesis.',
-      es: 'Se une irreversiblemente a la enzima aromatasa, reduciendo la síntesis de estrógeno.'
+      en: 'Enhances protein synthesis and nitrogen retention dramatically.',
+      es: 'Mejora la síntesis de proteínas y la retención de nitrógeno dramáticamente.'
     },
     safetyInformation: {
-      en: 'Monitor bone density and hormone levels during use.',
-      es: 'Monitorear densidad ósea y niveles hormonales durante el uso.'
+      en: 'Requires liver support and regular blood work monitoring.',
+      es: 'Requiere soporte hepático y monitoreo regular de análisis de sangre.'
     },
     cycleInformation: {
-      en: 'Used throughout anabolic steroid cycles to control estrogen.',
-      es: 'Usado durante ciclos de esteroides anabólicos para controlar estrógeno.'
+      en: 'Short cycles of 4-6 weeks maximum due to toxicity.',
+      es: 'Ciclos cortos de 4-6 semanas máximo debido a toxicidad.'
     },
     whatToExpect: {
-      en: 'Reduced estrogenic side effects and improved cycle results.',
-      es: 'Reducción de efectos secundarios estrogénicos y mejora de resultados del ciclo.'
+      en: 'Rapid muscle and strength gains with significant side effect potential.',
+      es: 'Ganancias rápidas de músculo y fuerza con potencial significativo de efectos secundarios.'
     },
     performanceRatings: {
-      muscleGain: 0,
-      strength: 0,
-      fatLoss: 0,
+      muscleGain: 5,
+      strength: 5,
+      fatLoss: 2,
+      sideEffects: 5,
+      retention: 3
+    }
+  },
+  {
+    id: 'enclo',
+    name: 'Enclomiphene',
+    price: 40.00,
+    image: '/lovable-uploads/80ca5b8b-5b25-4266-a8fe-acffb838a696.png',
+    description: {
+      en: 'Premium Enclomiphene for natural testosterone support and PCT.',
+      es: 'Enclomifeno premium para soporte natural de testosterona y PCT.'
+    },
+    ingredients: 'Enclomiphene Citrate 12.5mg per capsule',
+    dosage: '12.5mg daily',
+    capsules: 25,
+    featured: true,
+    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
+    inStock: true,
+    categories: ['pct', 'oral'],
+    specifications: {
+      en: {
+        dosePerCapsule: '12.5mg',
+        capsulesPerBottle: '25 capsules',
+        typicalCycleLength: '4-6 weeks',
+        potencyLevel: 'Moderate'
+      },
+      es: {
+        dosePerCapsule: '12.5mg',
+        capsulesPerBottle: '25 cápsulas',
+        typicalCycleLength: '4-6 semanas',
+        potencyLevel: 'Moderado'
+      }
+    },
+    researchBackground: {
+      en: 'Enclomiphene is a selective estrogen receptor modulator that helps restore natural testosterone production.',
+      es: 'El enclomifeno es un modulador selectivo de receptores de estrógeno que ayuda a restaurar la producción natural de testosterona.'
+    },
+    benefits: {
+      en: 'Supports natural testosterone production, improves libido, and helps with post-cycle recovery.',
+      es: 'Apoya la producción natural de testosterona, mejora la libido y ayuda con la recuperación post-ciclo.'
+    },
+    sideEffects: {
+      en: 'Mild side effects may include mood changes and hot flashes.',
+      es: 'Los efectos secundarios leves pueden incluir cambios de humor y sofocos.'
+    },
+    effectsOnWomen: {
+      en: 'May be used for fertility support in women under medical supervision.',
+      es: 'Puede usarse para apoyo de fertilidad en mujeres bajo supervisión médica.'
+    },
+    howItWorks: {
+      en: 'Blocks estrogen receptors in the brain, stimulating natural testosterone production.',
+      es: 'Bloquea los receptores de estrógeno en el cerebro, estimulando la producción natural de testosterona.'
+    },
+    safetyInformation: {
+      en: 'Monitor hormone levels during use. Consult healthcare provider if pregnant or nursing.',
+      es: 'Monitorear niveles hormonales durante el uso. Consultar proveedor de salud si está embarazada o amamantando.'
+    },
+    cycleInformation: {
+      en: 'Typically used for 4-6 weeks as part of PCT protocol.',
+      es: 'Típicamente usado por 4-6 semanas como parte del protocolo PCT.'
+    },
+    whatToExpect: {
+      en: 'Gradual improvement in energy, mood, and libido as natural testosterone levels recover.',
+      es: 'Mejora gradual en energía, estado de ánimo y libido mientras se recuperan los niveles naturales de testosterona.'
+    },
+    performanceRatings: {
+      muscleGain: 2,
+      strength: 2,
+      fatLoss: 1,
       sideEffects: 1,
-      retention: 0
+      retention: 4
     }
   },
   {
@@ -419,73 +423,71 @@ export const products: Product[] = [
     }
   },
   {
-    id: 'superdrol',
-    name: 'Superdrol',
+    id: 'aromasin',
+    name: 'Aromasin',
     price: 25.00,
-    image: '/lovable-uploads/71d351ff-45d9-4ad9-91bf-1e5572468693.png',
+    image: '',
     description: {
-      en: 'Powerful Superdrol for rapid muscle gains and strength.',
-      es: 'Superdrol potente para ganancias rápidas de músculo y fuerza.'
+      en: 'Essential Aromasin (Exemestane) for estrogen control during cycles.',
+      es: 'Aromasin esencial (Exemestano) para control de estrógenos durante ciclos.'
     },
-    ingredients: 'Methasterone 10mg per capsule',
-    dosage: '10-20mg daily',
-    capsules: 20,
-    featured: true,
-    labTestFile: '/lovable-uploads/fe9cf414-0d70-446e-8867-3150485e8cc2.png',
+    ingredients: 'Exemestane 25mg per capsule',
+    dosage: '12.5-25mg daily',
+    capsules: 10,
     inStock: true,
-    categories: ['steroids', 'bulking', 'oral'],
+    categories: ['aromatase-inhibitor', 'oral'],
     specifications: {
       en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '20 capsules',
-        typicalCycleLength: '4-6 weeks',
-        potencyLevel: 'Very High'
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10 capsules',
+        typicalCycleLength: 'Throughout cycle',
+        potencyLevel: 'High'
       },
       es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '20 cápsulas',
-        typicalCycleLength: '4-6 semanas',
-        potencyLevel: 'Muy Alto'
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10 cápsulas',
+        typicalCycleLength: 'Durante todo el ciclo',
+        potencyLevel: 'Alto'
       }
     },
     researchBackground: {
-      en: 'Superdrol is a potent oral anabolic steroid known for rapid muscle gains.',
-      es: 'Superdrol es un esteroide anabólico oral potente conocido por ganancias musculares rápidas.'
+      en: 'Exemestane is a steroidal aromatase inhibitor used to reduce estrogen levels.',
+      es: 'El exemestano es un inhibidor esteroidal de aromatasa usado para reducir niveles de estrógeno.'
     },
     benefits: {
-      en: 'Rapid muscle mass increase, strength gains, and improved nitrogen retention.',
-      es: 'Aumento rápido de masa muscular, ganancias de fuerza y mejor retención de nitrógeno.'
+      en: 'Prevents estrogen-related side effects such as gynecomastia and water retention.',
+      es: 'Previene efectos secundarios relacionados con estrógeno como ginecomastia y retención de agua.'
     },
     sideEffects: {
-      en: 'High liver toxicity, blood pressure elevation, and hormonal suppression.',
-      es: 'Alta toxicidad hepática, elevación de presión arterial y supresión hormonal.'
+      en: 'Possible joint pain, fatigue, and hormonal imbalances.',
+      es: 'Posible dolor articular, fatiga y desequilibrios hormonales.'
     },
     effectsOnWomen: {
-      en: 'Not recommended due to high virilization risk.',
-      es: 'No recomendado debido al alto riesgo de virilización.'
+      en: 'Used in postmenopausal women for breast cancer treatment.',
+      es: 'Usado en mujeres posmenopáusicas para tratamiento de cáncer de mama.'
     },
     howItWorks: {
-      en: 'Enhances protein synthesis and nitrogen retention dramatically.',
-      es: 'Mejora la síntesis de proteínas y la retención de nitrógeno dramáticamente.'
+      en: 'Irreversibly binds to aromatase enzyme, reducing estrogen synthesis.',
+      es: 'Se une irreversiblemente a la enzima aromatasa, reduciendo la síntesis de estrógeno.'
     },
     safetyInformation: {
-      en: 'Requires liver support and regular blood work monitoring.',
-      es: 'Requiere soporte hepático y monitoreo regular de análisis de sangre.'
+      en: 'Monitor bone density and hormone levels during use.',
+      es: 'Monitorear densidad ósea y niveles hormonales durante el uso.'
     },
     cycleInformation: {
-      en: 'Short cycles of 4-6 weeks maximum due to toxicity.',
-      es: 'Ciclos cortos de 4-6 semanas máximo debido a toxicidad.'
+      en: 'Used throughout anabolic steroid cycles to control estrogen.',
+      es: 'Usado durante ciclos de esteroides anabólicos para controlar estrógeno.'
     },
-    whatToExpected: {
-      en: 'Rapid muscle and strength gains with significant side effect potential.',
-      es: 'Ganancias rápidas de músculo y fuerza con potencial significativo de efectos secundarios.'
+    whatToExpect: {
+      en: 'Reduced estrogenic side effects and improved cycle results.',
+      es: 'Reducción de efectos secundarios estrogénicos y mejora de resultados del ciclo.'
     },
     performanceRatings: {
-      muscleGain: 5,
-      strength: 5,
-      fatLoss: 2,
-      sideEffects: 5,
-      retention: 3
+      muscleGain: 0,
+      strength: 0,
+      fatLoss: 0,
+      sideEffects: 1,
+      retention: 0
     }
   }
 ];

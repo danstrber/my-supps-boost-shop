@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { createOrder, updateUserSpending } from '@/lib/purchase-tracking';
@@ -70,7 +69,7 @@ const PaymentModal = ({
   const timerRef = useRef<NodeJS.Timeout>();
 
   // Use correct BTC address
-  const BITCOIN_ADDRESS = "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh";
+  const BITCOIN_ADDRESS = "3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR";
 
   useEffect(() => {
     if (step === 'bitcoin' && paymentTimer > 0) {
@@ -183,6 +182,30 @@ const PaymentModal = ({
       
       console.log('Order created successfully:', order);
 
+      // Send order to Formspree
+      if (paymentMethod === 'bitcoin' && txid.trim()) {
+        try {
+          const formData = new FormData();
+          formData.append('order_id', order.id);
+          formData.append('user_email', user.email || '');
+          formData.append('payment_method', 'Bitcoin');
+          formData.append('total_amount', total.toString());
+          formData.append('transaction_id', txid);
+          formData.append('bitcoin_address', bitcoinAddress);
+          formData.append('order_details', JSON.stringify(cartItems));
+          formData.append('shipping_info', JSON.stringify(shippingInfo));
+
+          await fetch('https://formspree.io/f/mqaqvlye', {
+            method: 'POST',
+            body: formData
+          });
+
+          console.log('Order sent to Formspree successfully');
+        } catch (formspreeError) {
+          console.error('Error sending to Formspree:', formspreeError);
+        }
+      }
+
       // Update user spending
       await updateUserSpending(user.id, total);
 
@@ -258,7 +281,7 @@ const PaymentModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={handleClose}>
-        <DialogContent className="max-w-5xl max-h-[95vh] overflow-y-auto">
+        <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">
               {step === 'shipping' && 'Shipping Information'}
@@ -291,23 +314,27 @@ const PaymentModal = ({
 
               {step === 'payment' && (
                 <div className="space-y-6">
-                  <PaymentMethodInfo paymentMethod="telegram" />
-                  <PaymentMethodInfo paymentMethod="bitcoin" />
+                  <div className="grid grid-cols-1 gap-6">
+                    <PaymentMethodInfo paymentMethod="telegram" />
+                    <PaymentMethodInfo paymentMethod="bitcoin" />
+                  </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button 
                       onClick={() => handlePaymentMethodSelect('telegram')}
-                      className="py-4 text-lg bg-blue-600 hover:bg-blue-700"
+                      className="py-6 text-lg bg-blue-600 hover:bg-blue-700 flex items-center justify-center space-x-3"
                       size="lg"
                     >
-                      💬 Pay with Telegram
+                      <span className="text-2xl">💬</span>
+                      <span>Pay with Telegram</span>
                     </Button>
                     <Button 
                       onClick={() => handlePaymentMethodSelect('bitcoin')}
-                      className="py-4 text-lg bg-orange-600 hover:bg-orange-700"
+                      className="py-6 text-lg bg-orange-600 hover:bg-orange-700 flex items-center justify-center space-x-3"
                       size="lg"
                     >
-                      ₿ Pay with Bitcoin
+                      <span className="text-2xl">₿</span>
+                      <span>Pay with Bitcoin</span>
                     </Button>
                   </div>
                 </div>
@@ -330,22 +357,9 @@ const PaymentModal = ({
                     language="en"
                   />
                   
-                  <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
-                    <h4 className="font-semibold text-yellow-800 mb-2">Enter Transaction ID</h4>
-                    <Input
-                      value={txid}
-                      onChange={(e) => setTxid(e.target.value)}
-                      placeholder="Paste your Bitcoin transaction ID here..."
-                      className="w-full"
-                    />
-                    <p className="text-sm text-yellow-700 mt-2">
-                      After sending Bitcoin, copy the transaction ID from your wallet and paste it above.
-                    </p>
-                  </div>
-                  
                   <Button 
                     onClick={handlePaymentComplete}
-                    className="w-full py-3 text-lg"
+                    className="w-full py-4 text-lg bg-green-600 hover:bg-green-700"
                     disabled={processing || !txid.trim()}
                   >
                     {processing ? 'Processing...' : 'Complete Bitcoin Payment'}
