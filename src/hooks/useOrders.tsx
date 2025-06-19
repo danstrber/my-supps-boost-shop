@@ -29,11 +29,11 @@ export const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { userProfile } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const fetchOrders = async () => {
-    if (!userProfile?.auth_id) {
+    if (!user) {
       setLoading(false);
       return;
     }
@@ -45,7 +45,7 @@ export const useOrders = () => {
       const { data, error: fetchError } = await supabase
         .from('orders')
         .select('*')
-        .eq('user_id', userProfile.auth_id)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (fetchError) {
@@ -64,9 +64,9 @@ export const useOrders = () => {
         id: order.id,
         date: order.created_at,
         total: order.final_total,
-        status: (order.status || 'pending') as 'pending' | 'confirmed' | 'shipped' | 'delivered',
-        verification_status: (order.verification_status || 'pending') as 'pending' | 'verified' | 'failed',
-        items: Array.isArray(order.items) ? JSON.parse(order.items as unknown as string) : [],
+        status: order.status || 'pending',
+        verification_status: order.verification_status || 'pending',
+        items: Array.isArray(order.items) ? order.items : [],
         transaction_hash: order.transaction_hash,
         bitcoin_address: order.bitcoin_address,
         bitcoin_amount: order.bitcoin_amount
@@ -88,7 +88,7 @@ export const useOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [userProfile]);
+  }, [user]);
 
   return {
     orders,

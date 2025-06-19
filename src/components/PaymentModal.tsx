@@ -52,8 +52,8 @@ const PaymentModal = ({
   const [transactionId, setTransactionId] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [bitcoinAddress, setBitcoinAddress] = useState('bc1qxy2kgdygjrsqtzq2yr8yr3ylk69swq2x83kppa');
-  const { userProfile } = useAuth();
+  const [bitcoinAddress, setBitcoinAddress] = useState('bc1qxy2kgdygjrsqtzq2yr8yr3ylk69swq2x83kppa'); // Replace with actual address
+  const { user } = useAuth();
 
   const text = {
     en: {
@@ -122,7 +122,7 @@ const PaymentModal = ({
   };
 
   const handleSubmitOrder = async () => {
-    if (!userProfile?.auth_id) {
+    if (!user) {
       console.error('User not authenticated');
       return;
     }
@@ -137,9 +137,46 @@ const PaymentModal = ({
     setVerificationError('');
 
     try {
-      console.log('🚀 Starting Bitcoin verification...');
+      console.log('🚀 Starting order submission process...');
       
-      // First verify the Bitcoin transaction
+      // First, save the order to database with pending verification
+      const orderData = {
+        user_id: user.id,
+        items: cartItems,
+        original_total: orderTotal,
+        discount_amount: discount,
+        shipping_fee: 10,
+        final_total: finalTotal,
+        payment_method: 'bitcoin',
+        bitcoin_address: bitcoinAddress,
+        bitcoin_amount: finalTotal,
+        transaction_hash: transactionId.trim(),
+        verification_status: 'pending',
+        status: 'pending',
+        payment_details: {
+          shipping_info: shippingInfo,
+          bitcoin_address: bitcoinAddress,
+          expected_amount: finalTotal
+        }
+      };
+
+      const { data: orderResult, error: orderError } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select()
+        .single();
+
+      if (orderError) {
+        console.error('❌ Error creating order:', orderError);
+        throw new Error('Failed to create order');
+      }
+
+      const newOrderId = orderResult.id;
+      setOrderId(newOrderId);
+      console.log('✅ Order created successfully:', newOrderId);
+
+      // Now verify the Bitcoin transaction
+      console.log('🔍 Starting Bitcoin verification...');
       const verificationResult = await BitcoinVerificationService.verifyTransaction(
         transactionId.trim(),
         bitcoinAddress,
@@ -149,79 +186,55 @@ const PaymentModal = ({
       console.log('🔍 Verification result:', verificationResult);
 
       if (verificationResult.isValid) {
-        // Only save order AFTER successful verification
+        // Transaction verified successfully
         console.log('✅ Bitcoin transaction verified successfully!');
         
-        const orderData = {
-          user_id: userProfile.auth_id,
-          items: JSON.stringify(cartItems),
-          original_total: orderTotal,
-          discount_amount: discount,
-          shipping_fee: 10,
-          final_total: finalTotal,
-          payment_method: 'bitcoin',
-          bitcoin_address: bitcoinAddress,
-          bitcoin_amount: finalTotal,
-          transaction_hash: transactionId.trim(),
-          verification_status: 'verified' as const,
-          status: 'confirmed' as const,
-          verified_at: new Date().toISOString(),
-          verification_details: JSON.stringify(verificationResult.details),
-          payment_details: JSON.stringify({
-            shipping_info: shippingInfo,
-            bitcoin_address: bitcoinAddress,
-            expected_amount: finalTotal
-          })
-        };
-
-        const { data: orderResult, error: orderError } = await supabase
+        // Update order status to confirmed
+        const { error: updateError } = await supabase
           .from('orders')
-          .insert(orderData)
-          .select()
-          .single();
+          .update({
+            verification_status: 'verified',
+            status: 'confirmed',
+            verified_at: new Date().toISOString(),
+            verification_details: verificationResult.details
+          })
+          .eq('id', newOrderId);
 
-        if (orderError) {
-          console.error('❌ Error creating order:', orderError);
-          throw new Error('Failed to create order');
+        if (updateError) {
+          console.error('❌ Error updating order status:', updateError);
         }
 
-        const newOrderId = orderResult.id;
-        setOrderId(newOrderId);
-        console.log('✅ Order created successfully:', newOrderId);
-
-        // Send confirmation email
+        // Only send email AFTER successful verification
         console.log('📧 Sending confirmation email...');
         try {
           const emailData = {
-            customerEmail: userProfile.email || '',
-            customerName: userProfile.name || userProfile.email || 'Customer',
-            items: cartItems.map(item => ({
-              id: item.product.id,
-              name: item.product.name,
-              price: item.product.price,
-              quantity: item.quantity
-            })),
-            originalTotal: orderTotal,
-            discountAmount: discount,
-            shippingFee: 10,
-            finalTotal: finalTotal,
-            paymentMethod: 'Bitcoin (BTC)',
-            paymentDetails: {
-              transactionId: transactionId.trim(),
-              bitcoinAddress,
-              verificationStatus: 'verified',
-              shippingInfo
-            }
+            email: user.email,
+            name: user.user_metadata?.name || user.email || 'Customer',
+            orderId: newOrderId,
+            items: cartItems.map(item => `${item.product.name} x${item.quantity}`).join(', '),
+            total: finalTotal.toFixed(2),
+            transactionId: transactionId.trim(),
+            bitcoinAddress,
+            verificationStatus: 'verified',
+            language: language
           };
 
-          const response = await supabase.functions.invoke('send-order-email', {
-            body: emailData
+          const response = await fetch('https://formspree.io/f/xdkojken', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...emailData,
+              subject: `${language === 'en' ? 'Order Confirmed' : 'Pedido Confirmado'} #${newOrderId}`,
+              message: `${language === 'en' ? 'Bitcoin payment verified and order confirmed' : 'Pago de Bitcoin verificado y pedido confirmado'}`
+            })
           });
 
-          if (response.error) {
-            console.error('❌ Email sending failed:', response.error);
-          } else {
+          if (response.ok) {
             console.log('✅ Email sent successfully');
+          } else {
+            console.error('❌ Email sending failed');
           }
         } catch (emailError) {
           console.error('❌ Email error:', emailError);
@@ -231,8 +244,26 @@ const PaymentModal = ({
         setShowSuccessModal(true);
         
       } else {
-        // Verification failed - don't save order
+        // Verification failed
         console.log('❌ Bitcoin verification failed:', verificationResult.error);
+        
+        // Update order with failed verification
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({
+            verification_status: 'failed',
+            verification_details: {
+              error: verificationResult.error,
+              errorMessage: verificationResult.errorMessage,
+              attempts: 1
+            }
+          })
+          .eq('id', newOrderId);
+
+        if (updateError) {
+          console.error('❌ Error updating failed verification:', updateError);
+        }
+
         setVerificationStatus('failed');
         setVerificationError(verificationResult.errorMessage || 'Verification failed');
       }
@@ -247,6 +278,8 @@ const PaymentModal = ({
   };
 
   const handleRetryVerification = async () => {
+    if (!orderId) return;
+    
     setIsRetrying(true);
     setVerificationError('');
     
@@ -260,7 +293,21 @@ const PaymentModal = ({
       );
 
       if (verificationResult.isValid) {
-        await handleSubmitOrder();
+        // Update order status
+        const { error: updateError } = await supabase
+          .from('orders')
+          .update({
+            verification_status: 'verified',
+            status: 'confirmed',
+            verified_at: new Date().toISOString(),
+            verification_details: verificationResult.details
+          })
+          .eq('id', orderId);
+
+        if (!updateError) {
+          setVerificationStatus('success');
+          setShowSuccessModal(true);
+        }
       } else {
         setVerificationError(verificationResult.errorMessage || 'Verification failed');
       }
@@ -305,7 +352,7 @@ const PaymentModal = ({
                 />
                 <PaymentTimer onExpired={handlePaymentExpired} language={language} />
                 <PaymentMethodInfo
-                  address={bitcoinAddress}
+                  bitcoinAddress={bitcoinAddress}
                   amount={finalTotal}
                   language={language}
                 />
@@ -324,7 +371,7 @@ const PaymentModal = ({
                       value={bitcoinAddress}
                       readOnly
                       onClick={(e) => {
-                        (e.target as HTMLInputElement).select();
+                        e.target.select();
                         copyToClipboard(bitcoinAddress);
                       }}
                     />
@@ -339,7 +386,7 @@ const PaymentModal = ({
                       value={finalTotal.toFixed(8)}
                       readOnly
                       onClick={(e) => {
-                        (e.target as HTMLInputElement).select();
+                        e.target.select();
                         copyToClipboard(finalTotal.toFixed(8));
                       }}
                     />
@@ -422,7 +469,7 @@ const PaymentModal = ({
               {isSubmitting ? (
                 <>
                   <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
-                  {verificationStatus === 'verifying' ? t.verifyingTransaction : t.processing}
+                  {verificationStatus === 'verifying' ? t.verifying : t.processing}
                 </>
               ) : (
                 t.submitOrder

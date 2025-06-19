@@ -1,21 +1,18 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
 export interface UserProfile {
   id: string;
   auth_id: string;
-  name: string;
-  email: string;
+  name: string | null;
+  email: string | null;
   referral_code: string;
   referred_by: string | null;
   total_spending: number;
   referred_spending: number;
   created_at: string;
   updated_at: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
 }
 
 export const signUp = async (email: string, password: string, name?: string, referralCode?: string) => {

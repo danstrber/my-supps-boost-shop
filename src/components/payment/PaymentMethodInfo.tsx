@@ -2,35 +2,10 @@
 import React from 'react';
 
 interface PaymentMethodInfoProps {
-  paymentMethod?: 'telegram' | 'bitcoin';
-  address?: string;
-  amount?: number;
-  language?: 'en' | 'es';
+  paymentMethod: 'telegram' | 'bitcoin';
 }
 
-const PaymentMethodInfo = ({ paymentMethod, address, amount, language = 'en' }: PaymentMethodInfoProps) => {
-  // If address and amount are provided, show Bitcoin payment info
-  if (address && amount) {
-    return (
-      <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-        <h4 className="font-semibold text-orange-800 mb-2">
-          ₿ Bitcoin Payment Details
-        </h4>
-        <div className="space-y-3">
-          <div>
-            <p className="text-sm font-medium text-orange-700 mb-1">Bitcoin Address:</p>
-            <p className="font-mono text-xs bg-orange-100 p-2 rounded break-all">{address}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-orange-700 mb-1">Amount:</p>
-            <p className="font-mono text-sm bg-orange-100 p-2 rounded">{amount.toFixed(8)} BTC</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Default behavior based on paymentMethod
+const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
   switch (paymentMethod) {
     case 'telegram':
       return (

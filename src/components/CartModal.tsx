@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -200,16 +199,11 @@ const CartModal = ({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={handlePaymentModalClose}
-        cartItems={cartItems}
-        orderTotal={subtotal}
-        discount={discountAmount}
-        shippingInfo={{
-          address: userProfile?.address || '',
-          city: userProfile?.city || '',
-          state: userProfile?.state || '',
-          zipCode: userProfile?.zipCode || ''
-        }}
-        language="en"
+        cart={cart}
+        products={products}
+        userDiscount={discountAmount}
+        userProfile={userProfile}
+        onOrderSuccess={handleOrderSuccess}
       />
     </>
   );
