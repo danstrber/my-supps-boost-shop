@@ -92,11 +92,17 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       console.log('🔄 Making Supabase insert request...');
       
-      // Calculate final_total properly
-      const calculatedFinalTotal = orderData.original_total - orderData.discount_amount + orderData.shipping_fee;
+      // Prepare the order data with all required fields
       const finalOrderData = {
-        ...orderData,
-        final_total: calculatedFinalTotal
+        user_id: orderData.user_id,
+        items: orderData.items,
+        original_total: Number(orderData.original_total),
+        discount_amount: Number(orderData.discount_amount || 0),
+        shipping_fee: Number(orderData.shipping_fee || 7.5),
+        final_total: Number(orderData.original_total) - Number(orderData.discount_amount || 0) + Number(orderData.shipping_fee || 7.5),
+        payment_method: orderData.payment_method,
+        payment_details: orderData.payment_details,
+        status: orderData.status || 'pending'
       };
       
       console.log('📊 Final order data with calculated total:', finalOrderData);
@@ -135,9 +141,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       emailFormData.append('customerName', orderData.payment_details.fullName);
       emailFormData.append('items', JSON.stringify(orderData.items));
       emailFormData.append('originalTotal', orderData.original_total.toString());
-      emailFormData.append('discountAmount', orderData.discount_amount.toString());
-      emailFormData.append('shippingFee', orderData.shipping_fee.toString());
-      emailFormData.append('finalTotal', (orderData.original_total - orderData.discount_amount + orderData.shipping_fee).toString());
+      emailFormData.append('discountAmount', (orderData.discount_amount || 0).toString());
+      emailFormData.append('shippingFee', (orderData.shipping_fee || 7.5).toString());
+      emailFormData.append('finalTotal', (Number(orderData.original_total) - Number(orderData.discount_amount || 0) + Number(orderData.shipping_fee || 7.5)).toString());
       emailFormData.append('paymentMethod', orderData.payment_method);
       emailFormData.append('txId', orderData.payment_details.txId || '');
       emailFormData.append('address', `${orderData.payment_details.address}, ${orderData.payment_details.city}, ${orderData.payment_details.state} ${orderData.payment_details.zipCode}, ${orderData.payment_details.country}`);
@@ -223,15 +229,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       console.log('💾 Creating Bitcoin order in database...');
 
+      const originalTotal = calculateTotalUSD() - 7.5;
+      const discountAmount = userDiscount;
+      const shippingFee = 7.5;
+
       const orderData = {
         user_id: userProfile?.auth_id,
         items: Object.entries(cart).map(([id, qty]) => {
           const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
           return { id, name: p.name, price: p.price, quantity: qty };
         }),
-        original_total: calculateTotalUSD() - 7.5,
-        discount_amount: userDiscount,
-        shipping_fee: 7.5,
+        original_total: originalTotal,
+        discount_amount: discountAmount,
+        shipping_fee: shippingFee,
         payment_method: 'bitcoin',
         payment_details: { ...formData, txId },
         status: 'pending'
@@ -245,12 +255,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       await sendOrderEmail(orderData);
       console.log('✅ Email sent successfully');
       
+      // Clear cart and close modal
       onOrderSuccess();
       onClose();
       
       toast({
-        title: 'Order Placed Successfully!',
-        description: `Your order #${createdOrder.id.slice(-8)} has been submitted. We will verify payment and process your order.`,
+        title: '🎉 Order Placed Successfully!',
+        description: `Your order #${createdOrder.id.slice(-8)} has been submitted. We will verify payment and process your order within 24 hours.`,
+        duration: 8000,
       });
       
     } catch (err: any) {
@@ -266,6 +278,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setStep(1);
     setError(null);
     setShowTelegramModal(false);
+    setTxId('');
     onClose();
   };
 
@@ -396,7 +409,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
               <div className="mb-6">
                 <label htmlFor="txId" className="block text-sm font-medium text-gray-700 mb-2">
-                  Transaction ID
+                  Transaction ID (Required)
                 </label>
                 <input 
                   id="txId"

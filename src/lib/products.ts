@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -271,7 +270,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 6-8 weeks maximum. Longer cycles increase suppression risk.',
       es: 'Ciclos típicos: 6-8 semanas máximo. Ciclos más largos aumentan el riesgo de supresión.'
     },
-    whatToExpected: {
+    whatToExpect: {
       en: 'Users report 8-15 lbs of lean muscle gain in 6-8 weeks with exceptional strength increases.',
       es: 'Los usuarios reportan 8-15 lbs de ganancia de músculo magro en 6-8 semanas con aumentos excepcionales de fuerza.'
     },
@@ -353,7 +352,7 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
-    image: '/lovable-uploads/placeholder-image.png',
+    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png', // Using enclomiphene image temporarily
     categories: ['pct', 'ai'],
     featured: false,
     inStock: true,

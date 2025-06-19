@@ -78,20 +78,28 @@ const Header = ({
                 <span className="md:hidden">🏆 COACH</span>
               </Button>
 
-              {/* Language Selector with flag and text */}
-              <div className="flex items-center space-x-1 border border-gray-300 rounded-lg px-2 py-1">
+              {/* Enhanced Language Selector */}
+              <div className="flex items-center space-x-2 bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 hover:bg-gray-100 transition-colors">
                 <Globe className="h-4 w-4 text-gray-600" />
-                <span className="text-sm text-gray-600 hidden sm:inline">Language</span>
-                <span className="text-lg">{language === 'en' ? '🇺🇸' : '🇪🇸'}</span>
-                <Select value={language} onValueChange={onLanguageChange}>
-                  <SelectTrigger className="w-12 border-0 p-0 h-auto">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">EN</SelectItem>
-                    <SelectItem value="es">ES</SelectItem>
-                  </SelectContent>
-                </Select>
+                <span className="text-sm font-medium text-gray-700 hidden sm:inline">Language</span>
+                <div className="flex items-center space-x-1">
+                  <span className="text-lg">{language === 'en' ? '🇺🇸' : '🇪🇸'}</span>
+                  <Select value={language} onValueChange={onLanguageChange}>
+                    <SelectTrigger className="w-16 border-0 p-0 h-auto bg-transparent">
+                      <SelectValue className="text-sm font-medium">
+                        {language === 'en' ?  'EN' : 'ES'}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en" className="flex items-center space-x-2">
+                        <span>🇺🇸 EN</span>
+                      </SelectItem>
+                      <SelectItem value="es" className="flex items-center space-x-2">
+                        <span>🇪🇸 ES</span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               {/* Auth Buttons */}
