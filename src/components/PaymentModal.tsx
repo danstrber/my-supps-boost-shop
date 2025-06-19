@@ -273,7 +273,7 @@ We'll contact you there for order updates and support!`;
 
       console.log('🔍 Starting Bitcoin transaction verification...');
 
-      // Verify the Bitcoin transaction
+      // Verify the Bitcoin transaction FIRST
       const verificationResult = await BitcoinVerificationService.verifyTransaction(
         txId,
         myAddress,
@@ -318,17 +318,18 @@ We'll contact you there for order updates and support!`;
         verificationDetails: verificationResult.details
       };
 
+      // ONLY save and confirm orders if verification is successful
       if (verificationResult.isValid) {
-        console.log('✅ Transaction verified! Processing order...');
+        console.log('✅ Transaction verified! Saving and confirming order...');
         
-        // Save to database first
+        // Save to database with confirmed status
         await saveOrderToDatabase(orderData);
         
         // Send confirmation email
         await sendOrderEmail(orderData);
         
         toast({
-          title: '✅ Payment Verified!',
+          title: '✅ Payment Verified & Order Confirmed!',
           description: 'Your Bitcoin payment has been verified and your order is confirmed.',
         });
 
@@ -344,30 +345,29 @@ We'll contact you there for order updates and support!`;
         onClose();
         
       } else {
-        console.log('❌ Transaction verification failed:', verificationResult.error);
+        console.log('❌ Transaction verification failed - ORDER NOT SAVED');
         
-        // Still save the order but with failed status
-        await saveOrderToDatabase(orderData);
-        
-        // Send email about failed verification
-        await sendOrderEmail(orderData);
-        
+        // Do NOT save failed orders to database
         setError(
           `Payment verification failed: ${verificationResult.error}. ` +
-          `Please check your transaction ID and try again, or contact support.`
+          `Please check your transaction ID and try again, or contact support. Your order was not processed.`
         );
         
         toast({
           title: '❌ Payment Verification Failed',
-          description: verificationResult.error,
+          description: 'Order not saved. Please verify your transaction and try again.',
           variant: 'destructive'
         });
       }
       
     } catch (err: any) {
       console.error('❌ Error in handleConfirm:', err);
-      setError(err.message);
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
+      setError(`Verification error: ${err.message}. Order not processed.`);
+      toast({ 
+        title: 'Verification Error', 
+        description: 'Order not processed due to verification error. Please try again.', 
+        variant: 'destructive' 
+      });
     } finally {
       setIsLoading(false);
       setIsVerifying(false);

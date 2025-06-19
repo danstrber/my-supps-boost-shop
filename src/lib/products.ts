@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -418,7 +419,7 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 45,
-    image: '',
+    image: '/lovable-uploads/63f9d2b1-4c72-40c0-8434-8e48cade7de5.png',
     categories: ['pct'],
     featured: false,
     inStock: true,
