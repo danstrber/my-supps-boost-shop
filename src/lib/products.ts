@@ -1,9 +1,10 @@
+
 export interface Product {
   id: string;
   name: string;
   price: number;
   images: string[];
-  description: string;
+  description: string | { [key: string]: string };
   sideEffects: string;
   categories: string[];
   specifications: { [key: string]: string };

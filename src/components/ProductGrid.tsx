@@ -95,7 +95,10 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {typeof product.description === 'object' ? product.description[language] : product.description}
+                  {typeof product.description === 'object' 
+                    ? product.description?.[language] || product.description?.['en'] || ''
+                    : product.description || ''
+                  }
                 </p>
 
                 {/* Dose and Capsule Info */}
