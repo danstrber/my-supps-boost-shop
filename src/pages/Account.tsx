@@ -42,7 +42,6 @@ const Account = ({
   const { userProfile, loading } = useAuth();
   const { cart, handleUpdateCart } = useCart();
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [orders, setOrders] = useState([]);
   const { toast } = useToast();
 
   // Calculate user discount based on the rules
@@ -95,34 +94,6 @@ const Account = ({
       </div>
     );
   }
-
-  // Mock orders data (replace with actual API call)
-  useEffect(() => {
-    // This would normally fetch from your database
-    const mockOrders = [
-      {
-        id: 'ORD-1234567890-123',
-        date: '2024-01-15',
-        total: 142.50,
-        status: 'delivered',
-        items: [
-          { name: 'MK-677 (Ibutamoren)', quantity: 1, price: 45 },
-          { name: 'Clenbuterol', quantity: 2, price: 45 }
-        ]
-      },
-      {
-        id: 'ORD-1234567891-124',
-        date: '2024-01-10',
-        total: 97.50,
-        status: 'pending',
-        items: [
-          { name: 'Aromasin (Exemestane)', quantity: 1, price: 45 },
-          { name: 'MK-677 (Ibutamoren)', quantity: 1, price: 45 }
-        ]
-      }
-    ];
-    setOrders(mockOrders);
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -193,7 +164,7 @@ const Account = ({
 
           {/* Order History */}
           <div className="mb-6">
-            <OrderHistory language={language} orders={orders} />
+            <OrderHistory language={language} />
           </div>
 
           {/* Two-Factor Authentication Settings */}

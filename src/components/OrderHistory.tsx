@@ -19,22 +19,45 @@ interface Order {
 
 interface OrderHistoryProps {
   language: 'en' | 'es';
-  orders: Order[];
 }
 
 type SortField = 'date' | 'total' | 'status' | 'id';
 type SortDirection = 'asc' | 'desc';
 
-const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
+const OrderHistory: React.FC<OrderHistoryProps> = ({ language }) => {
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  // Mock orders data that would come from Formspree webhooks or API
+  const mockOrders: Order[] = [
+    {
+      id: 'ORD-1234567890-123',
+      date: '2024-01-15',
+      total: 142.50,
+      status: 'delivered',
+      items: [
+        { name: 'MK-677 (Ibutamoren)', quantity: 1, price: 45 },
+        { name: 'Clenbuterol', quantity: 2, price: 45 }
+      ]
+    },
+    {
+      id: 'ORD-1234567891-124',
+      date: '2024-01-10',
+      total: 97.50,
+      status: 'pending',
+      items: [
+        { name: 'Aromasin (Exemestane)', quantity: 1, price: 45 },
+        { name: 'MK-677 (Ibutamoren)', quantity: 1, price: 45 }
+      ]
+    }
+  ];
 
   const text = {
     en: {
       title: 'Order History',
       noOrders: 'No orders found',
       noOrdersDesc: 'You haven\'t placed any orders yet.',
-      orderNumber: 'Order #',
+      orderNumber: '# Order',
       status: 'Status',
       total: 'Total',
       date: 'Date',
@@ -48,7 +71,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
       title: 'Historial de Pedidos',
       noOrders: 'No se encontraron pedidos',
       noOrdersDesc: 'Aún no has realizado ningún pedido.',
-      orderNumber: 'Pedido #',
+      orderNumber: '# Pedido',
       status: 'Estado',
       total: 'Total',
       date: 'Fecha',
@@ -96,7 +119,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
     return sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
-  const sortedOrders = [...orders].sort((a, b) => {
+  const sortedOrders = [...mockOrders].sort((a, b) => {
     let aValue: any, bValue: any;
     
     switch (sortField) {
@@ -136,7 +159,7 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ language, orders }) => {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        {orders.length === 0 ? (
+        {mockOrders.length === 0 ? (
           <div className="text-center py-12 px-4">
             <Package className="h-16 w-16 mx-auto text-gray-400 mb-6" />
             <h3 className="text-xl font-semibold text-gray-900 mb-3">{t.noOrders}</h3>

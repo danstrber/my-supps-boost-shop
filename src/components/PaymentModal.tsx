@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -5,7 +6,6 @@ import ShippingForm from './payment/ShippingForm';
 import BitcoinTutorial from './payment/BitcoinTutorial';
 import OrderSuccessModal from './OrderSuccessModal';
 import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
-import { supabase } from '@/integrations/supabase/client';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -75,14 +75,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const sendOrderEmailFormspree = async (orderData: any) => {
-    console.log('📧 Sending order email via Formspree...');
+    console.log('📧 Sending order collection email via Formspree...');
     try {
-      const telegramInfo = `
-
-🔹 For faster replies and 1-on-1 communications, join our Telegram group:
-📱 Telegram: https://t.me/DANSTRBER
-
-We'll contact you there for order updates and support!`;
+      // Format items for better readability
+      const itemsFormatted = orderData.items.map((item: any) => 
+        `${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
+      ).join('\n');
 
       const response = await fetch('https://formspree.io/f/mqaqvlye', {
         method: 'POST',
@@ -91,36 +89,30 @@ We'll contact you there for order updates and support!`;
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          customerEmail: orderData.customerEmail,
-          customerName: orderData.customerName,
           orderId: orderData.orderId,
-          items: JSON.stringify(orderData.items, null, 2),
-          originalTotal: orderData.originalTotal.toString(),
-          discountAmount: orderData.discountAmount.toString(),
-          shippingFee: orderData.shippingFee.toString(),
-          finalTotal: orderData.finalTotal.toString(),
-          paymentMethod: orderData.paymentMethod,
-          txId: orderData.txId || '',
-          shippingAddress: orderData.shippingAddress,
+          customerName: orderData.customerName,
+          customerEmail: orderData.customerEmail,
           phone: orderData.phone,
+          shippingAddress: orderData.shippingAddress,
+          items: itemsFormatted,
+          orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
+          paymentMethod: orderData.paymentMethod,
+          txId: orderData.txId || 'N/A',
           orderDate: orderData.orderDate,
           verificationStatus: orderData.verificationStatus || 'pending',
-          bitcoinAmount: orderData.bitcoinAmount || '',
-          telegramInfo: telegramInfo,
-          _subject: `🚨 Order ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'} #${orderData.orderId} - ${orderData.customerName}`,
-          _cc: 'christhomaso083@proton.me',
-          _replyto: orderData.customerEmail
+          _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
+          _replyto: 'christhomaso083@proton.me'
         }),
       });
       
       if (!response.ok) {
-        throw new Error(`Email failed with status: ${response.status}`);
+        throw new Error(`Order collection failed with status: ${response.status}`);
       }
       
-      console.log('✅ Order email sent successfully via Formspree');
+      console.log('✅ Order collected successfully via Formspree');
       return true;
     } catch (error) {
-      console.error('❌ Formspree email sending failed:', error);
+      console.error('❌ Formspree order collection failed:', error);
       throw error;
     }
   };
@@ -128,6 +120,11 @@ We'll contact you there for order updates and support!`;
   const sendCustomerConfirmationEmail = async (orderData: any) => {
     console.log('📧 Sending customer confirmation email...');
     try {
+      // Format items for customer email
+      const itemsList = orderData.items.map((item: any) => 
+        `• ${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
+      ).join('\n');
+
       const response = await fetch('https://formspree.io/f/mqaqvlye', {
         method: 'POST',
         headers: {
@@ -138,15 +135,18 @@ We'll contact you there for order updates and support!`;
           customerEmail: orderData.customerEmail,
           customerName: orderData.customerName,
           orderId: orderData.orderId,
-          items: JSON.stringify(orderData.items, null, 2),
-          finalTotal: orderData.finalTotal.toString(),
+          orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
+          itemsList: itemsList,
           shippingAddress: orderData.shippingAddress,
           deliveryInfo: `📦 DELIVERY INFORMATION:
-• Estimated delivery: 7-14 business days
-• Tracking number will be provided within 24-48 hours
-• All packages are discreetly shipped
-• Contact us on Telegram for faster updates: https://t.me/DANSTRBER`,
-          _subject: `✅ Order Confirmed #${orderData.orderId} - Purchase Successful!`,
+• Estimated delivery: 7-14 business days worldwide
+• Tracking number provided within 24-48 hours
+• All packages shipped discreetly
+• Contact us on Telegram for faster updates: https://t.me/DANSTRBER
+
+📱 JOIN OUR TELEGRAM: https://t.me/DANSTRBER
+For fastest support and order updates!`,
+          _subject: `✅ Order Confirmed #${orderData.orderId} - Your Purchase is Successful!`,
           _replyto: 'christhomaso083@proton.me'
         }),
       });
@@ -159,7 +159,6 @@ We'll contact you there for order updates and support!`;
       return true;
     } catch (error) {
       console.error('❌ Customer confirmation email failed:', error);
-      // Don't throw error here - order is still successful even if customer email fails
       return false;
     }
   };
@@ -232,7 +231,7 @@ We'll contact you there for order updates and support!`;
         const { btc: { currentPrice } } = await fetchCryptoPrice();
         const btcAmount = totalUSD / currentPrice;
         setBtcAmount(btcAmount);
-        console.log('🎯 Moving to step 2 for Bitcoin payment');
+        console.log('🎯 Moving to step 2 - Address Confirmation');
         setStep(2);
       } else if (paymentMethod === 'telegram') {
         console.log('📱 Redirecting to Telegram...');
@@ -252,6 +251,11 @@ We'll contact you there for order updates and support!`;
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleConfirmAddress = () => {
+    console.log('📋 Address confirmed, proceeding to payment...');
+    setStep(3);
   };
 
   const handleConfirm = async () => {
@@ -326,7 +330,7 @@ We'll contact you there for order updates and support!`;
         console.log('✅ Transaction verified! Processing order via Formspree...');
         
         try {
-          // Send order notification email
+          // Send order collection email
           await sendOrderEmailFormspree(orderData);
           console.log('✅ Order processed via Formspree successfully');
           
@@ -469,7 +473,7 @@ We'll contact you there for order updates and support!`;
                       disabled={isLoading} 
                       className="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                      {isLoading ? 'Processing...' : paymentMethod === 'bitcoin' ? 'Proceed to Bitcoin Payment' : 'Contact via Telegram'}
+                      {isLoading ? 'Processing...' : paymentMethod === 'bitcoin' ? 'Continue to Address Confirmation' : 'Contact via Telegram'}
                     </button>
                     <button 
                       type="button" 
@@ -480,6 +484,54 @@ We'll contact you there for order updates and support!`;
                     </button>
                   </div>
                 </form>
+              </div>
+            ) : step === 2 ? (
+              <div className="p-4 sm:p-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Confirm Your Address</h2>
+                  <button 
+                    onClick={handleClose}
+                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
+                    aria-label="Close modal"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-4">📋 Please confirm your shipping address:</h3>
+                  <div className="space-y-2 text-gray-700">
+                    <p><strong>Name:</strong> {formData.fullName}</p>
+                    <p><strong>Email:</strong> {formData.email}</p>
+                    <p><strong>Address:</strong> {formData.address}</p>
+                    <p><strong>City:</strong> {formData.city}</p>
+                    <p><strong>State/Province:</strong> {formData.state}</p>
+                    <p><strong>ZIP/Postal Code:</strong> {formData.zipCode}</p>
+                    <p><strong>Country:</strong> {formData.country}</p>
+                    <p><strong>Phone:</strong> {formData.phone}</p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                  <p className="text-orange-800 text-sm">
+                    ⚠️ Please double-check your address carefully. Orders cannot be changed once payment is confirmed.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
+                  <button 
+                    onClick={handleConfirmAddress}
+                    className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    ✅ Address is Correct - Proceed to Payment
+                  </button>
+                  <button 
+                    onClick={() => setStep(1)}
+                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    ← Edit Address
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="p-4 sm:p-8">
@@ -562,7 +614,7 @@ We'll contact you there for order updates and support!`;
                     {isVerifying ? 'Verifying Transaction...' : isLoading ? 'Processing Order...' : 'Verify & Submit Order'}
                   </button>
                   <button 
-                    onClick={() => setStep(1)} 
+                    onClick={() => setStep(2)} 
                     disabled={isLoading || isVerifying}
                     className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                   >
