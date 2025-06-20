@@ -62,7 +62,7 @@ const transformDatabaseRowToOrder = (row: any): Order => {
 const transformOrderToDatabaseFormat = (order: Omit<Order, 'id' | 'created_at' | 'user_id'>, userId?: string) => {
   return {
     user_id: userId || null,
-    items: order.items,
+    items: order.items as any, // Cast to any to satisfy Json type
     original_total: order.original_total,
     discount_amount: order.discount_amount,
     shipping_fee: order.shipping_fee,
@@ -77,7 +77,7 @@ const transformOrderToDatabaseFormat = (order: Omit<Order, 'id' | 'created_at' |
       customer_name: order.customer_name,
       shipping_address: order.shipping_address,
       phone: order.phone
-    }
+    } as any // Cast to any to satisfy Json type
   };
 };
 
@@ -130,12 +130,16 @@ export const useOrderHistory = () => {
     if (tempOrders.length === 0) return;
 
     try {
-      // Insert temporary orders into database
+      // Insert temporary orders into database one by one
       for (const order of tempOrders) {
         const dbOrder = transformOrderToDatabaseFormat(order, userProfile.auth_id);
-        await supabase
+        const { error } = await supabase
           .from('orders')
-          .insert([dbOrder]);
+          .insert(dbOrder);
+        
+        if (error) {
+          console.error('Error syncing order:', error);
+        }
       }
       
       // Clear temporary orders after successful sync
@@ -159,7 +163,7 @@ export const useOrderHistory = () => {
         const dbOrder = transformOrderToDatabaseFormat(order, userProfile.auth_id);
         const { data, error } = await supabase
           .from('orders')
-          .insert([dbOrder])
+          .insert(dbOrder)
           .select()
           .single();
 
