@@ -114,7 +114,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           orderDate: orderData.orderDate,
           verificationStatus: orderData.verificationStatus || 'pending',
           _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
-          _replyto: 'christhomaso083@proton.me'
+          _replyto: orderData.customerEmail, // This helps prevent spam
+          _gotcha: '', // Honeypot field to prevent spam
+          _cc: 'christhomaso083@proton.me' // Add your email as CC
         }),
       });
       
@@ -133,17 +135,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const sendCustomerConfirmationEmail = async (orderData: any) => {
     console.log('📧 Sending customer confirmation email...');
     try {
-      // Use the new email service
-      const response = await fetch('/supabase/functions/v1/send-order-email', {
+      // Use the Supabase edge function properly
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
         },
         body: JSON.stringify(orderData)
       });
       
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Customer email error response:', errorText);
         throw new Error(`Customer email failed with status: ${response.status}`);
       }
       
@@ -355,9 +359,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           throw new Error(`Order processing failed: ${emailError.message}`);
         }
         
+        // Show success message with celebration
         toast({
-          title: '✅ Payment Verified & Order Confirmed!',
-          description: 'Your Bitcoin payment has been verified and your order is confirmed.',
+          title: '🎉 Thank You for Your Purchase!',
+          description: 'Your Bitcoin payment has been verified and your order is confirmed. Check your email for details!',
+          duration: 5000,
         });
 
         // Set order ID and show success modal
