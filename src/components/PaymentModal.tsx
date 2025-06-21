@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -197,24 +198,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     console.log(`Updated ${field}:`, value);
   };
 
-  const handleShippingSubmit = (data: any) => {
+  const handleProceed = async (e: React.FormEvent) => {
+    e.preventDefault();
     console.log('🚀 Form submitted, processing...');
-    console.log('Form data:', data);
+    console.log('Form data:', formData);
     setError(null);
     setIsLoading(true);
 
     try {
-      // Update formData with submitted data
-      setFormData({
-        fullName: `${data.firstName} ${data.lastName}`,
-        email: data.email,
-        address: data.address,
-        city: data.city,
-        state: data.state,
-        zipCode: data.zipCode,
-        country: data.country,
-        phone: data.phone
-      });
+      // Validate form data
+      const validationErrors = validateAddress();
+      if (validationErrors.length > 0) {
+        throw new Error(validationErrors.join(', '));
+      }
       
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
@@ -224,13 +220,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       if (paymentMethod === 'bitcoin') {
         console.log('💰 Processing Bitcoin payment...');
         const totalUSD = calculateTotalUSD();
-        fetchCryptoPrice().then(({ btc: { currentPrice } }) => {
-          const btcAmount = totalUSD / currentPrice;
-          setBtcAmount(btcAmount);
-          console.log('🎯 Moving to step 2 - Address Confirmation');
-          setStep(2);
-          setIsLoading(false);
-        });
+        const { btc: { currentPrice } } = await fetchCryptoPrice();
+        const btcAmount = totalUSD / currentPrice;
+        setBtcAmount(btcAmount);
+        console.log('🎯 Moving to step 2 - Address Confirmation');
+        setStep(2);
       } else if (paymentMethod === 'telegram') {
         console.log('📱 Redirecting to Telegram...');
         window.open('https://t.me/DANSTRBER', '_blank');
@@ -241,12 +235,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         });
         
         onClose();
-        setIsLoading(false);
       }
     } catch (err: any) {
-      console.error('❌ Error in handleShippingSubmit:', err);
+      console.error('❌ Error in handleProceed:', err);
       setError(err.message);
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -437,51 +431,70 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   <p className="text-gray-600">Please fill out your shipping information to complete your order.</p>
                 </div>
                 
-                <ShippingForm 
-                  onSubmit={handleShippingSubmit}
-                  isLoading={isLoading}
-                  language="en"
-                />
+                <form onSubmit={handleProceed} className="space-y-6">
+                  <ShippingForm 
+                    formData={formData}
+                    onInputChange={handleInputChange}
+                    language="en"
+                  />
 
-                <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
-                  <div className="space-y-3">
-                    <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        id="bitcoin-payment"
-                        name="paymentMethod"
-                        type="radio" 
-                        value="bitcoin" 
-                        checked={paymentMethod === 'bitcoin'} 
-                        onChange={() => setPaymentMethod('bitcoin')} 
-                        className="w-4 h-4 text-blue-600"
-                      /> 
-                      <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
-                    </label>
-                    <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        id="telegram-payment"
-                        name="paymentMethod"
-                        type="radio" 
-                        value="telegram" 
-                        checked={paymentMethod === 'telegram'} 
-                        onChange={() => setPaymentMethod('telegram')} 
-                        className="w-4 h-4 text-blue-600"
-                      /> 
-                      <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
-                    </label>
+                  <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
+                    <div className="space-y-3">
+                      <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
+                        <input 
+                          id="bitcoin-payment"
+                          name="paymentMethod"
+                          type="radio" 
+                          value="bitcoin" 
+                          checked={paymentMethod === 'bitcoin'} 
+                          onChange={() => setPaymentMethod('bitcoin')} 
+                          className="w-4 h-4 text-blue-600"
+                        /> 
+                        <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
+                      </label>
+                      <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
+                        <input 
+                          id="telegram-payment"
+                          name="paymentMethod"
+                          type="radio" 
+                          value="telegram" 
+                          checked={paymentMethod === 'telegram'} 
+                          onChange={() => setPaymentMethod('telegram')} 
+                          className="w-4 h-4 text-blue-600"
+                        /> 
+                        <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                {paymentMethod === 'bitcoin' && (
-                  <BitcoinTutorial language="en" />
-                )}
+                  {paymentMethod === 'bitcoin' && (
+                    <BitcoinTutorial language="en" />
+                  )}
 
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-6">
-                    <p className="text-red-600 text-sm">{error}</p>
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <p className="text-red-600 text-sm">{error}</p>
+                    </div>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
+                    <button 
+                      type="submit" 
+                      disabled={isLoading} 
+                      className="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isLoading ? 'Processing...' : paymentMethod === 'bitcoin' ? 'Continue to Address Confirmation' : 'Contact via Telegram'}
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={handleClose} 
+                      className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
                   </div>
-                )}
+                </form>
               </div>
             ) : step === 2 ? (
               <div className="p-4 sm:p-8">

@@ -68,7 +68,7 @@ export const useOrderHistory = () => {
           user_id: dbOrder.user_id,
           customer_email: userProfile.email || '',
           customer_name: userProfile.name || '',
-          items: Array.isArray(dbOrder.items) ? (dbOrder.items as unknown as OrderItem[]) : [],
+          items: Array.isArray(dbOrder.items) ? dbOrder.items as OrderItem[] : [],
           original_total: Number(dbOrder.original_total) || 0,
           discount_amount: Number(dbOrder.discount_amount) || 0,
           shipping_fee: Number(dbOrder.shipping_fee) || 0,
@@ -107,7 +107,7 @@ export const useOrderHistory = () => {
       for (const order of tempOrders) {
         const dbOrder = {
           user_id: userProfile.auth_id,
-          items: order.items as any, // Cast to any to match Json type
+          items: order.items,
           original_total: order.original_total,
           discount_amount: order.discount_amount,
           shipping_fee: order.shipping_fee,
@@ -126,7 +126,7 @@ export const useOrderHistory = () => {
 
         await supabase
           .from('orders')
-          .insert(dbOrder);
+          .insert([dbOrder]);
       }
       
       // Clear temporary orders after successful sync
@@ -149,7 +149,7 @@ export const useOrderHistory = () => {
       try {
         const dbOrder = {
           user_id: userProfile.auth_id,
-          items: newOrder.items as any, // Cast to any to match Json type
+          items: newOrder.items,
           original_total: newOrder.original_total,
           discount_amount: newOrder.discount_amount,
           shipping_fee: newOrder.shipping_fee,
@@ -168,7 +168,7 @@ export const useOrderHistory = () => {
 
         const { data, error } = await supabase
           .from('orders')
-          .insert(dbOrder)
+          .insert([dbOrder])
           .select()
           .single();
 

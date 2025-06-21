@@ -8,7 +8,7 @@ import AuthModal from '@/components/AuthModal';
 import ProductDetailModal from '@/components/ProductDetailModal';
 import StaticPage from '@/components/StaticPage';
 import Account from './Account';
-import { products, SimpleProduct } from '@/lib/products';
+import { products, Product } from '@/lib/products';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
 import { useSidebar } from '@/hooks/useSidebar';
@@ -31,7 +31,7 @@ const Index = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
-  const [selectedProduct, setSelectedProduct] = useState<SimpleProduct | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState<'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account'>('home');
   const [referralCount, setReferralCount] = useState(0);
   const [detectedReferralCode, setDetectedReferralCode] = useState<string | null>(null);
@@ -61,7 +61,7 @@ const Index = () => {
       const product = products.find(p => p.id === productId);
       if (!product) return null;
       return { product, quantity };
-    }).filter(Boolean) as { product: SimpleProduct; quantity: number }[];
+    }).filter(Boolean) as { product: Product; quantity: number }[];
     
     const currentCartValue = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
     const totalSpendingForDiscount = userProfile.total_spending + currentCartValue;

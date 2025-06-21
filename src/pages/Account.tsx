@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -14,7 +13,7 @@ import ReferralSection from '@/components/ReferralSection';
 import TwoFactorSettings from '@/components/TwoFactorSettings';
 import OrderHistory from '@/components/OrderHistory';
 import CartModal from '@/components/CartModal';
-import { products, SimpleProduct } from '@/lib/products';
+import { products } from '@/lib/products';
 import { useCart } from '@/hooks/useCart';
 
 interface AccountProps {
