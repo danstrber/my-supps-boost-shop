@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/hooks/useCart';
 import { useToast } from '@/hooks/use-toast';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
 import ShippingForm from '@/components/payment/ShippingForm';
@@ -34,7 +34,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     show: boolean;
   }>({ orderId: '', show: false });
 
-  const form = useForm<FormData>({
+  const form: UseFormReturn<FormData> = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",

@@ -6,20 +6,10 @@ import { Label } from '@/components/ui/label';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { countries } from '@/lib/countries';
-
-interface ShippingFormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
+import { FormData } from './types';
 
 interface ShippingFormProps {
-  form: UseFormReturn<ShippingFormData>;
+  form: UseFormReturn<FormData>;
   language: 'en' | 'es';
 }
 
