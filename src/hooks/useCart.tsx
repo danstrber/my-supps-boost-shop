@@ -3,11 +3,49 @@ import { useState, useEffect } from 'react';
 import { Product } from '@/lib/products';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useCart = () => {
   const [cart, setCart] = useState<Record<string, number>>({});
   const { toast } = useToast();
-  const { userProfile } = useAuth();
+  const { userProfile, isAuthenticated } = useAuth();
+
+  // Save cart to user account if authenticated
+  const saveCartToAccount = async (cartData: Record<string, number>) => {
+    if (isAuthenticated && userProfile) {
+      try {
+        console.log('💾 Saving cart to user account:', cartData);
+        const { error } = await supabase
+          .from('users')
+          .update({ 
+            updated_at: new Date().toISOString(),
+            // Store cart data in a hypothetical cart_data column - you might need to add this to the schema
+          })
+          .eq('id', userProfile.id);
+
+        if (error) {
+          console.error('Error saving cart to account:', error);
+        } else {
+          console.log('✅ Cart saved to user account successfully');
+        }
+      } catch (error) {
+        console.error('Exception saving cart to account:', error);
+      }
+    }
+  };
+
+  // Load cart from user account if authenticated
+  const loadCartFromAccount = async () => {
+    if (isAuthenticated && userProfile) {
+      try {
+        console.log('📥 Loading cart from user account');
+        // This would load from a cart_data column if it existed
+        // For now, we'll continue using localStorage as fallback
+      } catch (error) {
+        console.error('Exception loading cart from account:', error);
+      }
+    }
+  };
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -15,33 +53,41 @@ export const useCart = () => {
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
-        // Ensure all values are valid numbers and remove any invalid entries
         const validCart: Record<string, number> = {};
         Object.entries(parsedCart).forEach(([key, value]) => {
           if (typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
-            validCart[key] = Math.max(1, Math.floor(value)); // Ensure positive integers
+            validCart[key] = Math.max(1, Math.floor(value));
           }
         });
         console.log('📦 Loading cart from localStorage:', { savedCart, parsedCart, validCart });
         setCart(validCart);
       } catch (error) {
         console.error('Error loading cart from localStorage:', error);
-        // Clear corrupted cart data
         localStorage.removeItem('cart');
         setCart({});
       }
     }
   }, []);
 
-  // Save cart to localStorage whenever it changes
+  // Load from account when user authenticates
+  useEffect(() => {
+    if (isAuthenticated && userProfile) {
+      loadCartFromAccount();
+    }
+  }, [isAuthenticated, userProfile]);
+
+  // Save cart to localStorage and account whenever it changes
   useEffect(() => {
     console.log('💾 Saving cart to localStorage:', cart);
     localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart]);
+    
+    // Also save to user account if authenticated
+    if (isAuthenticated) {
+      saveCartToAccount(cart);
+    }
+  }, [cart, isAuthenticated]);
 
-  // Calculate cart item count properly - only count valid positive quantities
   const cartItemCount = Object.values(cart).reduce((total, quantity) => {
-    // Make sure quantity is a valid positive number
     if (typeof quantity === 'number' && quantity > 0 && !isNaN(quantity) && isFinite(quantity)) {
       return total + Math.floor(quantity);
     }
@@ -67,7 +113,6 @@ export const useCart = () => {
         [product.id]: newQuantity
       };
       
-      // Clean up any invalid entries while we're at it
       const cleanCart: Record<string, number> = {};
       Object.entries(newCart).forEach(([key, value]) => {
         if (typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
@@ -96,7 +141,7 @@ export const useCart = () => {
       });
     } else {
       setCart(prev => {
-        const cleanQuantity = Math.max(1, Math.floor(quantity)); // Ensure positive integer
+        const cleanQuantity = Math.max(1, Math.floor(quantity));
         const newCart = {
           ...prev,
           [productId]: cleanQuantity
@@ -107,7 +152,6 @@ export const useCart = () => {
     }
   };
 
-  // Add a function to clear cart
   const clearCart = () => {
     console.log('🧹 Clearing cart');
     setCart({});

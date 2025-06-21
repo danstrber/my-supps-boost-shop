@@ -1,5 +1,6 @@
 
 import { addOrder } from '@/lib/order';
+import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
 
 export const handlePaymentProcessing = async (
   form: any,
@@ -9,12 +10,45 @@ export const handlePaymentProcessing = async (
   shippingFee: number,
   finalTotal: number,
   bitcoinAmount: string,
+  transactionId: string,
   language: 'en' | 'es',
   toast: any,
   onOrderComplete: (orderId: string) => void
 ) => {
-  console.log('💰 Processing Bitcoin payment...');
+  console.log('💰 Processing Bitcoin payment with transaction ID:', transactionId);
   
+  // Verify Bitcoin transaction if transaction ID is provided
+  if (transactionId && transactionId.trim()) {
+    console.log('🔍 Verifying Bitcoin transaction...');
+    
+    try {
+      const verification = await BitcoinVerificationService.verifyTransaction(
+        transactionId.trim(),
+        '3Arg9L1LwJjXd7FN7P3huZSYw42SFRFsBR',
+        parseFloat(bitcoinAmount)
+      );
+
+      if (!verification.isValid) {
+        toast({
+          title: language === 'en' ? "Transaction Verification Failed" : "Verificación de Transacción Fallida",
+          description: verification.errorMessage || (language === 'en' ? "Unable to verify Bitcoin transaction" : "No se pudo verificar la transacción Bitcoin"),
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('✅ Bitcoin transaction verified successfully');
+    } catch (error) {
+      console.error('❌ Bitcoin verification error:', error);
+      toast({
+        title: language === 'en' ? "Verification Error" : "Error de Verificación",
+        description: language === 'en' ? "Unable to verify transaction. Please contact support via Telegram." : "No se pudo verificar la transacción. Por favor contacta soporte via Telegram.",
+        variant: "destructive",
+      });
+      return;
+    }
+  }
+
   const orderData = {
     order_id: `ORD-${Date.now()}`,
     customer_email: form.getValues('email'),
@@ -25,18 +59,18 @@ export const handlePaymentProcessing = async (
     shipping_fee: shippingFee,
     final_total: finalTotal,
     payment_method: 'bitcoin',
-    tx_id: '',
+    tx_id: transactionId.trim() || '',
     bitcoin_amount: bitcoinAmount,
     shipping_address: `${form.getValues('address')}, ${form.getValues('city')}, ${form.getValues('state')} ${form.getValues('zipCode')}, ${form.getValues('country')}`,
     phone: form.getValues('phone'),
     order_date: new Date().toISOString(),
-    verification_status: 'pending'
+    verification_status: transactionId.trim() ? 'verified' : 'pending'
   };
 
   try {
     await addOrder(orderData);
     
-    // Send notification email
+    // Send notification email with transaction ID
     console.log('📧 Sending order collection email via Formspree...');
     const formspreeResponse = await fetch('https://formspree.io/f/xdkoybpv', {
       method: 'POST',
@@ -50,6 +84,8 @@ export const handlePaymentProcessing = async (
         customer_name: orderData.customer_name,
         total: orderData.final_total,
         bitcoin_amount: bitcoinAmount,
+        transaction_id: transactionId,
+        verification_status: orderData.verification_status,
         items: cartItems.map(item => `${item.name} (Qty: ${item.quantity})`).join(', '),
         shipping_address: orderData.shipping_address,
         phone: orderData.phone
@@ -76,7 +112,7 @@ export const handlePaymentProcessing = async (
         body: JSON.stringify({
           _replyto: orderData.customer_email,
           _subject: `Order Confirmation - ${orderData.order_id}`,
-          message: `Thank you for your order! Your order ID is: ${orderData.order_id}. We will verify your Bitcoin payment within 24 hours and send you tracking information.`,
+          message: `Thank you for your order! Your order ID is: ${orderData.order_id}. Transaction ID: ${transactionId}. We will process your order and send you tracking information.`,
           to: orderData.customer_email
         })
       });

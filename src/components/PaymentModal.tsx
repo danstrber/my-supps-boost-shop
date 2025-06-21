@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -13,6 +12,8 @@ import { Form } from '@/components/ui/form';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PaymentTimer from '@/components/payment/PaymentTimer';
 import ShippingForm from '@/components/payment/ShippingForm';
+import BitcoinTutorial from '@/components/payment/BitcoinTutorial';
+import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
 import { FormData, formSchema } from '@/components/payment/types';
 import { handlePaymentProcessing } from '@/components/payment/PaymentLogic';
 
@@ -69,7 +70,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const originalTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const discountAmount = originalTotal * userDiscount;
   const finalTotal = Math.max(0, originalTotal - discountAmount) + SHIPPING_FEE;
-  const bitcoinAmount = (finalTotal / 100000).toFixed(8); // More realistic BTC price
+  const bitcoinAmount = (finalTotal / 100000).toFixed(8);
 
   const handleOrderComplete = (orderId: string) => {
     console.log('🎉 Order completed with ID:', orderId);
@@ -128,6 +129,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       SHIPPING_FEE,
       finalTotal,
       bitcoinAmount,
+      transactionId,
       language,
       toast,
       handleOrderComplete
@@ -164,26 +166,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
       </RadioGroup>
 
-      {paymentMethod === 'telegram' && (
-        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-          <p className="text-blue-700 text-sm">
-            {language === 'en' 
-              ? 'You will be redirected to our Telegram channel for manual order coordination with our team.'
-              : 'Serás redirigido a nuestro canal de Telegram para coordinación manual del pedido con nuestro equipo.'
-            }
-          </p>
-        </div>
-      )}
-
+      <PaymentMethodInfo paymentMethod={paymentMethod} />
+      
       {paymentMethod === 'bitcoin' && (
-        <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-          <p className="text-orange-700 text-sm">
-            {language === 'en' 
-              ? 'Bitcoin payments are automatically verified on the blockchain. Orders are confirmed instantly after payment verification.'
-              : 'Los pagos en Bitcoin se verifican automáticamente en la blockchain. Los pedidos se confirman instantáneamente después de la verificación del pago.'
-            }
-          </p>
-        </div>
+        <BitcoinTutorial language={language} />
       )}
     </div>
   );
@@ -317,8 +303,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <span className="text-red-600 mr-2">❌</span>
             <p className="text-red-700 text-sm">
               {language === 'en' 
-                ? 'Transaction ID not working? Hit me up on Telegram: @'
-                : 'ID de transacción no funciona? Contáctame en Telegram: @'
+                ? 'Transaction ID not working? Hit me up on Telegram: @DANSTRBER'
+                : 'ID de transacción no funciona? Contáctame en Telegram: @DANSTRBER'
               }
             </p>
           </div>
