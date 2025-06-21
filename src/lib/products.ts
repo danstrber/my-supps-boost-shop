@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -82,7 +83,23 @@ export interface Product {
   };
 }
 
-export const products: Product[] = [
+// Simple product interface for backward compatibility
+export interface SimpleProduct {
+  id: string;
+  name: string;
+  description: string;
+  dosage: string;
+  quantity: string;
+  price: number;
+  imageUrl: string;
+  tags: string[];
+  effects: string[];
+  sideEffects: string[];
+  dosageInfo: string;
+  whatToExpect: string;
+}
+
+export const products: SimpleProduct[] = [
   {
     id: '1',
     name: 'Testosterone Cypionate',
@@ -319,7 +336,7 @@ export const products: Product[] = [
     effects: ['Anti-Aging', 'Fat Loss', 'Muscle Growth', 'Improved Sleep'],
     sideEffects: ['Joint Pain', 'Water Retention', 'Carpal Tunnel'],
     dosageInfo: 'Recommended: 2-6IU daily, preferably split into multiple doses',
-    whatToExpected: 'Gradual improvements in body composition, skin quality, and overall well-being over 3-6 months.'
+    whatToExpect: 'Gradual improvements in body composition, skin quality, and overall well-being over 3-6 months.'
   },
   {
     id: '18',
@@ -346,14 +363,14 @@ export const products: Product[] = [
     tags: ['Advanced', 'Recovery', 'Muscle Growth'],
     effects: ['Enhanced Muscle Growth', 'Improved Recovery', 'Cell Regeneration'],
     sideEffects: ['Injection Site Reactions', 'Possible Organ Growth'],
-    dosageInfo: 'Recommende: 20-40mcg daily, split bilaterally',
+    dosageInfo: 'Recommended: 20-40mcg daily, split bilaterally',
     whatToExpect: 'Enhanced muscle fullness and recovery, particularly effective when combined with other compounds.'
   },
   {
     id: '20',
     name: 'Aromasin (Exemestane)',
     description: 'Powerful aromatase inhibitor for controlling estrogen levels during steroid cycles.',
-    dosage: '25mg',
+    dosage: '10mg',
     quantity: '25 tablets',
     price: 25,
     imageUrl: '/lovable-uploads/8453db63-04b8-4354-ad42-023eb4ca2627.png',
@@ -473,10 +490,10 @@ export const products: Product[] = [
     effects: ['Severe Acne Treatment', 'Long-lasting Results', 'Oil Production Reduction'],
     sideEffects: ['Dry Skin', 'Mood Changes', 'Birth Defects Risk', 'Liver Stress'],
     dosageInfo: 'Recommended: 0.5-1mg per kg of body weight daily',
-    whatToExpect: 'Significant improvement in severe acne within 3-6 months, with long-lasting results after treatment completion.'
+    whatToExpected: 'Significant improvement in severe acne within 3-6 months, with long-lasting results after treatment completion.'
   }
 ];
 
-export function getProductById(id: string): Product | undefined {
+export function getProductById(id: string): SimpleProduct | undefined {
   return products.find(product => product.id === id);
 }
