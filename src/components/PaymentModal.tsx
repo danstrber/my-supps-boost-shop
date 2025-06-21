@@ -114,9 +114,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           orderDate: orderData.orderDate,
           verificationStatus: orderData.verificationStatus || 'pending',
           _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
-          _replyto: orderData.customerEmail, // This helps prevent spam
-          _gotcha: '', // Honeypot field to prevent spam
-          _cc: 'christhomaso083@proton.me' // Add your email as CC
+          _replyto: orderData.customerEmail,
+          _gotcha: '',
+          _cc: 'christhomaso083@proton.me',
+          // Add domain override for Formspree
+          _domain: 'mkbooster677.shop'
         }),
       });
       
@@ -366,7 +368,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           duration: 5000,
         });
 
-        // Set order ID and show success modal
+        // Set order ID and show success modal - IMPORTANT: Do this before clearing other state
         setCurrentOrderId(orderId);
         setShowSuccessModal(true);
         
@@ -375,6 +377,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         setStep(1);
         setError(null);
         setTxId('');
+        
+        // Close payment modal and trigger cart clear
+        onOrderSuccess();
         onClose();
         
       } else {
