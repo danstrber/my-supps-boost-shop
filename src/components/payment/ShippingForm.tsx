@@ -48,10 +48,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
         name="fullName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{l.fullName}</FormLabel>
+            <FormLabel htmlFor="shipping-fullName">{l.fullName}</FormLabel>
             <FormControl>
               <Input
-                id="fullName"
+                id="shipping-fullName"
                 name="fullName"
                 autoComplete="name"
                 placeholder={l.fullName}
@@ -68,10 +68,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
         name="email"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{l.email}</FormLabel>
+            <FormLabel htmlFor="shipping-email">{l.email}</FormLabel>
             <FormControl>
               <Input
-                id="email"
+                id="shipping-email"
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -89,10 +89,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
         name="phone"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{l.phone}</FormLabel>
+            <FormLabel htmlFor="shipping-phone">{l.phone}</FormLabel>
             <FormControl>
               <Input
-                id="phone"
+                id="shipping-phone"
                 name="phone"
                 type="tel"
                 autoComplete="tel"
@@ -110,10 +110,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
         name="address"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{l.address}</FormLabel>
+            <FormLabel htmlFor="shipping-address">{l.address}</FormLabel>
             <FormControl>
               <Input
-                id="address"
+                id="shipping-address"
                 name="address"
                 autoComplete="street-address"
                 placeholder={l.address}
@@ -131,10 +131,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
           name="city"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{l.city}</FormLabel>
+              <FormLabel htmlFor="shipping-city">{l.city}</FormLabel>
               <FormControl>
                 <Input
-                  id="city"
+                  id="shipping-city"
                   name="city"
                   autoComplete="address-level2"
                   placeholder={l.city}
@@ -151,10 +151,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
           name="state"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{l.state}</FormLabel>
+              <FormLabel htmlFor="shipping-state">{l.state}</FormLabel>
               <FormControl>
                 <Input
-                  id="state"
+                  id="shipping-state"
                   name="state"
                   autoComplete="address-level1"
                   placeholder={l.state}
@@ -173,10 +173,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
           name="zipCode"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{l.zipCode}</FormLabel>
+              <FormLabel htmlFor="shipping-zipCode">{l.zipCode}</FormLabel>
               <FormControl>
                 <Input
-                  id="zipCode"
+                  id="shipping-zipCode"
                   name="zipCode"
                   autoComplete="postal-code"
                   placeholder={l.zipCode}
@@ -193,10 +193,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ form, language }) => {
           name="country"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{l.country}</FormLabel>
+              <FormLabel htmlFor="shipping-country">{l.country}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <SelectTrigger id="country" name="country">
+                  <SelectTrigger id="shipping-country" name="country">
                     <SelectValue placeholder={l.selectCountry} />
                   </SelectTrigger>
                 </FormControl>
