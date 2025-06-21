@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import ShippingForm from '@/components/payment/ShippingForm';
-import { OrderSuccessModal } from '@/components/OrderSuccessModal';
+import OrderSuccessModal from '@/components/OrderSuccessModal';
 import { addOrder } from '@/lib/order';
 
 const formSchema = z.object({
@@ -40,6 +40,8 @@ const formSchema = z.object({
     message: "Country must be selected.",
   }),
 });
+
+type FormData = z.infer<typeof formSchema>;
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -70,7 +72,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     show: boolean;
   }>({ orderId: '', show: false });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       fullName: "",
