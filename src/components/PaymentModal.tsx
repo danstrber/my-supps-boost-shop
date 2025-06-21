@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -122,80 +122,78 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const renderStep1 = () => (
     <div className="space-y-4">
       <h3 className="text-xl font-semibold">
-        {language === 'en' ? 'Complete Your Purchase' : 'Completa tu Compra'}
+        Complete Your Purchase
       </h3>
       <p className="text-gray-600">
-        {language === 'en' 
-          ? 'Please fill out your shipping information to complete your order.'
-          : 'Por favor completa tu información de envío para completar tu orden.'}
+        Please fill out your shipping information to complete your order.
       </p>
       
       <h4 className="text-lg font-medium">
-        {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
+        Shipping Information
       </h4>
       
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="fullName">{language === 'en' ? 'Full Name' : 'Nombre Completo'}</Label>
+          <Label htmlFor="fullName">Full Name</Label>
           <Input
             id="fullName"
             {...form.register('fullName')}
-            placeholder={language === 'en' ? 'Full Name' : 'Nombre Completo'}
+            placeholder="Full Name"
           />
         </div>
         <div>
-          <Label htmlFor="email">{language === 'en' ? 'Email Address' : 'Correo Electrónico'}</Label>
+          <Label htmlFor="email">Email Address</Label>
           <Input
             id="email"
             type="email"
             {...form.register('email')}
-            placeholder={language === 'en' ? 'Email Address' : 'Correo Electrónico'}
+            placeholder="Email Address"
           />
         </div>
       </div>
 
       <div>
-        <Label htmlFor="address">{language === 'en' ? 'Street Address' : 'Dirección'}</Label>
+        <Label htmlFor="address">Street Address</Label>
         <Input
           id="address"
           {...form.register('address')}
-          placeholder={language === 'en' ? 'Street Address' : 'Dirección'}
+          placeholder="Street Address"
         />
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <Label htmlFor="city">{language === 'en' ? 'City' : 'Ciudad'}</Label>
+          <Label htmlFor="city">City</Label>
           <Input
             id="city"
             {...form.register('city')}
-            placeholder={language === 'en' ? 'City' : 'Ciudad'}
+            placeholder="City"
           />
         </div>
         <div>
-          <Label htmlFor="state">{language === 'en' ? 'State/Province' : 'Estado/Provincia'}</Label>
+          <Label htmlFor="state">State/Province</Label>
           <Input
             id="state"
             {...form.register('state')}
-            placeholder={language === 'en' ? 'State/Province' : 'Estado/Provincia'}
+            placeholder="State/Province"
           />
         </div>
         <div>
-          <Label htmlFor="zipCode">{language === 'en' ? 'ZIP/Postal Code' : 'Código Postal'}</Label>
+          <Label htmlFor="zipCode">ZIP/Postal Code</Label>
           <Input
             id="zipCode"
             {...form.register('zipCode')}
-            placeholder={language === 'en' ? 'ZIP/Postal Code' : 'Código Postal'}
+            placeholder="ZIP/Postal Code"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="country">{language === 'en' ? 'Country' : 'País'}</Label>
+          <Label htmlFor="country">Country</Label>
           <Select onValueChange={(value) => form.setValue('country', value)}>
             <SelectTrigger>
-              <SelectValue placeholder={language === 'en' ? 'Select Country' : 'Seleccionar País'} />
+              <SelectValue placeholder="Select Country" />
             </SelectTrigger>
             <SelectContent>
               {countries.map((country) => (
@@ -207,12 +205,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           </Select>
         </div>
         <div>
-          <Label htmlFor="phone">{language === 'en' ? 'Phone Number' : 'Número de Teléfono'}</Label>
+          <Label htmlFor="phone">Phone Number</Label>
           <Input
             id="phone"
             type="tel"
             {...form.register('phone')}
-            placeholder={language === 'en' ? 'Phone Number' : 'Número de Teléfono'}
+            placeholder="Phone Number"
           />
         </div>
       </div>
@@ -221,9 +219,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const renderStep2 = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold">
-        {language === 'en' ? 'Payment Method' : 'Método de Pago'}
-      </h3>
+      <h3 className="text-xl font-semibold">Payment Method</h3>
       
       <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
         <div className="flex items-center space-x-2">
@@ -236,8 +232,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
       </RadioGroup>
 
-      <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-        <h4 className="font-semibold text-blue-800 mb-2">How to Pay with Bitcoin</h4>
+      <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+        <h4 className="font-semibold text-gray-800 mb-2">How to Pay with Bitcoin</h4>
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-white p-3 rounded">
             <h5 className="font-medium text-blue-600 mb-2">Easy Bitcoin Payment</h5>
@@ -393,10 +389,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {currentStep === 1 && (language === 'en' ? 'Complete Your Purchase' : 'Completa tu Compra')}
-              {currentStep === 2 && (language === 'en' ? 'Payment Method' : 'Método de Pago')}
-              {currentStep === 3 && (language === 'en' ? 'Confirm Your Address' : 'Confirma tu Dirección')}
-              {currentStep === 4 && (language === 'en' ? 'Bitcoin Payment' : 'Pago Bitcoin')}
+              {currentStep === 1 && 'Complete Your Purchase'}
+              {currentStep === 2 && 'Payment Method'}
+              {currentStep === 3 && 'Confirm Your Address'}
+              {currentStep === 4 && 'Bitcoin Payment'}
             </DialogTitle>
           </DialogHeader>
 
@@ -411,7 +407,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="flex justify-between mt-6">
               {currentStep > 1 && (
                 <Button variant="secondary" onClick={handleBack}>
-                  {language === 'en' ? 'Back' : 'Atrás'}
+                  Back
                 </Button>
               )}
               <Button 
@@ -419,7 +415,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 disabled={currentStep === 1 && !form.formState.isValid}
                 className="ml-auto"
               >
-                {language === 'en' ? 'Next' : 'Siguiente'}
+                Next
               </Button>
             </div>
           )}
