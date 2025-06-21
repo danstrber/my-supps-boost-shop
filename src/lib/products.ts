@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -356,6 +355,7 @@ export const products: Product[] = [
     image: '/lovable-uploads/9f4f9977-4f6c-4d53-ae01-a03204441df1.png',
     categories: ['fat-burner'],
     featured: false,
+    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
     inStock: true,
     description: {
       en: 'Clenbuterol is a powerful beta-2 agonist used primarily for fat loss and improved cardiovascular performance.',
@@ -479,6 +479,73 @@ export const products: Product[] = [
       fatLoss: 2,
       sideEffects: 3,
       retention: 4
+    }
+  },
+  {
+    id: 'accutane',
+    name: 'Accutane (Isotretinoin)',
+    price: 55,
+    image: '/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
+    categories: ['acne-treatment'],
+    featured: false,
+    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
+    inStock: true,
+    description: {
+      en: 'Accutane (Isotretinoin) is a powerful retinoid used for severe acne treatment and skin improvement.',
+      es: 'Accutane (Isotretinoína) es un retinoide potente usado para el tratamiento del acné severo y mejora de la piel.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '20mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 months',
+        potencyLevel: 'High Potency Retinoid'
+      },
+      es: {
+        dosePerCapsule: '20mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 meses',
+        potencyLevel: 'Retinoide de alta potencia'
+      }
+    },
+    researchBackground: {
+      en: 'Accutane has been extensively studied for severe acne treatment with proven results in clinical trials.',
+      es: 'Accutane ha sido extensamente estudiado para el tratamiento del acné severo con resultados probados en ensayos clínicos.'
+    },
+    benefits: {
+      en: 'Dramatic acne improvement, reduced oil production, clearer skin, long-lasting results.',
+      es: 'Mejora dramática del acné, producción reducida de grasa, piel más clara, resultados duraderos.'
+    },
+    sideEffects: {
+      en: 'May cause dry skin, chapped lips, temporary mood changes, sun sensitivity, joint discomfort.',
+      es: 'Puede causar piel seca, labios agrietados, cambios temporales de humor, sensibilidad al sol, molestias articulares.'
+    },
+    effectsOnWomen: {
+      en: 'REQUIRES strict birth control due to severe birth defect risks. Regular pregnancy testing mandatory.',
+      es: 'REQUIERE control natal estricto debido a riesgos severos de defectos de nacimiento. Pruebas de embarazo regulares obligatorias.'
+    },
+    howItWorks: {
+      en: 'Reduces sebaceous gland size and oil production while promoting skin cell turnover.',
+      es: 'Reduce el tamaño de las glándulas sebáceas y la producción de grasa mientras promueve la renovación celular de la piel.'
+    },
+    safetyInformation: {
+      en: 'Requires regular blood work monitoring. Strict birth control for women. Avoid sun exposure.',
+      es: 'Requiere monitoreo regular de análisis de sangre. Control natal estricto para mujeres. Evitar exposición al sol.'
+    },
+    cycleInformation: {
+      en: 'Typical treatment: 4-6 months continuous use. Effects may continue after discontinuation.',
+      es: 'Tratamiento típico: 4-6 meses de uso continuo. Los efectos pueden continuar después de la discontinuación.'
+    },
+    whatToExpect: {
+      en: 'Initial skin purging (1-2 months), then gradual improvement. Results often permanent.',
+      es: 'Purga inicial de la piel (1-2 meses), luego mejora gradual. Los resultados son a menudo permanentes.'
+    },
+    performanceRatings: {
+      muscleGain: 0,
+      strength: 0,
+      fatLoss: 0,
+      sideEffects: 2,
+      retention: 5
     }
   }
 ];
