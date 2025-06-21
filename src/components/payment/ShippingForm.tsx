@@ -1,207 +1,281 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { countries } from '@/lib/countries';
 
+const shippingSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
+  email: z.string().email('Invalid email address'),
+  phone: z.string().min(1, 'Phone number is required'),
+  address: z.string().min(1, 'Address is required'),
+  city: z.string().min(1, 'City is required'),
+  state: z.string().min(1, 'State/Province is required'),
+  zipCode: z.string().min(1, 'ZIP/Postal code is required'),
+  country: z.string().min(1, 'Country is required'),
+});
+
+export type ShippingFormData = z.infer<typeof shippingSchema>;
+
 interface ShippingFormProps {
-  formData: {
-    fullName: string;
-    email: string;
-    address: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-    phone: string;
-  };
-  onInputChange: (field: string, value: string) => void;
+  onSubmit: (data: ShippingFormData) => void;
+  isLoading?: boolean;
   language: 'en' | 'es';
 }
 
-const ShippingForm = ({ formData, onInputChange, language }: ShippingFormProps) => {
-  const [countrySearch, setCountrySearch] = useState('');
+const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, language }) => {
+  const form = useForm<ShippingFormData>({
+    resolver: zodResolver(shippingSchema),
+  });
 
-  const labels = {
+  const t = {
     en: {
-      fullName: 'Full Name',
+      title: 'Shipping Information',
+      firstName: 'First Name',
+      lastName: 'Last Name',
       email: 'Email Address',
+      phone: 'Phone Number',
       address: 'Street Address',
       city: 'City',
       state: 'State/Province',
       zipCode: 'ZIP/Postal Code',
       country: 'Country',
-      phone: 'Phone Number'
+      selectCountry: 'Select a country',
+      continue: 'Continue to Payment',
     },
     es: {
-      fullName: 'Nombre Completo',
-      email: 'Dirección de Correo',
+      title: 'Información de Envío',
+      firstName: 'Nombre',
+      lastName: 'Apellido',
+      email: 'Correo Electrónico',
+      phone: 'Número de Teléfono',
       address: 'Dirección',
       city: 'Ciudad',
       state: 'Estado/Provincia',
       zipCode: 'Código Postal',
       country: 'País',
-      phone: 'Número de Teléfono'
-    }
+      selectCountry: 'Selecciona un país',
+      continue: 'Continuar al Pago',
+    },
   };
 
-  const l = labels[language];
-
-  const filteredCountries = countries.filter(country =>
-    country.toLowerCase().includes(countrySearch.toLowerCase())
-  );
+  const labels = t[language];
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">
-        {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
-      </h3>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center">{labels.title}</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="shipping-fullName" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.fullName}
-          </label>
-          <input
-            id="shipping-fullName"
-            name="fullName"
-            type="text"
-            value={formData.fullName}
-            onChange={(e) => onInputChange('fullName', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="name"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="shipping-email" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.email}
-          </label>
-          <input
-            id="shipping-email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={(e) => onInputChange('email', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="email"
-          />
-        </div>
-      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="firstName">{labels.firstName}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="firstName"
+                      name="firstName"
+                      autoComplete="given-name"
+                      placeholder={labels.firstName}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="lastName">{labels.lastName}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="lastName"
+                      name="lastName"
+                      autoComplete="family-name"
+                      placeholder={labels.lastName}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-      <div>
-        <label htmlFor="shipping-address" className="block text-sm font-medium text-gray-700 mb-2">
-          {l.address}
-        </label>
-        <input
-          id="shipping-address"
-          name="address"
-          type="text"
-          value={formData.address}
-          onChange={(e) => onInputChange('address', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          required
-          autoComplete="street-address"
-        />
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="email">{labels.email}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder={labels.email}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="phone">{labels.phone}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      autoComplete="tel"
+                      placeholder={labels.phone}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label htmlFor="shipping-city" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.city}
-          </label>
-          <input
-            id="shipping-city"
-            name="city"
-            type="text"
-            value={formData.city}
-            onChange={(e) => onInputChange('city', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="address-level2"
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor="address">{labels.address}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    id="address"
+                    name="address"
+                    autoComplete="street-address"
+                    placeholder={labels.address}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        
-        <div>
-          <label htmlFor="shipping-state" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.state}
-          </label>
-          <input
-            id="shipping-state"
-            name="state"
-            type="text"
-            value={formData.state}
-            onChange={(e) => onInputChange('state', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="address-level1"
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="shipping-zipCode" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.zipCode}
-          </label>
-          <input
-            id="shipping-zipCode"
-            name="zipCode"
-            type="text"
-            value={formData.zipCode}
-            onChange={(e) => onInputChange('zipCode', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="postal-code"
-          />
-        </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="shipping-country" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.country}
-          </label>
-          <Select value={formData.country} onValueChange={(value) => onInputChange('country', value)}>
-            <SelectTrigger id="shipping-country" className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-              <SelectValue placeholder="Select a country" />
-            </SelectTrigger>
-            <SelectContent>
-              <div className="p-2">
-                <input
-                  id="country-search"
-                  name="countrySearch"
-                  type="text"
-                  placeholder="Search countries..."
-                  value={countrySearch}
-                  onChange={(e) => setCountrySearch(e.target.value)}
-                  className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
-                />
-              </div>
-              {filteredCountries.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div>
-          <label htmlFor="shipping-phone" className="block text-sm font-medium text-gray-700 mb-2">
-            {l.phone}
-          </label>
-          <input
-            id="shipping-phone"
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={(e) => onInputChange('phone', e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-            required
-            autoComplete="tel"
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="city">{labels.city}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="city"
+                      name="city"
+                      autoComplete="address-level2"
+                      placeholder={labels.city}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="state"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="state">{labels.state}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="state"
+                      name="state"
+                      autoComplete="address-level1"
+                      placeholder={labels.state}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="zipCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="zipCode">{labels.zipCode}</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="zipCode"
+                      name="zipCode"
+                      autoComplete="postal-code"
+                      placeholder={labels.zipCode}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor="country">{labels.country}</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value} name="country">
+                  <FormControl>
+                    <SelectTrigger id="country">
+                      <SelectValue placeholder={labels.selectCountry} />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.code} value={country.code}>
+                        {country.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-      </div>
+
+          <Button 
+            type="submit" 
+            className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : labels.continue}
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };

@@ -116,7 +116,7 @@ const Header = ({
                   <Button
                     variant="outline"
                     onClick={() => onAuthAction('logout')}
-                    className="hidden md:flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 rounded-lg px-2 md:px-3 py-2"
+                    className="flex items-center border border-gray-300 hover:border-red-500 hover:text-red-600 hover:bg-red-50 rounded-lg px-2 md:px-3 py-2"
                   >
                     <LogOut className="h-4 w-4 md:mr-1" />
                     <span className="hidden lg:inline">{language === 'en' ? 'Sign Out' : 'Cerrar Sesión'}</span>

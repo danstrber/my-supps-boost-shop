@@ -337,7 +337,7 @@ export const products: Product[] = [
       en: 'Typical PCT: 12.5mg daily for 4-6 weeks starting immediately after cycle completion.',
       es: 'PCT típico: 12.5mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report testosterone recovery within 2-4 weeks, maintained muscle gains, and improved energy levels.',
       es: 'Los usuarios reportan recuperación de testosterona en 2-4 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
     },
@@ -356,6 +356,7 @@ export const products: Product[] = [
     image: '/lovable-uploads/9f4f9977-4f6c-4d53-ae01-a03204441df1.png',
     categories: ['fat-burner'],
     featured: false,
+    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
     inStock: true,
     description: {
       en: 'Clenbuterol is a powerful beta-2 agonist used primarily for fat loss and improved cardiovascular performance.',
@@ -418,7 +419,7 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 45,
+    price: 25,
     image: '/lovable-uploads/63f9d2b1-4c72-40c0-8434-8e48cade7de5.png',
     categories: ['pct'],
     featured: false,
@@ -429,14 +430,14 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '12.5mg',
-        capsulesPerBottle: '30',
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10',
         typicalCycleLength: '4-6 weeks PCT',
         potencyLevel: 'High Aromatase Inhibition'
       },
       es: {
-        dosePerCapsule: '12.5mg',
-        capsulesPerBottle: '30',
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '10',
         typicalCycleLength: '4-6 semanas PCT',
         potencyLevel: 'Alta inhibición de aromatasa'
       }
@@ -466,8 +467,8 @@ export const products: Product[] = [
       es: 'Monitorear niveles de estrógeno regularmente. Usar solo según necesario para controlar efectos secundarios relacionados con estrógeno.'
     },
     cycleInformation: {
-      en: 'Typical use: 12.5mg every other day or as needed based on blood work.',
-      es: 'Uso típico: 12.5mg cada dos días o según necesario basado en análisis de sangre.'
+      en: 'Typical use: 25mg every other day or as needed based on blood work.',
+      es: 'Uso típico: 25mg cada dos días o según necesario basado en análisis de sangre.'
     },
     whatToExpect: {
       en: 'Users report reduced estrogen levels within days, prevention of estrogenic side effects, maintained muscle hardness, improved recovery.',
@@ -479,6 +480,72 @@ export const products: Product[] = [
       fatLoss: 2,
       sideEffects: 3,
       retention: 4
+    }
+  },
+  {
+    id: 'accutane',
+    name: 'Accutane (Isotretinoin)',
+    price: 30,
+    image: '/placeholder.svg',
+    categories: ['skin-care'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Accutane (Isotretinoin) is a powerful oral medication used for severe acne treatment and prevention.',
+      es: 'Accutane (Isotretinoína) es un medicamento oral potente utilizado para el tratamiento y prevención de acné severo.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '20mg',
+        capsulesPerBottle: '50',
+        typicalCycleLength: '16-24 weeks',
+        potencyLevel: 'High Acne Treatment Efficacy'
+      },
+      es: {
+        dosePerCapsule: '20mg',
+        capsulesPerBottle: '50',
+        typicalCycleLength: '16-24 semanas',
+        potencyLevel: 'Alta eficacia para tratamiento de acné'
+      }
+    },
+    researchBackground: {
+      en: 'Accutane has been extensively studied for its ability to treat severe cystic acne and prevent scarring in clinical trials.',
+      es: 'Accutane ha sido extensamente estudiado por su capacidad de tratar acné quístico severo y prevenir cicatrices en ensayos clínicos.'
+    },
+    benefits: {
+      en: 'Dramatic acne reduction, prevents scarring, reduces oil production, long-lasting results, improves skin texture.',
+      es: 'Reducción dramática del acné, previene cicatrices, reduce producción de grasa, resultados duraderos, mejora textura de la piel.'
+    },
+    sideEffects: {
+      en: 'May cause dry skin, chapped lips, temporary skin irritation, possible mood changes, increased sun sensitivity, joint stiffness.',
+      es: 'Puede causar piel seca, labios agrietados, irritación temporal de la piel, posibles cambios de humor, aumento de sensibilidad al sol, rigidez articular.'
+    },
+    effectsOnWomen: {
+      en: 'Effective for women but requires careful monitoring. Must avoid pregnancy due to severe birth defect risks.',
+      es: 'Efectivo para mujeres pero requiere monitoreo cuidadoso. Debe evitarse el embarazo debido a riesgos severos de defectos de nacimiento.'
+    },
+    howItWorks: {
+      en: 'Reduces sebaceous gland size and oil production, normalizes skin cell turnover, and reduces inflammation.',
+      es: 'Reduce el tamaño de las glándulas sebáceas y la producción de grasa, normaliza la renovación celular de la piel y reduce la inflamación.'
+    },
+    safetyInformation: {
+      en: 'Requires regular blood work monitoring. Use effective contraception. Avoid vitamin A supplements. Stay hydrated.',
+      es: 'Requiere monitoreo regular de análisis de sangre. Usar anticonceptivos efectivos. Evitar suplementos de vitamina A. Mantenerse hidratado.'
+    },
+    cycleInformation: {
+      en: 'Typical treatment: 16-24 weeks at 0.5-1mg/kg daily. Taken with meals for better absorption.',
+      es: 'Tratamiento típico: 16-24 semanas a 0.5-1mg/kg diario. Tomado con comidas para mejor absorción.'
+    },
+    whatToExpect: {
+      en: 'Users report significant acne improvement within 8-12 weeks, with continued clearing throughout treatment. Results often permanent.',
+      es: 'Los usuarios reportan mejora significativa del acné en 8-12 semanas, con aclaramiento continuo durante el tratamiento. Resultados a menudo permanentes.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 1,
+      sideEffects: 3,
+      retention: 5
     }
   }
 ];
