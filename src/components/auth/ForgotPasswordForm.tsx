@@ -25,7 +25,7 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
 
       if (error) {
@@ -37,10 +37,10 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
       } else {
         setSent(true);
         toast({
-          title: language === 'en' ? 'Email Sent!' : '¡Correo Enviado!',
+          title: language === 'en' ? 'Reset Email Sent!' : '¡Correo de Restablecimiento Enviado!',
           description: language === 'en' 
-            ? 'Check your email for password reset instructions.' 
-            : 'Revisa tu correo para las instrucciones de restablecimiento.',
+            ? 'Check your email for password reset instructions. Click the link in the email to set a new password.' 
+            : 'Revisa tu correo para las instrucciones de restablecimiento. Haz clic en el enlace del correo para establecer una nueva contraseña.',
         });
       }
     } catch (error) {
@@ -64,9 +64,20 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
         </h2>
         <p className="text-gray-600">
           {language === 'en' 
-            ? `We've sent password reset instructions to ${email}`
-            : `Hemos enviado instrucciones de restablecimiento a ${email}`}
+            ? `We've sent password reset instructions to ${email}. Click the link in the email to set a new password.`
+            : `Hemos enviado instrucciones de restablecimiento a ${email}. Haz clic en el enlace del correo para establecer una nueva contraseña.`}
         </p>
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg text-left">
+          <h3 className="font-semibold text-blue-800 mb-2">
+            {language === 'en' ? 'Next Steps:' : 'Próximos Pasos:'}
+          </h3>
+          <ol className="list-decimal list-inside space-y-1 text-blue-700 text-sm">
+            <li>{language === 'en' ? 'Check your email inbox' : 'Revisa tu bandeja de entrada'}</li>
+            <li>{language === 'en' ? 'Click the "Reset Password" link' : 'Haz clic en el enlace "Restablecer Contraseña"'}</li>
+            <li>{language === 'en' ? 'Enter your new password' : 'Ingresa tu nueva contraseña'}</li>
+            <li>{language === 'en' ? 'Login with your new password' : 'Inicia sesión con tu nueva contraseña'}</li>
+          </ol>
+        </div>
         <Button onClick={onBack} className="w-full">
           {language === 'en' ? 'Back to Login' : 'Volver al Inicio de Sesión'}
         </Button>
@@ -82,8 +93,8 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
         </h2>
         <p className="text-gray-600">
           {language === 'en' 
-            ? 'Enter your email to receive reset instructions'
-            : 'Ingresa tu correo para recibir instrucciones'}
+            ? 'Enter your email to receive a password reset link'
+            : 'Ingresa tu correo para recibir un enlace de restablecimiento'}
         </p>
       </div>
 
@@ -107,8 +118,8 @@ const ForgotPasswordForm = ({ language, onBack }: ForgotPasswordFormProps) => {
 
         <Button type="submit" disabled={loading || !email} className="w-full">
           {loading 
-            ? (language === 'en' ? 'Sending...' : 'Enviando...')
-            : (language === 'en' ? 'Send Reset Email' : 'Enviar Correo de Restablecimiento')
+            ? (language === 'en' ? 'Sending Reset Link...' : 'Enviando Enlace...')
+            : (language === 'en' ? 'Send Reset Link' : 'Enviar Enlace de Restablecimiento')
           }
         </Button>
 
