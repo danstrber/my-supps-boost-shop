@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -315,7 +316,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           </DialogHeader>
 
           {currentStep === 1 && (
-            <ShippingForm form={form} language={language} />
+            <Form {...form}>
+              <ShippingForm form={form} language={language} />
+            </Form>
           )}
 
           {currentStep === 2 && (
