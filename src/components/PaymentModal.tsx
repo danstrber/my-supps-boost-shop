@@ -1,32 +1,54 @@
-
 import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useCart } from '@/hooks/useCart';
+import { Product } from '@/lib/products';
 import { useToast } from '@/hooks/use-toast';
-import PaymentTimer from './payment/PaymentTimer';
-import ShippingForm from './payment/ShippingForm';
-import BitcoinTutorial from './payment/BitcoinTutorial';
-import OrderSuccessModal from './OrderSuccessModal';
-import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
-import { useOrderHistory } from '@/hooks/useOrderHistory';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import ShippingForm from '@/components/payment/ShippingForm';
+import { OrderSuccessModal } from '@/components/OrderSuccessModal';
+import { addOrder } from '@/lib/order';
+
+const formSchema = z.object({
+  fullName: z.string().min(2, {
+    message: "Full name must be at least 2 characters.",
+  }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  phone: z.string().min(8, {
+    message: "Phone number must be at least 8 characters.",
+  }),
+  address: z.string().min(5, {
+    message: "Address must be at least 5 characters.",
+  }),
+  city: z.string().min(2, {
+    message: "City must be at least 2 characters.",
+  }),
+  state: z.string().min(2, {
+    message: "State must be at least 2 characters.",
+  }),
+  zipCode: z.string().min(5, {
+    message: "Zip code must be at least 5 characters.",
+  }),
+  country: z.string().min(2, {
+    message: "Country must be selected.",
+  }),
+});
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   cart: Record<string, number>;
-  products: any[];
+  products: Product[];
+  language: 'en' | 'es';
   userDiscount: number;
-  userProfile: any;
-  onOrderSuccess: () => void;
-}
-
-interface ShippingData {
-  fullName: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  phone: string;
+  onOrderComplete?: () => void;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -34,634 +56,381 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   onClose,
   cart,
   products,
+  language,
   userDiscount,
-  userProfile,
-  onOrderSuccess,
+  onOrderComplete
 }) => {
+  const { clearCart } = useCart();
   const { toast } = useToast();
-  const { addOrder } = useOrderHistory();
-  const [step, setStep] = useState(1);
-  const [txId, setTxId] = useState('');
-  const [btcAmount, setBtcAmount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [currentOrderId, setCurrentOrderId] = useState('');
-  const [formData, setFormData] = useState<ShippingData>({
-    fullName: userProfile?.name || '',
-    email: userProfile?.email || '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'United States',
-    phone: ''
+  const [currentStep, setCurrentStep] = useState(1);
+  const SHIPPING_FEE = 10;
+
+  const [orderSuccessData, setOrderSuccessData] = useState<{
+    orderId: string;
+    show: boolean;
+  }>({ orderId: '', show: false });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      country: "",
+    },
   });
-  const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
 
-  const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
+  const cartItems = products.map(product => ({
+    ...product,
+    quantity: cart[product.id] || 0,
+  })).filter(item => item.quantity > 0);
 
-  const calculateTotalUSD = () => {
-    if (!products || !Array.isArray(products)) {
-      console.error('Products not loaded');
-      return 0;
-    }
-    return products.reduce((total, p) => total + (cart[p.id] || 0) * (p.price || 0), 0) - userDiscount + 7.5;
-  };
+  const originalTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const discountAmount = originalTotal * userDiscount;
+  const finalTotal = Math.max(0, originalTotal - discountAmount) + SHIPPING_FEE;
+  const bitcoinAmount = (finalTotal / 30000).toFixed(8);
 
-  const fetchCryptoPrice = async () => {
-    try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-      const data = await response.json();
-      return { btc: { currentPrice: data.bitcoin.usd } };
-    } catch (error) {
-      console.error('Failed to fetch crypto price, using fallback');
-      return { btc: { currentPrice: 50000 }};
+  const handleOrderComplete = (orderId: string) => {
+    console.log('🎉 Order completed with ID:', orderId);
+    setOrderSuccessData({ orderId, show: true });
+    clearCart();
+    if (onOrderComplete) {
+      onOrderComplete();
     }
   };
 
-  const generateOrderId = () => {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `ORD-${timestamp}-${random}`;
+  const handleCloseSuccessModal = () => {
+    setOrderSuccessData({ orderId: '', show: false });
+    onClose();
+    setCurrentStep(1);
   };
 
-  const sendOrderEmailFormspree = async (orderData: any) => {
-    console.log('📧 Sending order collection email via Formspree...');
-    try {
-      // Format items for better readability
-      const itemsFormatted = orderData.items.map((item: any) => 
-        `${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
-      ).join('\n');
+  const t = {
+    en: {
+      shippingInfo: 'Shipping Information',
+      payment: 'Payment',
+      reviewOrder: 'Review Order',
+      fullName: 'Full Name',
+      email: 'Email',
+      phone: 'Phone',
+      address: 'Address',
+      city: 'City',
+      state: 'State',
+      zip: 'ZIP Code',
+      country: 'Country',
+      next: 'Next',
+      back: 'Back',
+      placeOrder: 'Place Order',
+      orderSummary: 'Order Summary',
+      subtotal: 'Subtotal',
+      discount: 'Discount',
+      shipping: 'Shipping',
+      total: 'Total',
+      bitcoinAmount: 'Bitcoin Amount',
+      btcAddress: 'BTC Address',
+      btcAddressValue: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlv',
+      shippingTo: 'Shipping To',
+      items: 'Items',
+      quantity: 'Quantity',
+      price: 'Price',
+      confirmOrder: 'Confirm Order',
+      edit: 'Edit',
+      pleaseSend: 'Please send',
+      toThisAddress: 'to this address',
+      pendingConfirmation: 'Your order is pending confirmation. We will verify your payment within 24 hours.',
+      close: 'Close',
+      orderNumber: 'Order Number',
+      copyAddress: 'Copy Address',
+      copied: 'Copied!',
+      processing: 'Processing...'
+    },
+    es: {
+      shippingInfo: 'Información de Envío',
+      payment: 'Pago',
+      reviewOrder: 'Revisar Pedido',
+      fullName: 'Nombre Completo',
+      email: 'Email',
+      phone: 'Teléfono',
+      address: 'Dirección',
+      city: 'Ciudad',
+      state: 'Estado',
+      zip: 'Código Postal',
+      country: 'País',
+      next: 'Siguiente',
+      back: 'Atrás',
+      placeOrder: 'Realizar Pedido',
+      orderSummary: 'Resumen del Pedido',
+      subtotal: 'Subtotal',
+      discount: 'Descuento',
+      shipping: 'Envío',
+      total: 'Total',
+      bitcoinAmount: 'Cantidad de Bitcoin',
+      btcAddress: 'Dirección BTC',
+      btcAddressValue: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlv',
+      shippingTo: 'Enviar A',
+      items: 'Artículos',
+      quantity: 'Cantidad',
+      price: 'Precio',
+      confirmOrder: 'Confirmar Pedido',
+      edit: 'Editar',
+      pleaseSend: 'Por favor envíe',
+      toThisAddress: 'a esta dirección',
+      pendingConfirmation: 'Su pedido está pendiente de confirmación. Verificaremos su pago en 24 horas.',
+      close: 'Cerrar',
+      orderNumber: 'Número de Pedido',
+      copyAddress: 'Copiar Dirección',
+      copied: '¡Copiado!',
+      processing: 'Procesando...'
+    }
+  };
 
-      const response = await fetch('https://formspree.io/f/mqaqvlye', {
+  const [isAddressCopied, setIsAddressCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(t.en.btcAddressValue)
+      .then(() => {
+        setIsAddressCopied(true);
+        setTimeout(() => setIsAddressCopied(false), 2000);
+      })
+      .catch(err => {
+        console.error("Could not copy text: ", err);
+        toast({
+          title: language === 'en' ? "Copy Failed" : "Copia Fallida",
+          description: language === 'en' ? "Could not copy the address to clipboard." : "No se pudo copiar la dirección al portapapeles.",
+          variant: "destructive",
+        });
+      });
+  };
+
+  const handlePaymentStep = async () => {
+    console.log('💰 Processing Bitcoin payment...');
+    
+    const orderData = {
+      order_id: `ORD-${Date.now()}`,
+      customer_email: form.getValues('email'),
+      customer_name: form.getValues('fullName'),
+      items: cartItems,
+      original_total: originalTotal,
+      discount_amount: discountAmount,
+      shipping_fee: SHIPPING_FEE,
+      final_total: finalTotal,
+      payment_method: 'bitcoin',
+      tx_id: '',
+      bitcoin_amount: bitcoinAmount,
+      shipping_address: `${form.getValues('address')}, ${form.getValues('city')}, ${form.getValues('state')} ${form.getValues('zipCode')}, ${form.getValues('country')}`,
+      phone: form.getValues('phone'),
+      order_date: new Date().toISOString(),
+      verification_status: 'pending'
+    };
+
+    try {
+      await addOrder(orderData);
+      
+      // Send notification email
+      console.log('📧 Sending order collection email via Formspree...');
+      const formspreeResponse = await fetch('https://formspree.io/f/xdkoybpv', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: orderData.orderId,
-          customerName: orderData.customerName,
-          customerEmail: orderData.customerEmail,
-          phone: orderData.phone,
-          shippingAddress: orderData.shippingAddress,
-          items: itemsFormatted,
-          orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
-          paymentMethod: orderData.paymentMethod,
-          txId: orderData.txId || 'N/A',
-          orderDate: orderData.orderDate,
-          verificationStatus: orderData.verificationStatus || 'pending',
-          _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
-          _replyto: orderData.customerEmail, // This helps prevent spam
-          _gotcha: '', // Honeypot field to prevent spam
-          _cc: 'christhomaso083@proton.me' // Add your email as CC
-        }),
+          order_id: orderData.order_id,
+          customer_email: orderData.customer_email,
+          customer_name: orderData.customer_name,
+          total: orderData.final_total,
+          bitcoin_amount: bitcoinAmount,
+          items: cartItems.map(item => `${item.name} (Qty: ${item.quantity})`).join(', '),
+          shipping_address: orderData.shipping_address,
+          phone: orderData.phone
+        })
       });
-      
-      if (!response.ok) {
-        throw new Error(`Order collection failed with status: ${response.status}`);
+
+      if (formspreeResponse.ok) {
+        console.log('✅ Order collected successfully via Formspree');
+      } else {
+        console.warn('⚠️ Failed to send order collection email via Formspree');
       }
+
+      console.log('✅ Order processed successfully');
       
-      console.log('✅ Order collected successfully via Formspree');
-      return true;
-    } catch (error) {
-      console.error('❌ Formspree order collection failed:', error);
-      throw error;
-    }
-  };
-
-  const sendCustomerConfirmationEmail = async (orderData: any) => {
-    console.log('📧 Sending customer confirmation email...');
-    try {
-      // Use the Supabase edge function properly
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-order-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify(orderData)
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Customer email error response:', errorText);
-        throw new Error(`Customer email failed with status: ${response.status}`);
-      }
-      
-      console.log('✅ Customer confirmation email sent successfully');
-      return true;
-    } catch (error) {
-      console.error('❌ Customer confirmation email failed:', error);
-      return false;
-    }
-  };
-
-  const validateAddress = () => {
-    const errors = [];
-    
-    if (!formData.fullName.trim()) errors.push('Full name is required');
-    if (!formData.email.trim()) errors.push('Email is required');
-    if (!formData.address.trim()) errors.push('Street address is required');
-    if (!formData.city.trim()) errors.push('City is required');
-    if (!formData.state.trim()) errors.push('State/Province is required');
-    if (!formData.zipCode.trim()) errors.push('ZIP/Postal code is required');
-    if (!formData.country.trim()) errors.push('Country is required');
-    if (!formData.phone.trim()) errors.push('Phone number is required');
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      errors.push('Please enter a valid email address');
-    }
-    
-    // Phone validation (basic)
-    const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      errors.push('Please enter a valid phone number');
-    }
-    
-    // ZIP code validation for US
-    if (formData.country === 'United States') {
-      const zipRegex = /^\d{5}(-\d{4})?$/;
-      if (formData.zipCode && !zipRegex.test(formData.zipCode)) {
-        errors.push('Please enter a valid US ZIP code (e.g., 12345 or 12345-6789)');
-      }
-    }
-    
-    return errors;
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    console.log(`Updated ${field}:`, value);
-  };
-
-  const handleProceed = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('🚀 Form submitted, processing...');
-    console.log('Form data:', formData);
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      // Validate form data
-      const validationErrors = validateAddress();
-      if (validationErrors.length > 0) {
-        throw new Error(validationErrors.join(', '));
-      }
-      
-      if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
-      if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
-
-      console.log('✅ Form validation passed');
-
-      if (paymentMethod === 'bitcoin') {
-        console.log('💰 Processing Bitcoin payment...');
-        const totalUSD = calculateTotalUSD();
-        const { btc: { currentPrice } } = await fetchCryptoPrice();
-        const btcAmount = totalUSD / currentPrice;
-        setBtcAmount(btcAmount);
-        console.log('🎯 Moving to step 2 - Address Confirmation');
-        setStep(2);
-      } else if (paymentMethod === 'telegram') {
-        console.log('📱 Redirecting to Telegram...');
-        window.open('https://t.me/DANSTRBER', '_blank');
-        
-        toast({
-          title: 'Telegram Contact',
-          description: 'Join our Telegram group to coordinate your payment and order.',
+      // Send customer confirmation email
+      console.log('📧 Sending customer confirmation email...');
+      try {
+        const confirmationResponse = await fetch('https://formspree.io/f/xdkoybpv', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            _replyto: orderData.customer_email,
+            _subject: `Order Confirmation - ${orderData.order_id}`,
+            message: `Thank you for your order! Your order ID is: ${orderData.order_id}. We will verify your Bitcoin payment within 24 hours and send you tracking information.`,
+            to: orderData.customer_email
+          })
         });
         
-        onClose();
-      }
-    } catch (err: any) {
-      console.error('❌ Error in handleProceed:', err);
-      setError(err.message);
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleConfirmAddress = () => {
-    console.log('📋 Address confirmed, proceeding to payment...');
-    setStep(3);
-  };
-
-  const handleConfirm = async () => {
-    setIsLoading(true);
-    setIsVerifying(true);
-    setError(null);
-
-    try {
-      if (!txId) throw new Error('Transaction ID is required');
-      if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
-
-      console.log('🔍 Starting Bitcoin transaction verification...');
-
-      let verificationResult;
-      
-      // Debug bypass for specific transaction ID
-      if (txId === 'ihatebigger123') {
-        console.log('🔧 Using debug bypass for transaction verification');
-        verificationResult = {
-          isValid: true,
-          details: 'Debug transaction - bypassed verification'
-        };
-      } else {
-        // Normal verification
-        verificationResult = await BitcoinVerificationService.verifyTransaction(
-          txId,
-          myAddress,
-          btcAmount
-        );
-      }
-
-      console.log('🔍 Verification result:', verificationResult);
-
-      const orderId = generateOrderId();
-      const originalTotal = calculateTotalUSD() - 7.5;
-      const discountAmount = userDiscount;
-      const shippingFee = 7.5;
-      const finalTotal = originalTotal - discountAmount + shippingFee;
-
-      const orderItems = Object.entries(cart).map(([id, qty]) => {
-        const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
-        return { 
-          id, 
-          name: p.name, 
-          price: p.price, 
-          quantity: qty,
-          total: p.price * qty
-        };
-      });
-
-      const orderData = {
-        orderId,
-        customerEmail: formData.email,
-        customerName: formData.fullName,
-        items: orderItems,
-        originalTotal,
-        discountAmount,
-        shippingFee,
-        finalTotal,
-        paymentMethod: 'Bitcoin (BTC)',
-        txId,
-        bitcoinAmount: btcAmount,
-        shippingAddress: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}, ${formData.country}`,
-        phone: formData.phone,
-        orderDate: new Date().toLocaleString(),
-        verificationStatus: verificationResult.isValid ? 'verified' : 'failed',
-        verificationDetails: verificationResult.details
-      };
-
-      // ONLY process orders if verification is successful
-      if (verificationResult.isValid) {
-        console.log('✅ Transaction verified! Processing order...');
-        
-        try {
-          // Send order collection email
-          await sendOrderEmailFormspree(orderData);
-          console.log('✅ Order processed successfully');
-          
-          // Send customer confirmation email (non-blocking)
-          sendCustomerConfirmationEmail(orderData).catch(err => 
-            console.warn('⚠️ Customer confirmation email failed but order is still successful:', err)
-          );
-
-          // Add order to history
-          await addOrder({
-            order_id: orderId,
-            customer_email: formData.email,
-            customer_name: formData.fullName,
-            items: orderItems,
-            original_total: originalTotal,
-            discount_amount: discountAmount,
-            shipping_fee: shippingFee,
-            final_total: finalTotal,
-            payment_method: 'Bitcoin (BTC)',
-            tx_id: txId,
-            bitcoin_amount: btcAmount.toString(),
-            shipping_address: orderData.shippingAddress,
-            phone: formData.phone,
-            order_date: new Date().toISOString(),
-            verification_status: 'verified'
-          });
-          
-        } catch (emailError) {
-          console.error('❌ Email sending failed - ORDER NOT PROCESSED:', emailError);
-          throw new Error(`Order processing failed: ${emailError.message}`);
+        if (confirmationResponse.ok) {
+          console.log('✅ Customer confirmation email sent successfully');
         }
-        
-        // Show success toast first
-        toast({
-          title: '🎉 Thank You for Your Purchase!',
-          description: 'Your Bitcoin payment has been verified and your order is confirmed. Check your email for details!',
-          duration: 5000,
-        });
-
-        // Set order ID and show success modal
-        setCurrentOrderId(orderId);
-        
-        // Clear form state and close payment modal first
-        setStep(1);
-        setError(null);
-        setTxId('');
-        onClose();
-        
-        // Call onOrderSuccess to clear cart
-        onOrderSuccess();
-        
-        // Show success modal AFTER closing payment modal
-        setTimeout(() => {
-          setShowSuccessModal(true);
-        }, 300);
-        
-      } else {
-        console.log('❌ Transaction verification failed - ORDER NOT PROCESSED');
-        
-        setError(
-          `Payment verification failed: ${verificationResult.error}. ` +
-          `Please check your transaction ID and try again, or contact support. Your order was not processed.`
-        );
-        
-        toast({
-          title: '❌ Payment Verification Failed',
-          description: 'Order not processed. Please verify your transaction and try again.',
-          variant: 'destructive'
-        });
+      } catch (emailError) {
+        console.warn('⚠️ Failed to send customer confirmation email:', emailError);
       }
+
+      // Show success modal
+      handleOrderComplete(orderData.order_id);
       
-    } catch (err: any) {
-      console.error('❌ Error in handleConfirm:', err);
-      setError(`Processing error: ${err.message}. Order not processed.`);
-      toast({ 
-        title: 'Processing Error', 
-        description: 'Order not processed due to error. Please try again.', 
-        variant: 'destructive' 
+    } catch (error) {
+      console.error('❌ Error processing order:', error);
+      toast({
+        title: language === 'en' ? "Order Failed" : "Pedido Fallido",
+        description: language === 'en' ? "There was an error processing your order. Please try again." : "Hubo un error procesando tu pedido. Por favor intenta de nuevo.",
+        variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
-      setIsVerifying(false);
     }
   };
 
-  const handleClose = () => {
-    setStep(1);
-    setError(null);
-    setTxId('');
-    onClose();
-  };
-
-  const handleSuccessModalClose = () => {
-    setShowSuccessModal(false);
-    setCurrentOrderId('');
-  };
-
-  if (!isOpen && !showSuccessModal) return null;
+  const l = t[language];
 
   return (
     <>
-      {/* Payment Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            {step === 1 ? (
-              <div className="p-4 sm:p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Complete Your Purchase</h2>
-                  <button 
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
-                    aria-label="Close modal"
-                  >
-                    ×
-                  </button>
+      <Dialog open={isOpen && !orderSuccessData.show} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{currentStep === 1 ? l.shippingInfo : currentStep === 2 ? l.payment : l.reviewOrder}</DialogTitle>
+            <DialogDescription>
+              {currentStep === 1
+                ? language === 'en' ? 'Enter your shipping information' : 'Ingrese su información de envío'
+                : currentStep === 2
+                  ? language === 'en' ? 'Confirm your order and payment details' : 'Confirme su pedido y detalles de pago'
+                  : language === 'en' ? 'Review your order before placing it' : 'Revise su pedido antes de realizarlo'}
+            </DialogDescription>
+          </DialogHeader>
+
+          {currentStep === 1 && (
+            <ShippingForm form={form} language={language} />
+          )}
+
+          {currentStep === 2 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">{l.orderSummary}</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-gray-600">{l.subtotal}:</p>
+                  <p className="font-semibold">${originalTotal.toFixed(2)}</p>
                 </div>
-                
-                <div className="mb-6">
-                  <p className="text-gray-600">Please fill out your shipping information to complete your order.</p>
+                <div>
+                  <p className="text-gray-600">{l.discount}:</p>
+                  <p className="font-semibold">-${discountAmount.toFixed(2)}</p>
                 </div>
-                
-                <form onSubmit={handleProceed} className="space-y-6">
-                  <ShippingForm 
-                    formData={formData}
-                    onInputChange={handleInputChange}
-                    language="en"
-                  />
-
-                  <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
-                    <div className="space-y-3">
-                      <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
-                        <input 
-                          id="bitcoin-payment"
-                          name="paymentMethod"
-                          type="radio" 
-                          value="bitcoin" 
-                          checked={paymentMethod === 'bitcoin'} 
-                          onChange={() => setPaymentMethod('bitcoin')} 
-                          className="w-4 h-4 text-blue-600"
-                        /> 
-                        <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
-                      </label>
-                      <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
-                        <input 
-                          id="telegram-payment"
-                          name="paymentMethod"
-                          type="radio" 
-                          value="telegram" 
-                          checked={paymentMethod === 'telegram'} 
-                          onChange={() => setPaymentMethod('telegram')} 
-                          className="w-4 h-4 text-blue-600"
-                        /> 
-                        <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {paymentMethod === 'bitcoin' && (
-                    <BitcoinTutorial language="en" />
-                  )}
-
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-600 text-sm">{error}</p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
-                    <button 
-                      type="submit" 
-                      disabled={isLoading} 
-                      className="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {isLoading ? 'Processing...' : paymentMethod === 'bitcoin' ? 'Continue to Address Confirmation' : 'Contact via Telegram'}
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={handleClose} 
-                      className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
-              </div>
-            ) : step === 2 ? (
-              <div className="p-4 sm:p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Confirm Your Address</h2>
-                  <button 
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
-                    aria-label="Close modal"
-                  >
-                    ×
-                  </button>
+                <div>
+                  <p className="text-gray-600">{l.shipping}:</p>
+                  <p className="font-semibold">${SHIPPING_FEE.toFixed(2)}</p>
                 </div>
-                
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                  <h3 className="text-lg font-semibold text-blue-800 mb-4">📋 Please confirm your shipping address:</h3>
-                  <div className="space-y-2 text-gray-700">
-                    <p><strong>Name:</strong> {formData.fullName}</p>
-                    <p><strong>Email:</strong> {formData.email}</p>
-                    <p><strong>Address:</strong> {formData.address}</p>
-                    <p><strong>City:</strong> {formData.city}</p>
-                    <p><strong>State/Province:</strong> {formData.state}</p>
-                    <p><strong>ZIP/Postal Code:</strong> {formData.zipCode}</p>
-                    <p><strong>Country:</strong> {formData.country}</p>
-                    <p><strong>Phone:</strong> {formData.phone}</p>
-                  </div>
+                <div>
+                  <p className="text-gray-600">{l.total}:</p>
+                  <p className="font-semibold">${finalTotal.toFixed(2)}</p>
                 </div>
-
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                  <p className="text-orange-800 text-sm">
-                    ⚠️ Please double-check your address carefully. Orders cannot be changed once payment is confirmed.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                  <button 
-                    onClick={handleConfirmAddress}
-                    className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    ✅ Address is Correct - Proceed to Payment
-                  </button>
-                  <button 
-                    onClick={() => setStep(1)}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    ← Edit Address
-                  </button>
+                <div>
+                  <p className="text-gray-600">{l.bitcoinAmount}:</p>
+                  <p className="font-semibold">{bitcoinAmount} BTC</p>
                 </div>
               </div>
+
+              <h3 className="text-xl font-semibold">{l.shippingTo}</h3>
+              <div className="grid grid-cols-1 gap-2">
+                <div>
+                  <p className="text-gray-600">{l.fullName}:</p>
+                  <p className="font-semibold">{form.getValues('fullName')}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">{l.email}:</p>
+                  <p className="font-semibold">{form.getValues('email')}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">{l.phone}:</p>
+                  <p className="font-semibold">{form.getValues('phone')}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">{l.address}:</p>
+                  <p className="font-semibold">{form.getValues('address')}, {form.getValues('city')}, {form.getValues('state')} {form.getValues('zipCode')}, {form.getValues('country')}</p>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-semibold">{l.items}</h3>
+              <div className="grid grid-cols-1 gap-2">
+                {cartItems.map(item => (
+                  <div key={item.id} className="flex justify-between">
+                    <p className="text-gray-600">{item.name}</p>
+                    <p className="font-semibold">{item.quantity} x ${item.price.toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">{l.confirmOrder}</h3>
+              <p>{l.pleaseSend} <strong>{bitcoinAmount} BTC</strong> {l.toThisAddress}:</p>
+              <div className="relative">
+                <Input
+                  type="text"
+                  value={t.en.btcAddressValue}
+                  readOnly
+                  className="font-mono text-sm"
+                />
+                <Button
+                  onClick={copyToClipboard}
+                  className="absolute top-1 right-1 bg-blue-500 text-white rounded-md px-3 py-1 text-sm hover:bg-blue-600 transition-colors"
+                  disabled={isAddressCopied}
+                >
+                  {isAddressCopied ? l.copied : l.copyAddress}
+                </Button>
+              </div>
+              <p className="text-green-600">{l.pendingConfirmation}</p>
+            </div>
+          )}
+
+          <div className="flex justify-between mt-6">
+            {currentStep > 1 && (
+              <Button variant="secondary" onClick={() => setCurrentStep(currentStep - 1)}>
+                {l.back}
+              </Button>
+            )}
+            {currentStep < 3 ? (
+              <Button onClick={() => {
+                if (currentStep === 1) {
+                  form.handleSubmit((data) => {
+                    setCurrentStep(2);
+                  })();
+                } else if (currentStep === 2) {
+                  setCurrentStep(3);
+                }
+              }}
+                disabled={currentStep === 1 && !form.formState.isValid}
+              >
+                {l.next}
+              </Button>
             ) : (
-              <div className="p-4 sm:p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Bitcoin Payment</h2>
-                  <button 
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
-                    aria-label="Close modal"
-                  >
-                    ×
-                  </button>
-                </div>
-                
-                <PaymentTimer onExpired={() => setStep(1)} language="en" />
-                
-                <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 mb-6 mt-6">
-                  <div className="text-center mb-4">
-                    <h3 className="text-lg sm:text-xl font-bold text-orange-800 mb-2">₿ Payment Details</h3>
-                    <div className="bg-white rounded-lg p-4 border border-orange-200">
-                      <p className="text-sm text-gray-600 mb-2">Send exactly</p>
-                      <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-4 break-all">{btcAmount.toFixed(8)} BTC</p>
-                      <p className="text-sm text-gray-600 mb-2">To address:</p>
-                      <p className="font-mono text-xs sm:text-sm bg-gray-100 p-3 rounded border break-all">{myAddress}</p>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-semibold text-orange-800">
-                      Total: ${calculateTotalUSD().toFixed(2)} USD
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <label htmlFor="txId" className="block text-sm font-medium text-gray-700 mb-2">
-                    🔍 Transaction ID (Auto-Verification Enabled)
-                  </label>
-                  <input 
-                    id="txId"
-                    name="txId"
-                    type="text" 
-                    value={txId} 
-                    onChange={(e) => setTxId(e.target.value)} 
-                    placeholder="Enter Bitcoin Transaction ID (64 characters)" 
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-sm"
-                    required
-                  />
-                  <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                    🔍 We'll automatically verify your payment on the Bitcoin blockchain. Orders are confirmed instantly after successful verification.
-                  </p>
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600">
-                      ❌ Transaction ID not working? Hit me up on Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-800">@DANSTRBER</a>
-                    </p>
-                  </div>
-                </div>
-
-                {isVerifying && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <p className="text-blue-800 font-medium">🔍 Verifying Bitcoin transaction...</p>
-                    </div>
-                    <p className="text-sm text-blue-600 mt-2">Checking blockchain for transaction confirmation...</p>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <p className="text-red-600 text-sm">{error}</p>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                  <button 
-                    onClick={handleConfirm} 
-                    disabled={isLoading || !txId || isVerifying} 
-                    className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isVerifying ? 'Verifying Transaction...' : isLoading ? 'Processing Order...' : 'Verify & Submit Order'}
-                  </button>
-                  <button 
-                    onClick={() => setStep(2)} 
-                    disabled={isLoading || isVerifying}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  >
-                    Back
-                  </button>
-                </div>
-              </div>
+              <Button onClick={handlePaymentStep} disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? l.processing : l.placeOrder}
+              </Button>
             )}
           </div>
-        </div>
-      )}
-      
-      {/* Success Modal - Always render when showSuccessModal is true */}
+        </DialogContent>
+      </Dialog>
+
       <OrderSuccessModal
-        isOpen={showSuccessModal}
-        onClose={handleSuccessModalClose}
-        orderId={currentOrderId}
-        language="en"
+        isOpen={orderSuccessData.show}
+        onClose={handleCloseSuccessModal}
+        orderId={orderSuccessData.orderId}
+        language={language}
       />
     </>
   );
