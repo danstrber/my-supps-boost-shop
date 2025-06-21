@@ -18,6 +18,7 @@ interface CartModalProps {
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
   onPageChange?: (page: string) => void;
+  language?: 'en' | 'es';
 }
 
 const CartModal = ({
@@ -29,7 +30,8 @@ const CartModal = ({
   userDiscount,
   isAuthenticated,
   userProfile,
-  onPageChange
+  onPageChange,
+  language = 'en'
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -201,6 +203,7 @@ const CartModal = ({
         onClose={handlePaymentModalClose}
         cart={cart}
         products={products}
+        language={language}
         userDiscount={discountAmount}
         userProfile={userProfile}
         onOrderSuccess={handleOrderSuccess}

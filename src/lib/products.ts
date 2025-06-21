@@ -1,4 +1,44 @@
-import { Product } from './products';
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  categories: string[];
+  description: string | { en: string; es: string };
+  labTestFile?: string;
+  featured?: boolean;
+  inStock?: boolean;
+  specifications?: {
+    en: {
+      dosePerCapsule: string;
+      capsulesPerBottle: string;
+      typicalCycleLength: string;
+      potencyLevel: string;
+    };
+    es: {
+      dosePerCapsule: string;
+      capsulesPerBottle: string;
+      typicalCycleLength: string;
+      potencyLevel: string;
+    };
+  };
+  benefits?: { en: string; es: string };
+  sideEffects?: { en: string; es: string };
+  effectsOnWomen?: { en: string; es: string };
+  safetyInformation?: { en: string; es: string };
+  howItWorks?: { en: string; es: string };
+  whatToExpect?: { en: string; es: string };
+  researchBackground?: { en: string; es: string };
+  cycleInformation?: { en: string; es: string };
+  performanceRatings?: {
+    muscleGain: number;
+    strength: number;
+    fatLoss: number;
+    sideEffects: number;
+    retention: number;
+  };
+}
 
 export const products: Product[] = [
   {
@@ -81,5 +121,13 @@ export const products: Product[] = [
     image: '/lovable-uploads/clomid.png',
     categories: ['post-cycle'],
     description: 'Post cycle therapy drug to restore natural testosterone production.',
+  },
+  {
+    id: '11',
+    name: 'Accutane',
+    price: 35,
+    image: '/lovable-uploads/accutane.png',
+    categories: ['skincare'],
+    description: 'Powerful acne treatment for severe and persistent acne.',
   }
 ];

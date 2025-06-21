@@ -120,7 +120,7 @@ const ProductDetailModal = ({
                   {product.name}
                 </h2>
                 <p className="text-gray-600">
-                  {language === 'en' ? 'Detailed product information and specifications' : 'Información detallada del producto y especificaciones'}
+                  {typeof product.description === 'string' ? product.description : product.description?.[language] || 'No description available'}
                 </p>
               </div>
               
@@ -145,42 +145,44 @@ const ProductDetailModal = ({
                 </div>
               </div>
 
-              {/* Product Specs */}
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                <h3 className="font-semibold text-gray-800 mb-3">
-                  {l.productSpecs}
-                </h3>
-                <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div className="bg-white p-2 rounded flex items-center gap-2">
-                    <Pill className="h-4 w-4 text-blue-600" />
-                    <div>
-                      <span className="text-gray-600 text-xs block">{l.dose}</span>
-                      <span className="font-semibold">{product.specifications[language].dosePerCapsule}</span>
+              {/* Product Specs - Only show if specifications exist */}
+              {product.specifications && (
+                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                  <h3 className="font-semibold text-gray-800 mb-3">
+                    {l.productSpecs}
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="bg-white p-2 rounded flex items-center gap-2">
+                      <Pill className="h-4 w-4 text-blue-600" />
+                      <div>
+                        <span className="text-gray-600 text-xs block">{l.dose}</span>
+                        <span className="font-semibold">{product.specifications[language]?.dosePerCapsule || 'N/A'}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-white p-2 rounded flex items-center gap-2">
-                    <div className="h-4 w-4 bg-green-600 rounded-full" />
-                    <div>
-                      <span className="text-gray-600 text-xs block">{l.capsules}</span>
-                      <span className="font-semibold">{product.specifications[language].capsulesPerBottle}</span>
+                    <div className="bg-white p-2 rounded flex items-center gap-2">
+                      <div className="h-4 w-4 bg-green-600 rounded-full" />
+                      <div>
+                        <span className="text-gray-600 text-xs block">{l.capsules}</span>
+                        <span className="font-semibold">{product.specifications[language]?.capsulesPerBottle || 'N/A'}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-white p-2 rounded flex items-center gap-2">
-                    <Timer className="h-4 w-4 text-purple-600" />
-                    <div>
-                      <span className="text-gray-600 text-xs block">{l.cycleLength}</span>
-                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleLength}</span>
+                    <div className="bg-white p-2 rounded flex items-center gap-2">
+                      <Timer className="h-4 w-4 text-purple-600" />
+                      <div>
+                        <span className="text-gray-600 text-xs block">{l.cycleLength}</span>
+                        <span className="font-semibold text-xs">{product.specifications[language]?.typicalCycleLength?.slice(0, 15) || 'N/A'}...</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-white p-2 rounded flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-yellow-600" />
-                    <div>
-                      <span className="text-gray-600 text-xs block">{l.strength}</span>
-                      <span className="font-semibold text-xs">{product.specifications[language].potencyLevel.slice(0, 15)}...</span>
+                    <div className="bg-white p-2 rounded flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-yellow-600" />
+                      <div>
+                        <span className="text-gray-600 text-xs block">{l.strength}</span>
+                        <span className="font-semibold text-xs">{product.specifications[language]?.potencyLevel?.slice(0, 15) || 'N/A'}...</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Price and Add to Cart */}
               <div className="bg-white border rounded-lg p-4 text-center">
@@ -203,85 +205,103 @@ const ProductDetailModal = ({
 
             {/* Right Side - Detailed Information */}
             <div className="space-y-4 text-sm">
-              {/* Research */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                  <Info className="h-4 w-4" />
-                  {l.research}
-                </h4>
-                <p className="text-blue-700 text-xs leading-relaxed">{product.researchBackground[language]}</p>
-              </div>
-
-              {/* Benefits */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  {l.benefits}
-                </h4>
-                <p className="text-green-700 text-xs leading-relaxed">{product.benefits[language]}</p>
-              </div>
-
-              {/* Side Effects */}
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  {l.sideEffects}
-                </h4>
-                <p className="text-red-700 text-xs leading-relaxed">{product.sideEffects[language]}</p>
-              </div>
-
-              {/* Effects on Women */}
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                <h4 className="font-semibold text-yellow-800 mb-2">{l.effectsOnWomen}</h4>
-                <p className="text-yellow-700 text-xs leading-relaxed">{product.effectsOnWomen[language]}</p>
-              </div>
-
-              {/* How It Works */}
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                <h4 className="font-semibold text-purple-800 mb-2">{l.howItWorks}</h4>
-                <p className="text-purple-700 text-xs leading-relaxed">{product.howItWorks[language]}</p>
-              </div>
-
-              {/* Safety */}
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                <h4 className="font-semibold text-orange-800 mb-2">{l.safety}</h4>
-                <p className="text-orange-700 text-xs leading-relaxed">{product.safetyInformation[language]}</p>
-              </div>
-
-              {/* Cycle Information */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                <h4 className="font-semibold text-gray-800 mb-2">{l.cycle}</h4>
-                <p className="text-gray-700 text-xs leading-relaxed mb-2">{product.cycleInformation[language]}</p>
-                <div className="bg-white p-2 rounded border">
-                  <h5 className="font-semibold text-gray-800 mb-1 text-xs">{l.expectations}</h5>
-                  <p className="text-gray-700 text-xs">{product.whatToExpect[language]}</p>
+              {/* Research - Only show if exists */}
+              {product.researchBackground && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    {l.research}
+                  </h4>
+                  <p className="text-blue-700 text-xs leading-relaxed">{product.researchBackground[language] || 'No research information available'}</p>
                 </div>
-              </div>
+              )}
 
-              {/* Performance Ratings */}
-              <div className="bg-white border border-gray-200 rounded-lg p-3">
-                <h4 className="font-semibold text-gray-800 mb-3">
-                  {l.performanceRatings}
-                </h4>
-                <div className="space-y-2">
-                  {Object.entries(product.performanceRatings).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between">
-                      <span className="text-xs font-medium text-gray-700">{ratingsLabels[language][key as keyof typeof ratingsLabels.en] || key}</span>
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`h-3 w-3 ${
-                              i < value ? 'text-yellow-500 fill-current' : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                        <span className="text-xs text-gray-600 ml-1">{value}/5</span>
-                      </div>
+              {/* Benefits - Only show if exists */}
+              {product.benefits && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    {l.benefits}
+                  </h4>
+                  <p className="text-green-700 text-xs leading-relaxed">{product.benefits[language] || 'No benefits information available'}</p>
+                </div>
+              )}
+
+              {/* Side Effects - Only show if exists */}
+              {product.sideEffects && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    {l.sideEffects}
+                  </h4>
+                  <p className="text-red-700 text-xs leading-relaxed">{product.sideEffects[language] || 'No side effect information available'}</p>
+                </div>
+              )}
+
+              {/* Effects on Women - Only show if exists */}
+              {product.effectsOnWomen && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-yellow-800 mb-2">{l.effectsOnWomen}</h4>
+                  <p className="text-yellow-700 text-xs leading-relaxed">{product.effectsOnWomen[language] || 'No information available'}</p>
+                </div>
+              )}
+
+              {/* How It Works - Only show if exists */}
+              {product.howItWorks && (
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-purple-800 mb-2">{l.howItWorks}</h4>
+                  <p className="text-purple-700 text-xs leading-relaxed">{product.howItWorks[language] || 'No information available'}</p>
+                </div>
+              )}
+
+              {/* Safety - Only show if exists */}
+              {product.safetyInformation && (
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-orange-800 mb-2">{l.safety}</h4>
+                  <p className="text-orange-700 text-xs leading-relaxed">{product.safetyInformation[language] || 'No safety information available'}</p>
+                </div>
+              )}
+
+              {/* Cycle Information - Only show if exists */}
+              {product.cycleInformation && (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-gray-800 mb-2">{l.cycle}</h4>
+                  <p className="text-gray-700 text-xs leading-relaxed mb-2">{product.cycleInformation[language] || 'No cycle information available'}</p>
+                  {product.whatToExpect && (
+                    <div className="bg-white p-2 rounded border">
+                      <h5 className="font-semibold text-gray-800 mb-1 text-xs">{l.expectations}</h5>
+                      <p className="text-gray-700 text-xs">{product.whatToExpected[language] || 'No expectation information available'}</p>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
+              )}
+
+              {/* Performance Ratings - Only show if exists */}
+              {product.performanceRatings && (
+                <div className="bg-white border border-gray-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-gray-800 mb-3">
+                    {l.performanceRatings}
+                  </h4>
+                  <div className="space-y-2">
+                    {Object.entries(product.performanceRatings).map(([key, value]) => (
+                      <div key={key} className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-gray-700">{ratingsLabels[language][key as keyof typeof ratingsLabels.en] || key}</span>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < (typeof value === 'number' ? value : 0) ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                              }`}
+                            />
+                          ))}
+                          <span className="text-xs text-gray-600 ml-1">{typeof value === 'number' ? value : 0}/5</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Categories */}
               <div className="bg-white border border-gray-200 rounded-lg p-3">
