@@ -1,211 +1,121 @@
-import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import React from 'react';
+import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, X } from 'lucide-react';
-import { Product } from '@/lib/products';
-import { UserProfile } from '@/lib/auth';
-import PaymentModal from './PaymentModal';
-import CartItem from './cart/CartItem';
-import CartSummary from './cart/CartSummary';
+import { SimpleProduct } from '@/lib/products';
 
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cart: Record<string, number>;
-  products: Product[];
+  cart: { [productId: string]: number };
+  products: SimpleProduct[];
   onUpdateCart: (productId: string, quantity: number) => void;
   userDiscount: number;
   isAuthenticated: boolean;
-  userProfile: UserProfile | null;
+  userProfile: any;
   onPageChange?: (page: string) => void;
 }
 
-const CartModal = ({
-  isOpen,
-  onClose,
-  cart = {},
-  products = [],
-  onUpdateCart,
+const CartModal = ({ 
+  isOpen, 
+  onClose, 
+  cart, 
+  products, 
+  onUpdateCart, 
   userDiscount,
   isAuthenticated,
   userProfile,
   onPageChange
 }: CartModalProps) => {
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-
-  // Safety check for cart and products
-  if (!cart || !products) {
-    return null;
-  }
+  const calculateDiscountedPrice = (price: number) => {
+    const discountPercentage = userDiscount / 100;
+    const discountedAmount = price * discountPercentage;
+    return price - discountedAmount;
+  };
+  
+  if (!isOpen) return null;
 
   const cartItems = Object.entries(cart).map(([productId, quantity]) => {
     const product = products.find(p => p.id === productId);
     if (!product) return null;
     return { product, quantity };
-  }).filter(Boolean) as { product: Product; quantity: number }[];
+  }).filter(Boolean) as { product: SimpleProduct; quantity: number }[];
 
-  if (cartItems.length === 0) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center">
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Cart
-            </DialogTitle>
-            <DialogDescription>
-              Your shopping cart is currently empty.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-8 text-center">
-            <ShoppingCart className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500 mb-4">Your cart is empty</p>
-            <Button onClick={onClose}>Continue Shopping</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  // Calculate totals - apply discount to subtotal, not individual items
-  const subtotal = cartItems.reduce((total, { product, quantity }) => total + (product.price * quantity), 0);
-  
-  // Apply discount only if user is authenticated and has a discount
-  const actualDiscount = isAuthenticated && userDiscount > 0 ? userDiscount : 0;
-  
-  // Cap discount based on order value
-  const cappedDiscount = subtotal >= 150 ? actualDiscount : Math.min(actualDiscount, 25);
-  
-  // Apply discount to subtotal
-  const discountAmount = subtotal * (cappedDiscount / 100);
-  const subtotalAfterDiscount = subtotal - discountAmount;
-  
-  // Updated shipping fee to $7.50, free shipping at $100
-  const freeShippingThreshold = 100;
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 7.5;
-  const finalTotal = subtotalAfterDiscount + shippingFee;
-
-  console.log('Cart calculation:', {
-    subtotal,
-    userDiscount,
-    actualDiscount,
-    cappedDiscount,
-    discountAmount,
-    subtotalAfterDiscount,
-    shippingFee,
-    finalTotal,
-    isAuthenticated
-  });
-
-  const handleCheckout = () => {
-    if (!isAuthenticated) {
-      alert('Please log in to checkout');
-      return;
-    }
-    // Close cart modal first, then open payment modal
-    onClose();
-    setIsPaymentModalOpen(true);
-  };
-
-  const handleReferralClick = () => {
-    if (onPageChange) {
-      onPageChange('account');
-      onClose();
-    }
-  };
-
-  const handlePaymentModalClose = () => {
-    setIsPaymentModalOpen(false);
-  };
-
-  const handleOrderSuccess = () => {
-    setIsPaymentModalOpen(false);
-    alert('Order placed successfully!');
-  };
+  const totalPrice = cartItems.reduce((total, { product, quantity }) => {
+    const discountedPrice = calculateDiscountedPrice(product.price);
+    return total + (discountedPrice * quantity);
+  }, 0);
 
   return (
-    <>
-      <Dialog open={isOpen && !isPaymentModalOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span className="flex items-center">
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Cart
-              </span>
-              <Button variant="ghost" size="sm" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
-            <DialogDescription>
-              Review your items and proceed to checkout when ready.
-            </DialogDescription>
-          </DialogHeader>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden max-w-2xl w-full">
+        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            <ShoppingCart className="inline-block mr-2 align-middle h-5 w-5" />
+            Your Cart
+          </h2>
+          <Button variant="ghost" onClick={onClose} className="hover:bg-gray-200 rounded-full h-8 w-8 p-1">
+            <X className="h-5 w-5" />
+            <span className="sr-only">Close</span>
+          </Button>
+        </div>
 
-          <div className="space-y-4">
-            {/* Referral Discount Notice */}
-            <div 
-              className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
-              onClick={handleReferralClick}
-            >
-              <p className="text-green-700 text-sm font-medium">
-                Want cheaper? Get 10% off by referring a new user!
-              </p>
+        <div className="p-6 max-h-[60vh] overflow-y-auto">
+          {cartItems.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-gray-600">Your cart is empty.</p>
             </div>
+          ) : (
+            <ul>
+              {cartItems.map(({ product, quantity }) => (
+                <li key={product.id} className="flex items-center justify-between py-4 border-b border-gray-200">
+                  <div className="flex items-center">
+                    <img src={product.imageUrl} alt={product.name} className="h-16 w-16 object-cover rounded-lg mr-4" />
+                    <div>
+                      <h3 className="font-semibold">{product.name}</h3>
+                      <p className="text-gray-500 text-sm">${product.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => onUpdateCart(product.id, quantity - 1)}
+                      disabled={quantity <= 1}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                    <span className="text-lg">{quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => onUpdateCart(product.id, quantity + 1)}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-            {cartItems.map(({ product, quantity }) => (
-              <CartItem
-                key={product.id}
-                product={product}
-                quantity={quantity}
-                onUpdateCart={onUpdateCart}
-                userDiscount={0} // Don't show discount on individual items
-              />
-            ))}
-
-            <CartSummary
-              subtotal={subtotal}
-              userDiscount={cappedDiscount}
-              discountAmount={discountAmount}
-              subtotalAfterDiscount={subtotalAfterDiscount}
-              shippingFee={shippingFee}
-              finalTotal={finalTotal}
-              freeShippingThreshold={freeShippingThreshold}
-            />
-
-            {/* Discount limitation notice */}
-            {actualDiscount > 25 && subtotal < 150 && (
-              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
-                <p className="text-yellow-700 text-sm">
-                  Discounts over 25% are limited to orders $150+. Current discount: {cappedDiscount}%
-                </p>
-              </div>
-            )}
-
-            <Button 
-              onClick={handleCheckout}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3"
-              disabled={!isAuthenticated}
-            >
-              {!isAuthenticated 
-                ? 'Login to Checkout'
-                : 'Proceed to Checkout'
-              }
-            </Button>
+        <div className="p-6 border-t border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-lg font-semibold">Subtotal:</div>
+            <div className="text-xl font-bold">${totalPrice.toFixed(2)}</div>
           </div>
-        </DialogContent>
-      </Dialog>
-
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={handlePaymentModalClose}
-        cart={cart}
-        products={products}
-        userDiscount={discountAmount}
-        userProfile={userProfile}
-        onOrderSuccess={handleOrderSuccess}
-      />
-    </>
+          {isAuthenticated ? (
+            <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-sm">
+              Proceed to Checkout
+            </Button>
+          ) : (
+            <Button onClick={() => onPageChange && onPageChange('account')} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-sm">
+              Login to Checkout
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

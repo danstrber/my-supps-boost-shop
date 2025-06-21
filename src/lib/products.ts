@@ -444,7 +444,7 @@ export const products: SimpleProduct[] = [
     effects: ['Testicular Function Maintenance', 'Fertility Preservation', 'Enhanced Recovery'],
     sideEffects: ['Gynecomastia Risk', 'Water Retention', 'Mood Changes'],
     dosageInfo: 'During cycle: 250-500IU twice weekly, PCT: 2000-3000IU every other day',
-    whatToExpect: 'Maintained testicular size and function during cycles, easier PCT transition.'
+    whatToExpected: 'Maintained testicular size and function during cycles, easier PCT transition.'
   },
   {
     id: '24',
