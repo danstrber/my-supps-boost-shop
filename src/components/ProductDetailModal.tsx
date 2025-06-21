@@ -1,10 +1,10 @@
-
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, X, FileText, Star, AlertTriangle, Users, Shield, Zap, Clock, BookOpen, Cycle } from 'lucide-react';
+import { ShoppingCart, Star, Shield, X, Pill, Timer, Zap, AlertTriangle, Info, Target, TrendingUp } from 'lucide-react';
 import { Product } from '@/lib/products';
+import { translations } from '@/lib/translations';
 
 interface ProductDetailModalProps {
   product: Product;
@@ -20,264 +20,331 @@ const ProductDetailModal = ({
   isOpen,
   onClose,
   onAddToCart,
-  language,
-  userDiscount
+  language
 }: ProductDetailModalProps) => {
-  if (!product) return null;
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
+  const t = translations[language];
 
-  const getDescription = (desc: string | { en: string; es: string }) => {
-    if (typeof desc === 'string') return desc;
-    return desc[language] || desc.en;
+  const images = [product.image];
+
+  const handleAddToCart = () => {
+    onAddToCart(product);
+    onClose();
   };
 
-  const getSpecification = (spec: any, key: string) => {
-    if (!spec || !spec[language]) return 'N/A';
-    return spec[language][key] || 'N/A';
+  const openImageModal = (index: number) => {
+    setSelectedImageIndex(index);
+    setImageModalOpen(true);
   };
 
-  const getText = (text: any) => {
-    if (!text) return '';
-    if (typeof text === 'string') return text;
-    return text[language] || text.en || '';
-  };
-
-  const discountedPrice = userDiscount > 0 
-    ? product.price * (1 - userDiscount / 100)
-    : product.price;
-
-  const sections = [
-    {
-      id: 'benefits',
-      title: language === 'en' ? 'Benefits' : 'Beneficios',
-      icon: Star,
-      content: getText(product.benefits)
+  const labels = {
+    en: {
+      dose: 'Dose per capsule',
+      capsules: 'Capsules per bottle',
+      cycleLength: 'Typical cycle length',
+      strength: 'Potency level',
+      benefits: 'Benefits',
+      sideEffects: 'Side Effects',
+      effectsOnWomen: 'Effects on Women',
+      safety: 'Safety Information',
+      howItWorks: 'How It Works',
+      expectations: 'What to Expect',
+      research: 'Research Background',
+      history: 'History & Development',
+      labTestResults: 'Lab Test Results',
+      cycle: 'Cycle Information',
+      productSpecs: 'Product Specifications',
+      performanceRatings: 'Performance Ratings',
+      categories: 'Categories',
+      clickToView: 'Click to view full lab test results'
     },
-    {
-      id: 'sideEffects',
-      title: language === 'en' ? 'Side Effects' : 'Efectos Secundarios',
-      icon: AlertTriangle,
-      content: getText(product.sideEffects)
-    },
-    {
-      id: 'effectsOnWomen',
-      title: language === 'en' ? 'Effects on Women' : 'Efectos en Mujeres',
-      icon: Users,
-      content: getText(product.effectsOnWomen)
-    },
-    {
-      id: 'safetyInformation',
-      title: language === 'en' ? 'Safety Information' : 'Información de Seguridad',
-      icon: Shield,
-      content: getText(product.safetyInformation)
-    },
-    {
-      id: 'howItWorks',
-      title: language === 'en' ? 'How It Works' : 'Cómo Funciona',
-      icon: Zap,
-      content: getText(product.howItWorks)
-    },
-    {
-      id: 'whatToExpect',
-      title: language === 'en' ? 'What to Expect' : 'Qué Esperar',
-      icon: Clock,
-      content: getText(product.whatToExpect)
-    },
-    {
-      id: 'researchBackground',
-      title: language === 'en' ? 'Research Background' : 'Antecedentes de Investigación',
-      icon: BookOpen,
-      content: getText(product.researchBackground)
-    },
-    {
-      id: 'cycleInformation',
-      title: language === 'en' ? 'Cycle Information' : 'Información del Ciclo',
-      icon: Cycle,
-      content: getText(product.cycleInformation)
+    es: {
+      dose: 'Dosis por cápsula',
+      capsules: 'Cápsulas por frasco',
+      cycleLength: 'Duración típica del ciclo',
+      strength: 'Nivel de potencia',
+      benefits: 'Beneficios',
+      sideEffects: 'Efectos Secundarios',
+      effectsOnWomen: 'Efectos en Mujeres',
+      safety: 'Información de Seguridad',
+      howItWorks: 'Cómo Funciona',
+      expectations: 'Qué Esperar',
+      research: 'Antecedentes de Investigación',
+      history: 'Historia y Desarrollo',
+      labTestResults: 'Resultados de Laboratorio',
+      cycle: 'Información del Ciclo',
+      productSpecs: 'Especificaciones del Producto',
+      performanceRatings: 'Calificaciones de Rendimiento',
+      categories: 'Categorías',
+      clickToView: 'Haz clic para ver los resultados completos del laboratorio'
     }
-  ].filter(section => section.content);
+  };
+
+  const l = labels[language];
+
+  // Get localized ratings labels
+  const ratingsLabels = {
+    en: {
+      'muscleGain': 'Muscle Gain',
+      'strength': 'Strength',
+      'fatLoss': 'Fat Loss',
+      'sideEffects': 'Side Effects',
+      'retention': 'Maintainability'
+    },
+    es: {
+      'muscleGain': 'Ganancia Muscular',
+      'strength': 'Fuerza',
+      'fatLoss': 'Pérdida de Grasa',
+      'sideEffects': 'Efectos Secundarios',
+      'retention': 'Mantenimiento'
+    }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span className="text-2xl font-bold">{product.name}</span>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Left Column - Image and Basic Info */}
-          <div className="space-y-4">
-            <div className="relative">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-64 object-cover rounded-lg"
-              />
-              <div className="absolute top-2 left-2 flex flex-col gap-1">
-                {product.featured && (
-                  <Badge variant="secondary" className="bg-orange-500 text-white">
-                    {language === 'en' ? 'Featured' : 'Destacado'}
-                  </Badge>
-                )}
-                {product.labTestFile && (
-                  <Badge variant="secondary" className="bg-green-600 text-white">
-                    {language === 'en' ? 'Lab Tested' : 'Probado en Laboratorio'}
-                  </Badge>
-                )}
+    <>
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{product.name} - Product Details</DialogTitle>
+            <DialogDescription>
+              {language === 'en' ? 'Detailed product information and specifications' : 'Información detallada del producto y especificaciones'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Left Side - Image and Basic Info */}
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  {product.name}
+                </h2>
+                <p className="text-gray-600">
+                  {language === 'en' ? 'Detailed product information and specifications' : 'Información detallada del producto y especificaciones'}
+                </p>
               </div>
-            </div>
+              
+              <div className="relative group">
+                <img
+                  src={images[selectedImageIndex]}
+                  alt={product.name}
+                  className="w-full h-64 object-cover rounded-lg border border-gray-200 cursor-pointer"
+                  onClick={() => openImageModal(selectedImageIndex)}
+                />
+                <div className="absolute top-3 left-3 flex flex-col gap-2">
+                  {product.featured && (
+                    <Badge className="bg-orange-500 text-white text-xs">
+                      {t.featured}
+                    </Badge>
+                  )}
+                  {product.labTestFile && (
+                    <Badge className="bg-green-600 text-white text-xs">
+                      {t.labTested}
+                    </Badge>
+                  )}
+                </div>
+              </div>
 
-            {/* Specifications */}
-            {product.specifications && (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3">
-                  {language === 'en' ? 'Specifications' : 'Especificaciones'}
+              {/* Product Specs */}
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                <h3 className="font-semibold text-gray-800 mb-3">
+                  {l.productSpecs}
                 </h3>
                 <div className="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span className="text-gray-600">
-                      {language === 'en' ? 'Dose per Capsule:' : 'Dosis por Cápsula:'}
-                    </span>
-                    <div className="font-medium">{getSpecification(product.specifications, 'dosePerCapsule')}</div>
+                  <div className="bg-white p-2 rounded flex items-center gap-2">
+                    <Pill className="h-4 w-4 text-blue-600" />
+                    <div>
+                      <span className="text-gray-600 text-xs block">{l.dose}</span>
+                      <span className="font-semibold">{product.specifications[language].dosePerCapsule}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">
-                      {language === 'en' ? 'Capsules per Bottle:' : 'Cápsulas por Frasco:'}
-                    </span>
-                    <div className="font-medium">{getSpecification(product.specifications, 'capsulesPerBottle')}</div>
+                  <div className="bg-white p-2 rounded flex items-center gap-2">
+                    <div className="h-4 w-4 bg-green-600 rounded-full" />
+                    <div>
+                      <span className="text-gray-600 text-xs block">{l.capsules}</span>
+                      <span className="font-semibold">{product.specifications[language].capsulesPerBottle}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">
-                      {language === 'en' ? 'Cycle Length:' : 'Duración del Ciclo:'}
-                    </span>
-                    <div className="font-medium">{getSpecification(product.specifications, 'typicalCycleLength')}</div>
+                  <div className="bg-white p-2 rounded flex items-center gap-2">
+                    <Timer className="h-4 w-4 text-purple-600" />
+                    <div>
+                      <span className="text-gray-600 text-xs block">{l.cycleLength}</span>
+                      <span className="font-semibold text-xs">{product.specifications[language].typicalCycleLength}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-600">
-                      {language === 'en' ? 'Potency Level:' : 'Nivel de Potencia:'}
-                    </span>
-                    <div className="font-medium">{getSpecification(product.specifications, 'potencyLevel')}</div>
+                  <div className="bg-white p-2 rounded flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-yellow-600" />
+                    <div>
+                      <span className="text-gray-600 text-xs block">{l.strength}</span>
+                      <span className="font-semibold text-xs">{product.specifications[language].potencyLevel.slice(0, 15)}...</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Performance Ratings */}
-            {product.performanceRatings && (
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3">
-                  {language === 'en' ? 'Performance Ratings' : 'Calificaciones de Rendimiento'}
-                </h3>
-                <div className="space-y-2 text-sm">
+              {/* Price and Add to Cart */}
+              <div className="bg-white border rounded-lg p-4 text-center">
+                <span className="text-3xl font-bold text-green-600">
+                  ${product.price.toFixed(2)}
+                </span>
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={product.inStock === false}
+                  className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white"
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {product.inStock === false
+                    ? t.outOfStock
+                    : t.addToCart
+                  }
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Side - Detailed Information */}
+            <div className="space-y-4 text-sm">
+              {/* Research */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
+                  <Info className="h-4 w-4" />
+                  {l.research}
+                </h4>
+                <p className="text-blue-700 text-xs leading-relaxed">{product.researchBackground[language]}</p>
+              </div>
+
+              {/* Benefits */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  {l.benefits}
+                </h4>
+                <p className="text-green-700 text-xs leading-relaxed">{product.benefits[language]}</p>
+              </div>
+
+              {/* Side Effects */}
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  {l.sideEffects}
+                </h4>
+                <p className="text-red-700 text-xs leading-relaxed">{product.sideEffects[language]}</p>
+              </div>
+
+              {/* Effects on Women */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                <h4 className="font-semibold text-yellow-800 mb-2">{l.effectsOnWomen}</h4>
+                <p className="text-yellow-700 text-xs leading-relaxed">{product.effectsOnWomen[language]}</p>
+              </div>
+
+              {/* How It Works */}
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                <h4 className="font-semibold text-purple-800 mb-2">{l.howItWorks}</h4>
+                <p className="text-purple-700 text-xs leading-relaxed">{product.howItWorks[language]}</p>
+              </div>
+
+              {/* Safety */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <h4 className="font-semibold text-orange-800 mb-2">{l.safety}</h4>
+                <p className="text-orange-700 text-xs leading-relaxed">{product.safetyInformation[language]}</p>
+              </div>
+
+              {/* Cycle Information */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-2">{l.cycle}</h4>
+                <p className="text-gray-700 text-xs leading-relaxed mb-2">{product.cycleInformation[language]}</p>
+                <div className="bg-white p-2 rounded border">
+                  <h5 className="font-semibold text-gray-800 mb-1 text-xs">{l.expectations}</h5>
+                  <p className="text-gray-700 text-xs">{product.whatToExpect[language]}</p>
+                </div>
+              </div>
+
+              {/* Performance Ratings */}
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-3">
+                  {l.performanceRatings}
+                </h4>
+                <div className="space-y-2">
                   {Object.entries(product.performanceRatings).map(([key, value]) => (
-                    <div key={key} className="flex justify-between items-center">
-                      <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                      <div className="flex">
+                    <div key={key} className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-gray-700">{ratingsLabels[language][key as keyof typeof ratingsLabels.en] || key}</span>
+                      <div className="flex items-center gap-1">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`h-3 w-3 ${i < value ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                            className={`h-3 w-3 ${
+                              i < value ? 'text-yellow-500 fill-current' : 'text-gray-300'
+                            }`}
                           />
                         ))}
+                        <span className="text-xs text-gray-600 ml-1">{value}/5</span>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Right Column - Details and Purchase */}
-          <div className="space-y-4">
-            <div>
-              <p className="text-gray-600 leading-relaxed">
-                {getDescription(product.description)}
-              </p>
-            </div>
-
-            {/* Categories */}
-            <div className="flex flex-wrap gap-2">
-              {product.categories.map((category) => (
-                <Badge key={category} variant="outline">
-                  {category.replace('-', ' ')}
-                </Badge>
-              ))}
-            </div>
-
-            {/* Price and Purchase */}
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  {userDiscount > 0 ? (
-                    <div className="space-y-1">
-                      <div className="text-2xl font-bold text-green-600">
-                        ${discountedPrice.toFixed(2)}
-                      </div>
-                      <div className="text-sm text-gray-500 line-through">
-                        ${product.price.toFixed(2)}
-                      </div>
-                      <div className="text-sm text-green-600 font-medium">
-                        {userDiscount}% {language === 'en' ? 'discount applied' : 'descuento aplicado'}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-2xl font-bold text-green-600">
-                      ${product.price.toFixed(2)}
-                    </div>
-                  )}
+              {/* Categories */}
+              <div className="bg-white border border-gray-200 rounded-lg p-3">
+                <h4 className="font-semibold text-gray-800 mb-2">
+                  {l.categories}
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {product.categories.map((category) => (
+                    <Badge key={category} variant="secondary" className="capitalize text-xs">
+                      {category.replace('-', ' ')}
+                    </Badge>
+                  ))}
                 </div>
-                <Button
-                  onClick={() => onAddToCart(product)}
-                  disabled={product.inStock === false}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  {language === 'en' ? 'Add to Cart' : 'Agregar al Carrito'}
-                </Button>
               </div>
 
+              {/* Lab Test Results - Only for products with lab test files */}
               {product.labTestFile && (
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => window.open(product.labTestFile, '_blank')}
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  {language === 'en' ? 'View Lab Test Results' : 'Ver Resultados de Laboratorio'}
-                </Button>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <h4 className="font-semibold text-green-800 mb-2 flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    {l.labTestResults}
+                  </h4>
+                  <img 
+                    src={product.labTestFile} 
+                    alt={`${product.name} Lab Test`}
+                    className="w-full rounded border border-green-300 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => window.open(product.labTestFile, '_blank')}
+                  />
+                  <p className="text-green-700 text-xs mt-2">
+                    {l.clickToView}
+                  </p>
+                </div>
               )}
             </div>
-
-            {/* Additional Information Sections */}
-            {sections.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">
-                  {language === 'en' ? 'Additional Information' : 'Información Adicional'}
-                </h3>
-                {sections.map((section) => {
-                  const IconComponent = section.icon;
-                  return (
-                    <div key={section.id} className="border rounded-lg p-4">
-                      <div className="flex items-center mb-2">
-                        <IconComponent className="h-4 w-4 mr-2 text-green-600" />
-                        <h4 className="font-medium">{section.title}</h4>
-                      </div>
-                      <p className="text-sm text-gray-600 leading-relaxed">
-                        {section.content}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Full-size Image Modal - Add DialogDescription here too */}
+      <Dialog open={imageModalOpen} onOpenChange={setImageModalOpen}>
+        <DialogContent className="sm:max-w-4xl p-0 bg-black/95">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{product.name} - Full Size Image</DialogTitle>
+            <DialogDescription>Full size image view of {product.name}</DialogDescription>
+          </DialogHeader>
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white"
+              onClick={() => setImageModalOpen(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <img
+              src={images[selectedImageIndex]}
+              alt={product.name}
+              className="w-full h-auto max-h-[80vh] object-contain"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
