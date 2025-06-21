@@ -25,18 +25,26 @@ export const addOrder = async (orderData: OrderData) => {
   try {
     const { data, error } = await supabase
       .from('orders')
-      .insert([{
+      .insert({
         id: orderData.order_id,
-        customer_email: orderData.customer_email,
-        customer_name: orderData.customer_name,
+        user_id: null, // Will be null for guest orders
         items: orderData.items,
-        total_amount: orderData.final_total,
+        original_total: orderData.original_total,
+        discount_amount: orderData.discount_amount,
+        shipping_fee: orderData.shipping_fee,
+        final_total: orderData.final_total,
         payment_method: orderData.payment_method,
-        shipping_address: orderData.shipping_address,
-        phone: orderData.phone,
-        status: orderData.verification_status,
-        created_at: orderData.order_date
-      }]);
+        bitcoin_amount: parseFloat(orderData.bitcoin_amount),
+        transaction_hash: orderData.tx_id || null,
+        verification_status: orderData.verification_status,
+        payment_details: {
+          customer_email: orderData.customer_email,
+          customer_name: orderData.customer_name,
+          shipping_address: orderData.shipping_address,
+          phone: orderData.phone,
+          order_id: orderData.order_id
+        }
+      });
 
     if (error) {
       console.error('❌ Error adding order:', error);
