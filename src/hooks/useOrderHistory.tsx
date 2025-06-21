@@ -62,7 +62,7 @@ const transformDatabaseRowToOrder = (row: any): Order => {
 const transformOrderToDatabaseFormat = (order: Omit<Order, 'id' | 'created_at' | 'user_id'>, userId?: string) => {
   return {
     user_id: userId || null,
-    items: order.items as any, // Cast to any to satisfy Json type
+    items: JSON.parse(JSON.stringify(order.items)),
     original_total: order.original_total,
     discount_amount: order.discount_amount,
     shipping_fee: order.shipping_fee,
@@ -71,13 +71,13 @@ const transformOrderToDatabaseFormat = (order: Omit<Order, 'id' | 'created_at' |
     bitcoin_amount: order.bitcoin_amount ? parseFloat(order.bitcoin_amount) : null,
     transaction_hash: order.tx_id || null,
     verification_status: order.verification_status,
-    payment_details: {
+    payment_details: JSON.parse(JSON.stringify({
       order_id: order.order_id,
       customer_email: order.customer_email,
       customer_name: order.customer_name,
       shipping_address: order.shipping_address,
       phone: order.phone
-    } as any // Cast to any to satisfy Json type
+    }))
   };
 };
 
