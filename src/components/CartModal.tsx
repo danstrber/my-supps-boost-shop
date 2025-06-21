@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -203,8 +202,8 @@ const CartModal = ({
         cart={cart}
         products={products}
         userDiscount={discountAmount}
-        language="en"
-        onOrderComplete={handleOrderSuccess}
+        userProfile={userProfile}
+        onOrderSuccess={handleOrderSuccess}
       />
     </>
   );

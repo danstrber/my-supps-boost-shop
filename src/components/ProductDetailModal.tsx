@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -255,7 +254,7 @@ const ProductDetailModal = ({
                 <p className="text-gray-700 text-xs leading-relaxed mb-2">{product.cycleInformation[language]}</p>
                 <div className="bg-white p-2 rounded border">
                   <h5 className="font-semibold text-gray-800 mb-1 text-xs">{l.expectations}</h5>
-                  <p className="text-gray-700 text-xs">{product.whatToExpected[language]}</p>
+                  <p className="text-gray-700 text-xs">{product.whatToExpect[language]}</p>
                 </div>
               </div>
 
