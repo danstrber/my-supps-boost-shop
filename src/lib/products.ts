@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -51,7 +50,7 @@ export interface Product {
     en: string;
     es: string;
   };
-  whatToExpect: {
+  whatToExpected: {
     en: string;
     es: string;
   };
@@ -139,7 +138,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 4-6 weeks maximum due to liver considerations. Always followed by comprehensive PCT.',
       es: 'Ciclos típicos: 4-6 semanas máximo debido a consideraciones hepáticas. Siempre seguido por PCT integral.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users typically gain 8-15 lbs of lean muscle in 4 weeks with significant strength increases. Results are dramatic but require proper PCT to maintain.',
       es: 'Los usuarios típicamente ganan 8-15 lbs de músculo magro en 4 semanas con aumentos significativos de fuerza. Los resultados son dramáticos pero requieren PCT adecuado para mantener.'
     },
@@ -205,7 +204,7 @@ export const products: Product[] = [
       en: 'Can be used for extended periods (3-6 months). Best taken in the evening due to sleep benefits.',
       es: 'Puede usarse por períodos extendidos (3-6 meses). Mejor tomado por la noche debido a beneficios del sueño.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report improved sleep within 1-2 weeks, increased appetite, and gradual muscle gains over 8-12 weeks.',
       es: 'Los usuarios reportan mejor sueño en 1-2 semanas, aumento del apetito y ganancias musculares graduales en 8-12 semanas.'
     },
@@ -271,7 +270,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 6-8 weeks maximum. Longer cycles increase suppression risk.',
       es: 'Ciclos típicos: 6-8 semanas máximo. Ciclos más largos aumentan el riesgo de supresión.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report 8-15 lbs of lean muscle gain in 6-8 weeks with exceptional strength increases.',
       es: 'Los usuarios reportan 8-15 lbs de ganancia de músculo magro en 6-8 semanas con aumentos excepcionales de fuerza.'
     },
@@ -337,7 +336,7 @@ export const products: Product[] = [
       en: 'Typical PCT: 12.5mg daily for 4-6 weeks starting immediately after cycle completion.',
       es: 'PCT típico: 12.5mg diario por 4-6 semanas comenzando inmediatamente después de completar el ciclo.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report testosterone recovery within 2-4 weeks, maintained muscle gains, and improved energy levels.',
       es: 'Los usuarios reportan recuperación de testosterona en 2-4 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
     },
@@ -356,6 +355,7 @@ export const products: Product[] = [
     image: '/lovable-uploads/9f4f9977-4f6c-4d53-ae01-a03204441df1.png',
     categories: ['fat-burner'],
     featured: false,
+    labTestFile: '/lovable-uploads/3ee24125-d9cb-413f-8d9f-91b07cd11134.png',
     inStock: true,
     description: {
       en: 'Clenbuterol is a powerful beta-2 agonist used primarily for fat loss and improved cardiovascular performance.',
@@ -403,7 +403,7 @@ export const products: Product[] = [
       en: 'Typical cycles: 2 weeks on, 2 weeks off. Start at 20mcg daily, gradually increase as tolerated.',
       es: 'Ciclos típicos: 2 semanas activo, 2 semanas descanso. Comenzar con 20mcg diario, aumentar gradualmente según tolerancia.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report noticeable fat loss within 1-2 weeks, increased energy, and improved muscle definition.',
       es: 'Los usuarios reportan pérdida notable de grasa en 1-2 semanas, energía aumentada y definición muscular mejorada.'
     },
@@ -469,7 +469,7 @@ export const products: Product[] = [
       en: 'Typical use: 12.5mg every other day or as needed based on blood work.',
       es: 'Uso típico: 12.5mg cada dos días o según necesario basado en análisis de sangre.'
     },
-    whatToExpect: {
+    whatToExpected: {
       en: 'Users report reduced estrogen levels within days, prevention of estrogenic side effects, maintained muscle hardness, improved recovery.',
       es: 'Los usuarios reportan niveles de estrógeno reducidos en días, prevención de efectos secundarios estrogénicos, dureza muscular mantenida, recuperación mejorada.'
     },
@@ -479,6 +479,72 @@ export const products: Product[] = [
       fatLoss: 2,
       sideEffects: 3,
       retention: 4
+    }
+  },
+  {
+    id: 'accutane',
+    name: 'Accutane (Isotretinoin)',
+    price: 55,
+    image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
+    categories: ['skin-health'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Accutane (Isotretinoin) is a powerful acne treatment that provides long-lasting results for severe acne.',
+      es: 'Accutane (Isotretinoína) es un tratamiento potente para el acné que proporciona resultados duraderos para el acné severo.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '10mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 months',
+        potencyLevel: 'High Acne Treatment Potency'
+      },
+      es: {
+        dosePerCapsule: '10mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 meses',
+        potencyLevel: 'Alta potencia tratamiento acné'
+      }
+    },
+    researchBackground: {
+      en: 'Accutane has been extensively studied and proven effective for treating severe cystic acne and preventing scarring.',
+      es: 'Accutane ha sido extensamente estudiado y probado como efectivo para tratar acné quístico severo y prevenir cicatrices.'
+    },
+    benefits: {
+      en: 'Clears severe acne, reduces oil production, prevents scarring, long-lasting results, improves skin texture.',
+      es: 'Limpia acné severo, reduce producción de grasa, previene cicatrices, resultados duraderos, mejora textura de la piel.'
+    },
+    sideEffects: {
+      en: 'May cause dry skin, chapped lips, temporary hair thinning, mood changes, joint discomfort, sun sensitivity.',
+      es: 'Puede causar piel seca, labios agrietados, adelgazamiento temporal del cabello, cambios de humor, molestias articulares, sensibilidad al sol.'
+    },
+    effectsOnWomen: {
+      en: 'IMPORTANT: Not recommended during pregnancy. May cause birth defects. Effective birth control required.',
+      es: 'IMPORTANTE: No recomendado durante embarazo. Puede causar defectos de nacimiento. Control natal efectivo requerido.'
+    },
+    howItWorks: {
+      en: 'Reduces sebum production, normalizes skin cell turnover, and has anti-inflammatory properties.',
+      es: 'Reduce producción de sebo, normaliza renovación celular de la piel y tiene propiedades antiinflamatorias.'
+    },
+    safetyInformation: {
+      en: 'Regular blood work required. Avoid pregnancy. Use sunscreen. Monitor for mood changes.',
+      es: 'Análisis de sangre regular requerido. Evitar embarazo. Usar protector solar. Monitorear cambios de humor.'
+    },
+    cycleInformation: {
+      en: 'Typical treatment: 4-6 months daily use. Results often permanent after one course.',
+      es: 'Tratamiento típico: 4-6 meses de uso diario. Resultados a menudo permanentes después de un curso.'
+    },
+    whatToExpected: {
+      en: 'Users see gradual improvement over 2-3 months, with significant clearing by month 4-6.',
+      es: 'Los usuarios ven mejora gradual en 2-3 meses, con limpieza significativa para el mes 4-6.'
+    },
+    performanceRatings: {
+      muscleGain: 0,
+      strength: 0,
+      fatLoss: 0,
+      sideEffects: 3,
+      retention: 5
     }
   }
 ];

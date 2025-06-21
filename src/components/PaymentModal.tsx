@@ -359,7 +359,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           throw new Error(`Order processing failed: ${emailError.message}`);
         }
         
-        // Show success message with celebration
+        // Show success toast first
         toast({
           title: '🎉 Thank You for Your Purchase!',
           description: 'Your Bitcoin payment has been verified and your order is confirmed. Check your email for details!',
@@ -368,14 +368,20 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
         // Set order ID and show success modal
         setCurrentOrderId(orderId);
-        setShowSuccessModal(true);
         
-        // Clear cart and close payment modal
-        onOrderSuccess();
+        // Clear form state and close payment modal first
         setStep(1);
         setError(null);
         setTxId('');
         onClose();
+        
+        // Call onOrderSuccess to clear cart
+        onOrderSuccess();
+        
+        // Show success modal AFTER closing payment modal
+        setTimeout(() => {
+          setShowSuccessModal(true);
+        }, 300);
         
       } else {
         console.log('❌ Transaction verification failed - ORDER NOT PROCESSED');
@@ -413,10 +419,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     onClose();
   };
 
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    setCurrentOrderId('');
+  };
+
   if (!isOpen && !showSuccessModal) return null;
 
   return (
     <>
+      {/* Payment Modal */}
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
@@ -644,9 +656,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
       )}
       
+      {/* Success Modal - Always render when showSuccessModal is true */}
       <OrderSuccessModal
         isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
+        onClose={handleSuccessModalClose}
         orderId={currentOrderId}
         language="en"
       />
