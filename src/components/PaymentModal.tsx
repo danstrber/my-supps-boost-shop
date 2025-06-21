@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { useCart } from '@/hooks/useCart';
 import { useToast } from '@/hooks/use-toast';
 import { useForm, UseFormReturn } from 'react-hook-form';
@@ -12,9 +13,6 @@ import { Form } from '@/components/ui/form';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PaymentTimer from '@/components/payment/PaymentTimer';
 import ShippingForm from '@/components/payment/ShippingForm';
-import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
-import PaymentStep from '@/components/payment/PaymentStep';
-import BitcoinStep from '@/components/payment/BitcoinStep';
 import { FormData, formSchema } from '@/components/payment/types';
 import { handlePaymentProcessing } from '@/components/payment/PaymentLogic';
 
@@ -41,7 +39,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
-  const SHIPPING_FEE = 10;
+  const [transactionId, setTransactionId] = useState('');
+  const SHIPPING_FEE = 7.5;
 
   const [orderSuccessData, setOrderSuccessData] = useState<{
     orderId: string;
@@ -70,7 +69,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const originalTotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   const discountAmount = originalTotal * userDiscount;
   const finalTotal = Math.max(0, originalTotal - discountAmount) + SHIPPING_FEE;
-  const bitcoinAmount = (finalTotal / 30000).toFixed(8);
+  const bitcoinAmount = (finalTotal / 100000).toFixed(8); // More realistic BTC price
 
   const handleOrderComplete = (orderId: string) => {
     console.log('🎉 Order completed with ID:', orderId);
@@ -89,14 +88,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const handleNext = async () => {
     if (currentStep === 1) {
-      // Validate shipping form
       const isValid = await form.trigger();
       if (isValid) {
         setCurrentStep(2);
       }
     } else if (currentStep === 2) {
       if (paymentMethod === 'telegram') {
-        // Direct redirect to Telegram
         window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
         onClose();
         return;
@@ -114,6 +111,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const handleFinalSubmit = async () => {
+    if (!transactionId.trim()) {
+      toast({
+        title: language === 'en' ? 'Transaction ID Required' : 'ID de Transacción Requerido',
+        description: language === 'en' ? 'Please enter your Bitcoin transaction ID' : 'Por favor ingresa tu ID de transacción Bitcoin',
+        variant: "destructive"
+      });
+      return;
+    }
+
     await handlePaymentProcessing(
       form,
       cartItems,
@@ -158,30 +164,88 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
       </RadioGroup>
 
-      <PaymentMethodInfo paymentMethod={paymentMethod} />
+      {paymentMethod === 'telegram' && (
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+          <p className="text-blue-700 text-sm">
+            {language === 'en' 
+              ? 'You will be redirected to our Telegram channel for manual order coordination with our team.'
+              : 'Serás redirigido a nuestro canal de Telegram para coordinación manual del pedido con nuestro equipo.'
+            }
+          </p>
+        </div>
+      )}
+
+      {paymentMethod === 'bitcoin' && (
+        <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+          <p className="text-orange-700 text-sm">
+            {language === 'en' 
+              ? 'Bitcoin payments are automatically verified on the blockchain. Orders are confirmed instantly after payment verification.'
+              : 'Los pagos en Bitcoin se verifican automáticamente en la blockchain. Los pedidos se confirman instantáneamente después de la verificación del pago.'
+            }
+          </p>
+        </div>
+      )}
     </div>
   );
 
   const renderStep3 = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <h3 className="text-xl font-semibold mb-4">
-        {language === 'en' ? 'Order Summary' : 'Resumen del Pedido'}
+        {language === 'en' ? 'Confirm Your Address' : 'Confirma tu Dirección'}
       </h3>
-      <PaymentStep
-        cartItems={cartItems}
-        originalTotal={originalTotal}
-        discountAmount={discountAmount}
-        shippingFee={SHIPPING_FEE}
-        finalTotal={finalTotal}
-        bitcoinAmount={bitcoinAmount}
-        form={form}
-        language={language}
-      />
+      
+      <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+        <div className="flex items-start mb-4">
+          <div className="text-blue-600 mr-2">📋</div>
+          <h4 className="text-blue-800 font-medium">
+            {language === 'en' ? 'Please confirm your shipping address:' : 'Por favor confirma tu dirección de envío:'}
+          </h4>
+        </div>
+        
+        <div className="space-y-2 text-gray-700">
+          <div><strong>Name:</strong> {form.getValues('fullName')}</div>
+          <div><strong>Email:</strong> {form.getValues('email')}</div>
+          <div><strong>Address:</strong> {form.getValues('address')}</div>
+          <div><strong>City:</strong> {form.getValues('city')}</div>
+          <div><strong>State/Province:</strong> {form.getValues('state')}</div>
+          <div><strong>ZIP/Postal Code:</strong> {form.getValues('zipCode')}</div>
+          <div><strong>Country:</strong> {form.getValues('country')}</div>
+          <div><strong>Phone:</strong> {form.getValues('phone')}</div>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+        <div className="flex items-center">
+          <span className="text-yellow-600 mr-2">⚠️</span>
+          <p className="text-yellow-700 text-sm">
+            {language === 'en' 
+              ? 'Please double-check your address carefully. Orders cannot be changed once payment is confirmed.'
+              : 'Por favor revisa tu dirección cuidadosamente. Los pedidos no pueden cambiarse una vez confirmado el pago.'
+            }
+          </p>
+        </div>
+      </div>
+
+      <div className="flex space-x-4">
+        <Button 
+          onClick={() => setCurrentStep(4)}
+          className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+        >
+          ✅ {language === 'en' ? 'Address is Correct - Proceed to Payment' : 'Dirección Correcta - Proceder al Pago'}
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => setCurrentStep(1)}
+          className="flex-1"
+        >
+          ← {language === 'en' ? 'Edit Address' : 'Editar Dirección'}
+        </Button>
+      </div>
     </div>
   );
 
   const renderStep4 = () => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <PaymentTimer 
         onExpired={() => {
           toast({
@@ -194,21 +258,83 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         language={language}
       />
 
-      <BitcoinStep
-        bitcoinAmount={bitcoinAmount}
-        language={language}
-      />
+      <div className="bg-orange-50 border border-orange-200 p-6 rounded-lg">
+        <div className="flex items-center mb-4">
+          <span className="text-orange-600 mr-2">₿</span>
+          <h3 className="text-orange-800 text-lg font-semibold">
+            {language === 'en' ? 'Payment Details' : 'Detalles de Pago'}
+          </h3>
+        </div>
+        
+        <div className="text-center space-y-4">
+          <div>
+            <p className="text-gray-600 mb-2">{language === 'en' ? 'Send exactly' : 'Envía exactamente'}</p>
+            <p className="text-2xl font-bold text-orange-600">{bitcoinAmount} BTC</p>
+          </div>
+          
+          <div>
+            <p className="text-gray-600 mb-2">{language === 'en' ? 'To address:' : 'A la dirección:'}</p>
+            <div className="bg-white p-3 rounded border">
+              <p className="font-mono text-sm break-all text-blue-600">3Arg9L1LwJjXd7FN7P3huZSYw42SFRFsBR</p>
+            </div>
+          </div>
+          
+          <div className="pt-4 border-t">
+            <p className="text-lg font-semibold text-red-600">
+              Total: ${finalTotal.toFixed(2)} USD
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <Button 
-        onClick={handleFinalSubmit}
-        className="w-full bg-green-600 hover:bg-green-700 mt-4"
-        disabled={form.formState.isSubmitting}
-      >
-        {form.formState.isSubmitting 
-          ? (language === 'en' ? 'Processing...' : 'Procesando...') 
-          : (language === 'en' ? 'Complete Order' : 'Completar Pedido')
-        }
-      </Button>
+      <div className="space-y-4">
+        <div className="flex items-center">
+          <span className="text-blue-600 mr-2">🔍</span>
+          <h4 className="font-medium">
+            {language === 'en' ? 'Transaction ID (Auto-Verification Enabled)' : 'ID de Transacción (Verificación Automática Habilitada)'}
+          </h4>
+        </div>
+        
+        <Input
+          placeholder={language === 'en' ? 'Enter Bitcoin Transaction ID (64 characters)' : 'Ingresa ID de Transacción Bitcoin (64 caracteres)'}
+          value={transactionId}
+          onChange={(e) => setTransactionId(e.target.value)}
+          className="font-mono text-sm"
+        />
+        
+        <div className="flex items-start space-x-2 text-sm text-blue-600">
+          <span>🔍</span>
+          <p>
+            {language === 'en' 
+              ? "We'll automatically verify your payment on the Bitcoin blockchain. Orders are confirmed instantly after successful verification."
+              : "Verificaremos automáticamente tu pago en la blockchain de Bitcoin. Los pedidos se confirman instantáneamente después de la verificación exitosa."
+            }
+          </p>
+        </div>
+
+        <div className="bg-red-50 border border-red-200 p-3 rounded-lg">
+          <div className="flex items-center">
+            <span className="text-red-600 mr-2">❌</span>
+            <p className="text-red-700 text-sm">
+              {language === 'en' 
+                ? 'Transaction ID not working? Hit me up on Telegram: @'
+                : 'ID de transacción no funciona? Contáctame en Telegram: @'
+              }
+            </p>
+          </div>
+        </div>
+
+        <Button 
+          onClick={handleFinalSubmit}
+          className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting 
+            ? (language === 'en' ? 'Processing...' : 'Procesando...') 
+            : (language === 'en' ? 'Verify & Submit Order' : 'Verificar y Enviar Pedido')
+          }
+        </Button>
+      </div>
     </div>
   );
 
@@ -219,7 +345,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       case 2:
         return language === 'en' ? 'Payment Method' : 'Método de Pago';
       case 3:
-        return language === 'en' ? 'Order Summary' : 'Resumen del Pedido';
+        return language === 'en' ? 'Confirm Your Address' : 'Confirma tu Dirección';
       case 4:
         return language === 'en' ? 'Bitcoin Payment' : 'Pago Bitcoin';
       default:
@@ -248,7 +374,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             {currentStep === 4 && renderStep4()}
           </Form>
 
-          {currentStep < 4 && (
+          {currentStep < 3 && (
             <div className="flex justify-between mt-6">
               {currentStep > 1 && (
                 <Button variant="secondary" onClick={handleBack}>
