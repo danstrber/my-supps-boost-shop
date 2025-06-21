@@ -26,6 +26,16 @@ const ProductGrid = ({
 }: ProductGridProps) => {
   const t = translations[language];
   
+  const getDescription = (desc: string | { en: string; es: string }) => {
+    if (typeof desc === 'string') return desc;
+    return desc[language] || desc.en || '';
+  };
+
+  const getSpecification = (product: Product, key: string) => {
+    if (!product.specifications || !product.specifications[language]) return 'N/A';
+    return product.specifications[language][key] || 'N/A';
+  };
+  
   return (
     <div className="space-y-6">
       {/* Sign In Button for non-authenticated users */}
@@ -85,18 +95,18 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {product.description[language]}
+                  {getDescription(product.description)}
                 </p>
 
                 {/* Dose and Capsule Info */}
                 <div className="flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Pill className="h-3 w-3" />
-                    <span>{product.specifications[language].dosePerCapsule}</span>
+                    <span>{getSpecification(product, 'dosePerCapsule')}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
+                    <span>{getSpecification(product, 'capsulesPerBottle')} caps</span>
                   </div>
                 </div>
                 
