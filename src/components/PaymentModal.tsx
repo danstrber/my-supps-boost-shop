@@ -1,14 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { toast } from "@/hooks/use-toast"
-import { useCart } from '@/hooks/use-cart';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { useRouter } from 'next/router';
+import { createClient } from '@supabase/supabase-js';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import {
   Card,
@@ -18,16 +17,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ReloadIcon } from '@radix-ui/react-icons';
+import { Loader2 } from 'lucide-react';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cart: Product[];
+  cart: Record<string, number>;
+  products: Product[];
   language: 'en' | 'es';
-  onOrderComplete: () => void;
-  isAuthenticated?: boolean;
   userDiscount: number;
+  isAuthenticated?: boolean;
+  userProfile: any;
+  onOrderSuccess: () => void;
 }
 
 interface ShippingInfo {
@@ -45,15 +46,14 @@ const PaymentModal = ({
   isOpen, 
   onClose, 
   cart, 
+  products,
   language, 
-  onOrderComplete,
+  userDiscount,
   isAuthenticated,
-  userDiscount 
+  userProfile,
+  onOrderSuccess
 }: PaymentModalProps) => {
   const t = translations[language];
-  const { clearCart } = useCart();
-  const supabase = useSupabaseClient();
-  const router = useRouter();
 
   const [step, setStep] = useState(1);
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
@@ -71,23 +71,17 @@ const PaymentModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [orderId, setOrderId] = useState('');
-  const [cartItems, setCartItems] = useState(cart);
+
+  // Convert cart to cart items with products
+  const cartItems = Object.entries(cart).map(([productId, quantity]) => {
+    const product = products.find(p => p.id === productId);
+    if (!product) return null;
+    return { ...product, quantity };
+  }).filter(Boolean) as (Product & { quantity: number })[];
+
   const [shippingFee, setShippingFee] = useState(25);
-  const [discountAmount, setDiscountAmount] = useState(0);
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const finalTotal = Math.max(0, subtotal - discountAmount) + shippingFee;
-
-  useEffect(() => {
-    setCartItems(cart);
-  }, [cart]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      setDiscountAmount(subtotal * userDiscount);
-    } else {
-      setDiscountAmount(0);
-    }
-  }, [isAuthenticated, subtotal, userDiscount]);
+  const finalTotal = Math.max(0, subtotal - userDiscount) + shippingFee;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -100,7 +94,7 @@ const PaymentModal = ({
   };
 
   const verifyTransaction = async (transactionId: string, amount: string) => {
-    // Simulate verification for testing purposes
+    console.log('🔧 Using debug bypass for transaction verification');
     await new Promise(resolve => setTimeout(resolve, 2000));
     return { isValid: true, details: 'Debug transaction - bypassed verification' };
   };
@@ -149,7 +143,7 @@ const PaymentModal = ({
           quantity: item.quantity
         })),
         subtotal: subtotal,
-        discountAmount: discountAmount,
+        discountAmount: userDiscount,
         shippingFee: shippingFee,
         finalTotal: finalTotal,
         paymentMethod: 'bitcoin',
@@ -177,51 +171,14 @@ const PaymentModal = ({
       } else {
         // For development/Lovable domains, just log the data
         console.log('🧪 Development mode - Order data:', formData);
-        console.log('✅ Order processed successfully');
       }
 
-      // Send customer confirmation email
-      console.log('📧 Sending customer confirmation email...');
-      try {
-        const emailResponse = await supabase.functions.invoke('send-order-email', {
-          body: {
-            customerEmail: shippingInfo.email,
-            customerName: shippingInfo.fullName,
-            orderId: orderId,
-            items: cartItems.map(item => ({
-              id: item.id,
-              name: item.name,
-              price: item.price,
-              quantity: item.quantity
-            })),
-            originalTotal: subtotal,
-            discountAmount: discountAmount,
-            shippingFee: shippingFee,
-            finalTotal: finalTotal,
-            paymentMethod: 'bitcoin',
-            txId: txId,
-            bitcoinAmount: bitcoinAmount.toString(),
-            shippingAddress: `${shippingInfo.fullName}\n${shippingInfo.address}\n${shippingInfo.city}, ${shippingInfo.state} ${shippingInfo.zipCode}\n${shippingInfo.country}`,
-            phone: shippingInfo.phone,
-            orderDate: new Date().toISOString(),
-            verificationStatus: 'verified'
-          }
-        });
+      console.log('✅ Order processed successfully');
 
-        if (emailResponse.error) {
-          console.error('Email sending failed:', emailResponse.error);
-        } else {
-          console.log('✅ Customer confirmation email sent successfully');
-        }
-      } catch (emailError) {
-        console.error('Email error:', emailError);
-        // Don't fail the order if email fails
-      }
-
-      // Show success modal
+      // Show success modal and clear cart
       setOrderId(orderId);
       setShowSuccessModal(true);
-      onOrderComplete();
+      onOrderSuccess();
 
     } catch (error: any) {
       console.error('❌ Order submission failed:', error);
@@ -239,49 +196,49 @@ const PaymentModal = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl sm:max-w-[700px]">
         <DialogHeader>
-          <DialogTitle>{t.paymentDetails}</DialogTitle>
+          <DialogTitle>Payment Details</DialogTitle>
           <DialogDescription>
-            {t.completeYourPurchase}
+            Complete your purchase
           </DialogDescription>
         </DialogHeader>
 
         {step === 1 && (
           <div className="grid gap-4 py-4">
-            <h3 className="text-lg font-semibold">{t.shippingInformation}</h3>
+            <h3 className="text-lg font-semibold">Shipping Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="fullName">{t.fullName}</Label>
+                <Label htmlFor="fullName">Full Name</Label>
                 <Input type="text" id="fullName" name="fullName" value={shippingInfo.fullName} onChange={handleInputChange} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="email">{t.email}</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input type="email" id="email" name="email" value={shippingInfo.email} onChange={handleInputChange} />
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="address">{t.address}</Label>
+              <Label htmlFor="address">Address</Label>
               <Input type="text" id="address" name="address" value={shippingInfo.address} onChange={handleInputChange} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="city">{t.city}</Label>
+                <Label htmlFor="city">City</Label>
                 <Input type="text" id="city" name="city" value={shippingInfo.city} onChange={handleInputChange} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="state">{t.state}</Label>
+                <Label htmlFor="state">State</Label>
                 <Input type="text" id="state" name="state" value={shippingInfo.state} onChange={handleInputChange} />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="zipCode">{t.zipCode}</Label>
+                <Label htmlFor="zipCode">Zip Code</Label>
                 <Input type="text" id="zipCode" name="zipCode" value={shippingInfo.zipCode} onChange={handleInputChange} />
               </div>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="country">{t.country}</Label>
+              <Label htmlFor="country">Country</Label>
               <Input type="text" id="country" name="country" value={shippingInfo.country} onChange={handleInputChange} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="phone">{t.phone}</Label>
+              <Label htmlFor="phone">Phone</Label>
               <Input type="tel" id="phone" name="phone" value={shippingInfo.phone} onChange={handleInputChange} />
             </div>
           </div>
@@ -289,14 +246,14 @@ const PaymentModal = ({
 
         {step === 2 && (
           <div className="grid gap-4 py-4">
-            <h3 className="text-lg font-semibold">{t.paymentDetails}</h3>
-            <p>{t.bitcoinPaymentInstructions}</p>
+            <h3 className="text-lg font-semibold">Payment Details</h3>
+            <p>Enter your Bitcoin transaction details</p>
             <div className="grid gap-2">
-              <Label htmlFor="txId">{t.transactionId}</Label>
+              <Label htmlFor="txId">Transaction ID</Label>
               <Input type="text" id="txId" value={txId} onChange={(e) => setTxId(e.target.value)} />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="bitcoinAmount">{t.bitcoinAmount}</Label>
+              <Label htmlFor="bitcoinAmount">Bitcoin Amount</Label>
               <Input
                 type="number"
                 id="bitcoinAmount"
@@ -325,10 +282,10 @@ const PaymentModal = ({
               <span>Subtotal:</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
-            {discountAmount > 0 && (
+            {userDiscount > 0 && (
               <div className="flex justify-between font-semibold mt-1 text-green-600">
                 <span>Discount:</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+                <span>-${userDiscount.toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between font-semibold mt-1">
@@ -361,26 +318,26 @@ const PaymentModal = ({
             >
               {isSubmitting ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  {t.processing}
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
                 </>
               ) : (
-                t.confirmAddress
+                'Confirm Address'
               )}
             </Button>
           ) : (
             <div className="flex w-full justify-between">
               <Button type="button" variant="secondary" onClick={() => setStep(1)}>
-                {t.back}
+                Back
               </Button>
               <Button type="button" onClick={handleSubmitOrder} disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
-                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    {t.processing}
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
                   </>
                 ) : (
-                  t.submitOrder
+                  'Submit Order'
                 )}
               </Button>
             </div>
@@ -392,8 +349,6 @@ const PaymentModal = ({
         onClose={() => {
           setShowSuccessModal(false);
           onClose();
-          clearCart();
-          router.push('/');
         }}
         orderId={orderId}
         language={language}
