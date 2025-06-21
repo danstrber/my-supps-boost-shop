@@ -9,8 +9,8 @@ export interface Product {
   featured?: boolean;
   labTestFile?: string;
   inStock?: boolean;
-  categories: string[];
-  specifications: {
+  categories?: string[];
+  specifications?: {
     en: {
       dosePerCapsule: string;
       capsulesPerBottle: string;
@@ -24,43 +24,39 @@ export interface Product {
       potencyLevel: string;
     };
   };
-  description: {
+  benefits?: {
     en: string;
     es: string;
   };
-  benefits: {
+  sideEffects?: {
     en: string;
     es: string;
   };
-  sideEffects: {
+  effectsOnWomen?: {
     en: string;
     es: string;
   };
-  effectsOnWomen: {
+  howItWorks?: {
     en: string;
     es: string;
   };
-  howItWorks: {
+  safetyInformation?: {
     en: string;
     es: string;
   };
-  safetyInformation: {
+  cycleInformation?: {
     en: string;
     es: string;
   };
-  cycleInformation: {
+  whatToExpect?: {
     en: string;
     es: string;
   };
-  whatToExpect: {
+  researchBackground?: {
     en: string;
     es: string;
   };
-  researchBackground: {
-    en: string;
-    es: string;
-  };
-  performanceRatings: {
+  performanceRatings?: {
     muscleGain: number;
     strength: number;
     fatLoss: number;
