@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Eye, Pill, User } from 'lucide-react';
-import { Product } from '@/lib/products';
+import { Product } from '@/types';
 import { translations } from '@/lib/translations';
 
 interface ProductGridProps {
@@ -50,6 +50,19 @@ const ProductGrid = ({
         {products.map((product) => {
           if (!product) return null;
           
+          // Handle description - use simple string or fallback
+          const productDescription = typeof product.description === 'string' 
+            ? product.description 
+            : (product.description?.[language] || product.description?.en || 'No description available');
+          
+          // Handle specifications with fallbacks
+          const specifications = product.specifications?.[language] || product.specifications?.en;
+          const dosePerCapsule = specifications?.dosePerCapsule || '20mg';
+          const capsulesPerBottle = specifications?.capsulesPerBottle || '50';
+          
+          // Handle categories with fallback
+          const categories = product.categories || product.tags || [];
+          
           return (
             <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
               <div className="relative mb-4">
@@ -85,23 +98,23 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {product.description[language]}
+                  {productDescription}
                 </p>
 
                 {/* Dose and Capsule Info */}
                 <div className="flex items-center gap-3 text-xs text-gray-500">
                   <div className="flex items-center gap-1">
                     <Pill className="h-3 w-3" />
-                    <span>{product.specifications[language].dosePerCapsule}</span>
+                    <span>{dosePerCapsule}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
+                    <span>{capsulesPerBottle} caps</span>
                   </div>
                 </div>
                 
                 <div className="flex flex-wrap gap-1">
-                  {product.categories.slice(0, 2).map((category) => (
+                  {categories.slice(0, 2).map((category) => (
                     <span
                       key={category}
                       className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium"
@@ -109,9 +122,9 @@ const ProductGrid = ({
                       {category.replace('-', ' ')}
                     </span>
                   ))}
-                  {product.categories.length > 2 && (
+                  {categories.length > 2 && (
                     <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
-                      +{product.categories.length - 2}
+                      +{categories.length - 2}
                     </span>
                   )}
                 </div>
