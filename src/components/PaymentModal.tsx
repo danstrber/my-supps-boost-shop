@@ -1,19 +1,20 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import { useCart } from '@/hooks/useCart';
 import { useToast } from '@/hooks/use-toast';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { countries } from '@/lib/countries';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PaymentTimer from '@/components/payment/PaymentTimer';
+import ShippingForm from '@/components/payment/ShippingForm';
+import PaymentMethodInfo from '@/components/payment/PaymentMethodInfo';
+import PaymentStep from '@/components/payment/PaymentStep';
+import BitcoinStep from '@/components/payment/BitcoinStep';
 import { FormData, formSchema } from '@/components/payment/types';
 import { handlePaymentProcessing } from '@/components/payment/PaymentLogic';
 
@@ -39,7 +40,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const { clearCart } = useCart();
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState('bitcoin');
+  const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
   const SHIPPING_FEE = 10;
 
   const [orderSuccessData, setOrderSuccessData] = useState<{
@@ -86,12 +87,20 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setCurrentStep(1);
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1) {
-      form.handleSubmit((data) => {
+      // Validate shipping form
+      const isValid = await form.trigger();
+      if (isValid) {
         setCurrentStep(2);
-      })();
+      }
     } else if (currentStep === 2) {
+      if (paymentMethod === 'telegram') {
+        // Direct redirect to Telegram
+        window.open('https://t.me/+fDDZObF0zjI2M2Y0', '_blank');
+        onClose();
+        return;
+      }
       setCurrentStep(3);
     } else if (currentStep === 3) {
       setCurrentStep(4);
@@ -121,212 +130,63 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const renderStep1 = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold">
-        Complete Your Purchase
+      <h3 className="text-xl font-semibold mb-4">
+        {language === 'en' ? 'Shipping Information' : 'Información de Envío'}
       </h3>
-      <p className="text-gray-600">
-        Please fill out your shipping information to complete your order.
-      </p>
-      
-      <h4 className="text-lg font-medium">
-        Shipping Information
-      </h4>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="fullName">Full Name</Label>
-          <Input
-            id="fullName"
-            {...form.register('fullName')}
-            placeholder="Full Name"
-          />
-        </div>
-        <div>
-          <Label htmlFor="email">Email Address</Label>
-          <Input
-            id="email"
-            type="email"
-            {...form.register('email')}
-            placeholder="Email Address"
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="address">Street Address</Label>
-        <Input
-          id="address"
-          {...form.register('address')}
-          placeholder="Street Address"
-        />
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <Label htmlFor="city">City</Label>
-          <Input
-            id="city"
-            {...form.register('city')}
-            placeholder="City"
-          />
-        </div>
-        <div>
-          <Label htmlFor="state">State/Province</Label>
-          <Input
-            id="state"
-            {...form.register('state')}
-            placeholder="State/Province"
-          />
-        </div>
-        <div>
-          <Label htmlFor="zipCode">ZIP/Postal Code</Label>
-          <Input
-            id="zipCode"
-            {...form.register('zipCode')}
-            placeholder="ZIP/Postal Code"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="country">Country</Label>
-          <Select onValueChange={(value) => form.setValue('country', value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Country" />
-            </SelectTrigger>
-            <SelectContent>
-              {countries.map((country) => (
-                <SelectItem key={country.code} value={country.code}>
-                  {country.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="phone">Phone Number</Label>
-          <Input
-            id="phone"
-            type="tel"
-            {...form.register('phone')}
-            placeholder="Phone Number"
-          />
-        </div>
-      </div>
+      <ShippingForm form={form} language={language} />
     </div>
   );
 
   const renderStep2 = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold">Payment Method</h3>
+      <h3 className="text-xl font-semibold mb-4">
+        {language === 'en' ? 'Payment Method' : 'Método de Pago'}
+      </h3>
       
-      <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="bitcoin" id="bitcoin" />
-          <Label htmlFor="bitcoin">Bitcoin (BTC) - Automated Verification</Label>
-        </div>
+      <RadioGroup value={paymentMethod} onValueChange={(value: 'bitcoin' | 'telegram') => setPaymentMethod(value)}>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="telegram" id="telegram" />
-          <Label htmlFor="telegram">Telegram - Manual Coordination</Label>
+          <Label htmlFor="telegram">
+            {language === 'en' ? 'Telegram - Manual Coordination' : 'Telegram - Coordinación Manual'}
+          </Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <RadioGroupItem value="bitcoin" id="bitcoin" />
+          <Label htmlFor="bitcoin">
+            {language === 'en' ? 'Bitcoin (BTC) - Automated Verification' : 'Bitcoin (BTC) - Verificación Automática'}
+          </Label>
         </div>
       </RadioGroup>
 
-      <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
-        <h4 className="font-semibold text-gray-800 mb-2">How to Pay with Bitcoin</h4>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-white p-3 rounded">
-            <h5 className="font-medium text-blue-600 mb-2">Easy Bitcoin Payment</h5>
-            <ul className="text-sm space-y-1">
-              <li>Copy the Bitcoin address provided</li>
-              <li>Open your Bitcoin wallet app</li>
-              <li>Send the exact amount to the address</li>
-              <li>Wait for confirmation (usually 10-30 minutes)</li>
-            </ul>
-            <div className="mt-2 space-y-1 text-blue-600 text-sm">
-              <div>• Coinbase.com</div>
-              <div>• Kraken.com</div>
-              <div>• Binance.com</div>
-            </div>
-          </div>
-          <div className="bg-white p-3 rounded">
-            <h5 className="font-medium text-purple-600 mb-2">🔒 Anonymous Bitcoin Payment Tips</h5>
-            <ul className="text-sm space-y-1">
-              <li>• Use privacy wallets (Wasabi, Samourai)</li>
-              <li>• Send from fresh, unlinked addresses</li>
-              <li>• No ID verification - completely anonymous</li>
-            </ul>
-            <div className="mt-2 space-y-1 text-purple-600 text-sm">
-              <div>• LocalCoinSwap.com</div>
-              <div>• Bisq.network</div>
-            </div>
-          </div>
-        </div>
-        <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
-          Continue to Address Confirmation
-        </Button>
-      </div>
+      <PaymentMethodInfo paymentMethod={paymentMethod} />
     </div>
   );
 
   const renderStep3 = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold">Confirm Your Address</h3>
-      
-      <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-        <div className="flex items-center mb-3">
-          <span className="text-blue-600 mr-2">📋</span>
-          <span className="font-medium text-blue-800">Please confirm your shipping address:</span>
-        </div>
-        
-        <div className="space-y-2 text-sm">
-          <div><strong>Name:</strong> {form.getValues('fullName')}</div>
-          <div><strong>Email:</strong> {form.getValues('email')}</div>
-          <div><strong>Address:</strong> {form.getValues('address')}</div>
-          <div><strong>City:</strong> {form.getValues('city')}</div>
-          <div><strong>State/Province:</strong> {form.getValues('state')}</div>
-          <div><strong>ZIP/Postal Code:</strong> {form.getValues('zipCode')}</div>
-          <div><strong>Country:</strong> {form.getValues('country')}</div>
-          <div><strong>Phone:</strong> {form.getValues('phone')}</div>
-        </div>
-      </div>
-
-      <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-        <div className="flex items-center">
-          <span className="text-orange-600 mr-2">⚠️</span>
-          <span className="text-orange-800 font-medium">
-            Please double-check your address carefully. Orders cannot be changed once payment is confirmed.
-          </span>
-        </div>
-      </div>
-
-      <div className="flex space-x-3">
-        <Button 
-          onClick={() => setCurrentStep(4)} 
-          className="flex-1 bg-green-600 hover:bg-green-700"
-        >
-          ✅ Address is Correct - Proceed to Payment
-        </Button>
-        <Button 
-          onClick={() => setCurrentStep(1)} 
-          variant="outline" 
-          className="flex-1"
-        >
-          ← Edit Address
-        </Button>
-      </div>
+      <h3 className="text-xl font-semibold mb-4">
+        {language === 'en' ? 'Order Summary' : 'Resumen del Pedido'}
+      </h3>
+      <PaymentStep
+        cartItems={cartItems}
+        originalTotal={originalTotal}
+        discountAmount={discountAmount}
+        shippingFee={SHIPPING_FEE}
+        finalTotal={finalTotal}
+        bitcoinAmount={bitcoinAmount}
+        form={form}
+        language={language}
+      />
     </div>
   );
 
   const renderStep4 = () => (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold">Bitcoin Payment</h3>
-      
       <PaymentTimer 
         onExpired={() => {
           toast({
-            title: "Payment Expired",
-            description: "Please restart the payment process",
+            title: language === 'en' ? 'Payment Expired' : 'Pago Expirado',
+            description: language === 'en' ? 'Please restart the payment process' : 'Por favor reinicia el proceso de pago',
             variant: "destructive"
           });
           setCurrentStep(1);
@@ -334,66 +194,51 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         language={language}
       />
 
-      <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
-        <h4 className="font-semibold text-orange-800 mb-3">₿ Payment Details</h4>
-        
-        <div className="bg-white p-4 rounded border text-center">
-          <div className="mb-2 text-gray-600">Send exactly</div>
-          <div className="text-2xl font-bold text-orange-600 mb-4">{bitcoinAmount} BTC</div>
-          
-          <div className="mb-2 text-gray-600">To address:</div>
-          <div className="bg-blue-100 p-2 rounded font-mono text-sm break-all mb-4">
-            3Arg9L1LwJTXd7fN7P3huZSYw42SfRFsBR
-          </div>
-          
-          <div className="text-lg font-semibold text-orange-600">
-            Total: ${finalTotal.toFixed(2)} USD
-          </div>
-        </div>
-      </div>
+      <BitcoinStep
+        bitcoinAmount={bitcoinAmount}
+        language={language}
+      />
 
-      <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-        <div className="flex items-center mb-2">
-          <span className="text-blue-600 mr-2">🔍</span>
-          <span className="font-medium">Transaction ID (Auto-Verification Enabled)</span>
-        </div>
-        
-        <Input
-          placeholder="Enter Bitcoin Transaction ID (64 characters)"
-          className="mb-3"
-        />
-        
-        <div className="flex items-center text-blue-600 text-sm mb-3">
-          <span className="mr-2">🔍</span>
-          <span>We'll automatically verify your payment on the Bitcoin blockchain. Orders are confirmed instantly after successful verification.</span>
-        </div>
-        
-        <div className="bg-red-50 border border-red-200 p-3 rounded text-red-700 text-sm mb-4">
-          ❌ Transaction ID not working? Hit me up on Telegram: @your_telegram
-        </div>
-        
-        <Button 
-          onClick={handleFinalSubmit}
-          className="w-full bg-green-600 hover:bg-green-700"
-          disabled={form.formState.isSubmitting}
-        >
-          {form.formState.isSubmitting ? 'Processing...' : 'Verify & Submit Order'}
-        </Button>
-      </div>
+      <Button 
+        onClick={handleFinalSubmit}
+        className="w-full bg-green-600 hover:bg-green-700 mt-4"
+        disabled={form.formState.isSubmitting}
+      >
+        {form.formState.isSubmitting 
+          ? (language === 'en' ? 'Processing...' : 'Procesando...') 
+          : (language === 'en' ? 'Complete Order' : 'Completar Pedido')
+        }
+      </Button>
     </div>
   );
+
+  const getStepTitle = () => {
+    switch (currentStep) {
+      case 1:
+        return language === 'en' ? 'Shipping Information' : 'Información de Envío';
+      case 2:
+        return language === 'en' ? 'Payment Method' : 'Método de Pago';
+      case 3:
+        return language === 'en' ? 'Order Summary' : 'Resumen del Pedido';
+      case 4:
+        return language === 'en' ? 'Bitcoin Payment' : 'Pago Bitcoin';
+      default:
+        return language === 'en' ? 'Complete Your Purchase' : 'Completa tu Compra';
+    }
+  };
 
   return (
     <>
       <Dialog open={isOpen && !orderSuccessData.show} onOpenChange={onClose}>
         <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>
-              {currentStep === 1 && 'Complete Your Purchase'}
-              {currentStep === 2 && 'Payment Method'}
-              {currentStep === 3 && 'Confirm Your Address'}
-              {currentStep === 4 && 'Bitcoin Payment'}
-            </DialogTitle>
+            <DialogTitle>{getStepTitle()}</DialogTitle>
+            <DialogDescription>
+              {language === 'en' 
+                ? `Step ${currentStep} of 4: Complete your order securely` 
+                : `Paso ${currentStep} de 4: Completa tu pedido de forma segura`
+              }
+            </DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
@@ -407,15 +252,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="flex justify-between mt-6">
               {currentStep > 1 && (
                 <Button variant="secondary" onClick={handleBack}>
-                  Back
+                  {language === 'en' ? 'Back' : 'Atrás'}
                 </Button>
               )}
               <Button 
                 onClick={handleNext}
-                disabled={currentStep === 1 && !form.formState.isValid}
                 className="ml-auto"
               >
-                Next
+                {language === 'en' ? 'Next' : 'Siguiente'}
               </Button>
             </div>
           )}
