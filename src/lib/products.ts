@@ -1,4 +1,5 @@
-import { Product } from '@/types'
+
+import { Product } from '@/types';
 
 export const products: Product[] = [
   {
@@ -122,3 +123,5 @@ export const products: Product[] = [
     description: 'Increase muscle mass and strength.'
   }
 ];
+
+export type { Product };
