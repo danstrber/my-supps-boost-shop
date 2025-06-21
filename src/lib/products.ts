@@ -484,8 +484,8 @@ export const products: Product[] = [
   {
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
-    price: 55,
-    image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
+    price: 30,
+    image: '',
     categories: ['skin-health'],
     featured: false,
     inStock: true,
@@ -495,14 +495,14 @@ export const products: Product[] = [
     },
     specifications: {
       en: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '30',
+        dosePerCapsule: '20mg',
+        capsulesPerBottle: '50',
         typicalCycleLength: '4-6 months',
         potencyLevel: 'High Acne Treatment Potency'
       },
       es: {
-        dosePerCapsule: '10mg',
-        capsulesPerBottle: '30',
+        dosePerCapsule: '20mg',
+        capsulesPerBottle: '50',
         typicalCycleLength: '4-6 meses',
         potencyLevel: 'Alta potencia tratamiento acné'
       }

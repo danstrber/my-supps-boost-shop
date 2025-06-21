@@ -87,15 +87,20 @@ export const useOrderHistory = () => {
   const { userProfile, isAuthenticated } = useAuth();
 
   const fetchOrders = async () => {
+    console.log('🔍 Fetching orders...', { isAuthenticated, userProfile: !!userProfile });
+    
     if (!isAuthenticated || !userProfile) {
+      console.log('👤 Not authenticated, checking localStorage...');
       // If not authenticated, check localStorage for temporary orders
       const localOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
+      console.log('📱 Local orders found:', localOrders.length);
       setOrders(localOrders);
       setLoading(false);
       return;
     }
 
     try {
+      console.log('🔎 Fetching from database for user:', userProfile.auth_id);
       const { data, error } = await supabase
         .from('orders')
         .select('*')
@@ -103,22 +108,26 @@ export const useOrderHistory = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching orders:', error);
+        console.error('❌ Error fetching orders:', error);
         // Fallback to localStorage if database fails
         const localOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
+        console.log('📱 Fallback to local orders:', localOrders.length);
         setOrders(localOrders);
       } else {
         // Transform database rows to Order interface
         const transformedOrders = (data || []).map(transformDatabaseRowToOrder);
+        console.log('✅ Database orders loaded:', transformedOrders.length);
         setOrders(transformedOrders);
         // Sync any temporary orders from localStorage
         await syncTemporaryOrders();
       }
     } catch (error) {
-      console.error('Exception fetching orders:', error);
+      console.error('💥 Exception fetching orders:', error);
       const localOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
+      console.log('📱 Exception fallback to local orders:', localOrders.length);
       setOrders(localOrders);
     } finally {
+      console.log('🏁 Orders fetch complete');
       setLoading(false);
     }
   };
