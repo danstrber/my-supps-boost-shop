@@ -191,11 +191,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="address">{labels.address}</Form
-
-
-
->
+                <FormLabel htmlFor="address">{labels.address}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
