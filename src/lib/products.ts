@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -546,6 +545,204 @@ export const products: Product[] = [
       fatLoss: 1,
       sideEffects: 3,
       retention: 5
+    }
+  },
+  {
+    id: 'clomid',
+    name: 'Clomid (Clomiphene Citrate)',
+    price: 30,
+    image: '/lovable-uploads/aea84c22-c0e6-477b-aed1-e323fa1bf550.png',
+    categories: ['pct', 'testosterone-booster'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Clomid (Clomiphene Citrate) is a selective estrogen receptor modulator (SERM) used for post-cycle therapy and testosterone restoration.',
+      es: 'Clomid (Citrato de Clomifeno) es un modulador selectivo del receptor de estrógeno (SERM) usado para terapia post-ciclo y restauración de testosterona.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 weeks PCT',
+        potencyLevel: 'Moderate Testosterone Stimulation'
+      },
+      es: {
+        dosePerCapsule: '25mg',
+        capsulesPerBottle: '30',
+        typicalCycleLength: '4-6 semanas PCT',
+        potencyLevel: 'Estimulación moderada de testosterona'
+      }
+    },
+    researchBackground: {
+      en: 'Clomid has been extensively studied for its ability to stimulate natural testosterone production through hypothalamic-pituitary axis activation.',
+      es: 'Clomid ha sido extensamente estudiado por su capacidad de estimular la producción natural de testosterona a través de la activación del eje hipotalámico-pituitario.'
+    },
+    benefits: {
+      en: 'Restores natural testosterone production, improves LH and FSH levels, maintains gains post-cycle, cost-effective PCT option.',
+      es: 'Restaura producción natural de testosterona, mejora niveles de LH y FSH, mantiene ganancias post-ciclo, opción PCT costo-efectiva.'
+    },
+    sideEffects: {
+      en: 'May cause mood variations, visual disturbances (rare), hot flashes, temporary hormone fluctuations, occasional headaches.',
+      es: 'Puede causar variaciones de humor, disturbios visuales (raro), sofocos, fluctuaciones hormonales temporales, dolores de cabeza ocasionales.'
+    },
+    effectsOnWomen: {
+      en: 'Used in women for fertility treatments. May help with ovulation induction. Requires medical supervision.',
+      es: 'Usado en mujeres para tratamientos de fertilidad. Puede ayudar con inducción de ovulación. Requiere supervisión médica.'
+    },
+    howItWorks: {
+      en: 'Blocks estrogen receptors in the hypothalamus, stimulating LH and FSH release to restore natural testosterone production.',
+      es: 'Bloquea receptores de estrógeno en el hipotálamo, estimulando la liberación de LH y FSH para restaurar la producción natural de testosterona.'
+    },
+    safetyInformation: {
+      en: 'Monitor hormone levels during PCT. Be aware of potential visual side effects. Use as directed for post-cycle therapy.',
+      es: 'Monitorear niveles hormonales durante PCT. Estar consciente de posibles efectos secundarios visuales. Usar según indicado para terapia post-ciclo.'
+    },
+    cycleInformation: {
+      en: 'Typical PCT: 25-50mg daily for 4-6 weeks starting 2 weeks after cycle completion.',
+      es: 'PCT típico: 25-50mg diario por 4-6 semanas comenzando 2 semanas después de completar el ciclo.'
+    },
+    whatToExpect: {
+      en: 'Users report testosterone recovery within 3-5 weeks, maintained muscle gains, and improved energy levels.',
+      es: 'Los usuarios reportan recuperación de testosterona en 3-5 semanas, ganancias musculares mantenidas y niveles de energía mejorados.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 1,
+      sideEffects: 3,
+      retention: 4
+    }
+  },
+  {
+    id: 'dust',
+    name: 'Dust (Pre-Workout)',
+    price: 40,
+    image: '/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
+    categories: ['pre-workout', 'energy'],
+    featured: true,
+    inStock: true,
+    description: {
+      en: 'Dust is a high-stimulant pre-workout formula designed for intense training sessions and maximum energy output.',
+      es: 'Dust es una fórmula pre-entreno de alto estimulante diseñada para sesiones de entrenamiento intensas y máximo rendimiento energético.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '1 scoop (8g)',
+        capsulesPerBottle: '30 servings',
+        typicalCycleLength: '4-8 weeks',
+        potencyLevel: 'Very High Stimulant Content'
+      },
+      es: {
+        dosePerCapsule: '1 cucharada (8g)',
+        capsulesPerBottle: '30 porciones',
+        typicalCycleLength: '4-8 semanas',
+        potencyLevel: 'Contenido de estimulante muy alto'
+      }
+    },
+    researchBackground: {
+      en: 'Dust contains research-backed ingredients including high-dose caffeine, beta-alanine, and nootropics for enhanced performance.',
+      es: 'Dust contiene ingredientes respaldados por investigación incluyendo cafeína de alta dosis, beta-alanina y nootrópicos para rendimiento mejorado.'
+    },
+    benefits: {
+      en: 'Explosive energy, enhanced focus, increased strength, improved endurance, muscle pumps, mental clarity.',
+      es: 'Energía explosiva, enfoque mejorado, fuerza aumentada, resistencia mejorada, congestión muscular, claridad mental.'
+    },
+    sideEffects: {
+      en: 'May cause jitters, increased heart rate, sleep disruption if taken late, beta-alanine tingling, elevated blood pressure.',
+      es: 'Puede causar nerviosismo, aumento de frecuencia cardíaca, disrupción del sueño si se toma tarde, hormigueo de beta-alanina, presión arterial elevada.'
+    },
+    effectsOnWomen: {
+      en: 'Effective for women but start with half dose. May cause increased energy and focus. Monitor caffeine tolerance.',
+      es: 'Efectivo para mujeres pero comenzar con media dosis. Puede causar aumento de energía y enfoque. Monitorear tolerancia a la cafeína.'
+    },
+    howItWorks: {
+      en: 'Combines stimulants, nootropics, and performance enhancers to increase energy, focus, and workout capacity.',
+      es: 'Combina estimulantes, nootrópicos y mejoradores de rendimiento para aumentar energía, enfoque y capacidad de entrenamiento.'
+    },
+    safetyInformation: {
+      en: 'Start with half dose to assess tolerance. Do not exceed 1 serving per day. Avoid late afternoon use.',
+      es: 'Comenzar con media dosis para evaluar tolerancia. No exceder 1 porción por día. Evitar uso en tarde.'
+    },
+    cycleInformation: {
+      en: 'Use 30-45 minutes before workout. Cycle 4-8 weeks on, 2 weeks off to maintain effectiveness.',
+      es: 'Usar 30-45 minutos antes del entrenamiento. Ciclar 4-8 semanas activo, 2 semanas descanso para mantener efectividad.'
+    },
+    whatToExpect: {
+      en: 'Users report intense energy within 20-30 minutes, improved focus, and enhanced workout performance.',
+      es: 'Los usuarios reportan energía intensa en 20-30 minutos, enfoque mejorado y rendimiento de entrenamiento mejorado.'
+    },
+    performanceRatings: {
+      muscleGain: 2,
+      strength: 4,
+      fatLoss: 3,
+      sideEffects: 2,
+      retention: 2
+    }
+  },
+  {
+    id: 'arimidex',
+    name: 'Arimidex (Anastrozole)',
+    price: 35,
+    image: '/lovable-uploads/63f9d2b1-4c72-40c0-8434-8e48cade7de5.png',
+    categories: ['pct', 'aromatase-inhibitor'],
+    featured: false,
+    inStock: true,
+    description: {
+      en: 'Arimidex (Anastrozole) is a potent aromatase inhibitor used to control estrogen levels during and after anabolic cycles.',
+      es: 'Arimidex (Anastrozol) es un potente inhibidor de aromatasa usado para controlar niveles de estrógeno durante y después de ciclos anabólicos.'
+    },
+    specifications: {
+      en: {
+        dosePerCapsule: '1mg',
+        capsulesPerBottle: '25',
+        typicalCycleLength: '4-12 weeks',
+        potencyLevel: 'Very High Aromatase Inhibition'
+      },
+      es: {
+        dosePerCapsule: '1mg',
+        capsulesPerBottle: '25',
+        typicalCycleLength: '4-12 semanas',
+        potencyLevel: 'Inhibición de aromatasa muy alta'
+      }
+    },
+    researchBackground: {
+      en: 'Arimidex has been extensively studied as a reversible aromatase inhibitor for controlling estrogen-related side effects.',
+      es: 'Arimidex ha sido extensamente estudiado como inhibidor de aromatasa reversible para controlar efectos secundarios relacionados con estrógeno.'
+    },
+    benefits: {
+      en: 'Prevents gynecomastia, reduces water retention, maintains muscle hardness, controls estrogen rebound, reversible action.',
+      es: 'Previene ginecomastia, reduce retención de agua, mantiene dureza muscular, controla rebote de estrógeno, acción reversible.'
+    },
+    sideEffects: {
+      en: 'May cause joint stiffness, fatigue, hot flashes, mood changes, decreased bone density with long-term use.',
+      es: 'Puede causar rigidez articular, fatiga, sofocos, cambios de humor, disminución de densidad ósea con uso a largo plazo.'
+    },
+    effectsOnWomen: {
+      en: 'Not recommended for women as it can severely suppress estrogen levels causing serious health issues.',
+      es: 'No recomendado para mujeres ya que puede suprimir severamente los niveles de estrógeno causando problemas serios de salud.'
+    },
+    howItWorks: {
+      en: 'Reversibly binds to aromatase enzyme, preventing conversion of testosterone to estrogen while allowing recovery.',
+      es: 'Se une reversiblemente a la enzima aromatasa, previniendo la conversión de testosterona a estrógeno mientras permite recuperación.'
+    },
+    safetyInformation: {
+      en: 'Monitor estrogen levels regularly. Use only as needed based on blood work. Can be reversed if discontinued.',
+      es: 'Monitorear niveles de estrógeno regularmente. Usar solo según necesario basado en análisis de sangre. Puede revertirse si se discontinúa.'
+    },
+    cycleInformation: {
+      en: 'Typical use: 0.5-1mg every other day or as needed based on estrogen levels and side effects.',
+      es: 'Uso típico: 0.5-1mg cada dos días o según necesario basado en niveles de estrógeno y efectos secundarios.'
+    },
+    whatToExpect: {
+      en: 'Users report reduced estrogenic side effects within days, improved muscle definition, and prevention of gynecomastia.',
+      es: 'Los usuarios reportan efectos secundarios estrogénicos reducidos en días, definición muscular mejorada y prevención de ginecomastia.'
+    },
+    performanceRatings: {
+      muscleGain: 1,
+      strength: 1,
+      fatLoss: 2,
+      sideEffects: 3,
+      retention: 4
     }
   }
 ];

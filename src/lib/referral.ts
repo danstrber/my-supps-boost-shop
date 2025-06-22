@@ -1,7 +1,7 @@
-
 // Utility functions for referral system
 export const generateReferralLink = (referralCode: string): string => {
-  return `${window.location.origin}?ref=${referralCode}`;
+  const baseUrl = 'https://mkbooster677.shop';
+  return `${baseUrl}?ref=${referralCode}`;
 };
 
 export const getReferralCodeFromUrl = (): string | null => {
