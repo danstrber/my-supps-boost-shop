@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -38,6 +37,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
+  const [shippingData, setShippingData] = useState<any>(null); // Store shipping form data
 
   const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
 
@@ -67,41 +67,56 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const sendOrderEmailFormspree = async (orderData: any) => {
-    console.log('📧 Sending order collection email via Formspree...');
+    console.log('📧 Sending order collection email via Formspree to both endpoints...');
     try {
       // Format items for better readability
       const itemsFormatted = orderData.items.map((item: any) => 
         `${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
       ).join('\n');
 
-      const response = await fetch('https://formspree.io/f/mqaqvlye', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: orderData.orderId,
-          customerName: orderData.customerName,
-          customerEmail: orderData.customerEmail,
-          phone: orderData.phone,
-          shippingAddress: orderData.shippingAddress,
-          items: itemsFormatted,
-          orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
-          paymentMethod: orderData.paymentMethod,
-          txId: orderData.txId || 'N/A',
-          orderDate: orderData.orderDate,
-          verificationStatus: orderData.verificationStatus || 'pending',
-          _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
-          _replyto: 'christhomaso083@proton.me'
-        }),
-      });
+      const emailPayload = {
+        orderId: orderData.orderId,
+        customerName: orderData.customerName,
+        customerEmail: orderData.customerEmail,
+        phone: orderData.phone,
+        shippingAddress: orderData.shippingAddress,
+        items: itemsFormatted,
+        orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
+        paymentMethod: orderData.paymentMethod,
+        txId: orderData.txId || 'N/A',
+        orderDate: orderData.orderDate,
+        verificationStatus: orderData.verificationStatus || 'pending',
+        _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
+        _replyto: 'christhomaso083@proton.me'
+      };
+
+      // Send to both Formspree endpoints
+      const endpoints = [
+        'https://formspree.io/f/xqabykjy',
+        'https://formspree.io/f/mqaqvlye'
+      ];
+
+      const promises = endpoints.map(endpoint => 
+        fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(emailPayload),
+        })
+      );
+
+      const responses = await Promise.all(promises);
       
-      if (!response.ok) {
-        throw new Error(`Order collection failed with status: ${response.status}`);
+      // Check if all requests were successful
+      const allSuccessful = responses.every(response => response.ok);
+      
+      if (!allSuccessful) {
+        throw new Error('One or more Formspree endpoints failed');
       }
       
-      console.log('✅ Order collected successfully via Formspree');
+      console.log('✅ Order collected successfully via both Formspree endpoints');
       return true;
     } catch (error) {
       console.error('❌ Formspree order collection failed:', error);
@@ -134,11 +149,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const handleProceed = async (data: ShippingFormData) => {
+  const handleProceed = async (data: any) => {
     console.log('🚀 Form submitted, processing...');
     console.log('Form data:', data);
     setError(null);
     setIsLoading(true);
+    setShippingData(data); // Store the shipping data
 
     try {
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
@@ -227,10 +243,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         };
       });
 
+      // Format shipping address properly
+      const formattedAddress = shippingData ? 
+        `${shippingData.firstName} ${shippingData.lastName}\n${shippingData.address}\n${shippingData.city}, ${shippingData.state} ${shippingData.zipCode}\n${shippingData.country}` :
+        'Default Address';
+
       const orderData = {
         orderId,
-        customerEmail: 'guest@example.com',
-        customerName: 'Guest User',
+        customerEmail: shippingData?.email || 'guest@example.com',
+        customerName: shippingData ? `${shippingData.firstName} ${shippingData.lastName}` : 'Guest User',
         items: orderItems,
         originalTotal,
         discountAmount,
@@ -239,8 +260,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         paymentMethod: 'Bitcoin (BTC)',
         txId,
         bitcoinAmount: btcAmount,
-        shippingAddress: 'Default Address',
-        phone: 'Default Phone',
+        shippingAddress: formattedAddress,
+        phone: shippingData?.phone || 'Default Phone',
         orderDate: new Date().toLocaleString(),
         verificationStatus: verificationResult.isValid ? 'verified' : 'failed',
         verificationDetails: verificationResult.details
@@ -263,8 +284,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           // Add order to history
           await addOrder({
             order_id: orderId,
-            customer_email: 'guest@example.com',
-            customer_name: 'Guest User',
+            customer_email: orderData.customerEmail,
+            customer_name: orderData.customerName,
             items: orderItems,
             original_total: originalTotal,
             discount_amount: discountAmount,
@@ -273,7 +294,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             payment_method: 'Bitcoin (BTC)',
             tx_id: txId,
             bitcoin_amount: btcAmount.toString(),
-            shipping_address: orderData.shippingAddress,
+            shipping_address: formattedAddress,
             phone: orderData.phone,
             order_date: new Date().toISOString(),
             verification_status: 'verified'
@@ -289,16 +310,22 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           description: 'Your Bitcoin payment has been verified and your order is confirmed.',
         });
 
-        // Set order ID and show success modal
-        setCurrentOrderId(orderId);
-        setShowSuccessModal(true);
+        // Close payment modal first
+        onClose();
         
-        // Clear cart and close payment modal
+        // Clear cart 
         onOrderSuccess();
+        
+        // Set order ID and show success modal after a brief delay
+        setCurrentOrderId(orderId);
+        setTimeout(() => {
+          setShowSuccessModal(true);
+        }, 500);
+        
+        // Reset form state
         setStep(1);
         setError(null);
         setTxId('');
-        onClose();
         
       } else {
         console.log('❌ Transaction verification failed - ORDER NOT PROCESSED');
@@ -333,6 +360,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     setStep(1);
     setError(null);
     setTxId('');
+    setShippingData(null);
     onClose();
   };
 
@@ -421,9 +449,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
                   <h3 className="text-lg font-semibold text-blue-800 mb-4">📋 Please confirm your shipping address:</h3>
-                  <div className="space-y-2 text-gray-700">
-                    <p><strong>Address confirmed</strong></p>
-                  </div>
+                  {shippingData ? (
+                    <div className="space-y-2 text-gray-700">
+                      <p><strong>{shippingData.firstName} {shippingData.lastName}</strong></p>
+                      <p>{shippingData.email}</p>
+                      <p>{shippingData.phone}</p>
+                      <p>{shippingData.address}</p>
+                      <p>{shippingData.city}, {shippingData.state} {shippingData.zipCode}</p>
+                      <p>{shippingData.country}</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-700">Address information not available</p>
+                  )}
                 </div>
 
                 <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
