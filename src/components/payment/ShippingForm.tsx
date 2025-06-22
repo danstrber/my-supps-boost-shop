@@ -5,10 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { countries } from '@/lib/countries';
 
 const shippingSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -23,6 +21,34 @@ const shippingSchema = z.object({
 });
 
 export type ShippingFormData = z.infer<typeof shippingSchema>;
+
+interface Country {
+  code: string;
+  name: string;
+}
+
+const countries: Country[] = [
+  { code: 'US', name: 'United States' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'FR', name: 'France' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'KR', name: 'South Korea' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'HK', name: 'Hong Kong' },
+  { code: 'NZ', name: 'New Zealand' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'AT', name: 'Austria' },
+];
 
 interface ShippingFormProps {
   onSubmit: (data: ShippingFormData) => void;
@@ -165,7 +191,11 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="address">{labels.address}</FormLabel>
+                <FormLabel htmlFor="address">{labels.address}</Form
+
+
+
+>
                 <FormControl>
                   <Input
                     {...field}

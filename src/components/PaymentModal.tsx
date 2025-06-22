@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
-import ShippingForm from './payment/ShippingForm';
+import ShippingForm, { ShippingFormData } from './payment/ShippingForm';
 import BitcoinTutorial from './payment/BitcoinTutorial';
 import OrderSuccessModal from './OrderSuccessModal';
 import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
@@ -16,17 +16,6 @@ interface PaymentModalProps {
   userDiscount: number;
   userProfile: any;
   onOrderSuccess: () => void;
-}
-
-interface ShippingData {
-  fullName: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  phone: string;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -48,16 +37,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentOrderId, setCurrentOrderId] = useState('');
-  const [formData, setFormData] = useState<ShippingData>({
-    fullName: userProfile?.name || '',
-    email: userProfile?.email || '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'United States',
-    phone: ''
-  });
   const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
 
   const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
@@ -155,63 +134,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const validateAddress = () => {
-    const errors = [];
-    
-    if (!formData.fullName.trim()) errors.push('Full name is required');
-    if (!formData.email.trim()) errors.push('Email is required');
-    if (!formData.address.trim()) errors.push('Street address is required');
-    if (!formData.city.trim()) errors.push('City is required');
-    if (!formData.state.trim()) errors.push('State/Province is required');
-    if (!formData.zipCode.trim()) errors.push('ZIP/Postal code is required');
-    if (!formData.country.trim()) errors.push('Country is required');
-    if (!formData.phone.trim()) errors.push('Phone number is required');
-    
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (formData.email && !emailRegex.test(formData.email)) {
-      errors.push('Please enter a valid email address');
-    }
-    
-    // Phone validation (basic)
-    const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/;
-    if (formData.phone && !phoneRegex.test(formData.phone)) {
-      errors.push('Please enter a valid phone number');
-    }
-    
-    // ZIP code validation for US
-    if (formData.country === 'United States') {
-      const zipRegex = /^\d{5}(-\d{4})?$/;
-      if (formData.zipCode && !zipRegex.test(formData.zipCode)) {
-        errors.push('Please enter a valid US ZIP code (e.g., 12345 or 12345-6789)');
-      }
-    }
-    
-    return errors;
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    console.log(`Updated ${field}:`, value);
-  };
-
-  const handleProceed = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleProceed = async (data: ShippingFormData) => {
     console.log('🚀 Form submitted, processing...');
-    console.log('Form data:', formData);
+    console.log('Form data:', data);
     setError(null);
     setIsLoading(true);
 
     try {
-      // Validate form data
-      const validationErrors = validateAddress();
-      if (validationErrors.length > 0) {
-        throw new Error(validationErrors.join(', '));
-      }
-      
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
       if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
 
@@ -300,8 +229,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       const orderData = {
         orderId,
-        customerEmail: formData.email,
-        customerName: formData.fullName,
+        customerEmail: 'guest@example.com',
+        customerName: 'Guest User',
         items: orderItems,
         originalTotal,
         discountAmount,
@@ -310,8 +239,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         paymentMethod: 'Bitcoin (BTC)',
         txId,
         bitcoinAmount: btcAmount,
-        shippingAddress: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zipCode}, ${formData.country}`,
-        phone: formData.phone,
+        shippingAddress: 'Default Address',
+        phone: 'Default Phone',
         orderDate: new Date().toLocaleString(),
         verificationStatus: verificationResult.isValid ? 'verified' : 'failed',
         verificationDetails: verificationResult.details
@@ -334,8 +263,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           // Add order to history
           await addOrder({
             order_id: orderId,
-            customer_email: formData.email,
-            customer_name: formData.fullName,
+            customer_email: 'guest@example.com',
+            customer_name: 'Guest User',
             items: orderItems,
             original_total: originalTotal,
             discount_amount: discountAmount,
@@ -345,7 +274,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             tx_id: txId,
             bitcoin_amount: btcAmount.toString(),
             shipping_address: orderData.shippingAddress,
-            phone: formData.phone,
+            phone: orderData.phone,
             order_date: new Date().toISOString(),
             verification_status: 'verified'
           });
@@ -431,70 +360,51 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   <p className="text-gray-600">Please fill out your shipping information to complete your order.</p>
                 </div>
                 
-                <form onSubmit={handleProceed} className="space-y-6">
-                  <ShippingForm 
-                    formData={formData}
-                    onInputChange={handleInputChange}
-                    language="en"
-                  />
+                <ShippingForm 
+                  onSubmit={handleProceed}
+                  isLoading={isLoading}
+                  language="en"
+                />
 
-                  <div className="bg-gray-50 p-4 sm:p-6 rounded-lg">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
-                    <div className="space-y-3">
-                      <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
-                        <input 
-                          id="bitcoin-payment"
-                          name="paymentMethod"
-                          type="radio" 
-                          value="bitcoin" 
-                          checked={paymentMethod === 'bitcoin'} 
-                          onChange={() => setPaymentMethod('bitcoin')} 
-                          className="w-4 h-4 text-blue-600"
-                        /> 
-                        <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
-                      </label>
-                      <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
-                        <input 
-                          id="telegram-payment"
-                          name="paymentMethod"
-                          type="radio" 
-                          value="telegram" 
-                          checked={paymentMethod === 'telegram'} 
-                          onChange={() => setPaymentMethod('telegram')} 
-                          className="w-4 h-4 text-blue-600"
-                        /> 
-                        <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
-                      </label>
-                    </div>
+                <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mt-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
+                  <div className="space-y-3">
+                    <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
+                      <input 
+                        id="bitcoin-payment"
+                        name="paymentMethod"
+                        type="radio" 
+                        value="bitcoin" 
+                        checked={paymentMethod === 'bitcoin'} 
+                        onChange={() => setPaymentMethod('bitcoin')} 
+                        className="w-4 h-4 text-blue-600"
+                      /> 
+                      <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
+                    </label>
+                    <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
+                      <input 
+                        id="telegram-payment"
+                        name="paymentMethod"
+                        type="radio" 
+                        value="telegram" 
+                        checked={paymentMethod === 'telegram'} 
+                        onChange={() => setPaymentMethod('telegram')} 
+                        className="w-4 h-4 text-blue-600"
+                      /> 
+                      <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
+                    </label>
                   </div>
+                </div>
 
-                  {paymentMethod === 'bitcoin' && (
-                    <BitcoinTutorial language="en" />
-                  )}
+                {paymentMethod === 'bitcoin' && (
+                  <BitcoinTutorial language="en" />
+                )}
 
-                  {error && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <p className="text-red-600 text-sm">{error}</p>
-                    </div>
-                  )}
-
-                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 pt-4">
-                    <button 
-                      type="submit" 
-                      disabled={isLoading} 
-                      className="flex-1 bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {isLoading ? 'Processing...' : paymentMethod === 'bitcoin' ? 'Continue to Address Confirmation' : 'Contact via Telegram'}
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={handleClose} 
-                      className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                    <p className="text-red-600 text-sm">{error}</p>
                   </div>
-                </form>
+                )}
               </div>
             ) : step === 2 ? (
               <div className="p-4 sm:p-8">
@@ -512,14 +422,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
                   <h3 className="text-lg font-semibold text-blue-800 mb-4">📋 Please confirm your shipping address:</h3>
                   <div className="space-y-2 text-gray-700">
-                    <p><strong>Name:</strong> {formData.fullName}</p>
-                    <p><strong>Email:</strong> {formData.email}</p>
-                    <p><strong>Address:</strong> {formData.address}</p>
-                    <p><strong>City:</strong> {formData.city}</p>
-                    <p><strong>State/Province:</strong> {formData.state}</p>
-                    <p><strong>ZIP/Postal Code:</strong> {formData.zipCode}</p>
-                    <p><strong>Country:</strong> {formData.country}</p>
-                    <p><strong>Phone:</strong> {formData.phone}</p>
+                    <p><strong>Address confirmed</strong></p>
                   </div>
                 </div>
 
