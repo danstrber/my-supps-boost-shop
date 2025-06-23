@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Eye, Pill, User } from 'lucide-react';
+import { ShoppingCart, Eye, User } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
@@ -54,22 +54,10 @@ const ProductGrid = ({
             <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
               <div className="relative mb-4">
                 <img
-                  src={product.image}
+                  src={product.image || '/placeholder.svg'}
                   alt={product.name}
                   className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute top-2 left-2 flex flex-col gap-1">
-                  {product.featured && (
-                    <span className="bg-gradient-to-r from-orange-500 to-orange-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                      {t.featured}
-                    </span>
-                  )}
-                  {product.labTestFile && (
-                    <span className="bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-sm">
-                      {t.labTested}
-                    </span>
-                  )}
-                </div>
                 {product.inStock === false && (
                   <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
                     <span className="text-white font-bold text-lg">
@@ -85,35 +73,13 @@ const ProductGrid = ({
                 </h3>
                 
                 <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                  {product.description[language]}
+                  {product.description}
                 </p>
-
-                {/* Dose and Capsule Info */}
-                <div className="flex items-center gap-3 text-xs text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Pill className="h-3 w-3" />
-                    <span>{product.specifications[language].dosePerCapsule}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="h-3 w-3 bg-green-500 rounded-full" />
-                    <span>{product.specifications[language].capsulesPerBottle} caps</span>
-                  </div>
-                </div>
                 
                 <div className="flex flex-wrap gap-1">
-                  {product.categories.slice(0, 2).map((category) => (
-                    <span
-                      key={category}
-                      className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium"
-                    >
-                      {category.replace('-', ' ')}
-                    </span>
-                  ))}
-                  {product.categories.length > 2 && (
-                    <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
-                      +{product.categories.length - 2}
-                    </span>
-                  )}
+                  <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
+                    {product.category}
+                  </span>
                 </div>
                 
                 <div className="pt-3 border-t border-gray-100">

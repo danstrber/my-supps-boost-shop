@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -11,70 +12,25 @@ export interface Product {
 
 export const products: Product[] = [
   {
-    id: 'mk-2866',
-    name: 'MK-2866 (Ostarine)',
-    price: 60,
-    image: '',
-    description: 'SARM for muscle growth and recovery - Ideal for bulking and cutting cycles.',
-    category: 'SARMs',
+    id: 'mk-677',
+    name: 'MK-677 (Ibutamoren)',
+    price: 45,
+    image: '/public/lovable-uploads/96e40d17-f8c0-404b-af96-b7cadb9b096e.png',
+    description: 'Growth hormone secretagogue for muscle growth and recovery - Ideal for bulking cycles.',
+    category: 'Growth Hormone',
     inStock: true,
     features: [
+      'Increases growth hormone levels',
       'Promotes lean muscle growth',
-      'Enhances bone density',
-      'Accelerates recovery',
-      'Improves overall performance'
-    ]
-  },
-  {
-    id: 'gw-501516',
-    name: 'GW-501516 (Cardarine)',
-    price: 70,
-    image: '',
-    description: 'PPAR receptor agonist for endurance and fat loss - Perfect for cutting and performance enhancement.',
-    category: 'SARMs',
-    inStock: true,
-    features: [
-      'Increases endurance',
-      'Burns fat effectively',
-      'Improves cholesterol levels',
-      'Enhances cardiovascular health'
-    ]
-  },
-  {
-    id: 's-23',
-    name: 'S-23',
-    price: 80,
-    image: '',
-    description: 'Potent SARM for significant muscle gains and fat loss - Use with caution due to its strength.',
-    category: 'SARMs',
-    inStock: true,
-    features: [
-      'Maximum muscle growth',
-      'Aggressive fat loss',
-      'Increases strength',
-      'Enhanced muscle definition'
-    ]
-  },
-  {
-    id: 'yk-11',
-    name: 'YK-11',
-    price: 90,
-    image: '',
-    description: 'Myostatin inhibitor for extreme muscle growth - Best used by experienced users.',
-    category: 'SARMs',
-    inStock: true,
-    features: [
-      'Inhibits myostatin',
-      'Unleashes extreme muscle growth',
-      'Increases muscle hardness',
-      'Enhances protein synthesis'
+      'Enhances recovery',
+      'Improves sleep quality'
     ]
   },
   {
     id: 'clomid',
     name: 'Clomid (Clomiphene Citrate)',
     price: 30,
-    image: '', // Removed image
+    image: '',
     description: 'PCT/Testosterone booster - Essential for post-cycle therapy to restore natural hormone production.',
     category: 'PCT',
     inStock: true,
@@ -86,25 +42,10 @@ export const products: Product[] = [
     ]
   },
   {
-    id: 'dust',
-    name: 'Dust (DHT Blocker)',
-    price: 40,
-    image: '', // Removed image
-    description: 'DHT blocker - Helps prevent hair loss and other DHT-related side effects.',
-    category: 'Support',
-    inStock: true,
-    features: [
-      'Blocks DHT conversion',
-      'Prevents hair loss',
-      'Reduces DHT side effects',
-      'Maintains healthy hormone balance'
-    ]
-  },
-  {
     id: 'arimidex',
     name: 'Arimidex (Anastrozole)',
     price: 35,
-    image: '', // Removed image
+    image: '',
     description: 'Aromatase inhibitor for PCT - Controls estrogen levels during and after cycles.',
     category: 'PCT',
     inStock: true,
@@ -116,4 +57,3 @@ export const products: Product[] = [
     ]
   }
 ];
-
