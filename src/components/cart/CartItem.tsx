@@ -28,7 +28,7 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
   return (
     <div className="flex items-center space-x-4 p-4 border rounded-lg">
       <img
-        src={product.image || '/placeholder.svg'}
+        src={product.image}
         alt={product.name}
         className="w-16 h-16 object-cover rounded-lg"
       />
@@ -36,6 +36,11 @@ const CartItem = ({ product, quantity, onUpdateCart, userDiscount }: CartItemPro
       <div className="flex-1">
         <h4 className="font-medium text-gray-900">{product.name}</h4>
         <p className="text-sm text-gray-600">${product.price.toFixed(2)} each</p>
+        {product.labTestFile && (
+          <span className="inline-block mt-1 px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+            🔬 Lab Tested
+          </span>
+        )}
         {userDiscount > 0 && (
           <p className="text-xs text-green-600 mt-1">
             {userDiscount}% discount applied

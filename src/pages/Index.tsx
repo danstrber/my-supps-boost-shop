@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -124,7 +125,7 @@ const Index = () => {
 
   const filteredProducts = selectedCategory === 'all' 
     ? products 
-    : products.filter(product => product.category === selectedCategory);
+    : products.filter(product => product.categories.includes(selectedCategory));
 
   const handleAuthModalAction = (action: 'login' | 'signup' | 'logout') => {
     if (action === 'logout') {

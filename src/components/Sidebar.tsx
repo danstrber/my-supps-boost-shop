@@ -29,7 +29,7 @@ const Sidebar = ({
     { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs' },
     { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores' },
     { id: 'pct', nameEn: 'PCT', nameEs: 'PCT' },
-    { id: 'growth', nameEn: 'Growth Hormone', nameEs: 'Hormona de Crecimiento' },
+    { id: 'growth', nameEn: 'Growth', nameEs: 'Crecimiento' },
   ];
 
   if (!isOpen) return null;
