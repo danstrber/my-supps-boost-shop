@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
@@ -41,6 +42,18 @@ const Index = () => {
   const { sidebarOpen, handleMenuToggle, handleSidebarClose } = useSidebar();
 
   console.log('Index state initialized', { loading, isAuthenticated });
+
+  // Listen for category reset event from Header
+  useEffect(() => {
+    const handleResetCategory = () => {
+      setSelectedCategory('all');
+    };
+
+    window.addEventListener('resetCategory', handleResetCategory);
+    return () => {
+      window.removeEventListener('resetCategory', handleResetCategory);
+    };
+  }, []);
 
   // Calculate user discount with updated rates (3% normal, 7% referred)
   const calculateUserDiscount = () => {
@@ -138,6 +151,10 @@ const Index = () => {
 
   const handlePageChange = (page: string) => {
     setCurrentPage(page as 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account');
+    // Reset category when navigating to home
+    if (page === 'home') {
+      setSelectedCategory('all');
+    }
   };
 
   // Show loading state while auth is initializing

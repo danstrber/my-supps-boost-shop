@@ -210,6 +210,38 @@ export const useOrderHistory = () => {
 
         setOrders(prev => [transformedOrder, ...prev]);
         console.log('Order saved to database successfully');
+
+        // Send order confirmation email
+        try {
+          const emailResponse = await supabase.functions.invoke('send-order-email', {
+            body: {
+              customerEmail: transformedOrder.customer_email,
+              customerName: transformedOrder.customer_name,
+              orderId: transformedOrder.id,
+              items: transformedOrder.items,
+              originalTotal: transformedOrder.original_total,
+              discountAmount: transformedOrder.discount_amount,
+              shippingFee: transformedOrder.shipping_fee,
+              finalTotal: transformedOrder.final_total,
+              paymentMethod: transformedOrder.payment_method,
+              txId: transformedOrder.tx_id,
+              bitcoinAmount: transformedOrder.bitcoin_amount,
+              shippingAddress: transformedOrder.shipping_address,
+              phone: transformedOrder.phone,
+              orderDate: transformedOrder.order_date,
+              verificationStatus: transformedOrder.verification_status
+            }
+          });
+
+          if (emailResponse.error) {
+            console.error('Error sending order confirmation email:', emailResponse.error);
+          } else {
+            console.log('Order confirmation email sent successfully');
+          }
+        } catch (emailError) {
+          console.error('Exception sending order confirmation email:', emailError);
+        }
+
       } catch (error) {
         console.error('Error saving order to database:', error);
         // Fallback to localStorage
@@ -227,6 +259,37 @@ export const useOrderHistory = () => {
     localStorage.setItem('tempOrders', JSON.stringify(tempOrders));
     setOrders(prev => [order, ...prev]);
     console.log('Order saved to localStorage (temporary)');
+
+    // Send order confirmation email even for localStorage orders
+    try {
+      supabase.functions.invoke('send-order-email', {
+        body: {
+          customerEmail: order.customer_email,
+          customerName: order.customer_name,
+          orderId: order.id,
+          items: order.items,
+          originalTotal: order.original_total,
+          discountAmount: order.discount_amount,
+          shippingFee: order.shipping_fee,
+          finalTotal: order.final_total,
+          paymentMethod: order.payment_method,
+          txId: order.tx_id,
+          bitcoinAmount: order.bitcoin_amount,
+          shippingAddress: order.shipping_address,
+          phone: order.phone,
+          orderDate: order.order_date,
+          verificationStatus: order.verification_status
+        }
+      }).then(emailResponse => {
+        if (emailResponse.error) {
+          console.error('Error sending order confirmation email:', emailResponse.error);
+        } else {
+          console.log('Order confirmation email sent successfully');
+        }
+      });
+    } catch (emailError) {
+      console.error('Exception sending order confirmation email:', emailError);
+    }
   };
 
   useEffect(() => {

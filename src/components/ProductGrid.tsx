@@ -53,11 +53,17 @@ const ProductGrid = ({
           return (
             <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
               <div className="relative mb-4">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
-                />
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-40 md:h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-400 text-sm">No Image</span>
+                  </div>
+                )}
                 {product.inStock === false && (
                   <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center rounded-lg">
                     <span className="text-white font-bold text-lg">
@@ -80,6 +86,22 @@ const ProductGrid = ({
                   <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
                     {product.category.replace('-', ' ')}
                   </span>
+                </div>
+
+                {/* Product Specifications */}
+                <div className="text-xs text-gray-500 space-y-1">
+                  <div className="flex justify-between">
+                    <span>Dose per capsule:</span>
+                    <span className="font-medium">{product.specifications.dosePerCapsule}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Capsules per bottle:</span>
+                    <span className="font-medium">{product.specifications.capsulesPerBottle}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Potency level:</span>
+                    <span className="font-medium">{product.specifications.potencyLevel}</span>
+                  </div>
                 </div>
                 
                 <div className="pt-3 border-t border-gray-100">
