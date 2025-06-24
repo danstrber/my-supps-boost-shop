@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -11,72 +12,57 @@ export interface Product {
 
 export const products: Product[] = [
   {
-    id: 'mk-2866',
-    name: 'MK-2866 (Ostarine)',
-    price: 60,
-    image: '',
-    description: 'SARM for muscle growth and recovery - Ideal for bulking and cutting cycles.',
-    category: 'SARMs',
+    id: 'superdrol',
+    name: 'Superdrol',
+    price: 25,
+    image: '/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png',
+    description: 'Powerful oral steroid for rapid muscle growth and strength gains.',
+    category: 'oral-steroids',
     inStock: true,
     features: [
-      'Promotes lean muscle growth',
-      'Enhances bone density',
-      'Accelerates recovery',
-      'Improves overall performance'
+      'Rapid muscle growth',
+      'Increased strength',
+      'Enhanced performance',
+      'Quick results'
     ]
   },
   {
-    id: 'gw-501516',
-    name: 'GW-501516 (Cardarine)',
-    price: 70,
-    image: '',
-    description: 'PPAR receptor agonist for endurance and fat loss - Perfect for cutting and performance enhancement.',
-    category: 'SARMs',
+    id: 'rad-140',
+    name: 'RAD-140 (Testolone)',
+    price: 55,
+    image: '/lovable-uploads/03872941-927f-4c0f-bbdc-f29c84db2e6c.png',
+    description: 'Selective Androgen Receptor Modulator for lean muscle mass and strength.',
+    category: 'sarms',
     inStock: true,
     features: [
-      'Increases endurance',
-      'Burns fat effectively',
-      'Improves cholesterol levels',
-      'Enhances cardiovascular health'
+      'Lean muscle gains',
+      'Increased strength',
+      'Improved endurance',
+      'Minimal side effects'
     ]
   },
   {
-    id: 's-23',
-    name: 'S-23',
-    price: 80,
-    image: '',
-    description: 'Potent SARM for significant muscle gains and fat loss - Use with caution due to its strength.',
-    category: 'SARMs',
+    id: 'mk-677',
+    name: 'MK-677 (Ibutamoren)',
+    price: 45,
+    image: '/lovable-uploads/092e9c9b-041a-4ad5-9acb-f427fbf3db14.png',
+    description: 'Growth hormone secretagogue for muscle growth and recovery.',
+    category: 'growth',
     inStock: true,
     features: [
-      'Maximum muscle growth',
-      'Aggressive fat loss',
-      'Increases strength',
-      'Enhanced muscle definition'
-    ]
-  },
-  {
-    id: 'yk-11',
-    name: 'YK-11',
-    price: 90,
-    image: '',
-    description: 'Myostatin inhibitor for extreme muscle growth - Best used by experienced users.',
-    category: 'SARMs',
-    inStock: true,
-    features: [
-      'Inhibits myostatin',
-      'Unleashes extreme muscle growth',
-      'Increases muscle hardness',
-      'Enhances protein synthesis'
+      'Increased growth hormone',
+      'Better recovery',
+      'Improved sleep quality',
+      'Enhanced muscle growth'
     ]
   },
   {
     id: 'clomid',
     name: 'Clomid (Clomiphene Citrate)',
     price: 30,
-    image: '', // Removed image
+    image: '',
     description: 'PCT/Testosterone booster - Essential for post-cycle therapy to restore natural hormone production.',
-    category: 'PCT',
+    category: 'pct',
     inStock: true,
     features: [
       'Restores natural testosterone production',
@@ -86,34 +72,63 @@ export const products: Product[] = [
     ]
   },
   {
-    id: 'dust',
-    name: 'Dust (DHT Blocker)',
-    price: 40,
-    image: '', // Removed image
-    description: 'DHT blocker - Helps prevent hair loss and other DHT-related side effects.',
-    category: 'Support',
+    id: 'enclomiphene',
+    name: 'Enclomiphene Citrate',
+    price: 25,
+    image: '/lovable-uploads/1bf4f1ae-fdea-4150-a6f0-d7624092d03b.png',
+    description: 'Selective estrogen receptor modulator for natural testosterone support.',
+    category: 'pct',
     inStock: true,
     features: [
-      'Blocks DHT conversion',
-      'Prevents hair loss',
-      'Reduces DHT side effects',
-      'Maintains healthy hormone balance'
+      'Natural testosterone support',
+      'Improved hormonal balance',
+      'Fewer side effects than Clomid',
+      'Effective PCT option'
     ]
   },
   {
-    id: 'arimidex',
-    name: 'Arimidex (Anastrozole)',
-    price: 35,
-    image: '', // Removed image
-    description: 'Aromatase inhibitor for PCT - Controls estrogen levels during and after cycles.',
-    category: 'PCT',
+    id: 'aromasin',
+    name: 'Aromasin (Exemestane)',
+    price: 25,
+    image: '/lovable-uploads/286bede4-8413-4ea2-ba39-1386b5f021fd.png',
+    description: 'Aromatase inhibitor for controlling estrogen levels during cycles.',
+    category: 'pct',
     inStock: true,
     features: [
       'Powerful aromatase inhibitor',
       'Controls estrogen levels',
       'Prevents gynecomastia',
-      'Essential for PCT protocols'
+      'Suicidal inhibitor - no rebound'
+    ]
+  },
+  {
+    id: 'clenbuterol',
+    name: 'Clenbuterol',
+    price: 35,
+    image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
+    description: 'Powerful fat burner and performance enhancer for cutting cycles.',
+    category: 'fat-burners',
+    inStock: true,
+    features: [
+      'Rapid fat loss',
+      'Increased metabolism',
+      'Preserved muscle mass',
+      'Enhanced performance'
+    ]
+  },
+  {
+    id: 'accutane',
+    name: 'Accutane (Isotretinoin)',
+    price: 30,
+    image: '/lovable-uploads/3676fa98-6e90-442a-99d8-ce8d8d9bef23.png',
+    description: 'Powerful acne treatment for severe cases and steroid-induced acne.',
+    category: 'support',
+    inStock: true,
+    features: [
+      'Treats severe acne',
+      'Reduces oil production',
+      'Long-lasting results',
+      'Prevents scarring'
     ]
   }
 ];
-
