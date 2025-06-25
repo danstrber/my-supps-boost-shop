@@ -30,15 +30,27 @@ const ProductGrid = ({
     <div className="space-y-6">
       {/* Sign In Button for non-authenticated users */}
       {!isAuthenticated && onAuthAction && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-          <p className="text-green-800 mb-3">
-            {language === 'en' 
-              ? 'Sign in to access exclusive discounts and track your orders!' 
-              : '¡Inicia sesión para acceder a descuentos exclusivos y rastrear tus pedidos!'}
-          </p>
+        <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6 text-center shadow-sm">
+          <div className="flex items-center justify-center mb-3">
+            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-3">
+              <User className="h-6 w-6 text-green-600" />
+            </div>
+            <div className="text-left">
+              <p className="text-green-800 font-semibold mb-1">
+                {language === 'en' 
+                  ? 'Unlock Exclusive Benefits!' 
+                  : '¡Desbloquea Beneficios Exclusivos!'}
+              </p>
+              <p className="text-green-700 text-sm">
+                {language === 'en' 
+                  ? 'Sign in to access exclusive discounts and track your orders!' 
+                  : '¡Inicia sesión para acceder a descuentos exclusivos y rastrear tus pedidos!'}
+              </p>
+            </div>
+          </div>
           <Button
             onClick={() => onAuthAction('login')}
-            className="bg-green-600 hover:bg-green-700 text-white"
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2"
           >
             <User className="h-4 w-4 mr-2" />
             {language === 'en' ? 'Sign In' : 'Iniciar Sesión'}
@@ -51,17 +63,19 @@ const ProductGrid = ({
           if (!product) return null;
           
           return (
-            <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-lg transition-all duration-300 group transform hover:-translate-y-1">
+            <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-xl transition-all duration-300 group transform hover:-translate-y-2">
               <div className="relative mb-4">
                 {product.image ? (
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-40 md:h-48 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300 border border-gray-100"
                   />
                 ) : (
-                  <div className="w-full h-40 md:h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <span className="text-gray-400 text-sm">No Image</span>
+                  <div className="w-full h-40 md:h-48 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center border border-gray-200">
+                    <span className="text-gray-400 text-sm font-medium">
+                      {language === 'en' ? 'No Image' : 'Sin Imagen'}
+                    </span>
                   </div>
                 )}
                 {product.inStock === false && (
@@ -71,6 +85,12 @@ const ProductGrid = ({
                     </span>
                   </div>
                 )}
+                {/* Category badge */}
+                <div className="absolute top-2 right-2">
+                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
+                    {product.category.replace('-', ' ')}
+                  </span>
+                </div>
               </div>
               
               <div className="space-y-3">
@@ -82,25 +102,19 @@ const ProductGrid = ({
                   {product.description}
                 </p>
 
-                <div className="flex flex-wrap gap-1">
-                  <span className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">
-                    {product.category.replace('-', ' ')}
-                  </span>
-                </div>
-
                 {/* Product Specifications */}
-                <div className="text-xs text-gray-500 space-y-1">
+                <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 space-y-1 border border-gray-100">
                   <div className="flex justify-between">
-                    <span>Dose per capsule:</span>
-                    <span className="font-medium">{product.specifications.dosePerCapsule}</span>
+                    <span>{language === 'en' ? 'Dose per capsule:' : 'Dosis por cápsula:'}</span>
+                    <span className="font-medium text-green-700">{product.specifications.dosePerCapsule}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Capsules per bottle:</span>
-                    <span className="font-medium">{product.specifications.capsulesPerBottle}</span>
+                    <span>{language === 'en' ? 'Capsules per bottle:' : 'Cápsulas por frasco:'}</span>
+                    <span className="font-medium text-green-700">{product.specifications.capsulesPerBottle}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Potency level:</span>
-                    <span className="font-medium">{product.specifications.potencyLevel}</span>
+                    <span>{language === 'en' ? 'Potency level:' : 'Nivel de potencia:'}</span>
+                    <span className="font-medium text-green-700">{product.specifications.potencyLevel}</span>
                   </div>
                 </div>
                 
@@ -117,7 +131,7 @@ const ProductGrid = ({
                     <Button
                       variant="outline"
                       onClick={() => onProductClick(product)}
-                      className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg"
+                      className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg transition-all duration-200"
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       {t.viewDetails}
@@ -126,7 +140,7 @@ const ProductGrid = ({
                     <Button
                       onClick={() => onAddToCart(product)}
                       disabled={product.inStock === false}
-                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm"
+                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" />
                       {t.addToCart}

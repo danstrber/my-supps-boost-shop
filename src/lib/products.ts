@@ -50,7 +50,7 @@ export const products: Product[] = [
     ],
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: 60,
+      capsulesPerBottle: 20,
       typicalCycleLength: '4-6 weeks',
       potencyLevel: 'Very High'
     },
@@ -74,7 +74,7 @@ export const products: Product[] = [
       howItWorks: 'Works by binding to androgen receptors, dramatically increasing protein synthesis and nitrogen retention for rapid muscle growth.',
       safetyInformation: 'Requires liver support and PCT. Monitor blood pressure and cholesterol levels. Not for beginners.',
       cycleInformation: 'Best used for 4-6 weeks maximum. Requires comprehensive post-cycle therapy and liver support throughout.',
-      whatToExpected: 'Users report significant strength gains within 1 week, visible muscle growth within 2-3 weeks, and continued gains throughout the cycle.',
+      whatToExpect: 'Users report significant strength gains within 1 week, visible muscle growth within 2-3 weeks, and continued gains throughout the cycle.',
       performanceRatings: {
         muscleGain: 5,
         strength: 5,
@@ -100,7 +100,7 @@ export const products: Product[] = [
     ],
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: 60,
+      capsulesPerBottle: 50,
       typicalCycleLength: '8-12 weeks',
       potencyLevel: 'High'
     },
@@ -200,7 +200,7 @@ export const products: Product[] = [
       'Maintains muscle gains post-cycle'
     ],
     specifications: {
-      dosePerCapsule: '50mg',
+      dosePerCapsule: '25mg',
       capsulesPerBottle: 50,
       typicalCycleLength: '4-6 weeks PCT',
       potencyLevel: 'High SERM'
@@ -250,8 +250,8 @@ export const products: Product[] = [
       'Effective PCT option'
     ],
     specifications: {
-      dosePerCapsule: '25mg',
-      capsulesPerBottle: 60,
+      dosePerCapsule: '12.5mg',
+      capsulesPerBottle: 25,
       typicalCycleLength: '4-8 weeks',
       potencyLevel: 'High SERM'
     },
@@ -301,7 +301,7 @@ export const products: Product[] = [
     ],
     specifications: {
       dosePerCapsule: '25mg',
-      capsulesPerBottle: 50,
+      capsulesPerBottle: 10,
       typicalCycleLength: 'Cycle support',
       potencyLevel: 'High AI'
     },
@@ -389,7 +389,7 @@ export const products: Product[] = [
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
     price: 30,
-    image: '/lovable-uploads/3676fa98-6e90-442a-99d8-ce8d8d9bef23.png',
+    image: '',
     description: 'Powerful acne treatment for severe cases and steroid-induced acne with long-lasting results.',
     category: 'support',
     inStock: true,

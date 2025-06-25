@@ -1,263 +1,425 @@
 
 export const translations = {
   en: {
+    // Header and Navigation
     home: 'Home',
-    payment: 'Payment',
-    delivery: 'Delivery',
     about: 'About',
     contact: 'Contact',
+    delivery: 'Delivery',
+    payment: 'Payment',
+    labTesting: 'Lab Testing',
+    account: 'Account',
+    login: 'Sign In',
+    signup: 'Sign Up',
+
+    // Categories
     categories: 'Categories',
     allProducts: 'All Products',
     sarms: 'SARMs',
-    muscleGrowth: 'Muscle Growth',
-    fatLoss: 'Fat Loss',
-    recovery: 'Recovery',
     oralSteroids: 'Oral Steroids',
-    pct: 'PCT',
-    products: 'Products',
-    account: 'Account',
-    admin: 'Admin',
-    labTesting: 'Lab Testing',
-    login: 'Login',
-    signup: 'Sign Up',
-    logout: 'Logout',
-    cart: 'Cart',
-    checkout: 'Checkout',
+    pct: 'PCT & Support',
+    fatBurners: 'Fat Burners',
+    growth: 'Growth Hormones',
+    support: 'Support & Health',
+
+    // Product actions
     addToCart: 'Add to Cart',
     viewDetails: 'View Details',
-    price: 'Price',
     outOfStock: 'Out of Stock',
-    inStock: 'In Stock',
-    labTested: 'Lab Tested',
-    featured: 'Featured',
-    searchProducts: 'Search products...',
-    noProductsFound: 'No products found matching your search.',
-    productDetails: 'Product Details',
-    productSpecs: 'Product Specifications',
-    dosePerCapsule: 'Dose per capsule',
-    capsulesPerBottle: 'Capsules per bottle',
-    typicalCycleDuration: 'Typical cycle duration',
-    potencyLevel: 'Potency level',
-    researchBackground: 'Research Background',
-    benefits: 'Benefits',
-    sideEffects: 'Side Effects',
-    effectsOnWomen: 'Effects on Women',
-    howItWorks: 'How It Works',
-    safetyInformation: 'Safety Information',
-    cycleInformation: 'Cycle Information',
-    whatToExpect: 'What to Expect',
-    performanceRatings: 'Performance Ratings',
-    subtotal: 'Subtotal',
-    originalTotal: 'Original Total',
-    discount: 'Discount',
-    shipping: 'Shipping',
+
+    // Cart
+    cart: 'Cart',
+    removeFromCart: 'Remove',
     total: 'Total',
-    finalTotal: 'Final Total',
+    checkout: 'Checkout',
     emptyCart: 'Your cart is empty',
-    removeFromCart: 'Remove from cart',
-    updateQuantity: 'Update quantity',
-    proceedToCheckout: 'Proceed to Checkout',
-    continueShopping: 'Continue Shopping',
-    shippingInformation: 'Shipping Information',
-    paymentMethod: 'Payment Method',
-    placeOrder: 'Place Order',
-    orderConfirmation: 'Order Confirmation',
-    fullName: 'Full Name',
+
+    // Authentication
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
+    logout: 'Log Out',
     email: 'Email',
+    password: 'Password',
+    confirmPassword: 'Confirm Password',
+    forgotPassword: 'Forgot Password?',
+    noAccount: "Don't have an account?",
+    haveAccount: 'Already have an account?',
+
+    // Payment and Orders
+    orderConfirmed: 'Order Confirmed!',
+    orderNumber: 'Order Number',
+    orderTotal: 'Order Total',
+    thankYou: 'Thank you for your order!',
+    paymentSuccessful: 'Payment Successful',
+    orderDetails: 'Order Details',
+    shippingAddress: 'Shipping Address',
+    paymentMethod: 'Payment Method',
+    
+    // About Page
+    aboutTitle: 'About MySupps',
+    aboutContent: 'Unlock Your Potential with Science-Backed Performance Enhancers',
+    aboutSubtitle: 'Are you striving for more — in the gym, in the mirror, or in life?',
+    aboutDescription: 'Whether you\'re chasing peak performance, accelerated recovery, or a sculpted physique, advanced peptides and medically-guided anabolic support may offer the edge you\'ve been looking for.',
+    whyChoose: 'Why Choose Peptides or Steroids (Under Medical Supervision)?',
+    benefits: [
+      'Build Lean Muscle Faster',
+      'Enhance Strength and Boost Endurance',
+      'Accelerate Recovery Between Workouts',
+      'Support Healthy Aging with hormone-optimizing solutions',
+      'Fight Fatigue & Elevate Confidence'
+    ],
+    trustedBy: 'Trusted by athletes, professionals, and wellness enthusiasts, today\'s treatments are tailored, safe, and built around your goals.',
+    tagline: 'Science meets performance. Results meet confidence.',
+
+    // Contact
+    contactTitle: 'Contact Us',
+    contactDescription: 'Get in touch with our team for any questions or support.',
+
+    // Delivery
+    deliveryTitle: 'Delivery Information',
+    deliveryDescription: 'Learn about our shipping options and delivery times.',
+
+    // Payment
+    paymentTitle: 'Payment Methods',
+    paymentDescription: 'We accept various secure payment methods for your convenience.',
+
+    // Lab Testing
+    labTestingTitle: 'Product Verification',
+    labTestingDescription: 'All our products undergo rigorous third-party testing for purity and potency.',
+
+    // Forms
+    fullName: 'Full Name',
+    phoneNumber: 'Phone Number',
     address: 'Address',
     city: 'City',
+    state: 'State',
+    zipCode: 'Zip Code',
     country: 'Country',
-    postalCode: 'Postal Code',
-    phoneNumber: 'Phone Number',
-    yourFullName: 'Your full name',
-    yourEmail: 'your@email.com',
-    streetAddress: 'Street address with house number',
-    yourPhoneNumber: 'Your phone number',
-    yourPostalCode: 'Your postal code',
-    telegram: 'Telegram',
-    bitcoin: 'Bitcoin',
-    telegramOrdering: 'Telegram Ordering',
-    telegramOrderDesc: 'Order directly through our secure Telegram channel for the fastest and most convenient experience.',
-    telegramEasyTracking: 'Easy order tracking',
-    telegramAnonymous: 'Anonymous ordering',
-    telegramDirectComm: 'Direct communication',
-    telegramExpertCoaching: 'Expert coaching included',
-    telegramFastSupport: '24/7 fast support',
-    telegramJoinInfo: 'Join our Telegram channel to place your order instantly!',
-    telegramEasierBuying: 'Telegram makes buying easier with instant communication, order tracking, and expert guidance all in one place.',
-    bitcoinPayment: 'Bitcoin Payment',
-    bitcoinPaymentDetails: 'Pay securely and anonymously with Bitcoin. Fast, private, and reliable.',
-    bitcoinWalletInfo: 'You will receive a Bitcoin wallet address after placing your order.',
-    bitcoinTutorial: 'How to Pay with Bitcoin',
-    bitcoinEasy: 'Easy Bitcoin Payment',
-    bitcoinEasySteps: [
-      'Copy the Bitcoin address provided',
-      'Open your Bitcoin wallet app',
-      'Send the exact amount to the address',
-      'Wait for confirmation (usually 10-30 minutes)'
-    ],
-    bitcoinAnonymous: 'Anonymous Bitcoin Payment',
-    bitcoinAnonSteps: [
-      'Use a privacy-focused wallet like Wasabi or Samourai',
-      'Consider using a Bitcoin mixer for extra privacy',
-      'Send from a fresh address not linked to your identity',
-      'Wait for multiple confirmations for maximum security'
-    ],
-    paymentMethods: 'Payment Methods',
-    copied: 'Copied!',
-    copiedToClipboard: 'copied to clipboard!',
-    sendExact: 'Send Exact Amount',
-    toWallet: 'To Wallet Address',
-    missingInformation: 'Missing Information',
-    fillAllFields: 'Please fill in all required fields',
-    redirectedTelegram: 'Redirected to Telegram',
-    completeTelegramOrder: 'Complete your order in Telegram',
-    orderPlacedSuccess: 'Order Placed Successfully',
-    orderPlaced: 'Your order has been placed',
-    orderFailed: 'Order Failed',
-    orderError: 'There was an error placing your order',
-    completeYourOrder: 'Complete Your Order',
-    wantCheaper: 'Want cheaper prices? Refer friends and get discounts!',
-    recommended: 'Recommended',
-    processing: 'Processing...',
-    joinTelegram: 'Join Telegram',
-    continueToPayment: 'Continue to Payment',
-    completeOrder: 'Complete Order',
-    invalidTxid: 'Invalid TXID. Must be a 64-character hexadecimal string.',
-    referralDiscount: 'Want cheaper? Get 10% off by referring a new user!',
+    submit: 'Submit',
+    save: 'Save',
+    cancel: 'Cancel',
+
+    // Order History
+    orderHistory: 'Order History',
+    noOrders: 'No orders found',
+    orderDate: 'Order Date',
+    status: 'Status',
+    pending: 'Pending',
+    confirmed: 'Confirmed',
+    shipped: 'Shipped',
+    delivered: 'Delivered',
+
+    // Error messages
+    errorOccurred: 'An error occurred',
+    tryAgain: 'Please try again',
+    invalidEmail: 'Please enter a valid email address',
+    passwordTooShort: 'Password must be at least 6 characters',
+    passwordsNotMatch: 'Passwords do not match',
+
+    // Success messages
+    accountCreated: 'Account created successfully!',
+    loginSuccessful: 'Login successful!',
+    profileUpdated: 'Profile updated successfully!',
+    orderPlaced: 'Order placed successfully!',
+
+    // Common
+    loading: 'Loading...',
+    search: 'Search',
+    filter: 'Filter',
+    sort: 'Sort',
+    price: 'Price',
+    name: 'Name',
+    category: 'Category',
+    quantity: 'Quantity',
+    description: 'Description',
+    features: 'Features',
+    specifications: 'Specifications',
+    reviews: 'Reviews',
+    rating: 'Rating',
+    
+    // Account
+    profile: 'Profile',
+    settings: 'Settings',
+    security: 'Security',
+    billing: 'Billing',
+    preferences: 'Preferences',
+
+    // Footer
+    privacyPolicy: 'Privacy Policy',
     termsOfService: 'Terms of Service',
-    agreeToTerms: 'I agree to the Terms of Service',
-    checkYourEmail: 'Check Your Email',
+    customerSupport: 'Customer Support',
+    
+    // Miscellaneous
+    viewAll: 'View All',
+    showMore: 'Show More',
+    showLess: 'Show Less',
+    readMore: 'Read More',
+    close: 'Close',
+    open: 'Open',
+    edit: 'Edit',
+    delete: 'Delete',
+    update: 'Update',
+    create: 'Create',
+    welcome: 'Welcome',
+    goodbye: 'Goodbye',
+    
+    // Newsletter
+    newsletter: 'Newsletter',
+    subscribeNewsletter: 'Subscribe to our newsletter',
+    emailPlaceholder: 'Enter your email',
+    subscribe: 'Subscribe',
+    
+    // Social
+    followUs: 'Follow Us',
+    shareProduct: 'Share Product',
+    
+    // Promotions
+    sale: 'Sale',
+    discount: 'Discount',
+    coupon: 'Coupon',
+    promo: 'Promo',
+    
+    // Support
+    faq: 'FAQ',
+    helpCenter: 'Help Center',
+    livechat: 'Live Chat',
+    
+    // Shipping
+    freeShipping: 'Free Shipping',
+    expressShipping: 'Express Shipping',
+    standardShipping: 'Standard Shipping',
+    
+    // Returns
+    returnPolicy: 'Return Policy',
+    refund: 'Refund',
+    exchange: 'Exchange',
+    
+    // Wishlist
+    wishlist: 'Wishlist',
+    addToWishlist: 'Add to Wishlist',
+    removeFromWishlist: 'Remove from Wishlist',
+    
+    // Compare
+    compare: 'Compare',
+    addToCompare: 'Add to Compare',
+    removeFromCompare: 'Remove from Compare',
+
+    // Email verification
+    verifyEmail: 'Verify Email',
+    emailVerification: 'Email Verification',
+    checkEmail: 'Check your email',
+    emailSent: 'Verification email sent',
     resendEmail: 'Resend Email'
   },
   es: {
+    // Header and Navigation
     home: 'Inicio',
-    payment: 'Pago',
-    delivery: 'Entrega',
     about: 'Acerca de',
     contact: 'Contacto',
+    delivery: 'Entrega',
+    payment: 'Pago',
+    labTesting: 'Pruebas de Laboratorio',
+    account: 'Cuenta',
+    login: 'Iniciar Sesión',
+    signup: 'Registrarse',
+
+    // Categories
     categories: 'Categorías',
     allProducts: 'Todos los Productos',
     sarms: 'SARMs',
-    muscleGrowth: 'Crecimiento Muscular',
-    fatLoss: 'Pérdida de Grasa',
-    recovery: 'Recuperación',
     oralSteroids: 'Esteroides Orales',
-    pct: 'PCT',
-    products: 'Productos',
-    account: 'Cuenta',
-    admin: 'Admin',
-    labTesting: 'Pruebas de Laboratorio',
-    login: 'Iniciar Sesión',
-    signup: 'Registrarse',
-    logout: 'Cerrar Sesión',
-    cart: 'Carrito',
-    checkout: 'Pagar',
-    addToCart: 'Agregar al Carrito',
+    pct: 'PCT y Soporte',
+    fatBurners: 'Quemadores de Grasa',
+    growth: 'Hormonas de Crecimiento',
+    support: 'Soporte y Salud',
+
+    // Product actions
+    addToCart: 'Añadir al Carrito',
     viewDetails: 'Ver Detalles',
-    price: 'Precio',
     outOfStock: 'Agotado',
-    inStock: 'En Stock',
-    labTested: 'Probado en Laboratorio',
-    featured: 'Destacado',
-    searchProducts: 'Buscar productos...',
-    noProductsFound: 'No se encontraron productos que coincidan con tu búsqueda.',
-    productDetails: 'Detalles del Producto',
-    productSpecs: 'Especificaciones del Producto',
-    dosePerCapsule: 'Dosis por cápsula',
-    capsulesPerBottle: 'Cápsulas por frasco',
-    typicalCycleDuration: 'Duración típica del ciclo',
-    potencyLevel: 'Nivel de potencia',
-    researchBackground: 'Antecedentes de Investigación',
-    benefits: 'Beneficios',
-    sideEffects: 'Efectos Secundarios',
-    effectsOnWomen: 'Efectos en Mujeres',
-    howItWorks: 'Cómo Funciona',
-    safetyInformation: 'Información de Seguridad',
-    cycleInformation: 'Información del Ciclo',
-    whatToExpected: 'Qué Esperar',
-    performanceRatings: 'Calificaciones de Rendimiento',
-    subtotal: 'Subtotal',
-    originalTotal: 'Total Original',
-    discount: 'Descuento',
-    shipping: 'Envío',
+
+    // Cart
+    cart: 'Carrito',
+    removeFromCart: 'Eliminar',
     total: 'Total',
-    finalTotal: 'Total Final',
+    checkout: 'Finalizar Compra',
     emptyCart: 'Tu carrito está vacío',
-    removeFromCart: 'Quitar del carrito',
-    updateQuantity: 'Actualizar cantidad',
-    proceedToCheckout: 'Proceder al Pago',
-    continueShopping: 'Continuar Comprando',
-    shippingInformation: 'Información de Envío',
-    paymentMethod: 'Método de Pago',
-    placeOrder: 'Realizar Pedido',
-    orderConfirmation: 'Confirmación de Pedido',
-    fullName: 'Nombre Completo',
+
+    // Authentication
+    signIn: 'Iniciar Sesión',
+    signUp: 'Registrarse',
+    logout: 'Cerrar Sesión',
     email: 'Correo Electrónico',
+    password: 'Contraseña',
+    confirmPassword: 'Confirmar Contraseña',
+    forgotPassword: '¿Olvidaste tu contraseña?',
+    noAccount: '¿No tienes una cuenta?',
+    haveAccount: '¿Ya tienes una cuenta?',
+
+    // Payment and Orders
+    orderConfirmed: '¡Pedido Confirmado!',
+    orderNumber: 'Número de Pedido',
+    orderTotal: 'Total del Pedido',
+    thankYou: '¡Gracias por tu pedido!',
+    paymentSuccessful: 'Pago Exitoso',
+    orderDetails: 'Detalles del Pedido',
+    shippingAddress: 'Dirección de Envío',
+    paymentMethod: 'Método de Pago',
+    
+    // About Page
+    aboutTitle: 'Acerca de MySupps',
+    aboutContent: 'Desbloquea tu Potencial con Potenciadores de Rendimiento Respaldados por la Ciencia',
+    aboutSubtitle: '¿Estás buscando más, en el gimnasio, en el espejo o en la vida?',
+    aboutDescription: 'Ya sea que busques un rendimiento máximo, recuperación acelerada o un físico esculpido, los péptidos avanzados y el soporte anabólico guiado médicamente pueden ofrecer la ventaja que has estado buscando.',
+    whyChoose: '¿Por qué Elegir Péptidos o Esteroides (Bajo Supervisión Médica)?',
+    benefits: [
+      'Construir Músculo Magro Más Rápido',
+      'Mejorar la Fuerza y Aumentar la Resistencia',
+      'Acelerar la Recuperación Entre Entrenamientos',
+      'Apoyar el Envejecimiento Saludable con soluciones de optimización hormonal',
+      'Combatir la Fatiga y Elevar la Confianza'
+    ],
+    trustedBy: 'Confiado por atletas, profesionales y entusiastas del bienestar, los tratamientos de hoy están adaptados, son seguros y están construidos alrededor de tus objetivos.',
+    tagline: 'La ciencia se encuentra con el rendimiento. Los resultados se encuentran con la confianza.',
+
+    // Contact
+    contactTitle: 'Contáctanos',
+    contactDescription: 'Ponte en contacto con nuestro equipo para cualquier pregunta o soporte.',
+
+    // Delivery
+    deliveryTitle: 'Información de Entrega',
+    deliveryDescription: 'Conoce nuestras opciones de envío y tiempos de entrega.',
+
+    // Payment
+    paymentTitle: 'Métodos de Pago',
+    paymentDescription: 'Aceptamos varios métodos de pago seguros para tu conveniencia.',
+
+    // Lab Testing
+    labTestingTitle: 'Verificación de Productos',
+    labTestingDescription: 'Todos nuestros productos se someten a rigurosas pruebas de terceros para pureza y potencia.',
+
+    // Forms
+    fullName: 'Nombre Completo',
+    phoneNumber: 'Número de Teléfono',
     address: 'Dirección',
     city: 'Ciudad',
+    state: 'Estado',
+    zipCode: 'Código Postal',
     country: 'País',
-    postalCode: 'Código Postal',
-    phoneNumber: 'Número de Teléfono',
-    yourFullName: 'Tu nombre completo',
-    yourEmail: 'tu@email.com',
-    streetAddress: 'Dirección con número de casa',
-    yourPhoneNumber: 'Tu número de teléfono',
-    yourPostalCode: 'Tu código postal',
-    telegram: 'Telegram',
-    bitcoin: 'Bitcoin',
-    telegramOrdering: 'Pedidos por Telegram',
-    telegramOrderDesc: 'Ordena directamente a través de nuestro canal seguro de Telegram para la experiencia más rápida y conveniente.',
-    telegramEasyTracking: 'Seguimiento fácil de pedidos',
-    telegramAnonymous: 'Pedidos anónimos',
-    telegramDirectComm: 'Comunicación directa',
-    telegramExpertCoaching: 'Coaching experto incluido',
-    telegramFastSupport: 'Soporte rápido 24/7',
-    telegramJoinInfo: '¡Únete a nuestro canal de Telegram para realizar tu pedido al instante!',
-    telegramEasierBuying: 'Telegram hace que comprar sea más fácil con comunicación instantánea, seguimiento de pedidos y orientación experta todo en un lugar.',
-    bitcoinPayment: 'Pago con Bitcoin',
-    bitcoinPaymentDetails: 'Paga de forma segura y anónima con Bitcoin. Rápido, privado y confiable.',
-    bitcoinWalletInfo: 'Recibirás una dirección de billetera Bitcoin después de realizar tu pedido.',
-    bitcoinTutorial: 'Cómo Pagar con Bitcoin',
-    bitcoinEasy: 'Pago Fácil con Bitcoin',
-    bitcoinEasySteps: [
-      'Copia la dirección Bitcoin proporcionada',
-      'Abre tu aplicación de billetera Bitcoin',
-      'Envía la cantidad exacta a la dirección',
-      'Espera la confirmación (usualmente 10-30 minutos)'
-    ],
-    bitcoinAnonymous: 'Pago Anónimo con Bitcoin',
-    bitcoinAnonSteps: [
-      'Usa una billetera enfocada en privacidad como Wasabi o Samourai',
-      'Considera usar un mezclador de Bitcoin para privacidad extra',
-      'Envía desde una dirección nueva no vinculada a tu identidad',
-      'Espera múltiples confirmaciones para máxima seguridad'
-    ],
-    paymentMethods: 'Métodos de Pago',
-    copied: '¡Copiado!',
-    copiedToClipboard: '¡copiado al portapapeles!',
-    sendExact: 'Enviar Cantidad Exacta',
-    toWallet: 'A la Dirección de Billetera',
-    missingInformation: 'Información Faltante',
-    fillAllFields: 'Por favor completa todos los campos requeridos',
-    redirectedTelegram: 'Redirigido a Telegram',
-    completeTelegramOrder: 'Completa tu pedido en Telegram',
-    orderPlacedSuccess: 'Pedido Realizado Exitosamente',
-    orderPlaced: 'Tu pedido ha sido realizado',
-    orderFailed: 'Pedido Falló',
-    orderError: 'Hubo un error al realizar tu pedido',
-    completeYourOrder: 'Completa Tu Pedido',
-    wantCheaper: '¿Quieres precios más baratos? ¡Refiere amigos y obtén descuentos!',
-    recommended: 'Recomendado',
-    processing: 'Procesando...',
-    joinTelegram: 'Unirse a Telegram',
-    continueToPayment: 'Continuar al Pago',
-    completeOrder: 'Completar Pedido',
-    invalidTxid: 'TXID inválido. Debe ser una cadena hexadecimal de 64 caracteres.',
-    referralDiscount: '¿Quieres ahorrar? ¡Obtén un 10% de descuento al referir a un nuevo usuario!',
+    submit: 'Enviar',
+    save: 'Guardar',
+    cancel: 'Cancelar',
+
+    // Order History
+    orderHistory: 'Historial de Pedidos',
+    noOrders: 'No se encontraron pedidos',
+    orderDate: 'Fecha del Pedido',
+    status: 'Estado',
+    pending: 'Pendiente',
+    confirmed: 'Confirmado',
+    shipped: 'Enviado',
+    delivered: 'Entregado',
+
+    // Error messages
+    errorOccurred: 'Ocurrió un error',
+    tryAgain: 'Por favor intenta de nuevo',
+    invalidEmail: 'Por favor ingresa un correo electrónico válido',
+    passwordTooShort: 'La contraseña debe tener al menos 6 caracteres',
+    passwordsNotMatch: 'Las contraseñas no coinciden',
+
+    // Success messages
+    accountCreated: '¡Cuenta creada exitosamente!',
+    loginSuccessful: '¡Inicio de sesión exitoso!',
+    profileUpdated: '¡Perfil actualizado exitosamente!',
+    orderPlaced: '¡Pedido realizado exitosamente!',
+
+    // Common
+    loading: 'Cargando...',
+    search: 'Buscar',
+    filter: 'Filtrar',
+    sort: 'Ordenar',
+    price: 'Precio',
+    name: 'Nombre',
+    category: 'Categoría',
+    quantity: 'Cantidad',
+    description: 'Descripción',
+    features: 'Características',
+    specifications: 'Especificaciones',
+    reviews: 'Reseñas',
+    rating: 'Calificación',
+    
+    // Account
+    profile: 'Perfil',
+    settings: 'Configuración',
+    security: 'Seguridad',
+    billing: 'Facturación',
+    preferences: 'Preferencias',
+
+    // Footer
+    privacyPolicy: 'Política de Privacidad',
     termsOfService: 'Términos de Servicio',
-    agreeToTerms: 'Acepto los Términos de Servicio',
-    checkYourEmail: 'Revisa Tu Correo',
+    customerSupport: 'Soporte al Cliente',
+    
+    // Miscellaneous
+    viewAll: 'Ver Todo',
+    showMore: 'Mostrar Más',
+    showLess: 'Mostrar Menos',
+    readMore: 'Leer Más',
+    close: 'Cerrar',
+    open: 'Abrir',
+    edit: 'Editar',
+    delete: 'Eliminar',
+    update: 'Actualizar',
+    create: 'Crear',
+    welcome: 'Bienvenido',
+    goodbye: 'Adiós',
+    
+    // Newsletter
+    newsletter: 'Boletín',
+    subscribeNewsletter: 'Suscríbete a nuestro boletín',
+    emailPlaceholder: 'Ingresa tu correo',
+    subscribe: 'Suscribirse',
+    
+    // Social
+    followUs: 'Síguenos',
+    shareProduct: 'Compartir Producto',
+    
+    // Promotions
+    sale: 'Venta',
+    discount: 'Descuento',
+    coupon: 'Cupón',
+    promo: 'Promoción',
+    
+    // Support
+    faq: 'Preguntas Frecuentes',
+    helpCenter: 'Centro de Ayuda',
+    livechat: 'Chat en Vivo',
+    
+    // Shipping
+    freeShipping: 'Envío Gratis',
+    expressShipping: 'Envío Express',
+    standardShipping: 'Envío Estándar',
+    
+    // Returns
+    returnPolicy: 'Política de Devoluciones',
+    refund: 'Reembolso',
+    exchange: 'Intercambio',
+    
+    // Wishlist
+    wishlist: 'Lista de Deseos',
+    addToWishlist: 'Añadir a Lista de Deseos',
+    removeFromWishlist: 'Quitar de Lista de Deseos',
+    
+    // Compare
+    compare: 'Comparar',
+    addToCompare: 'Añadir a Comparar',
+    removeFromCompare: 'Quitar de Comparar',
+
+    // Email verification
+    verifyEmail: 'Verificar Correo',
+    emailVerification: 'Verificación de Correo',
+    checkEmail: 'Revisa tu correo',
+    emailSent: 'Correo de verificación enviado',
     resendEmail: 'Reenviar Correo'
   }
 };

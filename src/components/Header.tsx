@@ -35,9 +35,7 @@ const Header = ({
   const handleHomeClick = () => {
     onPageChange('home');
     // Reset category to 'all' when going home
-    if (window.location.pathname === '/') {
-      window.dispatchEvent(new CustomEvent('resetCategory'));
-    }
+    window.dispatchEvent(new CustomEvent('resetCategory'));
   };
 
   return (
@@ -58,9 +56,13 @@ const Header = ({
             
             <button
               onClick={handleHomeClick}
-              className="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors"
+              className="flex items-center hover:opacity-80 transition-opacity"
             >
-              MySupps
+              <img
+                src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png"
+                alt="MySupps"
+                className="h-12 w-auto"
+              />
             </button>
           </div>
 
@@ -177,14 +179,14 @@ const Header = ({
                   onClick={() => onAuthAction('login')}
                   className="hidden sm:block"
                 >
-                  {t.signIn}
+                  {t.login}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => onAuthAction('signup')}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  {t.signUp}
+                  {t.signup}
                 </Button>
               </div>
             )}

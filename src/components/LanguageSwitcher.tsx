@@ -1,39 +1,39 @@
 
 import React from 'react';
+import { Button } from '@/components/ui/button';
 
 interface LanguageSwitcherProps {
   currentLanguage: 'en' | 'es';
-  onLanguageChange: (language: 'en' | 'es') => void;
+  onLanguageChange: (lang: 'en' | 'es') => void;
 }
 
-const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  currentLanguage,
-  onLanguageChange,
-}) => {
+const LanguageSwitcher = ({ currentLanguage, onLanguageChange }: LanguageSwitcherProps) => {
   return (
-    <div className="flex items-center space-x-2">
-      <button
+    <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+      <Button
+        variant={currentLanguage === 'en' ? "default" : "ghost"}
+        size="sm"
         onClick={() => onLanguageChange('en')}
-        className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-          currentLanguage === 'en'
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        className={`px-2 py-1 text-sm font-medium transition-all ${
+          currentLanguage === 'en' 
+            ? 'bg-white text-gray-900 shadow-sm' 
+            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
         }`}
       >
-        <span className="text-lg">🇺🇸</span>
-        <span className="text-sm font-medium">EN</span>
-      </button>
-      <button
+        🇺🇸 EN
+      </Button>
+      <Button
+        variant={currentLanguage === 'es' ? "default" : "ghost"}
+        size="sm"
         onClick={() => onLanguageChange('es')}
-        className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-colors ${
-          currentLanguage === 'es'
-            ? 'bg-blue-600 text-white'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+        className={`px-2 py-1 text-sm font-medium transition-all ${
+          currentLanguage === 'es' 
+            ? 'bg-white text-gray-900 shadow-sm' 
+            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
         }`}
       >
-        <span className="text-lg">🇪🇸</span>
-        <span className="text-sm font-medium">ES</span>
-      </button>
+        🇪🇸 ES
+      </Button>
     </div>
   );
 };
