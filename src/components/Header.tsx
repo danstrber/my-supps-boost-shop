@@ -59,7 +59,7 @@ const Header = ({
               className="flex items-center hover:opacity-80 transition-opacity"
             >
               <img
-                src="/lovable-uploads/0310946f-b30b-43c8-bd2a-cd7e11e4aa7e.png"
+                src="/lovable-uploads/4daaab9b-96d4-48f2-a2ee-59559ff09365.png"
                 alt="MySupps"
                 className="h-12 w-auto"
               />

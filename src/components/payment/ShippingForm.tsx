@@ -1,12 +1,11 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { countries } from '@/lib/countries';
 
 const shippingSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -21,34 +20,6 @@ const shippingSchema = z.object({
 });
 
 export type ShippingFormData = z.infer<typeof shippingSchema>;
-
-interface Country {
-  code: string;
-  name: string;
-}
-
-const countries: Country[] = [
-  { code: 'US', name: 'United States' },
-  { code: 'CA', name: 'Canada' },
-  { code: 'GB', name: 'United Kingdom' },
-  { code: 'AU', name: 'Australia' },
-  { code: 'DE', name: 'Germany' },
-  { code: 'FR', name: 'France' },
-  { code: 'IT', name: 'Italy' },
-  { code: 'ES', name: 'Spain' },
-  { code: 'NL', name: 'Netherlands' },
-  { code: 'SE', name: 'Sweden' },
-  { code: 'NO', name: 'Norway' },
-  { code: 'DK', name: 'Denmark' },
-  { code: 'FI', name: 'Finland' },
-  { code: 'JP', name: 'Japan' },
-  { code: 'KR', name: 'South Korea' },
-  { code: 'SG', name: 'Singapore' },
-  { code: 'HK', name: 'Hong Kong' },
-  { code: 'NZ', name: 'New Zealand' },
-  { code: 'CH', name: 'Switzerland' },
-  { code: 'AT', name: 'Austria' },
-];
 
 interface ShippingFormProps {
   onSubmit: (data: ShippingFormData) => void;
@@ -73,7 +44,6 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
       state: 'State/Province',
       zipCode: 'ZIP/Postal Code',
       country: 'Country',
-      selectCountry: 'Select a country',
       continue: 'Continue to Payment',
     },
     es: {
@@ -87,7 +57,6 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
       state: 'Estado/Provincia',
       zipCode: 'Código Postal',
       country: 'País',
-      selectCountry: 'Selecciona un país',
       continue: 'Continuar al Pago',
     },
   };
@@ -274,20 +243,21 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="country">{labels.country}</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value} name="country">
-                  <FormControl>
-                    <SelectTrigger id="country">
-                      <SelectValue placeholder={labels.selectCountry} />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem key={country.code} value={country.code}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <Input
+                    {...field}
+                    id="country"
+                    name="country"
+                    list="countries"
+                    autoComplete="country-name"
+                    placeholder={labels.country}
+                  />
+                </FormControl>
+                <datalist id="countries">
+                  {countries.map((country) => (
+                    <option key={country} value={country} />
+                  ))}
+                </datalist>
                 <FormMessage />
               </FormItem>
             )}

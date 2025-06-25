@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -85,7 +84,7 @@ export const products: Product[] = [
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 35,
-    image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
+    image: '/lovable-uploads/b01486f8-e291-44df-920c-5ab7b48e4160.png',
     category: 'fat-burners',
     description: 'Powerful thermogenic fat burner for cutting cycles.',
     specifications: {
