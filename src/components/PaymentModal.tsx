@@ -35,7 +35,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [currentOrderId, setCurrentOrderId] = useState('');
+  const [orderDetails, setOrderDetails] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
   const [shippingData, setShippingData] = useState<any>(null); // Store shipping form data
 
@@ -86,8 +86,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         txId: orderData.txId || 'N/A',
         orderDate: orderData.orderDate,
         verificationStatus: orderData.verificationStatus || 'pending',
-        _subject: `🚨 NEW ORDER #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED ✅' : 'PENDING ⏳'}`,
-        _replyto: 'christhomaso083@proton.me'
+        _subject: `Order #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED' : 'PENDING'}`,
+        _replyto: orderData.customerEmail
       };
 
       // Send to both Formspree endpoints
@@ -316,8 +316,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         // Clear cart 
         onOrderSuccess();
         
-        // Set order ID and show success modal after a brief delay
-        setCurrentOrderId(orderId);
+        // Set order details and show success modal
+        setOrderDetails({
+          orderId,
+          total: finalTotal,
+          customerEmail: orderData.customerEmail,
+          paymentMethod: 'Bitcoin (BTC)'
+        });
+        
         setTimeout(() => {
           setShowSuccessModal(true);
         }, 500);
@@ -578,12 +584,17 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
       )}
       
-      <OrderSuccessModal
-        isOpen={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        orderId={currentOrderId}
-        language="en"
-      />
+      {orderDetails && (
+        <OrderSuccessModal
+          isOpen={showSuccessModal}
+          onClose={() => {
+            setShowSuccessModal(false);
+            setOrderDetails(null);
+          }}
+          orderDetails={orderDetails}
+          language="en"
+        />
+      )}
     </>
   );
 };

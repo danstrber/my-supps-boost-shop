@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Eye, User } from 'lucide-react';
+import { ShoppingCart, Eye, User, Star } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
@@ -25,6 +25,13 @@ const ProductGrid = ({
   onAuthAction
 }: ProductGridProps) => {
   const t = translations[language];
+  
+  // Sort products to show featured ones first
+  const sortedProducts = [...products].sort((a, b) => {
+    if (a.featured && !b.featured) return -1;
+    if (!a.featured && b.featured) return 1;
+    return 0;
+  });
   
   return (
     <div className="space-y-6">
@@ -59,12 +66,31 @@ const ProductGrid = ({
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {products.map((product) => {
+        {sortedProducts.map((product) => {
           if (!product) return null;
           
           return (
-            <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-xl transition-all duration-300 group transform hover:-translate-y-2">
-              <div className="relative mb-4">
+            <div key={product.id} className="bg-white border border-gray-200 hover:border-green-300 rounded-xl p-4 md:p-6 hover:shadow-xl transition-all duration-300 group transform hover:-translate-y-2 relative">
+              {/* Featured Tag */}
+              {product.featured && (
+                <div className="absolute top-2 left-2 z-10">
+                  <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs px-3 py-1 rounded-full font-bold flex items-center shadow-lg">
+                    <Star className="w-3 h-3 mr-1" />
+                    {t.featured}
+                  </span>
+                </div>
+              )}
+
+              {/* Lab Tested Tag */}
+              {product.labTested && (
+                <div className="absolute top-2 right-2 z-10">
+                  <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs px-2 py-1 rounded-full font-medium shadow-lg">
+                    🧪 {t.labTested}
+                  </span>
+                </div>
+              )}
+
+              <div className="relative mb-4 mt-8">
                 {product.image ? (
                   <img
                     src={product.image}
@@ -86,7 +112,7 @@ const ProductGrid = ({
                   </div>
                 )}
                 {/* Category badge */}
-                <div className="absolute top-2 right-2">
+                <div className="absolute bottom-2 right-2">
                   <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium border border-green-200">
                     {product.category.replace('-', ' ')}
                   </span>
@@ -103,7 +129,7 @@ const ProductGrid = ({
                 </p>
 
                 {/* Product Specifications */}
-                <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-600 space-y-1 border border-gray-100">
+                <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg p-3 text-xs text-gray-600 space-y-1 border border-gray-100">
                   <div className="flex justify-between">
                     <span>{language === 'en' ? 'Dose per capsule:' : 'Dosis por cápsula:'}</span>
                     <span className="font-medium text-green-700">{product.specifications.dosePerCapsule}</span>
@@ -131,7 +157,7 @@ const ProductGrid = ({
                     <Button
                       variant="outline"
                       onClick={() => onProductClick(product)}
-                      className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg transition-all duration-200"
+                      className="w-full text-blue-600 border-blue-500 hover:bg-blue-50 hover:text-blue-700 font-medium py-2 rounded-lg transition-all duration-200 hover:shadow-md"
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       {t.viewDetails}
@@ -140,7 +166,7 @@ const ProductGrid = ({
                     <Button
                       onClick={() => onAddToCart(product)}
                       disabled={product.inStock === false}
-                      className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md"
+                      className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:bg-gray-400 text-white font-semibold py-2 rounded-lg shadow-sm transition-all duration-200 hover:shadow-lg transform hover:scale-105"
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" />
                       {t.addToCart}

@@ -9,15 +9,15 @@ interface LanguageSwitcherProps {
 
 const LanguageSwitcher = ({ currentLanguage, onLanguageChange }: LanguageSwitcherProps) => {
   return (
-    <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
+    <div className="flex items-center space-x-1 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl p-1 shadow-sm border border-gray-200">
       <Button
         variant={currentLanguage === 'en' ? "default" : "ghost"}
         size="sm"
         onClick={() => onLanguageChange('en')}
-        className={`px-2 py-1 text-sm font-medium transition-all ${
+        className={`px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
           currentLanguage === 'en' 
-            ? 'bg-white text-gray-900 shadow-sm' 
-            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+            ? 'bg-white text-gray-900 shadow-md border border-gray-200' 
+            : 'text-gray-600 hover:text-gray-900 hover:bg-white/70'
         }`}
       >
         🇺🇸 EN
@@ -26,10 +26,10 @@ const LanguageSwitcher = ({ currentLanguage, onLanguageChange }: LanguageSwitche
         variant={currentLanguage === 'es' ? "default" : "ghost"}
         size="sm"
         onClick={() => onLanguageChange('es')}
-        className={`px-2 py-1 text-sm font-medium transition-all ${
+        className={`px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
           currentLanguage === 'es' 
-            ? 'bg-white text-gray-900 shadow-sm' 
-            : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+            ? 'bg-white text-gray-900 shadow-md border border-gray-200' 
+            : 'text-gray-600 hover:text-gray-900 hover:bg-white/70'
         }`}
       >
         🇪🇸 ES

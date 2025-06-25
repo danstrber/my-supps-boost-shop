@@ -209,7 +209,21 @@ export const translations = {
     emailVerification: 'Email Verification',
     checkEmail: 'Check your email',
     emailSent: 'Verification email sent',
-    resendEmail: 'Resend Email'
+    resendEmail: 'Resend Email',
+
+    // Bitcoin Tutorial
+    bitcoinTutorial: 'How to Pay with Bitcoin',
+    bitcoinEasy: 'Easy Bitcoin Purchase',
+    bitcoinEasySteps: [
+      '1. Buy Bitcoin on any exchange',
+      '2. Copy our Bitcoin address',
+      '3. Send exact amount',
+      '4. Paste transaction ID'
+    ],
+
+    // Product Tags
+    featured: 'Featured',
+    labTested: 'Lab Tested'
   },
   es: {
     // Header and Navigation
@@ -420,6 +434,20 @@ export const translations = {
     emailVerification: 'Verificación de Correo',
     checkEmail: 'Revisa tu correo',
     emailSent: 'Correo de verificación enviado',
-    resendEmail: 'Reenviar Correo'
+    resendEmail: 'Reenviar Correo',
+
+    // Bitcoin Tutorial
+    bitcoinTutorial: 'Cómo Pagar con Bitcoin',
+    bitcoinEasy: 'Compra Fácil de Bitcoin',
+    bitcoinEasySteps: [
+      '1. Compra Bitcoin en cualquier exchange',
+      '2. Copia nuestra dirección Bitcoin',
+      '3. Envía la cantidad exacta',
+      '4. Pega el ID de transacción'
+    ],
+
+    // Product Tags
+    featured: 'Destacado',
+    labTested: 'Probado en Laboratorio'
   }
 };
