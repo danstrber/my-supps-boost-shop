@@ -21,7 +21,7 @@ export const products: Product[] = [
   {
     id: 'superdrol',
     name: 'Superdrol (Methasterone)',
-    price: 32,
+    price: 25,
     image: '/lovable-uploads/cf6f4971-3016-4a39-96f5-59bf98d3246f.png',
     category: 'oral-steroids',
     description: 'Powerful oral anabolic compound for serious muscle building and strength gains.',
@@ -30,7 +30,7 @@ export const products: Product[] = [
       capsulesPerBottle: '20 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Rapid muscle mass increases',
       'Significant strength gains',
       'Enhanced muscle hardness',
@@ -42,7 +42,7 @@ export const products: Product[] = [
   {
     id: 'rad-140',
     name: 'RAD-140 (Testolone)',
-    price: 45,
+    price: 55,
     image: '/lovable-uploads/cd558275-4c3b-4625-b9b5-52790802195c.png',
     category: 'sarms',
     description: 'Highly selective androgen receptor modulator for lean muscle growth.',
@@ -51,7 +51,7 @@ export const products: Product[] = [
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Intermediate'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Lean muscle development',
       'Increased strength',
       'Enhanced endurance',
@@ -65,14 +65,14 @@ export const products: Product[] = [
     name: 'MK-677 (Ibutamoren)',
     price: 45,
     image: '/lovable-uploads/2ce4fc44-88d8-4db2-8bff-c02b79b18bd8.png',
-    category: 'sarms',
+    category: 'growth',
     description: 'Growth hormone secretagogue promoting natural GH production.',
     specifications: {
       dosePerCapsule: '10mg',
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Beginner'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Improved sleep quality',
       'Enhanced recovery',
       'Increased appetite',
@@ -84,7 +84,7 @@ export const products: Product[] = [
   {
     id: 'clenbuterol',
     name: 'Clenbuterol',
-    price: 30,
+    price: 35,
     image: '/lovable-uploads/321d7f80-c176-4697-9b07-e889b642e288.png',
     category: 'fat-burners',
     description: 'Powerful thermogenic fat burner for cutting cycles.',
@@ -93,7 +93,7 @@ export const products: Product[] = [
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Rapid fat loss',
       'Increased metabolism',
       'Enhanced energy',
@@ -105,7 +105,7 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
-    price: 40,
+    price: 25,
     image: '/lovable-uploads/a49cd35f-62dc-449e-b143-2ebdc5fa0f61.png',
     category: 'pct',
     description: 'Selective estrogen receptor modulator for PCT and testosterone support.',
@@ -114,7 +114,7 @@ export const products: Product[] = [
       capsulesPerBottle: '25 capsules',
       potencyLevel: 'Intermediate'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Natural testosterone boost',
       'Improved recovery',
       'Hormonal balance',
@@ -125,7 +125,7 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 35,
+    price: 25,
     image: '/lovable-uploads/ee8bd939-e3e1-4fd1-903f-ab76073f6624.png',
     category: 'pct',
     description: 'Aromatase inhibitor for estrogen control and hormonal balance.',
@@ -134,7 +134,7 @@ export const products: Product[] = [
       capsulesPerBottle: '10 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Estrogen reduction',
       'Reduced water retention',
       'Enhanced muscle definition',
@@ -145,7 +145,7 @@ export const products: Product[] = [
   {
     id: 'clomid',
     name: 'Clomid (Clomiphene)',
-    price: 28,
+    price: 30,
     image: '',
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery.',
@@ -154,7 +154,7 @@ export const products: Product[] = [
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Beginner'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Testosterone recovery',
       'PCT support',
       'Hormonal restoration',
@@ -165,7 +165,7 @@ export const products: Product[] = [
   {
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
-    price: 35,
+    price: 30,
     image: '',
     category: 'support',
     description: 'Powerful acne treatment for severe cases.',
@@ -174,7 +174,7 @@ export const products: Product[] = [
       capsulesPerBottle: '30 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Clear skin',
       'Reduced oil production',
       'Acne elimination',

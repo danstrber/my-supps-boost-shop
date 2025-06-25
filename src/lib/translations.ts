@@ -1,4 +1,3 @@
-
 export const translations = {
   en: {
     // Header and Navigation
@@ -223,7 +222,8 @@ export const translations = {
 
     // Product Tags
     featured: 'Featured',
-    labTested: 'Lab Tested'
+    labTested: 'Lab Tested',
+    checkYourEmail: 'Check Your Email'
   },
   es: {
     // Header and Navigation
@@ -448,6 +448,7 @@ export const translations = {
 
     // Product Tags
     featured: 'Destacado',
-    labTested: 'Probado en Laboratorio'
+    labTested: 'Probado en Laboratorio',
+    checkYourEmail: 'Revisa tu Correo'
   }
 };
