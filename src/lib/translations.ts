@@ -11,14 +11,23 @@ export const translations = {
     login: 'Sign In',
     signup: 'Sign Up',
 
+    // Hero Section
+    heroTitle: 'Premium Performance Enhancement',
+    heroSubtitle: 'Unlock your potential with science-backed supplements',
+    shopNow: 'Shop Now',
+    learnMore: 'Learn More',
+    searchProducts: 'Search products...',
+
     // Categories
     categories: 'Categories',
     allProducts: 'All Products',
+    allCategories: 'All Categories',
     sarms: 'SARMs',
     oralSteroids: 'Oral Steroids',
     pct: 'PCT & Support',
     fatBurners: 'Fat Burners',
     growth: 'Growth Hormones',
+    growthHormones: 'Growth Hormones',
     support: 'Support & Health',
 
     // Product actions
@@ -237,14 +246,23 @@ export const translations = {
     login: 'Iniciar Sesión',
     signup: 'Registrarse',
 
+    // Hero Section
+    heroTitle: 'Mejora de Rendimiento Premium',
+    heroSubtitle: 'Desbloquea tu potencial con suplementos respaldados por la ciencia',
+    shopNow: 'Comprar Ahora',
+    learnMore: 'Aprender Más',
+    searchProducts: 'Buscar productos...',
+
     // Categories
     categories: 'Categorías',
     allProducts: 'Todos los Productos',
+    allCategories: 'Todas las Categorías',
     sarms: 'SARMs',
     oralSteroids: 'Esteroides Orales',
     pct: 'PCT y Soporte',
     fatBurners: 'Quemadores de Grasa',
     growth: 'Hormonas de Crecimiento',
+    growthHormones: 'Hormonas de Crecimiento',
     support: 'Soporte y Salud',
 
     // Product actions
