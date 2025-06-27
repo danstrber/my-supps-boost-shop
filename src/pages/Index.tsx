@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -223,14 +224,16 @@ const Index = ({ language, onAddToCart, userDiscount, isAuthenticated = false, o
       </div>
 
       {/* Modals */}
-      <ProductDetailModal
-        product={selectedProduct as Product}
-        isOpen={!!selectedProduct}
-        onClose={handleCloseModal}
-        onAddToCart={onAddToCart}
-        language={language}
-        userDiscount={userDiscount}
-      />
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          isOpen={!!selectedProduct}
+          onClose={handleCloseModal}
+          onAddToCart={onAddToCart}
+          language={language}
+          userDiscount={userDiscount}
+        />
+      )}
       
       <CoachingModal 
         isOpen={coachingModalOpen} 
