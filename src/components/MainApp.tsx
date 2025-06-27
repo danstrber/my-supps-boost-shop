@@ -54,7 +54,7 @@ const MainApp = () => {
     setLanguage(lang);
   };
 
-  const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
+  const handleAuthModalAction = (action: 'login' | 'signup' | 'logout') => {
     if (action === 'logout') {
       handleAuthAction(action);
     } else {
@@ -92,7 +92,7 @@ const MainApp = () => {
             onAddToCart={handleAddToCart}
             userDiscount={userDiscount}
             isAuthenticated={isAuthenticated}
-            onAuthAction={handleAuthAction}
+            onAuthAction={handleAuthModalAction}
           />
         );
       case 'account':
@@ -102,13 +102,11 @@ const MainApp = () => {
             onLanguageChange={handleLanguageChange}
             cartItemCount={cartItemCount}
             isAuthenticated={isAuthenticated}
-            onAuthAction={handleAuthAction}
+            onAuthAction={handleAuthModalAction}
             onCartOpen={handleCartOpen}
             onMenuToggle={handleMenuToggle}
-            currentPage={currentPage}
             onPageChange={handlePageChange}
             sidebarOpen={sidebarOpen}
-            onSidebarClose={() => setSidebarOpen(false)}
           />
         );
       default:
@@ -118,10 +116,10 @@ const MainApp = () => {
             onLanguageChange={handleLanguageChange}
             cartItemCount={cartItemCount}
             isAuthenticated={isAuthenticated}
-            onAuthAction={handleAuthAction}
+            onAuthAction={handleAuthModalAction}
             onCartOpen={handleCartOpen}
             onMenuToggle={handleMenuToggle}
-            currentPage={currentPage}
+            currentPage={currentPage as 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account'}
             onPageChange={handlePageChange}
             sidebarOpen={sidebarOpen}
             onSidebarClose={() => setSidebarOpen(false)}
@@ -137,7 +135,7 @@ const MainApp = () => {
         onLanguageChange={handleLanguageChange}
         cartItemCount={cartItemCount}
         isAuthenticated={isAuthenticated}
-        onAuthAction={handleAuthAction}
+        onAuthAction={handleAuthModalAction}
         onCartOpen={handleCartOpen}
         onMenuToggle={handleMenuToggle}
         currentPage={currentPage}
@@ -156,8 +154,6 @@ const MainApp = () => {
         }}
         userProfile={userProfile}
         referralCount={0}
-        isAuthenticated={isAuthenticated}
-        onAuthAction={handleAuthAction}
       />
 
       {renderCurrentPage()}
