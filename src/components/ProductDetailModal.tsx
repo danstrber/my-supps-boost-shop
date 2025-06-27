@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, X, Star, Sparkles, Shield } from 'lucide-react';
+import { ShoppingCart, X, Star, Sparkles, Shield, AlertTriangle, Clock, Users } from 'lucide-react';
 import { Product } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
@@ -42,7 +42,7 @@ const ProductDetailModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-green-50">
+        <DialogContent className="sm:max-w-6xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-blue-50 to-green-50">
           <DialogHeader className="sr-only">
             <DialogTitle>{product.name} - Product Details</DialogTitle>
             <DialogDescription>
@@ -119,6 +119,39 @@ const ProductDetailModal = ({
                 </div>
               </div>
 
+              {/* Cycle Information */}
+              <div className="bg-gradient-to-br from-purple-50 via-white to-purple-50 border-2 border-purple-200 rounded-xl p-6 shadow-lg">
+                <h3 className="font-bold text-purple-800 mb-4 text-xl flex items-center">
+                  <Clock className="w-5 h-5 mr-2" />
+                  {language === 'en' ? 'Cycle Information' : 'Información del Ciclo'}
+                </h3>
+                <div className="space-y-3">
+                  <div className="bg-white rounded-lg p-3 border border-purple-100">
+                    <span className="font-medium text-purple-700 block mb-1">
+                      {language === 'en' ? 'Cycle Length:' : 'Duración del Ciclo:'}
+                    </span>
+                    <p className="text-purple-600 font-semibold">{product.cycleInfo.length}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-purple-100">
+                    <span className="font-medium text-purple-700 block mb-1">
+                      {language === 'en' ? 'Recommended Dosage:' : 'Dosis Recomendada:'}
+                    </span>
+                    <p className="text-purple-600 font-semibold">{product.cycleInfo.dosage}</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-purple-100">
+                    <span className="font-medium text-purple-700 block mb-1">
+                      {language === 'en' ? 'PCT Required:' : 'PCT Requerido:'}
+                    </span>
+                    <p className={`font-semibold ${product.cycleInfo.pctRequired ? 'text-red-600' : 'text-green-600'}`}>
+                      {product.cycleInfo.pctRequired ? 
+                        (language === 'en' ? 'Yes' : 'Sí') : 
+                        (language === 'en' ? 'No' : 'No')
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Price and Add to Cart */}
               <div className="bg-gradient-to-br from-green-50 via-white to-green-50 border-2 border-green-300 rounded-xl p-6 text-center shadow-lg">
                 <span className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent block mb-4">
@@ -138,8 +171,9 @@ const ProductDetailModal = ({
               </div>
             </div>
 
-            {/* Right Side - What to Expect */}
+            {/* Right Side - Effects and Details */}
             <div className="space-y-6">
+              {/* What to Expect */}
               <div className="bg-gradient-to-br from-green-50 via-white to-green-50 border-2 border-green-200 rounded-xl p-6 shadow-lg">
                 <h4 className="font-bold text-green-800 mb-4 text-xl flex items-center">
                   <Star className="w-5 h-5 mr-2" />
@@ -155,6 +189,40 @@ const ProductDetailModal = ({
                 </ul>
               </div>
 
+              {/* Side Effects */}
+              <div className="bg-gradient-to-br from-red-50 via-white to-red-50 border-2 border-red-200 rounded-xl p-6 shadow-lg">
+                <h4 className="font-bold text-red-800 mb-4 text-xl flex items-center">
+                  <AlertTriangle className="w-5 h-5 mr-2" />
+                  {language === 'en' ? 'Potential Side Effects' : 'Posibles Efectos Secundarios'}
+                </h4>
+                <ul className="space-y-2">
+                  {product.sideEffects.map((effect, index) => (
+                    <li key={index} className="bg-white rounded-lg p-3 border border-red-100 text-red-700 font-medium flex items-start shadow-sm text-sm">
+                      <span className="text-red-600 mr-3 text-lg">⚠</span>
+                      {effect}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Women Effects */}
+              {product.womenEffects && (
+                <div className="bg-gradient-to-br from-pink-50 via-white to-pink-50 border-2 border-pink-200 rounded-xl p-6 shadow-lg">
+                  <h4 className="font-bold text-pink-800 mb-4 text-xl flex items-center">
+                    <Users className="w-5 h-5 mr-2" />
+                    {language === 'en' ? 'Effects on Women' : 'Efectos en Mujeres'}
+                  </h4>
+                  <ul className="space-y-2">
+                    {product.womenEffects.map((effect, index) => (
+                      <li key={index} className="bg-white rounded-lg p-3 border border-pink-100 text-pink-700 font-medium flex items-start shadow-sm text-sm">
+                        <span className="text-pink-600 mr-3 text-lg">♀</span>
+                        {effect}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {/* Safety Notice */}
               <div className="bg-gradient-to-br from-orange-50 via-white to-orange-50 border-2 border-orange-200 rounded-xl p-6 shadow-lg">
                 <h4 className="font-bold text-orange-800 mb-3 text-lg flex items-center">
@@ -163,8 +231,8 @@ const ProductDetailModal = ({
                 </h4>
                 <p className="text-orange-700 text-sm leading-relaxed">
                   {language === 'en' 
-                    ? 'This product is intended for research purposes only. Please consult with a healthcare professional before use. Not for human consumption.'
-                    : 'Este producto está destinado únicamente para fines de investigación. Consulte con un profesional de la salud antes de usar. No para consumo humano.'
+                    ? 'This product is intended for research purposes only. Consult with a healthcare professional before use. Not for human consumption. Use at your own risk and responsibility.'
+                    : 'Este producto está destinado únicamente para fines de investigación. Consulte con un profesional de la salud antes de usar. No para consumo humano. Use bajo su propio riesgo y responsabilidad.'
                   }
                 </p>
               </div>

@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -11,6 +12,13 @@ export interface Product {
     potencyLevel: string;
   };
   whatToExpect: string[];
+  cycleInfo: {
+    length: string;
+    dosage: string;
+    pctRequired: boolean;
+  };
+  sideEffects: string[];
+  womenEffects?: string[];
   inStock?: boolean;
   featured?: boolean;
   labTested?: boolean;
@@ -23,17 +31,37 @@ export const products: Product[] = [
     price: 25,
     image: '/lovable-uploads/cf6f4971-3016-4a39-96f5-59bf98d3246f.png',
     category: 'oral-steroids',
-    description: 'Powerful oral anabolic compound for serious muscle building and strength gains.',
+    description: 'Powerful oral anabolic compound for serious muscle building and strength gains. Known for its exceptional ability to build lean muscle mass rapidly.',
     specifications: {
       dosePerCapsule: '10mg',
       capsulesPerBottle: '20 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpect: [
-      'Rapid muscle mass increases',
-      'Significant strength gains',
-      'Enhanced muscle hardness',
-      'Improved recovery'
+    whatToExpected: [
+      'Rapid muscle mass increases (5-10lbs in 2-3 weeks)',
+      'Significant strength gains (20-30% increase)',
+      'Enhanced muscle hardness and vascularity',
+      'Improved recovery between workouts'
+    ],
+    cycleInfo: {
+      length: '3-4 weeks maximum',
+      dosage: '10-20mg daily',
+      pctRequired: true
+    },
+    sideEffects: [
+      'Liver toxicity (hepatotoxic)',
+      'Blood pressure elevation',
+      'Cholesterol imbalance',
+      'Lethargy and fatigue',
+      'Appetite suppression',
+      'Potential hair loss (if predisposed)'
+    ],
+    womenEffects: [
+      'NOT recommended for women',
+      'High risk of virilization',
+      'Voice deepening (irreversible)',
+      'Excessive body hair growth',
+      'Clitoral enlargement'
     ],
     inStock: true,
     labTested: true
@@ -44,17 +72,35 @@ export const products: Product[] = [
     price: 55,
     image: '/lovable-uploads/cd558275-4c3b-4625-b9b5-52790802195c.png',
     category: 'sarms',
-    description: 'Highly selective androgen receptor modulator for lean muscle growth.',
+    description: 'Highly selective androgen receptor modulator for lean muscle growth with fewer side effects than traditional steroids.',
     specifications: {
       dosePerCapsule: '10mg',
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Intermediate'
     },
     whatToExpect: [
-      'Lean muscle development',
-      'Increased strength',
-      'Enhanced endurance',
-      'Fat loss support'
+      'Lean muscle development (3-5lbs per month)',
+      'Increased strength and power output',
+      'Enhanced endurance and stamina',
+      'Fat loss support while maintaining muscle'
+    ],
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '10-20mg daily',
+      pctRequired: true
+    },
+    sideEffects: [
+      'Mild testosterone suppression',
+      'Potential mood changes',
+      'Slight increase in aggression',
+      'Possible hair thinning',
+      'Elevated liver enzymes (rare)'
+    ],
+    womenEffects: [
+      'Lower doses recommended (5-10mg)',
+      'Risk of virilization at higher doses',
+      'Menstrual cycle disruption possible',
+      'Voice changes at excessive doses'
     ],
     inStock: true,
     featured: true
@@ -65,17 +111,35 @@ export const products: Product[] = [
     price: 45,
     image: '/lovable-uploads/2ce4fc44-88d8-4db2-8bff-c02b79b18bd8.png',
     category: 'growth',
-    description: 'Growth hormone secretagogue promoting natural GH production.',
+    description: 'Growth hormone secretagogue promoting natural GH production for enhanced recovery and anti-aging benefits.',
     specifications: {
       dosePerCapsule: '10mg',
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Beginner'
     },
     whatToExpect: [
-      'Improved sleep quality',
-      'Enhanced recovery',
-      'Increased appetite',
-      'Better skin and hair'
+      'Improved sleep quality and deeper REM',
+      'Enhanced recovery and reduced soreness',
+      'Increased appetite and muscle fullness',
+      'Better skin elasticity and hair quality'
+    ],
+    cycleInfo: {
+      length: '3-6 months continuous',
+      dosage: '10-25mg daily (before bed)',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Increased appetite (can lead to weight gain)',
+      'Water retention and bloating',
+      'Lethargy in some users',
+      'Possible insulin resistance with long-term use',
+      'Elevated prolactin levels (rare)'
+    ],
+    womenEffects: [
+      'Generally well tolerated',
+      'Improved skin and hair quality',
+      'Enhanced sleep and recovery',
+      'Monitor for excessive water retention'
     ],
     inStock: true,
     featured: true
@@ -86,17 +150,36 @@ export const products: Product[] = [
     price: 35,
     image: '/lovable-uploads/b01486f8-e291-44df-920c-5ab7b48e4160.png',
     category: 'fat-burners',
-    description: 'Powerful thermogenic fat burner for cutting cycles.',
+    description: 'Powerful thermogenic fat burner for cutting cycles with muscle-preserving properties.',
     specifications: {
       dosePerCapsule: '40mcg',
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Advanced'
     },
     whatToExpect: [
-      'Rapid fat loss',
-      'Increased metabolism',
-      'Enhanced energy',
-      'Preserved muscle mass'
+      'Rapid fat loss (1-2lbs per week)',
+      'Increased metabolism (up to 10%)',
+      'Enhanced energy and focus',
+      'Preserved muscle mass during cutting'
+    ],
+    cycleInfo: {
+      length: '2 weeks on, 2 weeks off',
+      dosage: '20-120mcg daily (pyramid up/down)',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Hand tremors and shakiness',
+      'Increased heart rate and palpitations',
+      'Insomnia and sleep disturbances',
+      'Excessive sweating',
+      'Muscle cramps',
+      'Anxiety and nervousness'
+    ],
+    womenEffects: [
+      'Lower doses recommended (10-80mcg)',
+      'Effective for fat loss',
+      'Same side effects as men',
+      'No virilization risk'
     ],
     inStock: true,
     labTested: true
@@ -107,17 +190,34 @@ export const products: Product[] = [
     price: 25,
     image: '/lovable-uploads/a49cd35f-62dc-449e-b143-2ebdc5fa0f61.png',
     category: 'pct',
-    description: 'Selective estrogen receptor modulator for PCT and testosterone support.',
+    description: 'Selective estrogen receptor modulator for PCT and natural testosterone support without estrogenic side effects.',
     specifications: {
       dosePerCapsule: '12.5mg',
       capsulesPerBottle: '25 capsules',
       potencyLevel: 'Intermediate'
     },
     whatToExpect: [
-      'Natural testosterone boost',
-      'Improved recovery',
-      'Hormonal balance',
-      'Enhanced libido'
+      'Natural testosterone boost (200-400ng/dL increase)',
+      'Improved recovery post-cycle',
+      'Hormonal balance restoration',
+      'Enhanced libido and mood'
+    ],
+    cycleInfo: {
+      length: '4-6 weeks PCT',
+      dosage: '12.5-25mg daily',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Mild mood swings',
+      'Occasional hot flashes',
+      'Slight vision disturbances (rare)',
+      'Temporary decrease in IGF-1'
+    ],
+    womenEffects: [
+      'NOT recommended for women',
+      'Can cause ovarian hyperstimulation',
+      'Risk of multiple pregnancies',
+      'Severe hormonal disruption'
     ],
     inStock: true
   },
@@ -127,17 +227,35 @@ export const products: Product[] = [
     price: 25,
     image: '/lovable-uploads/ee8bd939-e3e1-4fd1-903f-ab76073f6624.png',
     category: 'pct',
-    description: 'Aromatase inhibitor for estrogen control and hormonal balance.',
+    description: 'Aromatase inhibitor for estrogen control and hormonal balance during and after cycles.',
     specifications: {
       dosePerCapsule: '25mg',
       capsulesPerBottle: '10 capsules',
       potencyLevel: 'Advanced'
     },
     whatToExpect: [
-      'Estrogen reduction',
-      'Reduced water retention',
+      'Estrogen reduction (50-85% decrease)',
+      'Reduced water retention and bloating',
       'Enhanced muscle definition',
-      'Hormonal optimization'
+      'Prevention of gynecomastia'
+    ],
+    cycleInfo: {
+      length: 'As needed during cycle',
+      dosage: '12.5-25mg every other day',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Joint pain and stiffness',
+      'Decreased bone density (long-term)',
+      'Potential mood changes',
+      'Reduced HDL cholesterol',
+      'Fatigue and lethargy'
+    ],
+    womenEffects: [
+      'Used in breast cancer treatment',
+      'Can cause severe estrogen depletion',
+      'Bone health monitoring required',
+      'Not for bodybuilding use in women'
     ],
     inStock: true
   },
@@ -147,37 +265,35 @@ export const products: Product[] = [
     price: 30,
     image: '',
     category: 'pct',
-    description: 'Post cycle therapy compound for testosterone recovery.',
+    description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
     specifications: {
       dosePerCapsule: '25mg',
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Beginner'
     },
     whatToExpect: [
-      'Testosterone recovery',
-      'PCT support',
-      'Hormonal restoration',
-      'Maintained gains'
+      'Testosterone recovery (150-300ng/dL increase)',
+      'PCT support and hormonal restoration',
+      'Improved sperm production',
+      'Maintained muscle gains post-cycle'
     ],
-    inStock: true
-  },
-  {
-    id: 'accutane',
-    name: 'Accutane (Isotretinoin)',
-    price: 30,
-    image: '',
-    category: 'support',
-    description: 'Powerful acne treatment for severe cases.',
-    specifications: {
-      dosePerCapsule: '20mg',
-      capsulesPerBottle: '30 capsules',
-      potencyLevel: 'Advanced'
+    cycleInfo: {
+      length: '4-6 weeks PCT',
+      dosage: '25-50mg daily',
+      pctRequired: false
     },
-    whatToExpect: [
-      'Clear skin',
-      'Reduced oil production',
-      'Acne elimination',
-      'Long-term results'
+    sideEffects: [
+      'Visual disturbances (blurred vision)',
+      'Mood swings and emotional changes',
+      'Hot flashes',
+      'Nausea and stomach upset',
+      'Headaches'
+    ],
+    womenEffects: [
+      'Used for fertility treatment',
+      'Can cause ovarian hyperstimulation',
+      'Multiple pregnancy risk',
+      'Mood and emotional changes'
     ],
     inStock: true
   }

@@ -232,7 +232,22 @@ export const translations = {
     // Product Tags
     featured: 'Featured',
     labTested: 'Lab Tested',
-    checkYourEmail: 'Check Your Email'
+    checkYourEmail: 'Check Your Email',
+
+    // Add missing translations for new features
+    cycleInformation: 'Cycle Information',
+    cycleLength: 'Cycle Length',
+    recommendedDosage: 'Recommended Dosage',
+    pctRequired: 'PCT Required',
+    potentialSideEffects: 'Potential Side Effects',
+    effectsOnWomen: 'Effects on Women',
+    yes: 'Yes',
+    no: 'No',
+    
+    // Form improvements for spam reduction
+    contactFormTitle: 'Contact Us - Professional Inquiry',
+    messageSubject: 'Professional Inquiry from Website',
+    formInstructions: 'Please fill out this form with your professional inquiry. We respond to all legitimate business requests within 24 hours.',
   },
   es: {
     // Header and Navigation
@@ -467,6 +482,21 @@ export const translations = {
     // Product Tags
     featured: 'Destacado',
     labTested: 'Probado en Laboratorio',
-    checkYourEmail: 'Revisa tu Correo'
+    checkYourEmail: 'Revisa tu Correo',
+
+    // Add missing translations for new features
+    cycleInformation: 'Información del Ciclo',
+    cycleLength: 'Duración del Ciclo',
+    recommendedDosage: 'Dosis Recomendada',
+    pctRequired: 'PCT Requerido',
+    potentialSideEffects: 'Posibles Efectos Secundarios',
+    effectsOnWomen: 'Efectos en Mujeres',
+    yes: 'Sí',
+    no: 'No',
+    
+    // Form improvements for spam reduction
+    contactFormTitle: 'Contáctanos - Consulta Profesional',
+    messageSubject: 'Consulta Profesional desde el Sitio Web',
+    formInstructions: 'Por favor complete este formulario con su consulta profesional. Respondemos a todas las solicitudes comerciales legítimas dentro de 24 horas.',
   }
 };

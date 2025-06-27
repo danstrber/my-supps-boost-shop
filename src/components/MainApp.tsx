@@ -1,10 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { useOrderSuccess } from '@/hooks/useOrderSuccess';
 import Header from '@/components/Header';
 import CartModal from '@/components/CartModal';
 import AuthModal from '@/components/AuthModal';
+import OrderSuccessModal from '@/components/OrderSuccessModal';
 import Sidebar from '@/components/Sidebar';
 import StaticPage from '@/components/StaticPage';
 import Account from '@/pages/Account';
@@ -23,6 +24,7 @@ const MainApp = () => {
 
   const { isAuthenticated, userProfile, handleAuthAction } = useAuth();
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart, clearCart } = useCart();
+  const { orderSuccessModal, showOrderSuccess, closeOrderSuccess } = useOrderSuccess();
 
   // Calculate user discount
   const [userDiscount, setUserDiscount] = useState(0);
@@ -81,6 +83,11 @@ const MainApp = () => {
   const handlePageChange = (page: string) => {
     setCurrentPage(page);
     setSidebarOpen(false);
+  };
+
+  const handleOrderSuccess = (orderDetails: any) => {
+    showOrderSuccess(orderDetails);
+    clearCart(); // Clear cart after successful order
   };
 
   const renderCurrentPage = () => {
@@ -168,6 +175,7 @@ const MainApp = () => {
         isAuthenticated={isAuthenticated}
         userProfile={userProfile}
         onPageChange={handlePageChange}
+        onOrderSuccess={handleOrderSuccess}
       />
 
       <AuthModal
@@ -176,6 +184,15 @@ const MainApp = () => {
         initialMode={authModalState.mode}
         language={language}
       />
+
+      {orderSuccessModal.isOpen && orderSuccessModal.orderDetails && (
+        <OrderSuccessModal
+          isOpen={orderSuccessModal.isOpen}
+          onClose={closeOrderSuccess}
+          orderDetails={orderSuccessModal.orderDetails}
+          language={language}
+        />
+      )}
     </div>
   );
 };
