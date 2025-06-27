@@ -56,7 +56,7 @@ const MainApp = () => {
 
   const handleAuthModalAction = (action: 'login' | 'signup' | 'logout') => {
     if (action === 'logout') {
-      handleAuthAction(action);
+      handleAuthAction('logout');
     } else {
       setAuthModalState({ isOpen: true, mode: action });
     }
