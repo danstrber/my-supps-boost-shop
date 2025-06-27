@@ -10,7 +10,6 @@ import StaticPage from '@/components/StaticPage';
 import Account from '@/pages/Account';
 import Index from '@/pages/Index';
 import { products } from '@/lib/products';
-import { calculateUserDiscount } from '@/lib/referral';
 
 const MainApp = () => {
   const [language, setLanguage] = useState<'en' | 'es'>('en');
@@ -22,21 +21,26 @@ const MainApp = () => {
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const { isAuthenticated, userProfile, logout } = useAuth();
+  const { isAuthenticated, userProfile, handleAuthAction } = useAuth();
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart, clearCart } = useCart();
 
   // Calculate user discount
   const [userDiscount, setUserDiscount] = useState(0);
 
   useEffect(() => {
-    const calculateDiscount = async () => {
+    const calculateDiscount = () => {
       if (isAuthenticated && userProfile) {
         const cartValue = Object.entries(cart).reduce((total, [productId, quantity]) => {
           const product = products.find(p => p.id === productId);
           return total + (product ? product.price * quantity : 0);
         }, 0);
         
-        const discount = await calculateUserDiscount(userProfile, cartValue);
+        const discount = userProfile ? Math.min(
+          (userProfile.referred_by ? 
+            Math.floor(userProfile.total_spending / 50) * 6 : 
+            Math.floor(userProfile.referred_spending / 50) * 2
+          ), 30
+        ) : 0;
         setUserDiscount(discount);
       } else {
         setUserDiscount(0);
@@ -52,7 +56,7 @@ const MainApp = () => {
 
   const handleAuthAction = (action: 'login' | 'signup' | 'logout') => {
     if (action === 'logout') {
-      logout();
+      handleAuthAction(action);
     } else {
       setAuthModalState({ isOpen: true, mode: action });
     }
@@ -92,12 +96,35 @@ const MainApp = () => {
           />
         );
       case 'account':
-        return <Account language={language} />;
+        return (
+          <Account
+            language={language}
+            onLanguageChange={handleLanguageChange}
+            cartItemCount={cartItemCount}
+            isAuthenticated={isAuthenticated}
+            onAuthAction={handleAuthAction}
+            onCartOpen={handleCartOpen}
+            onMenuToggle={handleMenuToggle}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            sidebarOpen={sidebarOpen}
+            onSidebarClose={() => setSidebarOpen(false)}
+          />
+        );
       default:
         return (
           <StaticPage
-            page={currentPage}
             language={language}
+            onLanguageChange={handleLanguageChange}
+            cartItemCount={cartItemCount}
+            isAuthenticated={isAuthenticated}
+            onAuthAction={handleAuthAction}
+            onCartOpen={handleCartOpen}
+            onMenuToggle={handleMenuToggle}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            sidebarOpen={sidebarOpen}
+            onSidebarClose={() => setSidebarOpen(false)}
           />
         );
     }
@@ -121,9 +148,14 @@ const MainApp = () => {
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
         language={language}
+        selectedCategory="all"
+        onCategoryChange={(category) => {
+          handlePageChange('home');
+          setSidebarOpen(false);
+        }}
+        userProfile={userProfile}
+        referralCount={0}
         isAuthenticated={isAuthenticated}
         onAuthAction={handleAuthAction}
       />
@@ -145,7 +177,7 @@ const MainApp = () => {
       <AuthModal
         isOpen={authModalState.isOpen}
         onClose={handleCloseAuthModal}
-        mode={authModalState.mode}
+        initialMode={authModalState.mode}
         language={language}
       />
     </div>
