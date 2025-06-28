@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Filter, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -15,9 +14,17 @@ interface IndexProps {
   userDiscount: number;
   isAuthenticated?: boolean;
   onAuthAction?: (action: 'login' | 'signup') => void;
+  onPageChange?: (page: string) => void;
 }
 
-const Index = ({ language, onAddToCart, userDiscount, isAuthenticated = false, onAuthAction }: IndexProps) => {
+const Index = ({ 
+  language, 
+  onAddToCart, 
+  userDiscount, 
+  isAuthenticated = false, 
+  onAuthAction,
+  onPageChange 
+}: IndexProps) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -82,6 +89,21 @@ const Index = ({ language, onAddToCart, userDiscount, isAuthenticated = false, o
     setCoachingModalOpen(true);
   };
 
+  const handleShopNow = () => {
+    // Scroll to products section
+    const productsSection = document.querySelector('.grid');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleLearnMore = () => {
+    // Navigate to about page if onPageChange is available
+    if (onPageChange) {
+      onPageChange('about');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
       <div className="container mx-auto px-4 py-8 pt-24">
@@ -121,10 +143,19 @@ const Index = ({ language, onAddToCart, userDiscount, isAuthenticated = false, o
             {t.heroSubtitle}
           </p>
           <div className="flex justify-center space-x-4">
-            <Button size="lg" className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold"
+              onClick={handleShopNow}
+            >
               {t.shopNow}
             </Button>
-            <Button variant="outline" size="lg" className="border-green-500 text-green-600 hover:bg-green-50">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="border-green-500 text-green-600 hover:bg-green-50"
+              onClick={handleLearnMore}
+            >
               {t.learnMore}
             </Button>
           </div>

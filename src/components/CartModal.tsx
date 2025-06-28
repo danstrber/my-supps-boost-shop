@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -91,24 +90,11 @@ const CartModal = ({
   const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 7.5;
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
-  console.log('Cart calculation:', {
-    subtotal,
-    userDiscount,
-    actualDiscount,
-    cappedDiscount,
-    discountAmount,
-    subtotalAfterDiscount,
-    shippingFee,
-    finalTotal,
-    isAuthenticated
-  });
-
   const handleCheckout = () => {
     if (!isAuthenticated) {
       alert('Please log in to checkout');
       return;
     }
-    // Close cart modal first, then open payment modal
     onClose();
     setIsPaymentModalOpen(true);
   };
@@ -149,7 +135,6 @@ const CartModal = ({
           </DialogHeader>
 
           <div className="space-y-4">
-            {/* Referral Discount Notice */}
             <div 
               className="bg-green-50 border border-green-200 p-3 rounded-lg text-center cursor-pointer hover:bg-green-100 transition-colors"
               onClick={handleReferralClick}
@@ -165,7 +150,7 @@ const CartModal = ({
                 product={product}
                 quantity={quantity}
                 onUpdateCart={onUpdateCart}
-                userDiscount={0} // Don't show discount on individual items
+                userDiscount={0}
               />
             ))}
 
@@ -179,7 +164,6 @@ const CartModal = ({
               freeShippingThreshold={freeShippingThreshold}
             />
 
-            {/* Discount limitation notice */}
             {actualDiscount > 25 && subtotal < 150 && (
               <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
                 <p className="text-yellow-700 text-sm">

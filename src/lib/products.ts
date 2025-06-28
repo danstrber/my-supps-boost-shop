@@ -11,7 +11,7 @@ export interface Product {
     capsulesPerBottle: string;
     potencyLevel: string;
   };
-  whatToExpect: string[];
+  whatToExpected: string[];
   cycleInfo: {
     length: string;
     dosage: string;
@@ -29,15 +29,15 @@ export const products: Product[] = [
     id: 'superdrol',
     name: 'Superdrol (Methasterone)',
     price: 25,
-    image: '/lovable-uploads/cf6f4971-3016-4a39-96f5-59bf98d3246f.png',
+    image: '/lovable-uploads/14261a69-7ff7-4bed-890d-882e8294932f.png',
     category: 'oral-steroids',
     description: 'Powerful oral anabolic compound for serious muscle building and strength gains. Known for its exceptional ability to build lean muscle mass rapidly.',
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: '20 capsules',
+      capsulesPerBottle: '50 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Rapid muscle mass increases (5-10lbs in 2-3 weeks)',
       'Significant strength gains (20-30% increase)',
       'Enhanced muscle hardness and vascularity',
@@ -78,7 +78,7 @@ export const products: Product[] = [
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Intermediate'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Lean muscle development (3-5lbs per month)',
       'Increased strength and power output',
       'Enhanced endurance and stamina',
@@ -117,7 +117,7 @@ export const products: Product[] = [
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Beginner'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Improved sleep quality and deeper REM',
       'Enhanced recovery and reduced soreness',
       'Increased appetite and muscle fullness',
@@ -156,7 +156,7 @@ export const products: Product[] = [
       capsulesPerBottle: '50 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Rapid fat loss (1-2lbs per week)',
       'Increased metabolism (up to 10%)',
       'Enhanced energy and focus',
@@ -192,11 +192,11 @@ export const products: Product[] = [
     category: 'pct',
     description: 'Selective estrogen receptor modulator for PCT and natural testosterone support without estrogenic side effects.',
     specifications: {
-      dosePerCapsule: '12.5mg',
+      dosePerCapsule: '25mg',
       capsulesPerBottle: '25 capsules',
       potencyLevel: 'Intermediate'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Natural testosterone boost (200-400ng/dL increase)',
       'Improved recovery post-cycle',
       'Hormonal balance restoration',
@@ -204,7 +204,7 @@ export const products: Product[] = [
     ],
     cycleInfo: {
       length: '4-6 weeks PCT',
-      dosage: '12.5-25mg daily',
+      dosage: '25-50mg daily',
       pctRequired: false
     },
     sideEffects: [
@@ -233,7 +233,7 @@ export const products: Product[] = [
       capsulesPerBottle: '10 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Estrogen reduction (50-85% decrease)',
       'Reduced water retention and bloating',
       'Enhanced muscle definition',
@@ -263,15 +263,15 @@ export const products: Product[] = [
     id: 'clomid',
     name: 'Clomid (Clomiphene)',
     price: 30,
-    image: '',
+    image: '/lovable-uploads/b95509ff-2fa9-495b-9eb3-7fd6d43bd4e8.png',
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
     specifications: {
       dosePerCapsule: '25mg',
-      capsulesPerBottle: '50 capsules',
+      capsulesPerBottle: '40 capsules',
       potencyLevel: 'Beginner'
     },
-    whatToExpect: [
+    whatToExpected: [
       'Testosterone recovery (150-300ng/dL increase)',
       'PCT support and hormonal restoration',
       'Improved sperm production',

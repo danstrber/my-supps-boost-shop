@@ -1,4 +1,3 @@
-
 interface BitcoinTransaction {
   hash: string;
   confirmed: boolean;
@@ -119,7 +118,7 @@ export class BitcoinVerificationService {
           confirmations: 0,
           actualAmount: 0,
           error: VerificationError.TX_NOT_FOUND,
-          errorMessage: 'Transaction not found on the blockchain. Please verify your transaction ID is correct.',
+          errorMessage: 'Transaction not found on the blockchain. This could mean: 1) The transaction ID does not exist, 2) The transaction is too new and not yet confirmed, or 3) You entered an incorrect transaction ID. Please double-check your transaction ID and try again.',
           details: null
         };
       }
@@ -188,10 +187,9 @@ export class BitcoinVerificationService {
       }
     }
 
-    // Retry if we haven't exceeded max retries
     if (attempt < this.MAX_RETRIES) {
       console.log(`🔄 Retrying in ${this.RETRY_DELAY}ms... (Attempt ${attempt + 1}/${this.MAX_RETRIES})`);
-      await this.delay(this.RETRY_DELAY * attempt); // Exponential backoff
+      await this.delay(this.RETRY_DELAY * attempt);
       return this.fetchTransactionWithRetry(txHash, attempt + 1);
     }
 
@@ -248,7 +246,6 @@ export class BitcoinVerificationService {
 
     const data = await response.json();
     
-    // Transform Blockstream format to match our expected format
     return {
       hash: data.txid,
       time: data.status?.block_time || Math.floor(Date.now() / 1000),
@@ -286,7 +283,6 @@ export class BitcoinVerificationService {
       outputs: transaction.out
     });
 
-    // Find payment to our address
     const paymentOutput = transaction.out.find((output: any) => 
       output.addr === expectedAddress
     );
@@ -311,7 +307,6 @@ export class BitcoinVerificationService {
       tolerance: this.TOLERANCE_SATOSHIS
     });
 
-    // Check if the amount is within tolerance
     const amountDifference = Math.abs(actualSatoshis - expectedSatoshis);
     if (amountDifference > this.TOLERANCE_SATOSHIS) {
       return {
@@ -323,7 +318,6 @@ export class BitcoinVerificationService {
       };
     }
 
-    // Calculate confirmations (simplified - in production you'd need current block height)
     const confirmations = transaction.block_height ? 1 : 0;
 
     if (confirmations < this.MIN_CONFIRMATIONS) {
@@ -344,7 +338,6 @@ export class BitcoinVerificationService {
   }
 
   private static isValidTxHash(hash: string): boolean {
-    // Bitcoin transaction hashes are 64 character hex strings
     return /^[a-f0-9]{64}$/i.test(hash);
   }
 
