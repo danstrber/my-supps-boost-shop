@@ -180,7 +180,7 @@ const ProductDetailModal = ({
                   {language === 'en' ? 'What to Expect' : 'Qué Esperar'}
                 </h4>
                 <ul className="space-y-3">
-                  {product.whatToExpect.map((benefit, index) => (
+                  {product.whatToExpected.map((benefit, index) => (
                     <li key={index} className="bg-white rounded-lg p-3 border border-green-100 text-green-700 font-medium flex items-start shadow-sm">
                       <span className="text-green-600 mr-3 text-xl">✓</span>
                       {benefit}

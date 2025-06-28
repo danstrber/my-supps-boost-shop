@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,13 +11,17 @@ import OrderHistory from '@/components/OrderHistory';
 import TwoFactorSettings from '@/components/TwoFactorSettings';
 
 const Account = () => {
-  const { userProfile, logout, isAuthenticated } = useAuth();
+  const { userProfile, handleAuthAction, isAuthenticated } = useAuth();
   const { cart, handleUpdateCart } = useCart();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
   const handleOrderSuccess = (orderDetails: any) => {
     console.log('Order successful:', orderDetails);
     // Handle order success - maybe show a toast or redirect
+  };
+
+  const handleLogout = () => {
+    handleAuthAction('logout');
   };
 
   if (!isAuthenticated || !userProfile) {
@@ -39,7 +44,7 @@ const Account = () => {
               Account Dashboard
             </h1>
             <p className="text-gray-600 mt-2">
-              Welcome back, {userProfile.first_name || userProfile.email}!
+              Welcome back, {userProfile.name || userProfile.email}!
             </p>
           </div>
 
@@ -62,17 +67,13 @@ const Account = () => {
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-700">First Name</label>
-                      <p className="text-gray-900">{userProfile.first_name || 'Not provided'}</p>
+                      <label className="text-sm font-medium text-gray-700">Name</label>
+                      <p className="text-gray-900">{userProfile.name || 'Not provided'}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-700">Last Name</label>
-                      <p className="text-gray-900">{userProfile.last_name || 'Not provided'}</p>
+                      <label className="text-sm font-medium text-gray-700">Email</label>
+                      <p className="text-gray-900">{userProfile.email}</p>
                     </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Email</label>
-                    <p className="text-gray-900">{userProfile.email}</p>
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-700">Member Since</label>
@@ -85,16 +86,23 @@ const Account = () => {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrderHistory />
+              <OrderHistory language="en" />
             </TabsContent>
 
             <TabsContent value="referrals">
-              <ReferralSection />
+              <ReferralSection 
+                userProfile={userProfile}
+                language="en"
+                referralCount={0}
+              />
             </TabsContent>
 
             <TabsContent value="security">
               <div className="space-y-6">
-                <TwoFactorSettings />
+                <TwoFactorSettings 
+                  language="en"
+                  userProfile={userProfile}
+                />
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-red-600">Danger Zone</CardTitle>
@@ -104,7 +112,7 @@ const Account = () => {
                   </CardHeader>
                   <CardContent>
                     <button
-                      onClick={logout}
+                      onClick={handleLogout}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                     >
                       Logout
@@ -123,7 +131,7 @@ const Account = () => {
         cart={cart}
         products={products}
         onUpdateCart={handleUpdateCart}
-        userDiscount={userProfile.referral_discount || 0}
+        userDiscount={0}
         isAuthenticated={true}
         userProfile={userProfile}
         onOrderSuccess={handleOrderSuccess}
