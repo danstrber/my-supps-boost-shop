@@ -37,7 +37,7 @@ export const products: Product[] = [
       capsulesPerBottle: '20 capsules',
       potencyLevel: 'Advanced'
     },
-    whatToExpected: [
+    whatToExpect: [
       'Rapid muscle mass increases (5-10lbs in 2-3 weeks)',
       'Significant strength gains (20-30% increase)',
       'Enhanced muscle hardness and vascularity',

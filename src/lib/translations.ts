@@ -1,3 +1,4 @@
+
 export const translations = {
   en: {
     // Header and Navigation
@@ -498,5 +499,13 @@ export const translations = {
     contactFormTitle: 'Contáctanos - Consulta Profesional',
     messageSubject: 'Consulta Profesional desde el Sitio Web',
     formInstructions: 'Por favor complete este formulario con su consulta profesional. Respondemos a todas las solicitudes comerciales legítimas dentro de 24 horas.',
+
+    // Bitcoin verification
+    transactionId: 'ID de Transacción',
+    verifyingTransaction: 'Verificando transacción...',
+    transactionVerified: 'Transacción verificada',
+    transactionFailed: 'Verificación de transacción falló',
+    enterTransactionId: 'Ingresa el ID de transacción de Bitcoin',
+    bitcoinPaymentOnly: 'Solo se acepta pago con Bitcoin por ahora',
   }
 };

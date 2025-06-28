@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -18,6 +19,7 @@ interface CartModalProps {
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
   onPageChange?: (page: string) => void;
+  onOrderSuccess: (orderDetails: any) => void;
 }
 
 const CartModal = ({
@@ -29,7 +31,8 @@ const CartModal = ({
   userDiscount,
   isAuthenticated,
   userProfile,
-  onPageChange
+  onPageChange,
+  onOrderSuccess
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
@@ -40,7 +43,10 @@ const CartModal = ({
 
   const cartItems = Object.entries(cart).map(([productId, quantity]) => {
     const product = products.find(p => p.id === productId);
-    if (!product) return null;
+    if (!product) {
+      console.warn(`Product with ID ${productId} not found in products array`);
+      return null;
+    }
     return { product, quantity };
   }).filter(Boolean) as { product: Product; quantity: number }[];
 
@@ -118,9 +124,9 @@ const CartModal = ({
     setIsPaymentModalOpen(false);
   };
 
-  const handleOrderSuccess = () => {
+  const handlePaymentOrderSuccess = (orderDetails: any) => {
     setIsPaymentModalOpen(false);
-    alert('Order placed successfully!');
+    onOrderSuccess(orderDetails);
   };
 
   return (
@@ -203,7 +209,7 @@ const CartModal = ({
         products={products}
         userDiscount={discountAmount}
         userProfile={userProfile}
-        onOrderSuccess={handleOrderSuccess}
+        onOrderSuccess={handlePaymentOrderSuccess}
       />
     </>
   );

@@ -13,6 +13,12 @@ const BitcoinTutorial = ({ language }: BitcoinTutorialProps) => {
     <div className="bg-gray-50 border border-gray-200 p-4 rounded-lg">
       <h4 className="font-semibold text-gray-800 mb-3">{t.bitcoinTutorial}</h4>
       
+      <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+        <p className="text-orange-700 text-sm font-medium">
+          {language === 'en' ? '⚠️ Bitcoin payments only for now' : '⚠️ Solo pagos con Bitcoin por ahora'}
+        </p>
+      </div>
+      
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
           <h5 className="font-medium text-blue-800 mb-2">{t.bitcoinEasy}</h5>
@@ -42,6 +48,12 @@ const BitcoinTutorial = ({ language }: BitcoinTutorialProps) => {
             <a href="https://bisq.network" target="_blank" rel="noopener noreferrer" className="text-purple-600 text-xs underline block">• Bisq.network</a>
           </div>
         </div>
+      </div>
+      
+      <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+        <p className="text-green-700 text-sm">
+          <strong>{language === 'en' ? 'Important:' : 'Importante:'}</strong> {language === 'en' ? 'After sending Bitcoin, paste your transaction ID below to verify payment. We only accept Bitcoin payments currently.' : 'Después de enviar Bitcoin, pega tu ID de transacción abajo para verificar el pago. Actualmente solo aceptamos pagos con Bitcoin.'}
+        </p>
       </div>
     </div>
   );

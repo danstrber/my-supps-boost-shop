@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Product } from '@/lib/products';
+import { Product, products } from '@/lib/products';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -15,11 +15,15 @@ export const useCart = () => {
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
-        // Ensure all values are valid numbers and remove any invalid entries
+        // Ensure all values are valid numbers and products exist
         const validCart: Record<string, number> = {};
         Object.entries(parsedCart).forEach(([key, value]) => {
-          if (typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
+          // Check if product exists in the products array
+          const productExists = products.find(p => p.id === key);
+          if (productExists && typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
             validCart[key] = Math.max(1, Math.floor(value)); // Ensure positive integers
+          } else if (!productExists) {
+            console.warn(`Removing invalid product ${key} from cart - product no longer exists`);
           }
         });
         console.log('📦 Loading cart from localStorage:', { savedCart, parsedCart, validCart });
@@ -70,7 +74,8 @@ export const useCart = () => {
       // Clean up any invalid entries while we're at it
       const cleanCart: Record<string, number> = {};
       Object.entries(newCart).forEach(([key, value]) => {
-        if (typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
+        const productExists = products.find(p => p.id === key);
+        if (productExists && typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
           cleanCart[key] = Math.floor(value);
         }
       });
