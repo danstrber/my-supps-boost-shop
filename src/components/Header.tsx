@@ -34,7 +34,6 @@ const Header = ({
 
   const handleHomeClick = () => {
     onPageChange('home');
-    // Reset category to 'all' when going home
     window.dispatchEvent(new CustomEvent('resetCategory'));
   };
 
@@ -66,8 +65,8 @@ const Header = ({
             </button>
           </div>
 
-          {/* Center navigation - always visible */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
+          {/* Center navigation - hidden on mobile */}
+          <nav className="hidden lg:flex items-center space-x-4 lg:space-x-8">
             <button
               onClick={handleHomeClick}
               className={`font-medium transition-colors text-sm lg:text-base ${

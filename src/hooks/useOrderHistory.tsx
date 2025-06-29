@@ -14,18 +14,20 @@ export interface OrderItem {
 export interface Order {
   id: string;
   user_id: string;
-  total_amount: number;
+  original_total: number;
   discount_amount: number;
   shipping_fee: number;
+  final_total: number;
   payment_method: string;
-  shipping_address: any;
-  items: OrderItem[];
+  items: any;
   status: string;
   created_at: string;
-  updated_at: string;
-  payment_address?: string;
-  payment_amount?: number;
-  payment_currency?: string;
+  bitcoin_address?: string;
+  bitcoin_amount?: number;
+  payment_details?: any;
+  verification_status?: string;
+  verified_at?: string;
+  transaction_hash?: string;
 }
 
 export const useOrderHistory = () => {
@@ -45,15 +47,7 @@ export const useOrderHistory = () => {
       
       const { data: ordersData, error } = await supabase
         .from('orders')
-        .select(`
-          *,
-          order_items (
-            product_id,
-            quantity,
-            price,
-            product_name
-          )
-        `)
+        .select('*')
         .eq('user_id', userProfile.id)
         .order('created_at', { ascending: false });
 
@@ -68,14 +62,7 @@ export const useOrderHistory = () => {
       }
 
       console.log('Orders fetched successfully:', ordersData);
-      
-      // Transform the data to match our Order interface
-      const transformedOrders: Order[] = ordersData?.map(order => ({
-        ...order,
-        items: order.order_items || []
-      })) || [];
-
-      setOrders(transformedOrders);
+      setOrders(ordersData || []);
     } catch (error) {
       console.error('Exception while fetching orders:', error);
       toast({
@@ -93,7 +80,7 @@ export const useOrderHistory = () => {
     cart: Record<string, number>,
     shippingAddress: any,
     paymentMethod: string,
-    totalAmount: number,
+    originalTotal: number,
     discountAmount: number,
     shippingFee: number,
     paymentAddress?: string,
@@ -107,20 +94,22 @@ export const useOrderHistory = () => {
     try {
       console.log('Creating order for user:', userProfile.id);
       
+      const finalTotal = originalTotal - discountAmount + shippingFee;
+
       // Create the order record
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert({
           user_id: userProfile.id,
-          total_amount: totalAmount,
+          original_total: originalTotal,
           discount_amount: discountAmount,
           shipping_fee: shippingFee,
+          final_total: finalTotal,
           payment_method: paymentMethod,
-          shipping_address: shippingAddress,
+          items: cart,
           status: paymentMethod === 'bitcoin' ? 'pending' : 'confirmed',
-          payment_address: paymentAddress,
-          payment_amount: paymentAmount,
-          payment_currency: paymentCurrency
+          bitcoin_address: paymentAddress,
+          bitcoin_amount: paymentAmount,
         })
         .select()
         .single();
@@ -132,26 +121,8 @@ export const useOrderHistory = () => {
 
       console.log('Order created successfully:', orderData);
 
-      // Create order items
-      const orderItems = Object.entries(cart).map(([productId, quantity]) => ({
-        order_id: orderData.id,
-        product_id: productId,
-        quantity: quantity,
-        price: 0, // You might want to pass actual product prices here
-        product_name: '' // You might want to pass actual product names here
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) {
-        console.error('Error creating order items:', itemsError);
-        // Don't throw here as the order was created successfully
-      }
-
       // Update user's total spending
-      const newTotalSpending = (userProfile.total_spending || 0) + totalAmount;
+      const newTotalSpending = (userProfile.total_spending || 0) + finalTotal;
       
       const { error: updateError } = await supabase
         .from('users')
@@ -160,7 +131,6 @@ export const useOrderHistory = () => {
 
       if (updateError) {
         console.error('Error updating user spending:', updateError);
-        // Don't throw here as the order was created successfully
       }
 
       // If this user was referred, update the referrer's spending
@@ -172,7 +142,7 @@ export const useOrderHistory = () => {
           .single();
 
         if (!referrerError && referrerData) {
-          const newReferredSpending = (referrerData.referred_spending || 0) + totalAmount;
+          const newReferredSpending = (referrerData.referred_spending || 0) + finalTotal;
           
           await supabase
             .from('users')

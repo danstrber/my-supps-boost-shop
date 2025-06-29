@@ -2,8 +2,15 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { countries } from '@/lib/countries';
 import CartModal from '@/components/CartModal';
 import { products } from '@/lib/products';
 import ReferralSection from '@/components/ReferralSection';
@@ -33,17 +40,61 @@ const Account = ({
   onPageChange,
   sidebarOpen
 }: AccountProps) => {
-  const { userProfile, handleAuthAction, isAuthenticated: authState } = useAuth();
+  const { userProfile, handleAuthAction, isAuthenticated: authState, refreshProfile } = useAuth();
   const { cart, handleUpdateCart } = useCart();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    name: userProfile?.name || '',
+    country: userProfile?.country || ''
+  });
+  const { toast } = useToast();
 
   const handleOrderSuccess = (orderDetails: any) => {
     console.log('Order successful:', orderDetails);
-    // Handle order success - maybe show a toast or redirect
   };
 
   const handleLogout = () => {
     handleAuthAction('logout');
+  };
+
+  const handleSaveProfile = async () => {
+    if (!userProfile?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('users')
+        .update({
+          name: formData.name,
+          country: formData.country
+        })
+        .eq('id', userProfile.id);
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update profile",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
+
+      setEditMode(false);
+      await refreshProfile();
+    } catch (error) {
+      console.error('Exception updating profile:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!authState || !userProfile) {
@@ -87,22 +138,74 @@ const Account = ({
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Name</label>
-                      <p className="text-gray-900">{userProfile.name || 'Not provided'}</p>
+                  {editMode ? (
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="name">Name</Label>
+                        <Input
+                          id="name"
+                          value={formData.name}
+                          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder="Enter your name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="country">Country</Label>
+                        <Select 
+                          value={formData.country} 
+                          onValueChange={(value) => setFormData(prev => ({ ...prev, country: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select your country" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="USA">United States</SelectItem>
+                            {countries.filter(c => c !== 'United States').map((country) => (
+                              <SelectItem key={country} value={country}>
+                                {country}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button onClick={handleSaveProfile}>Save Changes</Button>
+                        <Button variant="outline" onClick={() => setEditMode(false)}>Cancel</Button>
+                      </div>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Email</label>
-                      <p className="text-gray-900">{userProfile.email}</p>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Name</label>
+                          <p className="text-gray-900">{userProfile.name || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Email</label>
+                          <p className="text-gray-900">{userProfile.email}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Country</label>
+                          <p className="text-gray-900">{userProfile.country || 'Not provided'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-gray-700">Member Since</label>
+                          <p className="text-gray-900">
+                            {new Date(userProfile.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <Button onClick={() => {
+                        setFormData({
+                          name: userProfile.name || '',
+                          country: userProfile.country || ''
+                        });
+                        setEditMode(true);
+                      }}>
+                        Edit Profile
+                      </Button>
                     </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Member Since</label>
-                    <p className="text-gray-900">
-                      {new Date(userProfile.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

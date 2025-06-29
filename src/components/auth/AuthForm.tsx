@@ -131,45 +131,41 @@ const AuthForm = ({
           </div>
         </div>
 
-        {mode === 'signup' && (
-          <div>
-            <Label htmlFor="auth-country">
-              {language === 'en' ? 'Country' : 'País'}
-            </Label>
-            <Select value={country} onValueChange={onCountryChange}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder={language === 'en' ? 'Select your country' : 'Selecciona tu país'} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USA">
-                  {language === 'en' ? 'United States' : 'Estados Unidos'}
+        <div>
+          <Label htmlFor="auth-country">
+            {language === 'en' ? 'Country' : 'País'} *
+          </Label>
+          <Select value={country} onValueChange={onCountryChange} required>
+            <SelectTrigger className="mt-1">
+              <SelectValue placeholder={language === 'en' ? 'Select your country' : 'Selecciona tu país'} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USA">
+                {language === 'en' ? 'United States' : 'Estados Unidos'}
+              </SelectItem>
+              {countries.filter(c => c !== 'United States').map((countryName) => (
+                <SelectItem key={countryName} value={countryName}>
+                  {countryName}
                 </SelectItem>
-                {countries.filter(c => c !== 'United States').map((countryName) => (
-                  <SelectItem key={countryName} value={countryName}>
-                    {countryName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        {mode === 'signup' && (
-          <div>
-            <Label htmlFor="auth-referral">
-              {language === 'en' ? 'Referral Code (Optional)' : 'Código de Referido (Opcional)'}
-            </Label>
-            <Input
-              id="auth-referral"
-              name="referralCode"
-              type="text"
-              value={referralCodeInput}
-              onChange={(e) => onReferralCodeInputChange(e.target.value)}
-              placeholder={language === 'en' ? 'Enter referral code' : 'Ingresa código de referido'}
-              className="mt-1"
-            />
-          </div>
-        )}
+        <div>
+          <Label htmlFor="auth-referral">
+            {language === 'en' ? 'Referral Code (Optional)' : 'Código de Referido (Opcional)'}
+          </Label>
+          <Input
+            id="auth-referral"
+            name="referralCode"
+            type="text"
+            value={referralCodeInput}
+            onChange={(e) => onReferralCodeInputChange(e.target.value)}
+            placeholder={language === 'en' ? 'Enter referral code' : 'Ingresa código de referido'}
+            className="mt-1"
+          />
+        </div>
 
         {mode === 'login' && onForgotPassword && (
           <div className="text-right">
@@ -216,7 +212,7 @@ const AuthForm = ({
 
         <Button 
           type="submit" 
-          disabled={loading || (mode === 'signup' && (!acceptedTerms || !country))} 
+          disabled={loading || !country || (mode === 'signup' && !acceptedTerms)} 
           className="w-full"
         >
           {loading 
@@ -242,7 +238,7 @@ const AuthForm = ({
       <div className="space-y-3">
         <GoogleSignInButton 
           onClick={onGoogleSignIn} 
-          disabled={loading}
+          disabled={loading || !country}
           language={language}
           mode={mode}
         />
@@ -250,7 +246,7 @@ const AuthForm = ({
         <Button
           type="button"
           onClick={onPhantomConnect}
-          disabled={loading}
+          disabled={loading || !country}
           variant="outline"
           className="w-full flex items-center justify-center space-x-2"
         >
@@ -260,6 +256,14 @@ const AuthForm = ({
           </span>
         </Button>
       </div>
+
+      {!country && (
+        <p className="text-sm text-red-600 text-center">
+          {language === 'en' 
+            ? 'Please select your country to continue' 
+            : 'Por favor selecciona tu país para continuar'}
+        </p>
+      )}
 
       <div className="text-center">
         <button
