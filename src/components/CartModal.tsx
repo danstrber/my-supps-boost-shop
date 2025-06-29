@@ -46,14 +46,16 @@ const CartModal = ({
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const discountAmount = (subtotal * userDiscount) / 100;
+  const subtotalAfterDiscount = subtotal - discountAmount;
   
   // Calculate shipping based on user's country
   const isUSA = userProfile?.country === 'USA' || userProfile?.country === 'United States';
-  const shippingFee = isUSA 
-    ? (subtotal >= 100 ? 0 : 7.50)
-    : (subtotal >= 150 ? 0 : 17.50);
+  const freeShippingThreshold = isUSA ? 100 : 150;
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold 
+    ? 0 
+    : (isUSA ? 7.50 : 17.50);
   
-  const total = subtotal - discountAmount + shippingFee;
+  const finalTotal = subtotalAfterDiscount + shippingFee;
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -126,19 +128,20 @@ const CartModal = ({
                 key={product.id}
                 product={product}
                 quantity={quantity}
-                onUpdateQuantity={(newQuantity) => onUpdateCart(product.id, newQuantity)}
+                onUpdateCart={onUpdateCart}
+                userDiscount={userDiscount}
               />
             ))}
           </div>
 
           <CartSummary
             subtotal={subtotal}
-            discount={userDiscount}
+            userDiscount={userDiscount}
             discountAmount={discountAmount}
+            subtotalAfterDiscount={subtotalAfterDiscount}
             shippingFee={shippingFee}
-            total={total}
-            isAuthenticated={isAuthenticated}
-            userProfile={userProfile}
+            finalTotal={finalTotal}
+            freeShippingThreshold={freeShippingThreshold}
           />
 
           <Button 

@@ -28,6 +28,8 @@ export interface Order {
   verification_status?: string;
   verified_at?: string;
   transaction_hash?: string;
+  order_date: string;
+  order_id: string;
 }
 
 export const useOrderHistory = () => {
@@ -62,7 +64,15 @@ export const useOrderHistory = () => {
       }
 
       console.log('Orders fetched successfully:', ordersData);
-      setOrders(ordersData || []);
+      
+      // Transform the data to match the expected format
+      const transformedOrders = (ordersData || []).map(order => ({
+        ...order,
+        order_date: order.created_at,
+        order_id: order.id.slice(-8).toUpperCase()
+      }));
+      
+      setOrders(transformedOrders);
     } catch (error) {
       console.error('Exception while fetching orders:', error);
       toast({
@@ -73,6 +83,11 @@ export const useOrderHistory = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const refreshOrders = async () => {
+    // This will be implemented when we have access to user profile
+    console.log('Refresh orders called');
   };
 
   const createOrder = async (
@@ -162,6 +177,7 @@ export const useOrderHistory = () => {
     orders,
     loading,
     fetchOrders,
+    refreshOrders,
     createOrder
   };
 };
