@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -45,6 +44,8 @@ const AuthModal = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [country, setCountry] = useState('');
+  const [referralCodeInput, setReferralCodeInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
@@ -61,6 +62,8 @@ const AuthModal = ({
       setEmail('');
       setPassword('');
       setName('');
+      setCountry('');
+      setReferralCodeInput('');
       setEmailSent(false);
       setLoading(false);
       setAcceptedTerms(false);
@@ -106,20 +109,23 @@ const AuthModal = ({
           return;
         }
 
-        if (!acceptedTerms) {
+        if (!acceptedTerms || !country) {
           toast({
-            title: language === 'en' ? "Terms required" : "Términos requeridos",
+            title: language === 'en' ? "Required fields missing" : "Campos requeridos faltantes",
             description: language === 'en' 
-              ? "Please accept the Terms of Service to continue."
-              : "Por favor acepta los Términos de Servicio para continuar.",
+              ? "Please accept the Terms of Service and select your country to continue."
+              : "Por favor acepta los Términos de Servicio y selecciona tu país para continuar.",
             variant: "destructive",
           });
           setLoading(false);
           return;
         }
 
-        console.log('Starting signup process with referral code:', referralCode);
-        const { error } = await handleEmailAuth('signup', email, password, name, referralCode);
+        const finalReferralCode = referralCode || referralCodeInput || null;
+        console.log('Starting signup process with referral code:', finalReferralCode);
+        
+        // Add country and referral code to metadata
+        const { error } = await handleEmailAuth('signup', email, password, name, finalReferralCode, country);
         
         if (error) {
           console.error('Signup error:', error);
@@ -179,7 +185,8 @@ const AuthModal = ({
 
     setLoading(true);
     try {
-      const { error } = await handleGoogleAuth(mode, referralCode);
+      const finalReferralCode = referralCode || referralCodeInput || null;
+      const { error } = await handleGoogleAuth(mode, finalReferralCode);
       if (error) {
         toast({
           title: language === 'en' ? "Error" : "Error",
@@ -318,6 +325,8 @@ const AuthModal = ({
           email={email}
           password={password}
           name={name}
+          country={country}
+          referralCodeInput={referralCodeInput}
           loading={loading}
           showPassword={showPassword}
           acceptedTerms={acceptedTerms}
@@ -326,6 +335,8 @@ const AuthModal = ({
           onEmailChange={setEmail}
           onPasswordChange={setPassword}
           onNameChange={setName}
+          onCountryChange={setCountry}
+          onReferralCodeInputChange={setReferralCodeInput}
           onShowPasswordToggle={() => setShowPassword(!showPassword)}
           onTermsChange={setAcceptedTerms}
           onSubmit={handleSubmit}

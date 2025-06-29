@@ -1,305 +1,197 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
+import { UserProfile } from '@/lib/auth';
+import { useToast } from '@/hooks/use-toast';
 
 export interface OrderItem {
-  id: string;
-  name: string;
+  product_id: string;
   quantity: number;
   price: number;
-  total: number;
+  product_name: string;
 }
 
 export interface Order {
   id: string;
-  order_id: string;
-  user_id: string | null;
-  customer_email: string;
-  customer_name: string;
-  items: OrderItem[];
-  original_total: number;
+  user_id: string;
+  total_amount: number;
   discount_amount: number;
   shipping_fee: number;
-  final_total: number;
   payment_method: string;
-  tx_id?: string;
-  bitcoin_amount?: string;
-  shipping_address: string;
-  phone: string;
-  order_date: string;
-  verification_status: string;
+  shipping_address: any;
+  items: OrderItem[];
+  status: string;
   created_at: string;
+  updated_at: string;
+  payment_address?: string;
+  payment_amount?: number;
+  payment_currency?: string;
 }
 
 export const useOrderHistory = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { userProfile, isAuthenticated } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const fetchOrders = async () => {
-    setLoading(true);
-    
-    if (!isAuthenticated || !userProfile) {
-      // If not authenticated, check localStorage for temporary orders
-      const localOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
-      setOrders(localOrders);
-      setLoading(false);
+  const fetchOrders = async (userProfile: UserProfile | null) => {
+    if (!userProfile?.id) {
+      console.log('No user profile available for fetching orders');
       return;
     }
 
+    setLoading(true);
     try {
-      const { data, error } = await supabase
+      console.log('Fetching orders for user:', userProfile.id);
+      
+      const { data: ordersData, error } = await supabase
         .from('orders')
-        .select('*')
-        .eq('user_id', userProfile.auth_id)
+        .select(`
+          *,
+          order_items (
+            product_id,
+            quantity,
+            price,
+            product_name
+          )
+        `)
+        .eq('user_id', userProfile.id)
         .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching orders:', error);
-        // Fallback to localStorage if database fails
-        const localOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
-        setOrders(localOrders);
-      } else {
-        // Transform database orders to match our Order interface
-        const transformedOrders: Order[] = (data || []).map(dbOrder => ({
-          id: dbOrder.id,
-          order_id: dbOrder.id, // Using id as order_id for now
-          user_id: dbOrder.user_id,
-          customer_email: userProfile.email || '',
-          customer_name: userProfile.name || '',
-          items: Array.isArray(dbOrder.items) ? (dbOrder.items as any[]).map((item: any) => ({
-            id: item.id || '',
-            name: item.name || '',
-            quantity: item.quantity || 0,
-            price: item.price || 0,
-            total: item.total || 0,
-          })) : [],
-          original_total: Number(dbOrder.original_total) || 0,
-          discount_amount: Number(dbOrder.discount_amount) || 0,
-          shipping_fee: Number(dbOrder.shipping_fee) || 0,
-          final_total: Number(dbOrder.final_total) || 0,
-          payment_method: dbOrder.payment_method || '',
-          tx_id: dbOrder.transaction_hash || '',
-          bitcoin_amount: dbOrder.bitcoin_amount ? String(dbOrder.bitcoin_amount) : undefined,
-          shipping_address: '', // This would come from payment_details
-          phone: '', // This would come from payment_details
-          order_date: dbOrder.created_at,
-          verification_status: dbOrder.verification_status || 'pending',
-          created_at: dbOrder.created_at
-        }));
-        
-        setOrders(transformedOrders);
-        // Sync any temporary orders from localStorage
-        await syncTemporaryOrders();
+        toast({
+          title: "Error",
+          description: "Failed to fetch order history",
+          variant: "destructive",
+        });
+        return;
       }
+
+      console.log('Orders fetched successfully:', ordersData);
+      
+      // Transform the data to match our Order interface
+      const transformedOrders: Order[] = ordersData?.map(order => ({
+        ...order,
+        items: order.order_items || []
+      })) || [];
+
+      setOrders(transformedOrders);
     } catch (error) {
-      console.error('Exception fetching orders:', error);
-      const localOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
-      setOrders(localOrders);
+      console.error('Exception while fetching orders:', error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred while fetching orders",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const syncTemporaryOrders = async () => {
-    if (!userProfile) return;
-
-    const tempOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
-    if (tempOrders.length === 0) return;
+  const createOrder = async (
+    userProfile: UserProfile,
+    cart: Record<string, number>,
+    shippingAddress: any,
+    paymentMethod: string,
+    totalAmount: number,
+    discountAmount: number,
+    shippingFee: number,
+    paymentAddress?: string,
+    paymentAmount?: number,
+    paymentCurrency?: string
+  ) => {
+    if (!userProfile?.id) {
+      throw new Error('User profile is required to create an order');
+    }
 
     try {
-      // Insert temporary orders into database
-      for (const order of tempOrders) {
-        const dbOrder = {
-          user_id: userProfile.auth_id,
-          items: order.items,
-          original_total: order.original_total,
-          discount_amount: order.discount_amount,
-          shipping_fee: order.shipping_fee,
-          final_total: order.final_total,
-          payment_method: order.payment_method,
-          transaction_hash: order.tx_id,
-          bitcoin_amount: order.bitcoin_amount ? Number(order.bitcoin_amount) : null,
-          verification_status: order.verification_status,
-          payment_details: {
-            customer_email: order.customer_email,
-            customer_name: order.customer_name,
-            shipping_address: order.shipping_address,
-            phone: order.phone
-          }
-        };
-
-        await supabase
-          .from('orders')
-          .insert(dbOrder);
-      }
+      console.log('Creating order for user:', userProfile.id);
       
-      // Clear temporary orders after successful sync
-      localStorage.removeItem('tempOrders');
-      console.log('Successfully synced temporary orders to database');
-    } catch (error) {
-      console.error('Error syncing temporary orders:', error);
-    }
-  };
+      // Create the order record
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: userProfile.id,
+          total_amount: totalAmount,
+          discount_amount: discountAmount,
+          shipping_fee: shippingFee,
+          payment_method: paymentMethod,
+          shipping_address: shippingAddress,
+          status: paymentMethod === 'bitcoin' ? 'pending' : 'confirmed',
+          payment_address: paymentAddress,
+          payment_amount: paymentAmount,
+          payment_currency: paymentCurrency
+        })
+        .select()
+        .single();
 
-  const addOrder = async (order: Omit<Order, 'id' | 'created_at' | 'user_id'>) => {
-    const newOrder = {
-      ...order,
-      id: crypto.randomUUID(),
-      created_at: new Date().toISOString(),
-      user_id: userProfile?.auth_id || null
-    };
+      if (orderError) {
+        console.error('Error creating order:', orderError);
+        throw new Error('Failed to create order');
+      }
 
-    if (isAuthenticated && userProfile) {
-      try {
-        const dbOrder = {
-          user_id: userProfile.auth_id,
-          items: newOrder.items.map(item => ({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-            total: item.total,
-          })),
-          original_total: newOrder.original_total,
-          discount_amount: newOrder.discount_amount,
-          shipping_fee: newOrder.shipping_fee,
-          final_total: newOrder.final_total,
-          payment_method: newOrder.payment_method,
-          transaction_hash: newOrder.tx_id,
-          bitcoin_amount: newOrder.bitcoin_amount ? Number(newOrder.bitcoin_amount) : null,
-          verification_status: newOrder.verification_status,
-          payment_details: {
-            customer_email: newOrder.customer_email,
-            customer_name: newOrder.customer_name,
-            shipping_address: newOrder.shipping_address,
-            phone: newOrder.phone
-          }
-        };
+      console.log('Order created successfully:', orderData);
 
-        const { data, error } = await supabase
-          .from('orders')
-          .insert(dbOrder)
-          .select()
+      // Create order items
+      const orderItems = Object.entries(cart).map(([productId, quantity]) => ({
+        order_id: orderData.id,
+        product_id: productId,
+        quantity: quantity,
+        price: 0, // You might want to pass actual product prices here
+        product_name: '' // You might want to pass actual product names here
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error('Error creating order items:', itemsError);
+        // Don't throw here as the order was created successfully
+      }
+
+      // Update user's total spending
+      const newTotalSpending = (userProfile.total_spending || 0) + totalAmount;
+      
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ total_spending: newTotalSpending })
+        .eq('id', userProfile.id);
+
+      if (updateError) {
+        console.error('Error updating user spending:', updateError);
+        // Don't throw here as the order was created successfully
+      }
+
+      // If this user was referred, update the referrer's spending
+      if (userProfile.referred_by) {
+        const { data: referrerData, error: referrerError } = await supabase
+          .from('users')
+          .select('referred_spending')
+          .eq('referral_code', userProfile.referred_by)
           .single();
 
-        if (error) throw error;
-
-        // Transform the database response back to our Order interface
-        const transformedOrder: Order = {
-          id: data.id,
-          order_id: data.id,
-          user_id: data.user_id,
-          customer_email: newOrder.customer_email,
-          customer_name: newOrder.customer_name,
-          items: newOrder.items,
-          original_total: newOrder.original_total,
-          discount_amount: newOrder.discount_amount,
-          shipping_fee: newOrder.shipping_fee,
-          final_total: newOrder.final_total,
-          payment_method: newOrder.payment_method,
-          tx_id: newOrder.tx_id,
-          bitcoin_amount: newOrder.bitcoin_amount,
-          shipping_address: newOrder.shipping_address,
-          phone: newOrder.phone,
-          order_date: data.created_at,
-          verification_status: newOrder.verification_status,
-          created_at: data.created_at
-        };
-
-        setOrders(prev => [transformedOrder, ...prev]);
-        console.log('Order saved to database successfully');
-
-        // Send order confirmation email
-        try {
-          const emailResponse = await supabase.functions.invoke('send-order-email', {
-            body: {
-              customerEmail: transformedOrder.customer_email,
-              customerName: transformedOrder.customer_name,
-              orderId: transformedOrder.id,
-              items: transformedOrder.items,
-              originalTotal: transformedOrder.original_total,
-              discountAmount: transformedOrder.discount_amount,
-              shippingFee: transformedOrder.shipping_fee,
-              finalTotal: transformedOrder.final_total,
-              paymentMethod: transformedOrder.payment_method,
-              txId: transformedOrder.tx_id,
-              bitcoinAmount: transformedOrder.bitcoin_amount,
-              shippingAddress: transformedOrder.shipping_address,
-              phone: transformedOrder.phone,
-              orderDate: transformedOrder.order_date,
-              verificationStatus: transformedOrder.verification_status
-            }
-          });
-
-          if (emailResponse.error) {
-            console.error('Error sending order confirmation email:', emailResponse.error);
-          } else {
-            console.log('Order confirmation email sent successfully');
-          }
-        } catch (emailError) {
-          console.error('Exception sending order confirmation email:', emailError);
+        if (!referrerError && referrerData) {
+          const newReferredSpending = (referrerData.referred_spending || 0) + totalAmount;
+          
+          await supabase
+            .from('users')
+            .update({ referred_spending: newReferredSpending })
+            .eq('referral_code', userProfile.referred_by);
         }
-
-      } catch (error) {
-        console.error('Error saving order to database:', error);
-        // Fallback to localStorage
-        addToLocalStorage(newOrder);
       }
-    } else {
-      // Store in localStorage for unauthenticated users
-      addToLocalStorage(newOrder);
+
+      return orderData;
+    } catch (error) {
+      console.error('Exception while creating order:', error);
+      throw error;
     }
   };
-
-  const addToLocalStorage = (order: Order) => {
-    const tempOrders = JSON.parse(localStorage.getItem('tempOrders') || '[]');
-    tempOrders.unshift(order);
-    localStorage.setItem('tempOrders', JSON.stringify(tempOrders));
-    setOrders(prev => [order, ...prev]);
-    console.log('Order saved to localStorage (temporary)');
-
-    // Send order confirmation email even for localStorage orders
-    try {
-      supabase.functions.invoke('send-order-email', {
-        body: {
-          customerEmail: order.customer_email,
-          customerName: order.customer_name,
-          orderId: order.id,
-          items: order.items,
-          originalTotal: order.original_total,
-          discountAmount: order.discount_amount,
-          shippingFee: order.shipping_fee,
-          finalTotal: order.final_total,
-          paymentMethod: order.payment_method,
-          txId: order.tx_id,
-          bitcoinAmount: order.bitcoin_amount,
-          shippingAddress: order.shipping_address,
-          phone: order.phone,
-          orderDate: order.order_date,
-          verificationStatus: order.verification_status
-        }
-      }).then(emailResponse => {
-        if (emailResponse.error) {
-          console.error('Error sending order confirmation email:', emailResponse.error);
-        } else {
-          console.log('Order confirmation email sent successfully');
-        }
-      });
-    } catch (emailError) {
-      console.error('Exception sending order confirmation email:', emailError);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-  }, [isAuthenticated, userProfile]);
 
   return {
     orders,
     loading,
-    addOrder,
-    refreshOrders: fetchOrders
+    fetchOrders,
+    createOrder
   };
 };

@@ -48,7 +48,7 @@ const Header = ({
               variant="ghost"
               size="sm"
               onClick={onMenuToggle}
-              className="p-2 hover:bg-gray-100 rounded-full"
+              className="p-2 hover:bg-gray-100 rounded-full lg:hidden"
               data-hamburger
             >
               <Menu className="h-5 w-5 md:h-6 md:w-6" />
@@ -66,11 +66,11 @@ const Header = ({
             </button>
           </div>
 
-          {/* Center navigation - hidden on mobile, shown via sidebar */}
-          <nav className="hidden lg:flex items-center space-x-8">
+          {/* Center navigation - always visible */}
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
             <button
               onClick={handleHomeClick}
-              className={`font-medium transition-colors ${
+              className={`font-medium transition-colors text-sm lg:text-base ${
                 currentPage === 'home' 
                   ? 'text-green-600 border-b-2 border-green-600 pb-1' 
                   : 'text-gray-700 hover:text-green-600'
@@ -80,7 +80,7 @@ const Header = ({
             </button>
             <button
               onClick={() => onPageChange('about')}
-              className={`font-medium transition-colors ${
+              className={`font-medium transition-colors text-sm lg:text-base ${
                 currentPage === 'about' 
                   ? 'text-green-600 border-b-2 border-green-600 pb-1' 
                   : 'text-gray-700 hover:text-green-600'
@@ -90,7 +90,7 @@ const Header = ({
             </button>
             <button
               onClick={() => onPageChange('contact')}
-              className={`font-medium transition-colors ${
+              className={`font-medium transition-colors text-sm lg:text-base ${
                 currentPage === 'contact' 
                   ? 'text-green-600 border-b-2 border-green-600 pb-1' 
                   : 'text-gray-700 hover:text-green-600'
@@ -100,7 +100,7 @@ const Header = ({
             </button>
             <button
               onClick={() => onPageChange('delivery')}
-              className={`font-medium transition-colors ${
+              className={`font-medium transition-colors text-sm lg:text-base ${
                 currentPage === 'delivery' 
                   ? 'text-green-600 border-b-2 border-green-600 pb-1' 
                   : 'text-gray-700 hover:text-green-600'
@@ -110,7 +110,7 @@ const Header = ({
             </button>
             <button
               onClick={() => onPageChange('payment')}
-              className={`font-medium transition-colors ${
+              className={`font-medium transition-colors text-sm lg:text-base ${
                 currentPage === 'payment' 
                   ? 'text-green-600 border-b-2 border-green-600 pb-1' 
                   : 'text-gray-700 hover:text-green-600'
@@ -120,7 +120,7 @@ const Header = ({
             </button>
             <button
               onClick={() => onPageChange('labtesting')}
-              className={`font-medium transition-colors ${
+              className={`font-medium transition-colors text-sm lg:text-base ${
                 currentPage === 'labtesting' 
                   ? 'text-green-600 border-b-2 border-green-600 pb-1' 
                   : 'text-gray-700 hover:text-green-600'

@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Eye, EyeOff } from 'lucide-react';
+import { countries } from '@/lib/countries';
 import GoogleSignInButton from './GoogleSignInButton';
 
 interface AuthFormProps {
@@ -12,6 +14,8 @@ interface AuthFormProps {
   email: string;
   password: string;
   name: string;
+  country: string;
+  referralCodeInput: string;
   loading: boolean;
   showPassword: boolean;
   acceptedTerms: boolean;
@@ -20,6 +24,8 @@ interface AuthFormProps {
   onEmailChange: (email: string) => void;
   onPasswordChange: (password: string) => void;
   onNameChange: (name: string) => void;
+  onCountryChange: (country: string) => void;
+  onReferralCodeInputChange: (code: string) => void;
   onShowPasswordToggle: () => void;
   onTermsChange: (accepted: boolean) => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -35,6 +41,8 @@ const AuthForm = ({
   email,
   password,
   name,
+  country,
+  referralCodeInput,
   loading,
   showPassword,
   acceptedTerms,
@@ -43,6 +51,8 @@ const AuthForm = ({
   onEmailChange,
   onPasswordChange,
   onNameChange,
+  onCountryChange,
+  onReferralCodeInputChange,
   onShowPasswordToggle,
   onTermsChange,
   onSubmit,
@@ -121,6 +131,46 @@ const AuthForm = ({
           </div>
         </div>
 
+        {mode === 'signup' && (
+          <div>
+            <Label htmlFor="auth-country">
+              {language === 'en' ? 'Country' : 'País'}
+            </Label>
+            <Select value={country} onValueChange={onCountryChange}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder={language === 'en' ? 'Select your country' : 'Selecciona tu país'} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USA">
+                  {language === 'en' ? 'United States' : 'Estados Unidos'}
+                </SelectItem>
+                {countries.filter(c => c !== 'United States').map((countryName) => (
+                  <SelectItem key={countryName} value={countryName}>
+                    {countryName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {mode === 'signup' && (
+          <div>
+            <Label htmlFor="auth-referral">
+              {language === 'en' ? 'Referral Code (Optional)' : 'Código de Referido (Opcional)'}
+            </Label>
+            <Input
+              id="auth-referral"
+              name="referralCode"
+              type="text"
+              value={referralCodeInput}
+              onChange={(e) => onReferralCodeInputChange(e.target.value)}
+              placeholder={language === 'en' ? 'Enter referral code' : 'Ingresa código de referido'}
+              className="mt-1"
+            />
+          </div>
+        )}
+
         {mode === 'login' && onForgotPassword && (
           <div className="text-right">
             <button
@@ -166,7 +216,7 @@ const AuthForm = ({
 
         <Button 
           type="submit" 
-          disabled={loading || (mode === 'signup' && !acceptedTerms)} 
+          disabled={loading || (mode === 'signup' && (!acceptedTerms || !country))} 
           className="w-full"
         >
           {loading 

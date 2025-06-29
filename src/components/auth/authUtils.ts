@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export const handleEmailAuth = async (
@@ -6,12 +5,14 @@ export const handleEmailAuth = async (
   email: string,
   password: string,
   username?: string,
-  referralCode?: string
+  referralCode?: string,
+  country?: string
 ) => {
   console.log(`Starting ${mode} process...`, { 
     email, 
     username, 
     referralCode: referralCode || 'none',
+    country: country || 'none',
     hasReferralCode: !!referralCode 
   });
 
@@ -48,6 +49,9 @@ export const handleEmailAuth = async (
     }
     if (referralCode?.trim()) {
       metadata.referred_by = referralCode.trim();
+    }
+    if (country?.trim()) {
+      metadata.country = country.trim();
     }
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
