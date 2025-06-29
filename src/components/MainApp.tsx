@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
@@ -163,7 +164,9 @@ const MainApp = () => {
         referralCount={0}
       />
 
-      {renderCurrentPage()}
+      <div className="pt-16 md:pt-20">
+        {renderCurrentPage()}
+      </div>
 
       <CartModal
         isOpen={isCartOpen}

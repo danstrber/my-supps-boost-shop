@@ -147,6 +147,14 @@ const CartModal = ({
               </p>
             </div>
 
+            {!isAuthenticated && (
+              <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-center">
+                <p className="text-yellow-700 text-sm font-medium">
+                  Please login to see shipping costs and complete checkout
+                </p>
+              </div>
+            )}
+
             {cartItems.map(({ product, quantity }) => (
               <CartItem
                 key={product.id}
