@@ -10,8 +10,30 @@ import ReferralSection from '@/components/ReferralSection';
 import OrderHistory from '@/components/OrderHistory';
 import TwoFactorSettings from '@/components/TwoFactorSettings';
 
-const Account = () => {
-  const { userProfile, handleAuthAction, isAuthenticated } = useAuth();
+interface AccountProps {
+  language?: 'en' | 'es';
+  onLanguageChange?: (lang: 'en' | 'es') => void;
+  cartItemCount?: number;
+  isAuthenticated?: boolean;
+  onAuthAction?: (action: 'login' | 'signup' | 'logout') => void;
+  onCartOpen?: () => void;
+  onMenuToggle?: () => void;
+  onPageChange?: (page: string) => void;
+  sidebarOpen?: boolean;
+}
+
+const Account = ({
+  language = 'en',
+  onLanguageChange,
+  cartItemCount,
+  isAuthenticated,
+  onAuthAction,
+  onCartOpen,
+  onMenuToggle,
+  onPageChange,
+  sidebarOpen
+}: AccountProps) => {
+  const { userProfile, handleAuthAction, isAuthenticated: authState } = useAuth();
   const { cart, handleUpdateCart } = useCart();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
 
@@ -24,7 +46,7 @@ const Account = () => {
     handleAuthAction('logout');
   };
 
-  if (!isAuthenticated || !userProfile) {
+  if (!authState || !userProfile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center">
         <div className="text-center">
@@ -86,13 +108,13 @@ const Account = () => {
             </TabsContent>
 
             <TabsContent value="orders">
-              <OrderHistory language="en" />
+              <OrderHistory language={language} />
             </TabsContent>
 
             <TabsContent value="referrals">
               <ReferralSection 
                 userProfile={userProfile}
-                language="en"
+                language={language}
                 referralCount={0}
               />
             </TabsContent>
@@ -100,7 +122,7 @@ const Account = () => {
             <TabsContent value="security">
               <div className="space-y-6">
                 <TwoFactorSettings 
-                  language="en"
+                  language={language}
                   userProfile={userProfile}
                 />
                 <Card>

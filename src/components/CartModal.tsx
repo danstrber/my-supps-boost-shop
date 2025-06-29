@@ -86,9 +86,11 @@ const CartModal = ({
   const discountAmount = subtotal * (cappedDiscount / 100);
   const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Updated shipping fee to $7.50, free shipping at $100
-  const freeShippingThreshold = 100;
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : 7.5;
+  // Updated shipping fee - $7.50 for USA, $17.50 for international, free at $100 USA / $150 international
+  const isInternational = userProfile?.country && userProfile.country !== 'USA';
+  const freeShippingThreshold = isInternational ? 150 : 100;
+  const shippingCost = isInternational ? 17.5 : 7.5;
+  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold ? 0 : shippingCost;
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   const handleCheckout = () => {

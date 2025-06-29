@@ -1,4 +1,3 @@
-
 export const translations = {
   en: {
     // Header and Navigation
@@ -507,5 +506,23 @@ export const translations = {
     transactionFailed: 'Verificación de transacción falló',
     enterTransactionId: 'Ingresa el ID de transacción de Bitcoin',
     bitcoinPaymentOnly: 'Solo se acepta pago con Bitcoin por ahora',
+
+    // Product details - completely translated
+    whatToExpected: 'Qué Esperar',
+    leanMuscleDevelopment: 'Desarrollo de músculo magro (3-5 lbs por mes)',
+    increasedStrengthPower: 'Aumento de fuerza y potencia',
+    enhancedEnduranceStamina: 'Resistencia y aguante mejorados',  
+    fatLossSupport: 'Apoyo para pérdida de grasa manteniendo músculo',
+    mildTestosteroneSupression: 'Supresión leve de testosterona',
+    potentialMoodChanges: 'Posibles cambios de humor',
+    slightAggressionIncrease: 'Ligero aumento de agresividad',
+    possibleHairThinning: 'Posible adelgazamiento del cabello',
+    elevatedLiverEnzymes: 'Enzimas hepáticas elevadas (raro)',
+    lowerDosesRecommended: 'Dosis más bajas recomendadas (5-10mg)',
+    virilizationRisk: 'Riesgo de virilización en dosis altas',
+    menstrualCycleDisruption: 'Posible interrupción del ciclo menstrual',
+    voiceChanges: 'Cambios de voz en dosis excesivas',
+    importantNotice: 'Aviso Importante',
+    researchPurposesOnly: 'Este producto está destinado únicamente para fines de investigación. Consulte con un profesional de la salud antes de usar. No para consumo humano. Use bajo su propio riesgo y responsabilidad.'
   }
 };

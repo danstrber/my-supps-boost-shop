@@ -57,6 +57,26 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
             </div>
           </div>
 
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+            <h3 className="text-lg font-semibold text-blue-800 mb-3">
+              {language === 'en' ? 'Shipping Costs' : 'Costos de Envío'}
+            </h3>
+            <div className="space-y-2 text-blue-700">
+              <p>
+                <strong>{language === 'en' ? 'USA Domestic:' : 'Nacional EE.UU.:'}</strong> 
+                {language === 'en' 
+                  ? ' $7.50 - Free shipping on orders over $100'
+                  : ' $7.50 - Envío gratis en pedidos superiores a $100'}
+              </p>
+              <p>
+                <strong>{language === 'en' ? 'International:' : 'Internacional:'}</strong> 
+                {language === 'en' 
+                  ? ' $17.50 - Free shipping on orders over $150'
+                  : ' $17.50 - Envío gratis en pedidos superiores a $150'}
+              </p>
+            </div>
+          </div>
+
           <div className="border-t pt-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-3">
               {language === 'en' ? 'Tracking & Support' : 'Seguimiento y Soporte'}
