@@ -44,11 +44,16 @@ const Account = ({
   const { cart, handleUpdateCart } = useCart();
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
   const [formData, setFormData] = useState({
     name: userProfile?.name || '',
     country: userProfile?.country || ''
   });
   const { toast } = useToast();
+
+  const filteredCountries = countries.filter(countryName =>
+    countryName.toLowerCase().includes(countrySearch.toLowerCase())
+  );
 
   const handleOrderSuccess = (orderDetails: any) => {
     console.log('Order successful:', orderDetails);
@@ -62,6 +67,8 @@ const Account = ({
     if (!userProfile?.id) return;
 
     try {
+      console.log('Updating profile with:', formData);
+      
       const { error } = await supabase
         .from('users')
         .update({
@@ -159,8 +166,16 @@ const Account = ({
                             <SelectValue placeholder="Select your country" />
                           </SelectTrigger>
                           <SelectContent>
+                            <div className="p-2">
+                              <Input
+                                placeholder="Search countries..."
+                                value={countrySearch}
+                                onChange={(e) => setCountrySearch(e.target.value)}
+                                className="mb-2"
+                              />
+                            </div>
                             <SelectItem value="USA">United States</SelectItem>
-                            {countries.filter(c => c !== 'United States').map((country) => (
+                            {filteredCountries.filter(c => c !== 'United States').map((country) => (
                               <SelectItem key={country} value={country}>
                                 {country}
                               </SelectItem>

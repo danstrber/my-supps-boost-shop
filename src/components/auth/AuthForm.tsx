@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -62,6 +62,12 @@ const AuthForm = ({
   onTermsClick,
   onForgotPassword
 }: AuthFormProps) => {
+  const [countrySearch, setCountrySearch] = useState('');
+  
+  const filteredCountries = countries.filter(countryName =>
+    countryName.toLowerCase().includes(countrySearch.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <form onSubmit={onSubmit} className="space-y-4">
@@ -79,6 +85,7 @@ const AuthForm = ({
               placeholder={language === 'en' ? 'Enter your full name' : 'Ingresa tu nombre completo'}
               autoComplete="name"
               className="mt-1"
+              required
             />
           </div>
         )}
@@ -140,10 +147,18 @@ const AuthForm = ({
               <SelectValue placeholder={language === 'en' ? 'Select your country' : 'Selecciona tu país'} />
             </SelectTrigger>
             <SelectContent>
+              <div className="p-2">
+                <Input
+                  placeholder={language === 'en' ? 'Search countries...' : 'Buscar países...'}
+                  value={countrySearch}
+                  onChange={(e) => setCountrySearch(e.target.value)}
+                  className="mb-2"
+                />
+              </div>
               <SelectItem value="USA">
                 {language === 'en' ? 'United States' : 'Estados Unidos'}
               </SelectItem>
-              {countries.filter(c => c !== 'United States').map((countryName) => (
+              {filteredCountries.filter(c => c !== 'United States').map((countryName) => (
                 <SelectItem key={countryName} value={countryName}>
                   {countryName}
                 </SelectItem>
@@ -212,7 +227,7 @@ const AuthForm = ({
 
         <Button 
           type="submit" 
-          disabled={loading || !country || (mode === 'signup' && !acceptedTerms)} 
+          disabled={loading || !country || (mode === 'signup' && (!acceptedTerms || !name))} 
           className="w-full"
         >
           {loading 

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -96,6 +97,30 @@ const AuthModal = ({
 
     try {
       if (mode === 'signup') {
+        if (!country) {
+          toast({
+            title: language === 'en' ? "Country required" : "País requerido",
+            description: language === 'en' 
+              ? "Please select your country to continue."
+              : "Por favor selecciona tu país para continuar.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
+        if (!name) {
+          toast({
+            title: language === 'en' ? "Name required" : "Nombre requerido",
+            description: language === 'en' 
+              ? "Please enter your full name."
+              : "Por favor ingresa tu nombre completo.",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
         const emailExists = await checkForDuplicateEmail(email);
         if (emailExists) {
           toast({
@@ -109,12 +134,12 @@ const AuthModal = ({
           return;
         }
 
-        if (!acceptedTerms || !country) {
+        if (!acceptedTerms) {
           toast({
-            title: language === 'en' ? "Required fields missing" : "Campos requeridos faltantes",
+            title: language === 'en' ? "Terms required" : "Términos requeridos",
             description: language === 'en' 
-              ? "Please accept the Terms of Service and select your country to continue."
-              : "Por favor acepta los Términos de Servicio y selecciona tu país para continuar.",
+              ? "Please accept the Terms of Service to continue."
+              : "Por favor acepta los Términos de Servicio para continuar.",
             variant: "destructive",
           });
           setLoading(false);
@@ -122,9 +147,8 @@ const AuthModal = ({
         }
 
         const finalReferralCode = referralCode || referralCodeInput || null;
-        console.log('Starting signup process with referral code:', finalReferralCode);
+        console.log('Starting signup process with:', { email, name, country, referralCode: finalReferralCode });
         
-        // Add country and referral code to metadata
         const { error } = await handleEmailAuth('signup', email, password, name, finalReferralCode, country);
         
         if (error) {
@@ -183,10 +207,21 @@ const AuthModal = ({
       return;
     }
 
+    if (!country) {
+      toast({
+        title: language === 'en' ? "Country required" : "País requerido",
+        description: language === 'en' 
+          ? "Please select your country before signing in with Google."
+          : "Por favor selecciona tu país antes de iniciar sesión con Google.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const finalReferralCode = referralCode || referralCodeInput || null;
-      const { error } = await handleGoogleAuth(mode, finalReferralCode);
+      const { error } = await handleGoogleAuth(mode, finalReferralCode, country);
       if (error) {
         toast({
           title: language === 'en' ? "Error" : "Error",
@@ -207,6 +242,17 @@ const AuthModal = ({
   };
 
   const connectPhantomWallet = async () => {
+    if (!country) {
+      toast({
+        title: language === 'en' ? "Country required" : "País requerido",
+        description: language === 'en' 
+          ? "Please select your country before connecting with Phantom wallet."
+          : "Por favor selecciona tu país antes de conectar con Phantom wallet.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       if (!window.phantom?.solana) {
         toast({

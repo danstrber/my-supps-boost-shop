@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -14,12 +15,13 @@ export interface UserProfile {
   two_factor_enabled?: boolean;
 }
 
-export const signUp = async (email: string, password: string, name?: string, referralCode?: string) => {
-  console.log('Starting signup process...', { email, name, referralCode });
+export const signUp = async (email: string, password: string, name?: string, referralCode?: string, country?: string) => {
+  console.log('Starting signup process...', { email, name, referralCode, country });
   
   const metadata: any = {};
   if (name) metadata.name = name;
   if (referralCode) metadata.referred_by = referralCode;
+  if (country) metadata.country = country;
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -59,13 +61,21 @@ export const signIn = async (email: string, password: string) => {
 export const signInWithGoogle = async (referralCode?: string) => {
   console.log('Starting Google signin...', { referralCode });
   
+  const queryParams: any = {};
+  if (referralCode) queryParams.referred_by = referralCode;
+  
+  // Get country from localStorage if available
+  const pendingCountry = localStorage.getItem('pending_country');
+  if (pendingCountry) {
+    queryParams.country = pendingCountry;
+    localStorage.removeItem('pending_country');
+  }
+  
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: `${window.location.origin}/`,
-      queryParams: {
-        ...(referralCode && { referred_by: referralCode })
-      }
+      queryParams
     }
   });
 
