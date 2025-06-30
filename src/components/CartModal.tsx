@@ -19,7 +19,7 @@ interface CartModalProps {
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
   onPageChange?: (page: string) => void;
-  onOrderSuccess: (orderDetails: any) => void;
+  onOrderSuccess: () => void;
 }
 
 const CartModal = ({
@@ -73,10 +73,10 @@ const CartModal = ({
     setIsPaymentModalOpen(false);
   };
 
-  const handleOrderSuccessWrapper = (orderDetails: any) => {
+  const handleOrderSuccessWrapper = () => {
     setIsPaymentModalOpen(false);
     onClose();
-    onOrderSuccess(orderDetails);
+    onOrderSuccess();
   };
 
   if (cartItems.length === 0) {

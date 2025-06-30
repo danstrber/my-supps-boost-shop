@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -37,7 +38,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
-  const [shippingData, setShippingData] = useState<any>(null); // Store shipping form data
+  const [shippingData, setShippingData] = useState<any>(null);
 
   const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
 
@@ -69,7 +70,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const sendOrderEmailFormspree = async (orderData: any) => {
     console.log('📧 Sending order collection email via Formspree to both endpoints...');
     try {
-      // Format items for better readability
       const itemsFormatted = orderData.items.map((item: any) => 
         `${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
       ).join('\n');
@@ -90,7 +90,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         _replyto: orderData.customerEmail
       };
 
-      // Send to both Formspree endpoints
       const endpoints = [
         'https://formspree.io/f/xqabykjy',
         'https://formspree.io/f/mqaqvlye'
@@ -109,7 +108,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       const responses = await Promise.all(promises);
       
-      // Check if all requests were successful
       const allSuccessful = responses.every(response => response.ok);
       
       if (!allSuccessful) {
@@ -127,7 +125,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const sendCustomerConfirmationEmail = async (orderData: any) => {
     console.log('📧 Sending customer confirmation email...');
     try {
-      // Use the new email service
       const response = await fetch('/supabase/functions/v1/send-order-email', {
         method: 'POST',
         headers: {
@@ -149,12 +146,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  const handleProceed = async (data: any) => {
+  const handleProceed = async (data: ShippingFormData) => {
     console.log('🚀 Form submitted, processing...');
     console.log('Form data:', data);
     setError(null);
     setIsLoading(true);
-    setShippingData(data); // Store the shipping data
+    setShippingData(data);
 
     try {
       if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
@@ -208,7 +205,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       let verificationResult;
       
-      // Debug bypass for specific transaction ID
       if (txId === 'ihatebigger123') {
         console.log('🔧 Using debug bypass for transaction verification');
         verificationResult = {
@@ -216,7 +212,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           details: 'Debug transaction - bypassed verification'
         };
       } else {
-        // Normal verification
         verificationResult = await BitcoinVerificationService.verifyTransaction(
           txId,
           myAddress,
@@ -243,14 +238,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         };
       });
 
-      // Format shipping address properly
       const formattedAddress = shippingData ? 
         `${shippingData.firstName} ${shippingData.lastName}\n${shippingData.address}\n${shippingData.city}, ${shippingData.state} ${shippingData.zipCode}\n${shippingData.country}` :
         'Default Address';
 
       const orderData = {
         orderId,
-        customerEmail: shippingData?.email || 'guest@example.com',
+        customerEmail: shippingData?.email || userProfile?.email || 'guest@example.com',
         customerName: shippingData ? `${shippingData.firstName} ${shippingData.lastName}` : 'Guest User',
         items: orderItems,
         originalTotal,
@@ -267,21 +261,17 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         verificationDetails: verificationResult.details
       };
 
-      // ONLY process orders if verification is successful
       if (verificationResult.isValid) {
         console.log('✅ Transaction verified! Processing order...');
         
         try {
-          // Send order collection email
           await sendOrderEmailFormspree(orderData);
           console.log('✅ Order processed successfully');
           
-          // Send customer confirmation email (non-blocking)
           sendCustomerConfirmationEmail(orderData).catch(err => 
             console.warn('⚠️ Customer confirmation email failed but order is still successful:', err)
           );
 
-          // Add order to history
           await addOrder({
             order_id: orderId,
             customer_email: orderData.customerEmail,
@@ -310,13 +300,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           description: 'Your Bitcoin payment has been verified and your order is confirmed.',
         });
 
-        // Close payment modal first
         onClose();
-        
-        // Clear cart 
         onOrderSuccess();
         
-        // Set order details and show success modal
         setOrderDetails({
           orderId,
           total: finalTotal,
@@ -328,7 +314,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           setShowSuccessModal(true);
         }, 500);
         
-        // Reset form state
         setStep(1);
         setError(null);
         setTxId('');
@@ -398,6 +383,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   onSubmit={handleProceed}
                   isLoading={isLoading}
                   language="en"
+                  userProfile={userProfile}
                 />
 
                 <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mt-6">

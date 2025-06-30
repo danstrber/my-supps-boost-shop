@@ -13,6 +13,7 @@ export interface UserProfile {
   referred_spending?: number;
   created_at: string;
   two_factor_enabled?: boolean;
+  auth_id: string;
 }
 
 export const signUp = async (email: string, password: string, name?: string, referralCode?: string, country?: string) => {
@@ -40,7 +41,7 @@ export const signUp = async (email: string, password: string, name?: string, ref
     // If signup is successful and user is created, update the users table directly
     if (data.user && !error) {
       try {
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for trigger to complete
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Wait longer for trigger to complete
         
         const { error: updateError } = await supabase
           .from('users')

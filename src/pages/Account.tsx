@@ -55,8 +55,8 @@ const Account = ({
     countryName.toLowerCase().includes(countrySearch.toLowerCase())
   );
 
-  const handleOrderSuccess = (orderDetails: any) => {
-    console.log('Order successful:', orderDetails);
+  const handleOrderSuccess = () => {
+    console.log('Order successful');
   };
 
   const handleLogout = () => {
@@ -64,7 +64,7 @@ const Account = ({
   };
 
   const handleSaveProfile = async () => {
-    if (!userProfile?.auth_id) return;
+    if (!userProfile?.id) return;
 
     try {
       console.log('Updating profile with:', formData);
@@ -75,7 +75,7 @@ const Account = ({
           name: formData.name,
           country: formData.country
         })
-        .eq('auth_id', userProfile.auth_id);
+        .eq('id', userProfile.id);
 
       if (error) {
         console.error('Error updating profile:', error);
