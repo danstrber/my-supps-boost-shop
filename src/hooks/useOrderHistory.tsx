@@ -3,18 +3,20 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
 
+export interface OrderItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
+}
+
 export interface Order {
   id: string;
   order_id: string;
   customer_email: string;
   customer_name: string;
-  items: Array<{
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    total: number;
-  }>;
+  items: OrderItem[];
   original_total: number;
   discount_amount: number;
   shipping_fee: number;
@@ -59,7 +61,7 @@ export const OrderHistoryProvider = ({ children }: { children: ReactNode }) => {
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('customer_email', userProfile.email)
+        .eq('user_id', userProfile.auth_id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -70,10 +72,10 @@ export const OrderHistoryProvider = ({ children }: { children: ReactNode }) => {
       // Transform database data to match Order interface
       const transformedOrders: Order[] = (data || []).map(dbOrder => ({
         id: dbOrder.id,
-        order_id: dbOrder.id, // Use id as order_id if no separate order_id field
+        order_id: dbOrder.id,
         customer_email: userProfile.email,
         customer_name: userProfile.name || userProfile.email,
-        items: Array.isArray(dbOrder.items) ? dbOrder.items : [],
+        items: Array.isArray(dbOrder.items) ? dbOrder.items as OrderItem[] : [],
         original_total: dbOrder.original_total || 0,
         discount_amount: dbOrder.discount_amount || 0,
         shipping_fee: dbOrder.shipping_fee || 0,
@@ -81,8 +83,8 @@ export const OrderHistoryProvider = ({ children }: { children: ReactNode }) => {
         payment_method: dbOrder.payment_method || '',
         tx_id: dbOrder.transaction_hash,
         bitcoin_amount: dbOrder.bitcoin_amount?.toString(),
-        shipping_address: '', // Will need to be extracted from payment_details if stored there
-        phone: '', // Will need to be extracted from payment_details if stored there
+        shipping_address: dbOrder.payment_details?.shipping_address || '',
+        phone: dbOrder.payment_details?.phone || '',
         order_date: dbOrder.created_at,
         verification_status: dbOrder.verification_status,
         user_id: dbOrder.user_id,

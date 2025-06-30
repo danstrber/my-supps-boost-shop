@@ -87,7 +87,13 @@ const MainApp = () => {
   };
 
   const handleOrderSuccess = () => {
-    showOrderSuccess({});
+    // Show order success without specific details since they come from PaymentModal
+    showOrderSuccess({
+      orderId: 'TEMP',
+      total: 0,
+      customerEmail: userProfile?.email || '',
+      paymentMethod: 'Bitcoin'
+    });
     clearCart(); // Clear cart after successful order
   };
 
