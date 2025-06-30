@@ -287,7 +287,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             shipping_address: formattedAddress,
             phone: orderData.phone,
             order_date: new Date().toISOString(),
-            verification_status: 'verified'
+            verification_status: 'verified',
+            user_id: userProfile?.auth_id || userProfile?.id || 'guest',
+            bitcoin_address: myAddress,
+            transaction_hash: txId,
+            status: 'pending',
+            created_at: new Date().toISOString()
           });
           
         } catch (emailError) {

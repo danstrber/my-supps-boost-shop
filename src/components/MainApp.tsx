@@ -86,8 +86,8 @@ const MainApp = () => {
     setSidebarOpen(false);
   };
 
-  const handleOrderSuccess = (orderDetails: any) => {
-    showOrderSuccess(orderDetails);
+  const handleOrderSuccess = () => {
+    showOrderSuccess({});
     clearCart(); // Clear cart after successful order
   };
 
