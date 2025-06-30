@@ -36,6 +36,29 @@ export const signUp = async (email: string, password: string, name?: string, ref
     console.error('Signup error:', error);
   } else {
     console.log('Signup successful:', data);
+    
+    // If signup is successful and user is created, update the users table directly
+    if (data.user && !error) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for trigger to complete
+        
+        const { error: updateError } = await supabase
+          .from('users')
+          .update({ 
+            name: name || data.user.email,
+            country: country 
+          })
+          .eq('auth_id', data.user.id);
+          
+        if (updateError) {
+          console.error('Error updating user profile after signup:', updateError);
+        } else {
+          console.log('User profile updated successfully after signup');
+        }
+      } catch (updateException) {
+        console.error('Exception updating user profile after signup:', updateException);
+      }
+    }
   }
 
   return { data, error };

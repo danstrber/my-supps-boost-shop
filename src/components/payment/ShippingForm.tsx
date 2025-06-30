@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -6,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { countries } from '@/lib/countries';
+import { UserProfile } from '@/lib/auth';
 
 const shippingSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -25,12 +27,24 @@ interface ShippingFormProps {
   onSubmit: (data: ShippingFormData) => void;
   isLoading?: boolean;
   language: 'en' | 'es';
+  userProfile: UserProfile;
 }
 
-const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, language }) => {
+const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, language, userProfile }) => {
   const form = useForm<ShippingFormData>({
     resolver: zodResolver(shippingSchema),
+    defaultValues: {
+      email: userProfile.email || '',
+      country: userProfile.country || '',
+    }
   });
+
+  // Set the country field to be readonly and match user's profile
+  useEffect(() => {
+    if (userProfile.country) {
+      form.setValue('country', userProfile.country);
+    }
+  }, [userProfile.country, form]);
 
   const t = {
     en: {
@@ -45,6 +59,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
       zipCode: 'ZIP/Postal Code',
       country: 'Country',
       continue: 'Continue to Payment',
+      countryNote: 'Country matches your profile and cannot be changed here.',
     },
     es: {
       title: 'Información de Envío',
@@ -58,6 +73,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
       zipCode: 'Código Postal',
       country: 'País',
       continue: 'Continuar al Pago',
+      countryNote: 'El país coincide con tu perfil y no se puede cambiar aquí.',
     },
   };
 
@@ -126,6 +142,8 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
                       type="email"
                       autoComplete="email"
                       placeholder={labels.email}
+                      readOnly
+                      className="bg-gray-100"
                     />
                   </FormControl>
                   <FormMessage />
@@ -248,16 +266,13 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
                     {...field}
                     id="country"
                     name="country"
-                    list="countries"
                     autoComplete="country-name"
                     placeholder={labels.country}
+                    readOnly
+                    className="bg-gray-100"
                   />
                 </FormControl>
-                <datalist id="countries">
-                  {countries.map((country) => (
-                    <option key={country} value={country} />
-                  ))}
-                </datalist>
+                <p className="text-sm text-gray-600 mt-1">{labels.countryNote}</p>
                 <FormMessage />
               </FormItem>
             )}

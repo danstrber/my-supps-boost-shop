@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { Product } from '@/lib/products';
@@ -95,6 +95,9 @@ const CartModal = ({
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
+            <DialogDescription>
+              Your shopping cart is currently empty.
+            </DialogDescription>
           </DialogHeader>
           <div className="text-center py-8">
             <p className="text-gray-500">Your cart is empty</p>
@@ -120,6 +123,9 @@ const CartModal = ({
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
+            <DialogDescription>
+              Review your items before checkout.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 max-h-60 overflow-y-auto">

@@ -64,7 +64,7 @@ const Account = ({
   };
 
   const handleSaveProfile = async () => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.auth_id) return;
 
     try {
       console.log('Updating profile with:', formData);
@@ -75,7 +75,7 @@ const Account = ({
           name: formData.name,
           country: formData.country
         })
-        .eq('id', userProfile.id);
+        .eq('auth_id', userProfile.auth_id);
 
       if (error) {
         console.error('Error updating profile:', error);
