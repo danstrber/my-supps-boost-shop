@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -296,5 +295,46 @@ export const products: Product[] = [
       'Mood and emotional changes'
     ],
     inStock: true
+  },
+  {
+    id: 'accutane',
+    name: 'Accutane (Isotretinoin)',
+    price: 30,
+    image: '/lovable-uploads/14261a69-7ff7-4bed-890d-882e8294932f.png',
+    category: 'dermatology',
+    description: 'Powerful acne treatment medication for severe acne and skin conditions. Highly effective for hormonal acne often experienced during cycles.',
+    specifications: {
+      dosePerCapsule: '10mg',
+      capsulesPerBottle: '60 tablets',
+      potencyLevel: 'Advanced'
+    },
+    whatToExpected: [
+      'Significant acne reduction (80-90% improvement)',
+      'Long-lasting skin clearing effects',
+      'Reduced oil production and pore size',
+      'Prevention of acne scarring'
+    ],
+    cycleInfo: {
+      length: '4-6 months treatment',
+      dosage: '10-20mg daily with food',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Severe skin dryness and sensitivity',
+      'Chapped lips and dry mouth',
+      'Joint pain and muscle aches',
+      'Potential mood changes',
+      'Increased sun sensitivity',
+      'Elevated liver enzymes (monitor required)'
+    ],
+    womenEffects: [
+      'STRICTLY NOT for pregnant women',
+      'Requires pregnancy prevention program',
+      'Can cause severe birth defects',
+      'Monthly pregnancy tests required',
+      'Same side effects as men'
+    ],
+    inStock: true,
+    labTested: true
   }
 ];

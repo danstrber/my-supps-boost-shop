@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { UserProfile } from '@/lib/auth';
@@ -69,33 +68,52 @@ export const OrderHistoryProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Transform database data to match Order interface
-      const transformedOrders: Order[] = (data || []).map(dbOrder => ({
-        id: dbOrder.id,
-        order_id: dbOrder.id,
-        customer_email: userProfile.email,
-        customer_name: userProfile.name || userProfile.email,
-        items: Array.isArray(dbOrder.items) ? dbOrder.items as OrderItem[] : [],
-        original_total: dbOrder.original_total || 0,
-        discount_amount: dbOrder.discount_amount || 0,
-        shipping_fee: dbOrder.shipping_fee || 0,
-        final_total: dbOrder.final_total || 0,
-        payment_method: dbOrder.payment_method || '',
-        tx_id: dbOrder.transaction_hash,
-        bitcoin_amount: dbOrder.bitcoin_amount?.toString(),
-        shipping_address: dbOrder.payment_details?.shipping_address || '',
-        phone: dbOrder.payment_details?.phone || '',
-        order_date: dbOrder.created_at,
-        verification_status: dbOrder.verification_status,
-        user_id: dbOrder.user_id,
-        bitcoin_address: dbOrder.bitcoin_address,
-        transaction_hash: dbOrder.transaction_hash,
-        status: dbOrder.status,
-        created_at: dbOrder.created_at,
-        verified_at: dbOrder.verified_at,
-        payment_details: dbOrder.payment_details,
-        verification_details: dbOrder.verification_details
-      }));
+      // Transform database data to match Order interface with proper type handling
+      const transformedOrders: Order[] = (data || []).map(dbOrder => {
+        // Safely parse items with type guards
+        let parsedItems: OrderItem[] = [];
+        if (Array.isArray(dbOrder.items)) {
+          parsedItems = (dbOrder.items as any[]).map(item => ({
+            id: item.id || '',
+            name: item.name || '',
+            price: Number(item.price) || 0,
+            quantity: Number(item.quantity) || 0,
+            total: Number(item.total) || 0
+          }));
+        }
+
+        // Safely parse payment_details
+        const paymentDetails = typeof dbOrder.payment_details === 'object' && dbOrder.payment_details !== null 
+          ? dbOrder.payment_details as Record<string, any>
+          : {};
+
+        return {
+          id: dbOrder.id,
+          order_id: dbOrder.id,
+          customer_email: userProfile.email,
+          customer_name: userProfile.name || userProfile.email,
+          items: parsedItems,
+          original_total: dbOrder.original_total || 0,
+          discount_amount: dbOrder.discount_amount || 0,
+          shipping_fee: dbOrder.shipping_fee || 0,
+          final_total: dbOrder.final_total || 0,
+          payment_method: dbOrder.payment_method || '',
+          tx_id: dbOrder.transaction_hash,
+          bitcoin_amount: dbOrder.bitcoin_amount?.toString(),
+          shipping_address: paymentDetails.shipping_address || '',
+          phone: paymentDetails.phone || '',
+          order_date: dbOrder.created_at,
+          verification_status: dbOrder.verification_status,
+          user_id: dbOrder.user_id,
+          bitcoin_address: dbOrder.bitcoin_address,
+          transaction_hash: dbOrder.transaction_hash,
+          status: dbOrder.status,
+          created_at: dbOrder.created_at,
+          verified_at: dbOrder.verified_at,
+          payment_details: dbOrder.payment_details,
+          verification_details: dbOrder.verification_details
+        };
+      });
 
       setOrders(transformedOrders);
     } catch (error) {
@@ -126,10 +144,10 @@ export const OrderHistoryProvider = ({ children }: { children: ReactNode }) => {
 
   const addOrder = async (orderData: Omit<Order, 'id'>) => {
     try {
-      // Transform Order data to match database schema
+      // Transform Order data to match database schema - fix the array wrapping issue
       const dbOrderData = {
         user_id: orderData.user_id,
-        items: orderData.items,
+        items: orderData.items as any, // Cast to any for Json compatibility
         original_total: orderData.original_total,
         discount_amount: orderData.discount_amount,
         shipping_fee: orderData.shipping_fee,
@@ -152,7 +170,7 @@ export const OrderHistoryProvider = ({ children }: { children: ReactNode }) => {
 
       const { data, error } = await supabase
         .from('orders')
-        .insert([dbOrderData])
+        .insert(dbOrderData) // Remove array wrapping - insert single object
         .select()
         .single();
 
