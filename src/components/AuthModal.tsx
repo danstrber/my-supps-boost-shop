@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { handleEmailAuth, handleGoogleAuth } from '@/components/auth/authUtils';
@@ -326,6 +326,9 @@ const AuthModal = ({
             <DialogTitle>
               {language === 'en' ? 'Email Confirmation Required' : 'Confirmación de Correo Requerida'}
             </DialogTitle>
+            <DialogDescription>
+              {language === 'en' ? 'Please check your email to confirm your account.' : 'Por favor revisa tu correo para confirmar tu cuenta.'}
+            </DialogDescription>
           </DialogHeader>
           <EmailConfirmationView
             email={email}
@@ -346,6 +349,9 @@ const AuthModal = ({
             <DialogTitle>
               {language === 'en' ? 'Reset Password' : 'Restablecer Contraseña'}
             </DialogTitle>
+            <DialogDescription>
+              {language === 'en' ? 'Enter your email to receive a password reset link.' : 'Ingresa tu correo para recibir un enlace de restablecimiento.'}
+            </DialogDescription>
           </DialogHeader>
           <ForgotPasswordForm
             language={language}
@@ -365,6 +371,11 @@ const AuthModal = ({
               ? (language === 'en' ? 'Sign In' : 'Iniciar Sesión')
               : (language === 'en' ? 'Sign Up' : 'Registrarse')}
           </DialogTitle>
+          <DialogDescription>
+            {mode === 'login'
+              ? (language === 'en' ? 'Welcome back! Please sign in to your account.' : '¡Bienvenido de vuelta! Por favor inicia sesión en tu cuenta.')
+              : (language === 'en' ? 'Create your account to get started.' : 'Crea tu cuenta para comenzar.')}
+          </DialogDescription>
         </DialogHeader>
         <AuthForm
           mode={mode}

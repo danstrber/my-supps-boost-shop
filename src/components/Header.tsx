@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Menu, User, LogOut } from 'lucide-react';
+import { ShoppingCart, User, LogOut } from 'lucide-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import { translations } from '@/lib/translations';
 
@@ -12,10 +12,10 @@ interface HeaderProps {
   isAuthenticated: boolean;
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
   onCartOpen: () => void;
-  onMenuToggle: () => void;
+  
   currentPage: string;
   onPageChange: (page: string) => void;
-  sidebarOpen: boolean;
+  
 }
 
 const Header = ({
@@ -25,10 +25,10 @@ const Header = ({
   isAuthenticated,
   onAuthAction,
   onCartOpen,
-  onMenuToggle,
+  
   currentPage,
   onPageChange,
-  sidebarOpen
+  
 }: HeaderProps) => {
   const t = translations[language];
 
@@ -43,15 +43,6 @@ const Header = ({
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Left section */}
           <div className="flex items-center space-x-2 md:space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onMenuToggle}
-              className="p-2 hover:bg-gray-100 rounded-full lg:hidden"
-              data-hamburger
-            >
-              <Menu className="h-5 w-5 md:h-6 md:w-6" />
-            </Button>
             
             <button
               onClick={handleHomeClick}

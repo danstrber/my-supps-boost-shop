@@ -118,9 +118,7 @@ const MainApp = () => {
             isAuthenticated={isAuthenticated}
             onAuthAction={handleAuthModalAction}
             onCartOpen={handleCartOpen}
-            onMenuToggle={handleMenuToggle}
             onPageChange={handlePageChange}
-            sidebarOpen={sidebarOpen}
           />
         );
       default:
@@ -132,11 +130,9 @@ const MainApp = () => {
             isAuthenticated={isAuthenticated}
             onAuthAction={handleAuthModalAction}
             onCartOpen={handleCartOpen}
-            onMenuToggle={handleMenuToggle}
             currentPage={currentPage as 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account'}
             onPageChange={handlePageChange}
-            sidebarOpen={sidebarOpen}
-            onSidebarClose={() => setSidebarOpen(false)}
+            
           />
         );
     }
@@ -151,10 +147,10 @@ const MainApp = () => {
         isAuthenticated={isAuthenticated}
         onAuthAction={handleAuthModalAction}
         onCartOpen={handleCartOpen}
-        onMenuToggle={handleMenuToggle}
+        
         currentPage={currentPage}
         onPageChange={handlePageChange}
-        sidebarOpen={sidebarOpen}
+        
       />
 
       <Sidebar

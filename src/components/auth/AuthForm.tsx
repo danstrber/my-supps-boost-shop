@@ -149,6 +149,8 @@ const AuthForm = ({
             <SelectContent>
               <div className="p-2">
                 <Input
+                  id="country-search"
+                  name="countrySearch"
                   placeholder={language === 'en' ? 'Search countries...' : 'Buscar países...'}
                   value={countrySearch}
                   onChange={(e) => setCountrySearch(e.target.value)}

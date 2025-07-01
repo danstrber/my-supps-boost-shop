@@ -300,8 +300,8 @@ export const products: Product[] = [
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
     price: 30,
-    image: '/lovable-uploads/14261a69-7ff7-4bed-890d-882e8294932f.png',
-    category: 'dermatology',
+    image: '/lovable-uploads/a49cd35f-62dc-449e-b143-2ebdc5fa0f61.png',
+    category: 'support',
     description: 'Powerful acne treatment medication for severe acne and skin conditions. Highly effective for hormonal acne often experienced during cycles.',
     specifications: {
       dosePerCapsule: '10mg',

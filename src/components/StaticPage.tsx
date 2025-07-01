@@ -16,11 +16,11 @@ interface StaticPageProps {
   isAuthenticated: boolean;
   onAuthAction: (action: 'login' | 'signup' | 'logout') => void;
   onCartOpen: () => void;
-  onMenuToggle: () => void;
+  
   currentPage: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account';
   onPageChange: (page: 'home' | 'about' | 'contact' | 'delivery' | 'payment' | 'labtesting' | 'account') => void;
-  sidebarOpen: boolean;
-  onSidebarClose: () => void;
+  
+  
 }
 
 const StaticPage = ({
@@ -30,11 +30,11 @@ const StaticPage = ({
   isAuthenticated,
   onAuthAction,
   onCartOpen,
-  onMenuToggle,
+  
   currentPage,
   onPageChange,
-  sidebarOpen,
-  onSidebarClose
+  
+  
 }: StaticPageProps) => {
   const { userProfile } = useAuth();
 
@@ -64,24 +64,12 @@ const StaticPage = ({
         isAuthenticated={isAuthenticated}
         onAuthAction={onAuthAction}
         onCartOpen={onCartOpen}
-        onMenuToggle={onMenuToggle}
+        
         currentPage={currentPage}
         onPageChange={onPageChange}
-        sidebarOpen={sidebarOpen}
+        
       />
 
-      <Sidebar
-        language={language}
-        isOpen={sidebarOpen}
-        selectedCategory="all"
-        onCategoryChange={(category) => {
-          onPageChange('home');
-          onSidebarClose();
-        }}
-        userProfile={userProfile}
-        referralCount={0}
-        onClose={onSidebarClose}
-      />
 
       <main className="pt-32 px-4">
         <div className="container mx-auto py-8">
