@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
 
@@ -22,7 +21,12 @@ export const signUp = async (email: string, password: string, name?: string, ref
   const metadata: any = {};
   if (name) metadata.name = name;
   if (referralCode) metadata.referred_by = referralCode;
-  if (country) metadata.country = country;
+  if (country) {
+    metadata.country = country;
+    console.log('Setting country in metadata:', country);
+  }
+
+  console.log('Final metadata for signup:', metadata);
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -47,14 +51,14 @@ export const signUp = async (email: string, password: string, name?: string, ref
           .from('users')
           .update({ 
             name: name || data.user.email,
-            country: country 
+            country: country || 'USA' 
           })
           .eq('auth_id', data.user.id);
           
         if (updateError) {
           console.error('Error updating user profile after signup:', updateError);
         } else {
-          console.log('User profile updated successfully after signup');
+          console.log('User profile updated successfully after signup with country:', country);
         }
       } catch (updateException) {
         console.error('Exception updating user profile after signup:', updateException);
@@ -91,6 +95,7 @@ export const signInWithGoogle = async (referralCode?: string, country?: string) 
   }
   if (country) {
     localStorage.setItem('pending_country', country);
+    console.log('Stored country for Google auth:', country);
   }
   
   const { data, error } = await supabase.auth.signInWithOAuth({

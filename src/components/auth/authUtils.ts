@@ -17,6 +17,7 @@ export const handleEmailAuth = async (
   if (referralCode) localStorage.setItem('pending_referral', referralCode);
   
   if (mode === 'signup') {
+    console.log('Calling signUp with country:', country);
     return await signUp(email, password, name, referralCode, country);
   } else {
     return await signIn(email, password);
@@ -33,6 +34,7 @@ export const handleGoogleAuth = async (
   // Store country in localStorage temporarily for Google auth
   if (country) {
     localStorage.setItem('pending_country', country);
+    console.log('Stored country in localStorage:', country);
   }
   
   return await signInWithGoogle(referralCode, country);

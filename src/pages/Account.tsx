@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -103,8 +102,16 @@ const Account = ({
       });
 
       setEditMode(false);
-      // Refresh the profile to get updated data
+      // Refresh the profile to get updated data and force re-render
       await refreshProfile();
+      
+      // Force formData to update with new profile data
+      if (userProfile) {
+        setFormData({
+          name: formData.name,
+          country: formData.country
+        });
+      }
     } catch (error) {
       console.error('Exception updating profile:', error);
       toast({

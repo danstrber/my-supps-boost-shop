@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -218,13 +217,12 @@ const AuthModal = ({
       return;
     }
 
-    // For signup mode, also require terms acceptance for Google auth
-    if (mode === 'signup' && !acceptedTerms) {
+    if (!acceptedTerms) {
       toast({
         title: language === 'en' ? "Terms required" : "Términos requeridos",
         description: language === 'en' 
-          ? "Please accept the Terms of Service to continue with Google sign-up."
-          : "Por favor acepta los Términos de Servicio para continuar con el registro de Google.",
+          ? "Please accept the Terms of Service to continue with Google sign-in."
+          : "Por favor acepta los Términos de Servicio para continuar con el inicio de sesión de Google.",
         variant: "destructive",
       });
       return;
@@ -233,6 +231,7 @@ const AuthModal = ({
     setLoading(true);
     try {
       const finalReferralCode = referralCode || referralCodeInput || null;
+      console.log('Google auth with country:', country);
       const { error } = await handleGoogleAuth(mode, finalReferralCode, country);
       if (error) {
         toast({
@@ -260,6 +259,17 @@ const AuthModal = ({
         description: language === 'en' 
           ? "Please select your country before connecting with Phantom wallet."
           : "Por favor selecciona tu país antes de conectar con Phantom wallet.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!acceptedTerms) {
+      toast({
+        title: language === 'en' ? "Terms required" : "Términos requeridos",
+        description: language === 'en' 
+          ? "Please accept the Terms of Service to continue with Phantom wallet."
+          : "Por favor acepta los Términos de Servicio para continuar con Phantom wallet.",
         variant: "destructive",
       });
       return;
