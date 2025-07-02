@@ -69,20 +69,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isAuthenticated = !!userProfile;
   
-  // Calculate user discount based on referral system rules with 32.5% hard cap
+  // Calculate user discount based on NEW referral system rules
   const userDiscount = userProfile ? (() => {
-    let discount = 0;
+    // First fetch referral count - for now use 0 until we can properly fetch it
+    // TODO: This should fetch actual referral count from database
+    const referralCount = 0; // Placeholder
     
-    // Base discount for having referrals (10% + 4% per additional referral, max 25%)
-    if (userProfile.referred_by) {
-      // User was referred - gets spending discount (6% per $50 spent)
-      discount = Math.floor((userProfile.total_spending || 0) / 50) * 6;
-    } else {
-      // User is a referrer - gets referral discount (2% per $50 of referred spending)
-      discount = Math.floor((userProfile.referred_spending || 0) / 50) * 2;
-    }
+    // NEW REFERRAL RULES (matching ReferralSection.tsx)
+    // Each referral: 2.5%
+    const referralDiscount = referralCount * 2.5;
     
-    return Math.min(discount, 32.5); // Hard cap at 32.5%
+    // If user has made referrals, they become a referrer and use referrer spending rules
+    const isReferrer = referralCount > 0;
+    
+    // NEW: First time referral bonus = 10%
+    const firstReferralBonus = userProfile.referred_by ? 10 : 0;
+    
+    // Spending discount based on user type - ROUNDING UP RULE
+    // NEW: Referrers get 5% per $50 of referred spending (max at $150 total discounts)
+    const referredSpendingDiscount = isReferrer
+      ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending || 0) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 of referred spending (max at $150)
+      : 0;
+    
+    // NEW RULE: Standard users get 2.5% per $50, Referred users get 6.5% per $50 (max at $150), Referrers get 5% per $50
+    const spendingDiscount = isReferrer
+      ? Math.floor(Math.ceil(userProfile.total_spending || 0) / 50) * 5  // Referrers: 5% per $50 spent personally (rounded up)
+      : userProfile.referred_by 
+        ? Math.min(Math.floor(Math.ceil(userProfile.total_spending || 0) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (rounded up) MAX AT $150
+        : Math.floor(Math.ceil(userProfile.total_spending || 0) / 50) * 2.5; // Standard users: 2.5% per $50 (rounded up)
+    
+    // ALL discounts STACK but cap at 32%
+    const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
+    
+    console.log('Discount calculation:', {
+      referralCount,
+      referralDiscount,
+      spendingDiscount, 
+      referredSpendingDiscount,
+      firstReferralBonus,
+      totalDiscount,
+      userProfile: { 
+        referred_by: userProfile.referred_by,
+        total_spending: userProfile.total_spending,
+        referred_spending: userProfile.referred_spending
+      }
+    });
+    
+    return totalDiscount;
   })() : 0;
 
   useEffect(() => {

@@ -105,13 +105,15 @@ const Account = ({
       // Refresh the profile to get updated data and force re-render
       await refreshProfile();
       
-      // Force formData to update with new profile data
-      if (userProfile) {
-        setFormData({
-          name: formData.name,
-          country: formData.country
-        });
-      }
+      // Force formData to update with the fresh profile data from the refresh
+      setTimeout(() => {
+        if (userProfile) {
+          setFormData({
+            name: userProfile.name || '',
+            country: userProfile.country || ''
+          });
+        }
+      }, 100);
     } catch (error) {
       console.error('Exception updating profile:', error);
       toast({
