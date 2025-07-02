@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Gift } from 'lucide-react';
@@ -56,7 +57,7 @@ const ReferralSection = ({
     }
   };
 
-  // FIXED REFERRAL RULES WITH PROPER CAPS
+  // CORRECTED DISCOUNT CALCULATION
   // Each referral: 2.5%
   const referralDiscount = referralCount * 2.5;
   
@@ -69,7 +70,7 @@ const ReferralSection = ({
   // Spending discount based on CURRENT CART AMOUNT (not historical spending)
   // ALL users have $150 spending cap per purchase for personal spending discounts
   const cartSpendingCap = Math.min(currentCartTotal, 150); // Cap cart calculation at $150
-  const spendingTiers = Math.ceil(cartSpendingCap / 50);
+  const spendingTiers = Math.ceil(cartSpendingCap / 50); // Round UP to nearest $50
   
   // Referrers get 5% per $50 of referred spending (based on total referred_spending)
   const referredSpendingDiscount = isReferrer
@@ -79,13 +80,13 @@ const ReferralSection = ({
   // Personal spending discount based on CURRENT CART AMOUNT (capped at $150)
   let spendingDiscount = 0;
   if (isReferrer) {
-    // Referrers: 5% per $50 in cart (max 15% at 3 tiers)
+    // Referrers: 5% per $50 in cart (max 15% at 3 tiers = $150)
     spendingDiscount = Math.min(spendingTiers * 5, 15);
   } else if (userProfile.referred_by) {
-    // Referred users: 6.5% per $50 in cart (max 19.5% at 3 tiers)
+    // Referred users: 6.5% per $50 in cart (max 19.5% at 3 tiers = $150)
     spendingDiscount = Math.min(spendingTiers * 6.5, 19.5);
   } else {
-    // Standard users: 2.5% per $50 in cart (max 7.5% at 3 tiers)
+    // Standard users: 2.5% per $50 in cart (max 7.5% at 3 tiers = $150)
     spendingDiscount = Math.min(spendingTiers * 2.5, 7.5);
   }
   
@@ -99,6 +100,19 @@ const ReferralSection = ({
   // Free shipping at $100 for EVERYONE
   const freeShippingThreshold = 100;
   const freeShipping = currentCartTotal >= freeShippingThreshold;
+
+  console.log('ReferralSection discount calculation:', {
+    currentCartTotal,
+    cartSpendingCap,
+    spendingTiers,
+    userType: isReferrer ? 'referrer' : (userProfile.referred_by ? 'referred' : 'standard'),
+    spendingDiscount,
+    referralDiscount,
+    firstReferralBonus,
+    savedDiscount,
+    totalEarnedDiscount,
+    totalAvailableDiscount
+  });
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
@@ -125,11 +139,14 @@ const ReferralSection = ({
             {language === 'en' ? 'Total Available Discount (Max 32%)' : 'Descuento Total Disponible (Máx 32%)'}
           </div>
           
-          {/* Show breakdown if there are saved discounts */}
-          {savedDiscount > 0 && (
+          {/* Show breakdown if there are saved discounts OR if user has active cart */}
+          {(savedDiscount > 0 || currentCartTotal > 0) && (
             <div className="mt-2 text-xs text-blue-600 bg-blue-50 rounded-lg p-2">
               <div className="font-semibold mb-1">💰 {language === 'en' ? 'Discount Breakdown:' : 'Desglose de Descuentos:'}</div>
-              <div>Current: {totalEarnedDiscount.toFixed(1)}% + Saved: {savedDiscount.toFixed(1)}%</div>
+              {currentCartTotal > 0 && <div>Cart Spending ({userProfile.referred_by ? 'Referred' : 'Standard'}): {spendingDiscount.toFixed(1)}%</div>}
+              {referralDiscount > 0 && <div>Referral Bonuses: {referralDiscount.toFixed(1)}%</div>}
+              {firstReferralBonus > 0 && <div>First Referral Bonus: {firstReferralBonus.toFixed(1)}%</div>}
+              {savedDiscount > 0 && <div>Saved from Previous: {savedDiscount.toFixed(1)}%</div>}
             </div>
           )}
           
@@ -138,7 +155,7 @@ const ReferralSection = ({
               🚚 {language === 'en' ? 'FREE SHIPPING!' : 'ENVÍO GRATIS!'}
             </div>
           )}
-          {!freeShipping && (
+          {!freeShipping && currentCartTotal > 0 && (
             <div className="mt-2 text-xs text-gray-500">
               {language === 'en' 
                 ? `Add $${(freeShippingThreshold - currentCartTotal).toFixed(2)} more for free shipping!`
