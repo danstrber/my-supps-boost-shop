@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -19,12 +20,12 @@ const PostAuthHandler = () => {
           try {
             console.log('Updating user post-auth with:', { pendingName, pendingCountry, pendingReferral });
             
-            // Call the post-auth update function
+            // Call the post-auth update function with correct parameter name
             const { error } = await supabase.rpc('update_user_post_auth', {
               user_auth_id: user.id,
               user_name: pendingName,
               user_country: pendingCountry,
-              referral_code: pendingReferral
+              user_referral_code: pendingReferral
             });
 
             if (error) {
