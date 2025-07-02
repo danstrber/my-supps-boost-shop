@@ -82,21 +82,15 @@ export const signIn = async (email: string, password: string) => {
   return { data, error };
 };
 
-export const signInWithGoogle = async (referralCode?: string) => {
-  console.log('Starting Google signin...', { referralCode });
+export const signInWithGoogle = async (referralCode?: string, country?: string) => {
+  console.log('Starting Google signin...', { referralCode, country });
   
-  // Get country from localStorage if available
-  const pendingCountry = localStorage.getItem('pending_country');
-  
-  // Store referral data in localStorage for post-auth handling
-  const authMetadata: any = {};
+  // Store both referral and country data in localStorage for post-auth handling
   if (referralCode) {
-    authMetadata.referred_by = referralCode;
     localStorage.setItem('pending_referral', referralCode);
   }
-  if (pendingCountry) {
-    authMetadata.country = pendingCountry;
-    // Keep country in localStorage for post-auth handling
+  if (country) {
+    localStorage.setItem('pending_country', country);
   }
   
   const { data, error } = await supabase.auth.signInWithOAuth({

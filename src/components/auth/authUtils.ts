@@ -35,5 +35,5 @@ export const handleGoogleAuth = async (
     localStorage.setItem('pending_country', country);
   }
   
-  return await signInWithGoogle(referralCode);
+  return await signInWithGoogle(referralCode, country);
 };
