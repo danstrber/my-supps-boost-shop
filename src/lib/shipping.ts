@@ -4,8 +4,8 @@
 export const getShippingCost = (country: string, orderTotal: number): number => {
   const isUS = isUSCountry(country);
   
-  // Free shipping thresholds: $100 for US, $125 for international
-  const freeShippingThreshold = isUS ? 100 : 125;
+  // Free shipping threshold: $110 for both US and international (based on subtotal before discount)
+  const freeShippingThreshold = 110;
   
   if (orderTotal >= freeShippingThreshold) {
     return 0;

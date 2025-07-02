@@ -68,16 +68,15 @@ const CartModal = ({
   const discountAmount = (subtotal * userDiscount) / 100;
   const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Use the shipping utility to calculate shipping cost
+  // IMPORTANT: Free shipping is based on original subtotal BEFORE discount
   const userCountry = userProfile?.country || 'USA';
-  const shippingFee = getShippingCost(userCountry, subtotalAfterDiscount);
+  const shippingFee = getShippingCost(userCountry, subtotal); // Use original subtotal here
   
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
-  // Calculate how much more is needed for free shipping
-  const isUS = isUSCountry(userCountry);
-  const freeShippingThreshold = isUS ? 100 : 125;
-  const amountNeededForFreeShipping = Math.max(0, freeShippingThreshold - subtotalAfterDiscount);
+  // Calculate how much more is needed for free shipping based on original subtotal
+  const freeShippingThreshold = 110; // Updated to $110
+  const amountNeededForFreeShipping = Math.max(0, freeShippingThreshold - subtotal); // Use original subtotal
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -184,6 +183,9 @@ const CartModal = ({
               {amountNeededForFreeShipping > 0 && (
                 <div className="text-blue-600 text-sm text-center p-2 bg-blue-50 rounded">
                   Add ${amountNeededForFreeShipping.toFixed(2)} more for free shipping!
+                  <div className="text-xs text-blue-500 mt-1">
+                    *Free shipping at $110+ (before discount)
+                  </div>
                 </div>
               )}
               <div className="flex justify-between font-semibold text-lg border-t pt-2">
