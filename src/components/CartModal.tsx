@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -46,7 +47,7 @@ const CartModal = ({
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   
-  // CORRECTED: Calculate discount based on cart subtotal with proper caps per user type
+  // FIXED: Calculate discount based on cart subtotal with proper complete $50 tiers only
   const calculateCartDiscount = (cartSubtotal: number, profile: UserProfile | null) => {
     if (!profile) return 0;
     
@@ -59,20 +60,20 @@ const CartModal = ({
     const isReferrer = referralCount > 0;
     const referralDiscount = referralCount * 2.5;
     
-    // CORRECTED: Spending discount based on cart amount (rounded up to nearest $50)
+    // FIXED: Spending discount based on cart amount (complete $50 tiers only)
     // ALL users have $150 spending cap per purchase for personal spending discounts
     const cartSpendingCap = Math.min(cartSubtotal, 150); // Cap cart calculation at $150
-    const spendingTiers = Math.ceil(cartSpendingCap / 50); // Round UP to nearest $50
+    const spendingTiers = Math.floor(cartSpendingCap / 50); // FIXED: Use Math.floor for complete $50 tiers only
     
     let spendingDiscount = 0;
     if (isReferrer) {
-      // Referrers: 5% per $50 in cart (max 3 tiers at $150 = 15%)
+      // Referrers: 5% per complete $50 in cart (max 3 tiers at $150 = 15%)
       spendingDiscount = Math.min(spendingTiers * 5, 15);
     } else if (profile.referred_by) {
-      // Referred users: 6.5% per $50 in cart (max 3 tiers at $150 = 19.5%)
+      // Referred users: 6.5% per complete $50 in cart (max 3 tiers at $150 = 19.5%)
       spendingDiscount = Math.min(spendingTiers * 6.5, 19.5);
     } else {
-      // Standard users: 2.5% per $50 in cart (max 3 tiers at $150 = 7.5%)
+      // Standard users: 2.5% per complete $50 in cart (max 3 tiers at $150 = 7.5%)
       spendingDiscount = Math.min(spendingTiers * 2.5, 7.5);
     }
     

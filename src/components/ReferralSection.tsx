@@ -57,7 +57,7 @@ const ReferralSection = ({
     }
   };
 
-  // CORRECTED DISCOUNT CALCULATION - Fixed the cart spending calculation
+  // FIXED DISCOUNT CALCULATION - Using Math.floor for complete $50 tiers only
   // Each referral: 2.5%
   const referralDiscount = referralCount * 2.5;
   
@@ -70,7 +70,7 @@ const ReferralSection = ({
   // Spending discount based on CURRENT CART AMOUNT (not historical spending)
   // ALL users have $150 spending cap per purchase for personal spending discounts
   const cartSpendingCap = Math.min(currentCartTotal, 150); // Cap cart calculation at $150
-  const spendingTiers = Math.ceil(cartSpendingCap / 50); // Round UP to nearest $50
+  const spendingTiers = Math.floor(cartSpendingCap / 50); // FIXED: Use Math.floor for complete $50 tiers only
   
   // Referrers get 5% per $50 of referred spending (based on total referred_spending)
   const referredSpendingDiscount = isReferrer
@@ -192,7 +192,7 @@ const ReferralSection = ({
           <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each additional referral: 2.5% discount' : 'Cada referido adicional: 2.5% descuento'}</li>
           <li>• {language === 'en' ? 'Personal spending: Based on current cart amount (max $150)' : 'Gastos personales: Basado en el monto actual del carrito (máx $150)'}</li>
-          <li>• {language === 'en' ? 'Standard: 2.5% per $50 (max 7.5%) | Referred: 6.5% per $50 (max 19.5%) | Referrers: 5% per $50 (max 15%)' : 'Estándar: 2.5% por $50 (máx 7.5%) | Referidos: 6.5% por $50 (máx 19.5%) | Referidores: 5% por $50 (máx 15%)'}</li>
+          <li>• {language === 'en' ? 'Standard: 2.5% per complete $50 (max 7.5%) | Referred: 6.5% per complete $50 (max 19.5%) | Referrers: 5% per complete $50 (max 15%)' : 'Estándar: 2.5% por cada $50 completo (máx 7.5%) | Referidos: 6.5% por cada $50 completo (máx 19.5%) | Referidores: 5% por cada $50 completo (máx 15%)'}</li>
           <li>• {language === 'en' ? '💰 NEW: Unused discounts are saved for future purchases!' : '💰 NUEVO: ¡Los descuentos no utilizados se guardan para futuras compras!'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100 for everyone' : 'Envío gratis a $100 para todos'}</li>
         </ul>
