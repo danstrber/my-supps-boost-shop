@@ -14,9 +14,16 @@ interface ReferralSectionProps {
   language: 'en' | 'es';
   referralCount: number;
   onPageChange?: (page: string) => void;
+  currentCartTotal?: number; // Add cart total prop for spending discount calculation
 }
 
-const ReferralSection = ({ userProfile, language, referralCount, onPageChange }: ReferralSectionProps) => {
+const ReferralSection = ({ 
+  userProfile, 
+  language, 
+  referralCount, 
+  onPageChange,
+  currentCartTotal = 0 
+}: ReferralSectionProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const { toast } = useToast();
 
@@ -50,42 +57,42 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
     }
   };
 
-  // NEW REFERRAL RULES
+  // UPDATED REFERRAL RULES WITH DISCOUNT BANKING
   // Each referral: 2.5%
   const referralDiscount = referralCount * 2.5;
   
   // If user has made referrals, they become a referrer and use referrer spending rules
   const isReferrer = referralCount > 0;
   
-  // NEW: First time referral bonus = 10%
+  // First time referral bonus = 10%
   const firstReferralBonus = userProfile.referred_by ? 10 : 0;
   
-  // Spending discount based on user type - ROUNDING UP RULE
-  // NEW: Referrers get 5% per $50 of referred spending (max at $150 total discounts)
+  // Spending discount based on CURRENT CART AMOUNT (not historical spending)
+  // ALL users have $150 spending cap per purchase for personal spending discounts
+  const cartSpendingCap = Math.min(currentCartTotal, 150); // Cap cart calculation at $150
+  
+  // Referrers get 5% per $50 of referred spending (based on total referred_spending)
   const referredSpendingDiscount = isReferrer
-    ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 of referred spending (max at $150)
+    ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending || 0) / 50) * 5, Math.floor(150 / 50) * 5)
     : 0;
   
-  // NEW RULE: ALL users have $150 spending cap for personal spending discounts
-  // Standard users get 2.5% per $50, Referred users get 6.5% per $50, Referrers get 5% per $50
-  // ALL CAPPED AT $150 total spending
+  // Personal spending discount based on CURRENT CART AMOUNT (capped at $150)
   const spendingDiscount = isReferrer
-    ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 spent personally (rounded up) MAX AT $150
+    ? Math.min(Math.floor(Math.ceil(cartSpendingCap) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 in cart
     : userProfile.referred_by 
-      ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (rounded up) MAX AT $150
-      : Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5, Math.floor(150 / 50) * 2.5); // Standard users: 2.5% per $50 (rounded up) MAX AT $150
+      ? Math.min(Math.floor(Math.ceil(cartSpendingCap) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 in cart
+      : Math.min(Math.floor(Math.ceil(cartSpendingCap) / 50) * 2.5, Math.floor(150 / 50) * 2.5); // Standard users: 2.5% per $50 in cart
   
-  // ALL discounts STACK but cap at 32%
-  const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
+  // Get saved discount from previous purchases (NEW FEATURE)
+  const savedDiscount = userProfile.saved_discount_percentage || 0;
+  
+  // Calculate total available discount (all sources)
+  const totalEarnedDiscount = referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus;
+  const totalAvailableDiscount = Math.min(totalEarnedDiscount + savedDiscount, 32); // Cap at 32%
 
-  // NEW: Free shipping at $100 for EVERYONE
+  // Free shipping at $100 for EVERYONE
   const freeShippingThreshold = 100;
-  const freeShipping = userProfile.total_spending >= freeShippingThreshold;
-
-  // Handle referral link click - just stay on same page since we're already on account
-  const handleReferralClick = () => {
-    // Do nothing since we're already on the account page
-  };
+  const freeShipping = currentCartTotal >= freeShippingThreshold;
 
   return (
     <div className="bg-gradient-to-br from-green-50 to-emerald-100 border-2 border-green-200 rounded-xl p-4 md:p-6 shadow-lg mb-6">
@@ -107,10 +114,19 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
       {/* Current Discount Display */}
       <div className="bg-white rounded-lg p-4 mb-4 border border-green-200">
         <div className="text-center">
-          <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalDiscount.toFixed(1)}%</div>
+          <div className="text-2xl md:text-3xl font-bold text-green-600 mb-1">{totalAvailableDiscount.toFixed(1)}%</div>
           <div className="text-xs md:text-sm text-gray-600">
-            {language === 'en' ? 'Total Discount (Max 32%)' : 'Descuento Total (Máx 32%)'}
+            {language === 'en' ? 'Total Available Discount (Max 32%)' : 'Descuento Total Disponible (Máx 32%)'}
           </div>
+          
+          {/* Show breakdown if there are saved discounts */}
+          {savedDiscount > 0 && (
+            <div className="mt-2 text-xs text-blue-600 bg-blue-50 rounded-lg p-2">
+              <div className="font-semibold mb-1">💰 {language === 'en' ? 'Discount Breakdown:' : 'Desglose de Descuentos:'}</div>
+              <div>Current: {totalEarnedDiscount.toFixed(1)}% + Saved: {savedDiscount.toFixed(1)}%</div>
+            </div>
+          )}
+          
           {freeShipping && (
             <div className="mt-2 text-sm font-semibold text-blue-600">
               🚚 {language === 'en' ? 'FREE SHIPPING!' : 'ENVÍO GRATIS!'}
@@ -119,8 +135,8 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
           {!freeShipping && (
             <div className="mt-2 text-xs text-gray-500">
               {language === 'en' 
-                ? `Spend $${(freeShippingThreshold - userProfile.total_spending).toFixed(2)} more for free shipping!`
-                : `¡Gasta $${(freeShippingThreshold - userProfile.total_spending).toFixed(2)} más para envío gratis!`
+                ? `Add $${(freeShippingThreshold - currentCartTotal).toFixed(2)} more for free shipping!`
+                : `¡Agrega $${(freeShippingThreshold - currentCartTotal).toFixed(2)} más para envío gratis!`
               }
             </div>
           )}
@@ -150,11 +166,9 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
         <ul className="space-y-1 text-xs text-gray-700">
           <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each additional referral: 2.5% discount' : 'Cada referido adicional: 2.5% descuento'}</li>
-          <li>• {language === 'en' ? 'Standard users: 2.5% per $50 spent (max $150 total)' : 'Usuarios estándar: 2.5% por cada $50 gastados (máx $150 total)'}</li>
-          <li>• {language === 'en' ? 'Referred users: 6.5% per $50 spent (max $150 total)' : 'Usuarios referidos: 6.5% por cada $50 gastados (máx $150 total)'}</li>
-          <li>• {language === 'en' ? 'Referrers: 5% per $50 spent + 5% per $50 referral spending (max $150 each)' : 'Referidores: 5% por $50 gastados + 5% por $50 de gastos de referidos (máx $150 cada uno)'}</li>
-          <li>• {language === 'en' ? 'Spending discounts reset to 0% after each purchase' : 'Los descuentos por gastos se reinician a 0% después de cada compra'}</li>
-          <li>• {language === 'en' ? 'Personal spending discount based on current cart amount' : 'Descuento por gastos personales basado en el monto actual del carrito'}</li>
+          <li>• {language === 'en' ? 'Personal spending: Based on current cart amount (max $150)' : 'Gastos personales: Basado en el monto actual del carrito (máx $150)'}</li>
+          <li>• {language === 'en' ? 'Standard: 2.5% per $50 | Referred: 6.5% per $50 | Referrers: 5% per $50' : 'Estándar: 2.5% por $50 | Referidos: 6.5% por $50 | Referidores: 5% por $50'}</li>
+          <li>• {language === 'en' ? '💰 NEW: Unused discounts are saved for future purchases!' : '💰 NUEVO: ¡Los descuentos no utilizados se guardan para futuras compras!'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100 for everyone' : 'Envío gratis a $100 para todos'}</li>
         </ul>
       </div>
@@ -165,11 +179,13 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
           referralDiscount={referralDiscount}
           spendingDiscount={spendingDiscount}
           referredSpendingDiscount={referredSpendingDiscount}
-          totalDiscount={totalDiscount}
+          totalDiscount={totalAvailableDiscount}
           freeShipping={freeShipping}
           freeShippingThreshold={freeShippingThreshold}
           isReferrer={isReferrer}
           firstReferralBonus={firstReferralBonus}
+          savedDiscount={savedDiscount}
+          currentCartTotal={currentCartTotal}
         />
       )}
     </div>

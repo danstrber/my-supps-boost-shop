@@ -227,7 +227,7 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
-    image: '/lovable-uploads/794a3da4-a1e8-4328-b04d-1227831d2204.png',
+    image: '/lovable-uploads/b4e1e935-17bb-42b9-a59c-c6c0fdf1f07a.png',
     category: 'pct',
     description: 'Aromatase inhibitor for estrogen control and hormonal balance during and after cycles.',
     specifications: {
@@ -265,7 +265,7 @@ export const products: Product[] = [
     id: 'clomid',
     name: 'Clomid (Clomiphene)',
     price: 35,
-    image: '/lovable-uploads/b95509ff-2fa9-495b-9eb3-7fd6d43bd4e8.png',
+    image: '/lovable-uploads/4f0a7a5d-014a-4619-8fac-4c6427878eec.png',
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
     specifications: {

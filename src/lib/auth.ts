@@ -3,16 +3,18 @@ import { User } from '@supabase/supabase-js';
 
 export interface UserProfile {
   id: string;
-  email: string;
-  name?: string;
-  country?: string;
-  referred_by?: string;
-  referral_code?: string;
-  total_spending?: number;
-  referred_spending?: number;
-  created_at: string;
-  two_factor_enabled?: boolean;
   auth_id: string;
+  email: string | null;
+  name: string | null;
+  country: string | null;
+  referral_code: string;
+  referred_by: string | null;
+  total_spending: number;
+  referred_spending: number;
+  created_at: string;
+  updated_at: string;
+  saved_discount_percentage?: number; // NEW: For discount banking
+  lifetime_earned_discount?: number;  // NEW: Track lifetime earned bonuses
 }
 
 export const signUp = async (email: string, password: string, name?: string, referralCode?: string, country?: string) => {
