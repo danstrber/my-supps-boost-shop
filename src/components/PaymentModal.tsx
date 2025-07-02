@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -312,7 +313,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             status: 'pending',
             user_id: userProfile?.auth_id || userProfile?.id || 'guest',
             created_at: new Date().toISOString(),
-            verification_status: 'verified'
+            verification_status: 'verified',
+            phone: orderData.phone,
+            shipping_address: orderData.shippingAddress,
+            order_date: orderData.orderDate
           });
           
         } catch (emailError) {

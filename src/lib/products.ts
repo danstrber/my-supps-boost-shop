@@ -1,3 +1,4 @@
+
 import accutaneImage from '@/assets/accutane.png';
 
 export interface Product {
@@ -50,19 +51,19 @@ export const products: Product[] = [
       pctRequired: true
     },
     sideEffects: [
-      'Liver toxicity (hepatotoxic)',
-      'Blood pressure elevation',
-      'Cholesterol imbalance',
-      'Lethargy and fatigue',
-      'Appetite suppression',
-      'Potential hair loss (if predisposed)'
+      'May affect liver function (hepatotoxic)',
+      'Possible blood pressure elevation',
+      'May impact cholesterol levels',
+      'Can cause lethargy and fatigue',
+      'May decrease appetite',
+      'Potential hair thinning (if predisposed)'
     ],
     womenEffects: [
       'NOT recommended for women',
-      'High risk of virilization',
-      'Voice deepening (irreversible)',
-      'Excessive body hair growth',
-      'Clitoral enlargement'
+      'May cause virilization symptoms',
+      'Voice changes (potentially irreversible)',
+      'Increased body hair growth',
+      'Other masculinizing effects'
     ],
     inStock: true,
     labTested: true
@@ -91,16 +92,16 @@ export const products: Product[] = [
       pctRequired: true
     },
     sideEffects: [
-      'Mild testosterone suppression',
-      'Potential mood changes',
+      'May cause mild testosterone suppression',
+      'Possible mood changes',
       'Slight increase in aggression',
-      'Possible hair thinning',
-      'Elevated liver enzymes (rare)'
+      'Potential hair thinning',
+      'May elevate liver enzymes (rare)'
     ],
     womenEffects: [
       'Lower doses recommended (5-10mg)',
-      'Risk of virilization at higher doses',
-      'Menstrual cycle disruption possible',
+      'May cause virilization at higher doses',
+      'Possible menstrual cycle disruption',
       'Voice changes at excessive doses'
     ],
     inStock: true,
@@ -130,11 +131,11 @@ export const products: Product[] = [
       pctRequired: false
     },
     sideEffects: [
-      'Increased appetite (can lead to weight gain)',
+      'Increased appetite (may lead to weight gain)',
       'Water retention and bloating',
-      'Lethargy in some users',
-      'Possible insulin resistance with long-term use',
-      'Elevated prolactin levels (rare)'
+      'Possible lethargy in some users',
+      'May affect insulin sensitivity with long-term use',
+      'Possible elevation in prolactin levels (rare)'
     ],
     womenEffects: [
       'Generally well tolerated',
@@ -171,7 +172,7 @@ export const products: Product[] = [
     sideEffects: [
       'Hand tremors and shakiness',
       'Increased heart rate and palpitations',
-      'Insomnia and sleep disturbances',
+      'May cause insomnia and sleep disturbances',
       'Excessive sweating',
       'Muscle cramps',
       'Anxiety and nervousness'
@@ -180,7 +181,7 @@ export const products: Product[] = [
       'Lower doses recommended (10-80mcg)',
       'Effective for fat loss',
       'Same side effects as men',
-      'No virilization risk'
+      'No virilization concerns'
     ],
     inStock: true,
     labTested: true
@@ -216,9 +217,9 @@ export const products: Product[] = [
     ],
     womenEffects: [
       'NOT recommended for women',
-      'Can cause ovarian hyperstimulation',
+      'May cause ovarian hyperstimulation',
       'Risk of multiple pregnancies',
-      'Severe hormonal disruption'
+      'Significant hormonal disruption'
     ],
     inStock: true
   },
@@ -247,14 +248,14 @@ export const products: Product[] = [
     },
     sideEffects: [
       'Joint pain and stiffness',
-      'Decreased bone density (long-term)',
+      'May decrease bone density (long-term)',
       'Potential mood changes',
-      'Reduced HDL cholesterol',
+      'May reduce HDL cholesterol',
       'Fatigue and lethargy'
     ],
     womenEffects: [
       'Used in breast cancer treatment',
-      'Can cause severe estrogen depletion',
+      'May cause significant estrogen depletion',
       'Bone health monitoring required',
       'Not for bodybuilding use in women'
     ],
@@ -292,7 +293,7 @@ export const products: Product[] = [
     ],
     womenEffects: [
       'Used for fertility treatment',
-      'Can cause ovarian hyperstimulation',
+      'May cause ovarian hyperstimulation',
       'Multiple pregnancy risk',
       'Mood and emotional changes'
     ],
@@ -322,17 +323,17 @@ export const products: Product[] = [
       pctRequired: false
     },
     sideEffects: [
-      'Severe skin dryness and sensitivity',
+      'Significant skin dryness and sensitivity',
       'Chapped lips and dry mouth',
       'Joint pain and muscle aches',
       'Potential mood changes',
       'Increased sun sensitivity',
-      'Elevated liver enzymes (monitor required)'
+      'May elevate liver enzymes (monitoring required)'
     ],
     womenEffects: [
       'STRICTLY NOT for pregnant women',
       'Requires pregnancy prevention program',
-      'Can cause severe birth defects',
+      'May cause severe birth defects',
       'Monthly pregnancy tests required',
       'Same side effects as men'
     ],
