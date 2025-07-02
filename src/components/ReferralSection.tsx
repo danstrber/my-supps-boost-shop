@@ -57,7 +57,7 @@ const ReferralSection = ({
     }
   };
 
-  // CORRECTED DISCOUNT CALCULATION
+  // CORRECTED DISCOUNT CALCULATION - Fixed the cart spending calculation
   // Each referral: 2.5%
   const referralDiscount = referralCount * 2.5;
   
@@ -79,15 +79,17 @@ const ReferralSection = ({
   
   // Personal spending discount based on CURRENT CART AMOUNT (capped at $150)
   let spendingDiscount = 0;
-  if (isReferrer) {
-    // Referrers: 5% per $50 in cart (max 15% at 3 tiers = $150)
-    spendingDiscount = Math.min(spendingTiers * 5, 15);
-  } else if (userProfile.referred_by) {
-    // Referred users: 6.5% per $50 in cart (max 19.5% at 3 tiers = $150)
-    spendingDiscount = Math.min(spendingTiers * 6.5, 19.5);
-  } else {
-    // Standard users: 2.5% per $50 in cart (max 7.5% at 3 tiers = $150)
-    spendingDiscount = Math.min(spendingTiers * 2.5, 7.5);
+  if (currentCartTotal > 0) { // Only calculate if there's actually a cart
+    if (isReferrer) {
+      // Referrers: 5% per $50 in cart (max 15% at 3 tiers = $150)
+      spendingDiscount = Math.min(spendingTiers * 5, 15);
+    } else if (userProfile.referred_by) {
+      // Referred users: 6.5% per $50 in cart (max 19.5% at 3 tiers = $150)
+      spendingDiscount = Math.min(spendingTiers * 6.5, 19.5);
+    } else {
+      // Standard users: 2.5% per $50 in cart (max 7.5% at 3 tiers = $150)
+      spendingDiscount = Math.min(spendingTiers * 2.5, 7.5);
+    }
   }
   
   // Get saved discount from previous purchases (NEW FEATURE)
@@ -143,7 +145,7 @@ const ReferralSection = ({
           {(savedDiscount > 0 || currentCartTotal > 0) && (
             <div className="mt-2 text-xs text-blue-600 bg-blue-50 rounded-lg p-2">
               <div className="font-semibold mb-1">💰 {language === 'en' ? 'Discount Breakdown:' : 'Desglose de Descuentos:'}</div>
-              {currentCartTotal > 0 && <div>Cart Spending ({userProfile.referred_by ? 'Referred' : 'Standard'}): {spendingDiscount.toFixed(1)}%</div>}
+              {currentCartTotal > 0 && <div>Cart Spending ({userProfile.referred_by ? 'Referred' : (isReferrer ? 'Referrer' : 'Standard')}): {spendingDiscount.toFixed(1)}%</div>}
               {referralDiscount > 0 && <div>Referral Bonuses: {referralDiscount.toFixed(1)}%</div>}
               {firstReferralBonus > 0 && <div>First Referral Bonus: {firstReferralBonus.toFixed(1)}%</div>}
               {savedDiscount > 0 && <div>Saved from Previous: {savedDiscount.toFixed(1)}%</div>}

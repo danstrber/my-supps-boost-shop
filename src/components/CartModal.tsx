@@ -46,7 +46,7 @@ const CartModal = ({
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   
-  // FIXED: Calculate discount based on cart subtotal with proper caps per user type
+  // CORRECTED: Calculate discount based on cart subtotal with proper caps per user type
   const calculateCartDiscount = (cartSubtotal: number, profile: UserProfile | null) => {
     if (!profile) return 0;
     
@@ -59,19 +59,21 @@ const CartModal = ({
     const isReferrer = referralCount > 0;
     const referralDiscount = referralCount * 2.5;
     
-    // Spending discount based on cart amount (rounded up to nearest $50)
-    const spendingTiers = Math.ceil(Math.min(cartSubtotal, 150) / 50); // Cap at $150 for all users
+    // CORRECTED: Spending discount based on cart amount (rounded up to nearest $50)
+    // ALL users have $150 spending cap per purchase for personal spending discounts
+    const cartSpendingCap = Math.min(cartSubtotal, 150); // Cap cart calculation at $150
+    const spendingTiers = Math.ceil(cartSpendingCap / 50); // Round UP to nearest $50
     
     let spendingDiscount = 0;
     if (isReferrer) {
-      // Referrers: 5% per $50 in cart (max 3 tiers at $150)
-      spendingDiscount = Math.min(spendingTiers * 5, 15); // Max 15% (3 × 5%)
+      // Referrers: 5% per $50 in cart (max 3 tiers at $150 = 15%)
+      spendingDiscount = Math.min(spendingTiers * 5, 15);
     } else if (profile.referred_by) {
-      // Referred users: 6.5% per $50 in cart (max 3 tiers at $150)
-      spendingDiscount = Math.min(spendingTiers * 6.5, 19.5); // Max 19.5% (3 × 6.5%)
+      // Referred users: 6.5% per $50 in cart (max 3 tiers at $150 = 19.5%)
+      spendingDiscount = Math.min(spendingTiers * 6.5, 19.5);
     } else {
-      // Standard users: 2.5% per $50 in cart (max 3 tiers at $150)
-      spendingDiscount = Math.min(spendingTiers * 2.5, 7.5); // Max 7.5% (3 × 2.5%)
+      // Standard users: 2.5% per $50 in cart (max 3 tiers at $150 = 7.5%)
+      spendingDiscount = Math.min(spendingTiers * 2.5, 7.5);
     }
     
     // Get saved discount from discount banking
@@ -83,6 +85,7 @@ const CartModal = ({
     
     console.log('Cart discount calculation:', {
       cartSubtotal,
+      cartSpendingCap,
       spendingTiers,
       userType: isReferrer ? 'referrer' : (profile.referred_by ? 'referred' : 'standard'),
       firstReferralBonus,
