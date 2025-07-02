@@ -66,12 +66,14 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
     ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 of referred spending (max at $150)
     : 0;
   
-  // NEW RULE: Standard users get 2.5% per $50, Referred users get 6.5% per $50 (max at $150), Referrers get 5% per $50
+  // NEW RULE: ALL users have $150 spending cap for personal spending discounts
+  // Standard users get 2.5% per $50, Referred users get 6.5% per $50, Referrers get 5% per $50
+  // ALL CAPPED AT $150 total spending
   const spendingDiscount = isReferrer
-    ? Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5  // Referrers: 5% per $50 spent personally (rounded up)
+    ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 spent personally (rounded up) MAX AT $150
     : userProfile.referred_by 
       ? Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (rounded up) MAX AT $150
-      : Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5; // Standard users: 2.5% per $50 (rounded up)
+      : Math.min(Math.floor(Math.ceil(userProfile.total_spending) / 50) * 2.5, Math.floor(150 / 50) * 2.5); // Standard users: 2.5% per $50 (rounded up) MAX AT $150
   
   // ALL discounts STACK but cap at 32%
   const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
@@ -140,7 +142,7 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
         language={language}
       />
 
-      {/* Simplified Rules Display */}
+      {/* Updated Rules Display */}
       <div className="bg-white rounded-lg p-3 mb-4 border border-green-200">
         <h4 className="font-semibold text-green-800 mb-2 text-sm">
           📋 {language === 'en' ? 'Simple Rules' : 'Reglas Simples'}:
@@ -148,9 +150,11 @@ const ReferralSection = ({ userProfile, language, referralCount, onPageChange }:
         <ul className="space-y-1 text-xs text-gray-700">
           <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each additional referral: 2.5% discount' : 'Cada referido adicional: 2.5% descuento'}</li>
-          <li>• {language === 'en' ? 'Standard users: 2.5% per $50 spent' : 'Usuarios estándar: 2.5% por cada $50 gastados'}</li>
-          <li>• {language === 'en' ? 'Referrers: 5% per $50 from referral spending + 5% per $50 personal spending' : 'Referidores: 5% por $50 de gastos de referidos + 5% por $50 gasto personal'}</li>
+          <li>• {language === 'en' ? 'Standard users: 2.5% per $50 spent (max $150 total)' : 'Usuarios estándar: 2.5% por cada $50 gastados (máx $150 total)'}</li>
           <li>• {language === 'en' ? 'Referred users: 6.5% per $50 spent (max $150 total)' : 'Usuarios referidos: 6.5% por cada $50 gastados (máx $150 total)'}</li>
+          <li>• {language === 'en' ? 'Referrers: 5% per $50 spent + 5% per $50 referral spending (max $150 each)' : 'Referidores: 5% por $50 gastados + 5% por $50 de gastos de referidos (máx $150 cada uno)'}</li>
+          <li>• {language === 'en' ? 'Spending discounts reset to 0% after each purchase' : 'Los descuentos por gastos se reinician a 0% después de cada compra'}</li>
+          <li>• {language === 'en' ? 'Personal spending discount based on current cart amount' : 'Descuento por gastos personales basado en el monto actual del carrito'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100 for everyone' : 'Envío gratis a $100 para todos'}</li>
         </ul>
       </div>

@@ -150,7 +150,7 @@ export const products: Product[] = [
     id: 'clenbuterol',
     name: 'Clenbuterol',
     price: 35,
-    image: '/lovable-uploads/b01486f8-e291-44df-920c-5ab7b48e4160.png',
+    image: '/lovable-uploads/455afa37-6ab8-4e0f-8579-c2fdbf12e2ba.png',
     category: 'fat-burners',
     description: 'Powerful thermogenic fat burner for cutting cycles with muscle-preserving properties.',
     specifications: {
@@ -190,7 +190,7 @@ export const products: Product[] = [
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
     price: 40,
-    image: '/lovable-uploads/a49cd35f-62dc-449e-b143-2ebdc5fa0f61.png',
+    image: '/lovable-uploads/0f656d9e-afeb-45b0-8785-80029343c306.png',
     category: 'pct',
     description: 'Selective estrogen receptor modulator for PCT and natural testosterone support without estrogenic side effects.',
     specifications: {
@@ -227,7 +227,7 @@ export const products: Product[] = [
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
     price: 25,
-    image: '/lovable-uploads/ee8bd939-e3e1-4fd1-903f-ab76073f6624.png',
+    image: '/lovable-uploads/794a3da4-a1e8-4328-b04d-1227831d2204.png',
     category: 'pct',
     description: 'Aromatase inhibitor for estrogen control and hormonal balance during and after cycles.',
     specifications: {
@@ -303,7 +303,7 @@ export const products: Product[] = [
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
     price: 30,
-    image: accutaneImage,
+    image: '/lovable-uploads/bac5a63b-e051-461e-8a6c-f87e42b10ad6.png',
     category: 'support',
     description: 'Powerful acne treatment medication for severe acne and skin conditions. Highly effective for hormonal acne often experienced during cycles.',
     specifications: {
