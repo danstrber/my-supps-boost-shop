@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isAuthenticated = !!userProfile;
   
-  // Calculate user discount based on referral system rules
+  // Calculate user discount based on referral system rules with 32.5% hard cap
   const userDiscount = userProfile ? (() => {
     let discount = 0;
     
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       discount = Math.floor((userProfile.referred_spending || 0) / 50) * 2;
     }
     
-    return Math.min(discount, 30); // Cap at 30%
+    return Math.min(discount, 32.5); // Hard cap at 32.5%
   })() : 0;
 
   useEffect(() => {

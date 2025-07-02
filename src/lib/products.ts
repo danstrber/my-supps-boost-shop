@@ -29,7 +29,7 @@ export const products: Product[] = [
   {
     id: 'superdrol',
     name: 'Superdrol (Methasterone)',
-    price: 25,
+    price: 55,
     image: '/lovable-uploads/14261a69-7ff7-4bed-890d-882e8294932f.png',
     category: 'oral-steroids',
     description: 'Powerful oral anabolic compound for serious muscle building and strength gains. Known for its exceptional ability to build lean muscle mass rapidly.',
@@ -188,7 +188,7 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
-    price: 25,
+    price: 40,
     image: '/lovable-uploads/a49cd35f-62dc-449e-b143-2ebdc5fa0f61.png',
     category: 'pct',
     description: 'Selective estrogen receptor modulator for PCT and natural testosterone support without estrogenic side effects.',
@@ -263,7 +263,7 @@ export const products: Product[] = [
   {
     id: 'clomid',
     name: 'Clomid (Clomiphene)',
-    price: 30,
+    price: 35,
     image: '/lovable-uploads/b95509ff-2fa9-495b-9eb3-7fd6d43bd4e8.png',
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
