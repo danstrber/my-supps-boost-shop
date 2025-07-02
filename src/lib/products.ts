@@ -1,3 +1,5 @@
+import accutaneImage from '@/assets/accutane.png';
+
 export interface Product {
   id: string;
   name: string;
@@ -300,7 +302,7 @@ export const products: Product[] = [
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
     price: 30,
-    image: '/lovable-uploads/a49cd35f-62dc-449e-b143-2ebdc5fa0f61.png',
+    image: accutaneImage,
     category: 'support',
     description: 'Powerful acne treatment medication for severe acne and skin conditions. Highly effective for hormonal acne often experienced during cycles.',
     specifications: {

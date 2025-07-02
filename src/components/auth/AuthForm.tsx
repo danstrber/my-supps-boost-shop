@@ -143,7 +143,7 @@ const AuthForm = ({
             {language === 'en' ? 'Country' : 'País'} *
           </Label>
           <Select value={country} onValueChange={onCountryChange} required>
-            <SelectTrigger className="mt-1">
+            <SelectTrigger id="auth-country" className="mt-1">
               <SelectValue placeholder={language === 'en' ? 'Select your country' : 'Selecciona tu país'} />
             </SelectTrigger>
             <SelectContent>

@@ -85,21 +85,28 @@ export const signIn = async (email: string, password: string) => {
 export const signInWithGoogle = async (referralCode?: string) => {
   console.log('Starting Google signin...', { referralCode });
   
-  const queryParams: any = {};
-  if (referralCode) queryParams.referred_by = referralCode;
-  
   // Get country from localStorage if available
   const pendingCountry = localStorage.getItem('pending_country');
+  
+  // Store referral data in localStorage for post-auth handling
+  const authMetadata: any = {};
+  if (referralCode) {
+    authMetadata.referred_by = referralCode;
+    localStorage.setItem('pending_referral', referralCode);
+  }
   if (pendingCountry) {
-    queryParams.country = pendingCountry;
-    localStorage.removeItem('pending_country');
+    authMetadata.country = pendingCountry;
+    // Keep country in localStorage for post-auth handling
   }
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: `${window.location.origin}/`,
-      queryParams
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'select_account'
+      }
     }
   });
 
