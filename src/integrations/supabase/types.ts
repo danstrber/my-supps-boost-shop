@@ -181,7 +181,7 @@ export type Database = {
           user_auth_id: string
           user_name?: string
           user_country?: string
-          referral_code?: string
+          user_referral_code?: string
         }
         Returns: undefined
       }
