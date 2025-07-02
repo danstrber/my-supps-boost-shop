@@ -148,26 +148,29 @@ const Account = ({
                   {editMode ? (
                     <div className="space-y-4">
                       <div>
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="profile-name">Name</Label>
                         <Input
-                          id="name"
+                          id="profile-name"
+                          name="profileName"
                           value={formData.name}
                           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                           placeholder="Enter your name"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="country">Country</Label>
+                        <Label htmlFor="profile-country">Country</Label>
                         <Select 
                           value={formData.country} 
                           onValueChange={(value) => setFormData(prev => ({ ...prev, country: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger id="profile-country">
                             <SelectValue placeholder="Select your country" />
                           </SelectTrigger>
                           <SelectContent>
                             <div className="p-2">
                               <Input
+                                id="profile-country-search"
+                                name="profileCountrySearch"
                                 placeholder="Search countries..."
                                 value={countrySearch}
                                 onChange={(e) => setCountrySearch(e.target.value)}

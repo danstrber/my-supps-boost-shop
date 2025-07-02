@@ -8,6 +8,7 @@ import { UserProfile } from '@/lib/auth';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
 import PaymentModal from '@/components/PaymentModal';
+import { getShippingCost, isUSCountry } from '@/lib/shipping';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -48,14 +49,16 @@ const CartModal = ({
   const discountAmount = (subtotal * userDiscount) / 100;
   const subtotalAfterDiscount = subtotal - discountAmount;
   
-  // Calculate shipping based on user's country
-  const isUSA = userProfile?.country === 'USA' || userProfile?.country === 'United States';
-  const freeShippingThreshold = isUSA ? 100 : 150;
-  const shippingFee = subtotalAfterDiscount >= freeShippingThreshold 
-    ? 0 
-    : (isUSA ? 7.50 : 17.50);
+  // Use the shipping utility to calculate shipping cost
+  const userCountry = userProfile?.country || 'USA';
+  const shippingFee = getShippingCost(userCountry, subtotalAfterDiscount);
   
   const finalTotal = subtotalAfterDiscount + shippingFee;
+
+  // Calculate how much more is needed for free shipping
+  const isUS = isUSCountry(userCountry);
+  const freeShippingThreshold = isUS ? 100 : 125;
+  const amountNeededForFreeShipping = Math.max(0, freeShippingThreshold - subtotalAfterDiscount);
 
   const handleCheckout = () => {
     if (!isAuthenticated) {
@@ -119,6 +122,7 @@ const CartModal = ({
                 size="sm"
                 onClick={onClose}
                 className="p-1 hover:bg-gray-100 rounded-full"
+                aria-label="Close cart"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -140,15 +144,31 @@ const CartModal = ({
             ))}
           </div>
 
-          <CartSummary
-            subtotal={subtotal}
-            userDiscount={userDiscount}
-            discountAmount={discountAmount}
-            subtotalAfterDiscount={subtotalAfterDiscount}
-            shippingFee={shippingFee}
-            finalTotal={finalTotal}
-            freeShippingThreshold={freeShippingThreshold}
-          />
+          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+            <div className="flex justify-between">
+              <span>Subtotal:</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            {userDiscount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Discount ({userDiscount.toFixed(1)}%):</span>
+                <span>-${discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Shipping:</span>
+              <span>{shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`}</span>
+            </div>
+            {amountNeededForFreeShipping > 0 && (
+              <div className="text-blue-600 text-sm text-center p-2 bg-blue-50 rounded">
+                Add ${amountNeededForFreeShipping.toFixed(2)} more for free shipping!
+              </div>
+            )}
+            <div className="flex justify-between font-semibold text-lg border-t pt-2">
+              <span>Total:</span>
+              <span className="text-green-600">${finalTotal.toFixed(2)}</span>
+            </div>
+          </div>
 
           <Button 
             onClick={handleCheckout}

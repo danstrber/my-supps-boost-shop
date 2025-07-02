@@ -21,7 +21,21 @@ const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
             <li>✅ Anonymous ordering</li>
             <li>✅ Direct communication</li>
             <li>✅ 24/7 fast support</li>
+            <li>✅ Personal consultation available</li>
+            <li>✅ Instant order confirmation</li>
           </ul>
+          
+          <div className="bg-blue-100 border border-blue-300 p-3 rounded-lg mb-3">
+            <h5 className="font-medium text-blue-800 mb-2">
+              📋 How it works:
+            </h5>
+            <ol className="text-blue-700 text-sm space-y-1">
+              <li>1. Join our Telegram channel below</li>
+              <li>2. Send us your cart details and shipping address</li>
+              <li>3. Get instant confirmation and payment instructions</li>
+              <li>4. Track your order in real-time</li>
+            </ol>
+          </div>
           
           {/* Direct Telegram Link */}
           <div className="bg-blue-100 border border-blue-300 p-4 rounded-lg text-center">
@@ -44,7 +58,7 @@ const PaymentMethodInfo = ({ paymentMethod }: PaymentMethodInfoProps) => {
               🚀 Why Choose Telegram?
             </h5>
             <p className="text-blue-700 text-sm">
-              Telegram makes buying easier with instant communication, order tracking, and expert guidance all in one place.
+              Telegram makes buying easier with instant communication, order tracking, and expert guidance all in one place. Get personalized recommendations and fast support directly from our team.
             </p>
           </div>
         </div>
