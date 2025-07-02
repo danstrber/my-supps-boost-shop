@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { UserProfile } from '@/lib/auth';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
 import PaymentModal from '@/components/PaymentModal';
-import { getShippingCost, isUSCountry } from '@/lib/shipping';
+import { getShippingCost, getFreeShippingThreshold } from '@/lib/shipping';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -75,7 +74,7 @@ const CartModal = ({
   const finalTotal = subtotalAfterDiscount + shippingFee;
 
   // Calculate how much more is needed for free shipping based on original subtotal
-  const freeShippingThreshold = 110; // Updated to $110
+  const freeShippingThreshold = getFreeShippingThreshold(userCountry);
   const amountNeededForFreeShipping = Math.max(0, freeShippingThreshold - subtotal); // Use original subtotal
 
   const handleCheckout = () => {
@@ -184,7 +183,7 @@ const CartModal = ({
                 <div className="text-blue-600 text-sm text-center p-2 bg-blue-50 rounded">
                   Add ${amountNeededForFreeShipping.toFixed(2)} more for free shipping!
                   <div className="text-xs text-blue-500 mt-1">
-                    *Free shipping at $110+ (before discount)
+                    *Free shipping at ${freeShippingThreshold}+ (before discount)
                   </div>
                 </div>
               )}
