@@ -336,7 +336,6 @@ export const products: Product[] = [
       'Monthly pregnancy tests required',
       'Same side effects as men'
     ],
-    inStock: true,
-    labTested: true
+    inStock: true
   }
 ];
