@@ -102,7 +102,7 @@ const CartModal = ({
   if (cartItems.length === 0) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md z-50">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               Your Cart
@@ -129,8 +129,8 @@ const CartModal = ({
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
+      <Dialog open={isOpen && !isPaymentModalOpen} onOpenChange={onClose}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col z-50">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center justify-between">
               Your Cart ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})

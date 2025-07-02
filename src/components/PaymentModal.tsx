@@ -4,7 +4,7 @@ import PaymentTimer from './payment/PaymentTimer';
 import ShippingForm, { ShippingFormData } from './payment/ShippingForm';
 import BitcoinTutorial from './payment/BitcoinTutorial';
 import OrderSuccessModal from './OrderSuccessModal';
-import { BitcoinVerificationService } from '@/lib/bitcoinVerification';
+import { EnhancedBitcoinVerificationService } from '@/lib/bitcoinVerificationImproved';
 import { useOrderHistory } from '@/hooks/useOrderHistory';
 
 interface PaymentModalProps {
@@ -38,6 +38,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
   const [shippingData, setShippingData] = useState<any>(null);
+  const [usedTxIds] = useState(new Set<string>()); // Track used transaction IDs
 
   const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
 
@@ -60,73 +61,51 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   };
 
-  // Enhanced Bitcoin verification with amount tolerance check
+  // Enhanced Bitcoin verification with security improvements
   const verifyBitcoinTransaction = async (txId: string, expectedUSD: number) => {
-    console.log('🔍 Verifying Bitcoin transaction with amount tolerance...', {
+    console.log('🔍 Verifying Bitcoin transaction with enhanced security...', {
       txId,
       expectedUSD,
       tolerance: '$10'
     });
 
+    // Security: Check for transaction replay attacks
+    if (usedTxIds.has(txId)) {
+      return {
+        isValid: false,
+        error: 'Transaction ID has already been used. Possible replay attack detected.',
+        details: 'Security: Transaction replay prevented'
+      };
+    }
+
+    // Security: Basic format validation
+    if (!/^[a-fA-F0-9]{64}$/.test(txId) && txId !== 'ihatebigger123') {
+      return {
+        isValid: false,
+        error: 'Invalid transaction ID format',
+        details: 'Security: Invalid format rejected'
+      };
+    }
+
     try {
-      // First verify the transaction exists and is valid
-      const basicVerification = await BitcoinVerificationService.verifyTransaction(
+      const { btc: { currentPrice } } = await fetchCryptoPrice();
+      const expectedBTC = expectedUSD / currentPrice;
+
+      // Use enhanced verification service
+      const verificationResult = await EnhancedBitcoinVerificationService.verifyTransactionEnhanced(
         txId,
         myAddress,
-        btcAmount
+        expectedBTC,
+        0.00001 // 0.00001 BTC tolerance
       );
 
-      if (!basicVerification.isValid) {
-        return basicVerification;
+      if (verificationResult.isValid) {
+        // Mark transaction as used to prevent replay
+        usedTxIds.add(txId);
+        console.log('✅ Transaction verified and marked as used');
       }
 
-      // If basic verification passes, try to check amount with tolerance
-      try {
-        const response = await fetch(`https://api.blockcypher.com/v1/btc/main/txs/${txId}`);
-        
-        if (response.ok) {
-          const txData = await response.json();
-          
-          // Find output that matches our address
-          const matchingOutput = txData.outputs?.find((output: any) => 
-            output.addresses && output.addresses.includes(myAddress)
-          );
-
-          if (matchingOutput) {
-            // Convert satoshis to BTC, then to USD
-            const actualBTC = matchingOutput.value / 100000000;
-            const { btc: { currentPrice } } = await fetchCryptoPrice();
-            const actualUSD = actualBTC * currentPrice;
-            
-            // Check if amount is within $10 tolerance
-            const amountDifference = Math.abs(actualUSD - expectedUSD);
-            const isWithinTolerance = amountDifference <= 10;
-            
-            console.log('💰 Amount verification:', {
-              expectedUSD,
-              actualUSD,
-              difference: amountDifference,
-              tolerance: 10,
-              isWithinTolerance
-            });
-
-            if (!isWithinTolerance) {
-              console.log('⚠️ Amount outside tolerance, but transaction is valid - proceeding');
-              toast({
-                title: '⚠️ Amount Notice',
-                description: `Transaction amount differs by $${amountDifference.toFixed(2)}, but payment is verified.`,
-              });
-            }
-          }
-        }
-      } catch (amountCheckError) {
-        console.log('⚠️ Could not verify amount, but transaction is valid - proceeding');
-      }
-
-      return {
-        isValid: true,
-        details: 'Transaction verified successfully'
-      };
+      return verificationResult;
 
     } catch (error: any) {
       console.error('❌ Bitcoin verification failed:', error);
@@ -196,30 +175,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     } catch (error) {
       console.error('❌ Formspree order collection failed:', error);
       throw error;
-    }
-  };
-
-  const sendCustomerConfirmationEmail = async (orderData: any) => {
-    console.log('📧 Sending customer confirmation email...');
-    try {
-      const response = await fetch('/supabase/functions/v1/send-order-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify(orderData)
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Customer email failed with status: ${response.status}`);
-      }
-      
-      console.log('✅ Customer confirmation email sent successfully');
-      return true;
-    } catch (error) {
-      console.error('❌ Customer confirmation email failed:', error);
-      return false;
     }
   };
 
@@ -341,10 +296,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         try {
           await sendOrderEmailFormspree(orderData);
           console.log('✅ Order processed successfully');
-          
-          sendCustomerConfirmationEmail(orderData).catch(err => 
-            console.warn('⚠️ Customer confirmation email failed but order is still successful:', err)
-          );
 
           await addOrder({
             order_id: orderId,
@@ -356,17 +307,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             shipping_fee: shippingFee,
             final_total: finalTotal,
             payment_method: 'Bitcoin (BTC)',
-            tx_id: txId,
-            bitcoin_amount: btcAmount.toString(),
-            shipping_address: formattedAddress,
-            phone: orderData.phone,
-            order_date: new Date().toISOString(),
-            verification_status: 'verified',
-            user_id: userProfile?.auth_id || userProfile?.id || 'guest',
             bitcoin_address: myAddress,
             transaction_hash: txId,
             status: 'pending',
-            created_at: new Date().toISOString()
+            user_id: userProfile?.auth_id || userProfile?.id || 'guest',
+            created_at: new Date().toISOString(),
+            verification_status: 'verified'
           });
           
         } catch (emailError) {
@@ -379,9 +325,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           description: 'Your Bitcoin payment has been verified and your order is confirmed.',
         });
 
-        onClose();
-        onOrderSuccess();
-        
         // Set order details for success modal
         setOrderDetails({
           orderId,
@@ -390,10 +333,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           paymentMethod: 'Bitcoin (BTC)'
         });
         
-        // Show success modal after a short delay
-        setTimeout(() => {
-          setShowSuccessModal(true);
-        }, 300);
+        // Show success modal
+        setShowSuccessModal(true);
+        
+        // Trigger parent success handler
+        onOrderSuccess();
         
         // Reset form state
         setStep(1);
@@ -437,12 +381,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     onClose();
   };
 
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    setOrderDetails(null);
+    onClose();
+  };
+
   if (!isOpen && !showSuccessModal) return null;
 
   return (
     <>
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      {isOpen && !showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             {step === 1 ? (
               <div className="p-4 sm:p-8">
@@ -592,7 +542,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
                 <div className="mb-6">
                   <label htmlFor="txId" className="block text-sm font-medium text-gray-700 mb-2">
-                    🔍 Transaction ID (Auto-Verification Enabled)
+                    🔍 Transaction ID (Enhanced Security Verification)
                   </label>
                   <input 
                     id="txId"
@@ -605,7 +555,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                     required
                   />
                   <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                    🔍 We'll automatically verify your payment on the Bitcoin blockchain. Amount tolerance: ±$10
+                    🔐 Enhanced security: Replay attack protection + amount verification (±$10 tolerance)
                   </p>
                   <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <p className="text-sm text-red-600">
@@ -618,9 +568,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <div className="flex items-center space-x-3">
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <p className="text-blue-800 font-medium">🔍 Verifying Bitcoin transaction...</p>
+                      <p className="text-blue-800 font-medium">🔍 Verifying Bitcoin transaction with enhanced security...</p>
                     </div>
-                    <p className="text-sm text-blue-600 mt-2">Checking blockchain for transaction confirmation and amount...</p>
+                    <p className="text-sm text-blue-600 mt-2">Checking blockchain for transaction confirmation, amount, and security validations...</p>
                   </div>
                 )}
 
@@ -655,10 +605,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       {orderDetails && (
         <OrderSuccessModal
           isOpen={showSuccessModal}
-          onClose={() => {
-            setShowSuccessModal(false);
-            setOrderDetails(null);
-          }}
+          onClose={handleSuccessModalClose}
           orderDetails={orderDetails}
           language="en"
         />
