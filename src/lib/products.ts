@@ -1,4 +1,3 @@
-import { StaticImageData } from 'next/image';
 
 export interface Product {
   id: string;
@@ -9,8 +8,23 @@ export interface Product {
   description: string;
   ingredients: string;
   dosage: string;
-  sideEffects: string;
+  sideEffects: string[];
   benefits: string[];
+  featured?: boolean;
+  labTested?: boolean;
+  inStock?: boolean;
+  specifications: {
+    dosePerCapsule: string;
+    capsulesPerBottle: string;
+    potencyLevel: string;
+  };
+  cycleInfo: {
+    length: string;
+    dosage: string;
+    pctRequired: boolean;
+  };
+  whatToExpected: string[];
+  womenEffects?: string[];
 }
 
 export const products: Product[] = [
@@ -23,12 +37,35 @@ export const products: Product[] = [
     description: 'Growth hormone secretagogue that can support increased muscle mass, improved sleep quality, and enhanced recovery.',
     ingredients: 'MK-677 (Ibutamoren) 25mg per capsule',
     dosage: '25mg daily, preferably before bedtime',
-    sideEffects: 'May cause increased appetite, mild water retention, or temporary changes in sleep patterns. Individual responses may vary.',
+    sideEffects: [
+      'May cause increased appetite',
+      'Mild water retention possible',
+      'Temporary changes in sleep patterns'
+    ],
     benefits: [
       'Supports natural growth hormone production',
       'May improve sleep quality and recovery',
       'Can help with muscle mass development',
       'Supports bone density'
+    ],
+    featured: true,
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '25mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'High'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '25mg daily',
+      pctRequired: false
+    },
+    whatToExpected: [
+      'Increased growth hormone levels',
+      'Better sleep quality',
+      'Enhanced recovery',
+      'Gradual muscle mass gains'
     ]
   },
   {
@@ -40,12 +77,35 @@ export const products: Product[] = [
     description: 'Selective androgen receptor modulator designed for lean muscle gain and strength enhancement.',
     ingredients: 'RAD-140 (Testolone) 10mg per capsule',
     dosage: '10-20mg daily for 8-12 weeks',
-    sideEffects: 'Some users may experience mild testosterone suppression or temporary changes in energy levels. Consider post-cycle support.',
+    sideEffects: [
+      'Mild testosterone suppression possible',
+      'Temporary changes in energy levels',
+      'May affect sleep patterns'
+    ],
     benefits: [
       'Supports lean muscle growth',
       'May enhance strength and endurance',
       'Selective tissue targeting',
       'Supports body composition goals'
+    ],
+    featured: true,
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '10mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'Very High'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '10-20mg daily',
+      pctRequired: true
+    },
+    whatToExpected: [
+      'Significant muscle gains',
+      'Increased strength',
+      'Better endurance',
+      'Improved body composition'
     ]
   },
   {
@@ -57,12 +117,34 @@ export const products: Product[] = [
     description: 'Popular SARM for muscle building and strength gains with good bioavailability.',
     ingredients: 'LGD-4033 (Ligandrol) 10mg per capsule',
     dosage: '5-10mg daily for 8-12 weeks',
-    sideEffects: 'May cause mild water retention or temporary hormonal changes. Post-cycle therapy may be beneficial for some users.',
+    sideEffects: [
+      'Mild water retention possible',
+      'Temporary hormonal changes',
+      'May affect energy levels'
+    ],
     benefits: [
       'Effective for muscle building',
       'Supports strength gains',
       'Good oral bioavailability',
       'Well-researched compound'
+    ],
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '10mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'High'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '5-10mg daily',
+      pctRequired: true
+    },
+    whatToExpected: [
+      'Steady muscle growth',
+      'Strength improvements',
+      'Better recovery',
+      'Enhanced performance'
     ]
   },
   {
@@ -74,12 +156,34 @@ export const products: Product[] = [
     description: 'Mild SARM ideal for beginners, supporting muscle preservation and gradual gains.',
     ingredients: 'Ostarine (MK-2866) 25mg per capsule',
     dosage: '15-25mg daily for 8-12 weeks',
-    sideEffects: 'Generally well-tolerated. Some users may experience mild changes in energy or mood. Monitor your response.',
+    sideEffects: [
+      'Generally well-tolerated',
+      'Mild changes in energy possible',
+      'Temporary mood changes'
+    ],
     benefits: [
       'Beginner-friendly profile',
       'Supports muscle preservation',
       'May help with recovery',
       'Gradual, sustainable gains'
+    ],
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '25mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'Moderate'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '15-25mg daily',
+      pctRequired: false
+    },
+    whatToExpected: [
+      'Muscle preservation',
+      'Gradual gains',
+      'Better recovery',
+      'Improved endurance'
     ]
   },
   {
@@ -91,12 +195,34 @@ export const products: Product[] = [
     description: 'PPARδ agonist supporting endurance, fat metabolism, and cardiovascular health.',
     ingredients: 'GW-501516 (Cardarine) 20mg per capsule',
     dosage: '10-20mg daily, can be split into two doses',
-    sideEffects: 'Most users tolerate well. Some may experience mild changes in sleep patterns or energy levels initially.',
+    sideEffects: [
+      'Most users tolerate well',
+      'Mild changes in sleep patterns',
+      'Energy level changes initially'
+    ],
     benefits: [
       'Supports endurance and stamina',
       'May enhance fat metabolism',
       'Supports cardiovascular health',
       'No hormonal impact'
+    ],
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '20mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'High'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '10-20mg daily',
+      pctRequired: false
+    },
+    whatToExpected: [
+      'Enhanced endurance',
+      'Better fat burning',
+      'Improved cardiovascular performance',
+      'Increased stamina'
     ]
   },
   {
@@ -108,12 +234,34 @@ export const products: Product[] = [
     description: 'Rev-ErbA agonist that may support metabolic function and circadian rhythm.',
     ingredients: 'SR-9009 (Stenabolic) 10mg per capsule',
     dosage: '20-30mg daily, split into 3-4 doses',
-    sideEffects: 'Generally well-tolerated. Some users may experience mild changes in sleep schedule or energy patterns.',
+    sideEffects: [
+      'Generally well-tolerated',
+      'Mild changes in sleep schedule',
+      'Energy pattern changes'
+    ],
     benefits: [
       'Supports metabolic function',
       'May improve endurance',
       'Supports healthy sleep cycles',
       'No hormonal suppression'
+    ],
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '10mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'Moderate'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '20-30mg daily',
+      pctRequired: false
+    },
+    whatToExpected: [
+      'Better metabolic function',
+      'Enhanced endurance',
+      'Improved sleep quality',
+      'Increased energy'
     ]
   },
   {
@@ -125,12 +273,39 @@ export const products: Product[] = [
     description: 'Unique myostatin inhibitor with SARM-like properties for advanced users.',
     ingredients: 'YK-11 5mg per capsule',
     dosage: '5-10mg daily for 6-8 weeks',
-    sideEffects: 'More potent compound - may cause hormonal changes or liver stress. Regular monitoring recommended for advanced users.',
+    sideEffects: [
+      'More potent compound - monitor usage',
+      'May cause hormonal changes',
+      'Liver stress possible with extended use'
+    ],
     benefits: [
       'Myostatin inhibition',
       'Potent muscle building effects',
       'Supports strength gains',
       'For experienced users'
+    ],
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '5mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'Very High'
+    },
+    cycleInfo: {
+      length: '6-8 weeks',
+      dosage: '5-10mg daily',
+      pctRequired: true
+    },
+    whatToExpected: [
+      'Rapid muscle gains',
+      'Significant strength increase',
+      'Enhanced muscle hardness',
+      'Quick results'
+    ],
+    womenEffects: [
+      'Not recommended for women',
+      'High risk of virilization',
+      'May cause permanent changes'
     ]
   },
   {
@@ -142,12 +317,39 @@ export const products: Product[] = [
     description: 'SARM supporting lean muscle gains while promoting fat loss.',
     ingredients: 'S-4 (Andarine) 25mg per capsule',
     dosage: '25-50mg daily, cycle 5 days on, 2 days off',
-    sideEffects: 'Some users may experience temporary vision changes (yellow tint) or mild hormonal effects. Cycling recommended.',
+    sideEffects: [
+      'Temporary vision changes possible (yellow tint)',
+      'Mild hormonal effects',
+      'Night vision may be affected'
+    ],
     benefits: [
       'Supports lean muscle growth',
       'May help with fat loss',
       'Good for body recomposition',
       'Relatively fast-acting'
+    ],
+    labTested: true,
+    inStock: true,
+    specifications: {
+      dosePerCapsule: '25mg',
+      capsulesPerBottle: '60',
+      potencyLevel: 'High'
+    },
+    cycleInfo: {
+      length: '8-12 weeks',
+      dosage: '25-50mg daily',
+      pctRequired: true
+    },
+    whatToExpected: [
+      'Lean muscle gains',
+      'Fat loss support',
+      'Better muscle definition',
+      'Improved vascularity'
+    ],
+    womenEffects: [
+      'Can be used by women at lower doses',
+      'Risk of virilization at higher doses',
+      'Monitor for voice changes'
     ]
   },
 ];
