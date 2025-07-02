@@ -46,21 +46,54 @@ const CartModal = ({
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   
-  // Calculate discount based on cart subtotal, not historical spending
+  // FIXED: Calculate discount based on cart subtotal with proper caps per user type
   const calculateCartDiscount = (cartSubtotal: number, profile: UserProfile | null) => {
     if (!profile) return 0;
     
     // First referral bonus: 10%
     const firstReferralBonus = profile.referred_by ? 10 : 0;
     
-    // Spending discount based on cart amount (rounded up to nearest $50)
-    const spendingTiers = Math.ceil(cartSubtotal / 50);
-    const spendingDiscount = profile.referred_by 
-      ? Math.min(spendingTiers * 6.5, 19.5) // Referred users: 6.5% per $50, max at $150 cart (3 tiers)
-      : spendingTiers * 2.5; // Standard users: 2.5% per $50
+    // Get referral count - for now using 0 as placeholder
+    // TODO: This should fetch actual referral count from database
+    const referralCount = 0;
+    const isReferrer = referralCount > 0;
+    const referralDiscount = referralCount * 2.5;
     
-    // Cap total at 32%
-    return Math.min(firstReferralBonus + spendingDiscount, 32);
+    // Spending discount based on cart amount (rounded up to nearest $50)
+    const spendingTiers = Math.ceil(Math.min(cartSubtotal, 150) / 50); // Cap at $150 for all users
+    
+    let spendingDiscount = 0;
+    if (isReferrer) {
+      // Referrers: 5% per $50 in cart (max 3 tiers at $150)
+      spendingDiscount = Math.min(spendingTiers * 5, 15); // Max 15% (3 × 5%)
+    } else if (profile.referred_by) {
+      // Referred users: 6.5% per $50 in cart (max 3 tiers at $150)
+      spendingDiscount = Math.min(spendingTiers * 6.5, 19.5); // Max 19.5% (3 × 6.5%)
+    } else {
+      // Standard users: 2.5% per $50 in cart (max 3 tiers at $150)
+      spendingDiscount = Math.min(spendingTiers * 2.5, 7.5); // Max 7.5% (3 × 2.5%)
+    }
+    
+    // Get saved discount from discount banking
+    const savedDiscount = profile.saved_discount_percentage || 0;
+    
+    // Total available discount (including saved), but cap at 32%
+    const totalEarnedDiscount = firstReferralBonus + referralDiscount + spendingDiscount;
+    const totalAvailableDiscount = Math.min(totalEarnedDiscount + savedDiscount, 32);
+    
+    console.log('Cart discount calculation:', {
+      cartSubtotal,
+      spendingTiers,
+      userType: isReferrer ? 'referrer' : (profile.referred_by ? 'referred' : 'standard'),
+      firstReferralBonus,
+      referralDiscount,
+      spendingDiscount,
+      savedDiscount,
+      totalEarnedDiscount,
+      totalAvailableDiscount
+    });
+    
+    return totalAvailableDiscount;
   };
   
   const userDiscount = isAuthenticated ? calculateCartDiscount(subtotal, userProfile) : 0;

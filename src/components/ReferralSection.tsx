@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Gift } from 'lucide-react';
@@ -57,7 +56,7 @@ const ReferralSection = ({
     }
   };
 
-  // UPDATED REFERRAL RULES WITH DISCOUNT BANKING
+  // FIXED REFERRAL RULES WITH PROPER CAPS
   // Each referral: 2.5%
   const referralDiscount = referralCount * 2.5;
   
@@ -70,18 +69,25 @@ const ReferralSection = ({
   // Spending discount based on CURRENT CART AMOUNT (not historical spending)
   // ALL users have $150 spending cap per purchase for personal spending discounts
   const cartSpendingCap = Math.min(currentCartTotal, 150); // Cap cart calculation at $150
+  const spendingTiers = Math.ceil(cartSpendingCap / 50);
   
   // Referrers get 5% per $50 of referred spending (based on total referred_spending)
   const referredSpendingDiscount = isReferrer
-    ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending || 0) / 50) * 5, Math.floor(150 / 50) * 5)
+    ? Math.min(Math.floor(Math.ceil(userProfile.referred_spending || 0) / 50) * 5, 15) // Max 15% (3 tiers × 5%)
     : 0;
   
   // Personal spending discount based on CURRENT CART AMOUNT (capped at $150)
-  const spendingDiscount = isReferrer
-    ? Math.min(Math.floor(Math.ceil(cartSpendingCap) / 50) * 5, Math.floor(150 / 50) * 5)  // Referrers: 5% per $50 in cart
-    : userProfile.referred_by 
-      ? Math.min(Math.floor(Math.ceil(cartSpendingCap) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 in cart
-      : Math.min(Math.floor(Math.ceil(cartSpendingCap) / 50) * 2.5, Math.floor(150 / 50) * 2.5); // Standard users: 2.5% per $50 in cart
+  let spendingDiscount = 0;
+  if (isReferrer) {
+    // Referrers: 5% per $50 in cart (max 15% at 3 tiers)
+    spendingDiscount = Math.min(spendingTiers * 5, 15);
+  } else if (userProfile.referred_by) {
+    // Referred users: 6.5% per $50 in cart (max 19.5% at 3 tiers)
+    spendingDiscount = Math.min(spendingTiers * 6.5, 19.5);
+  } else {
+    // Standard users: 2.5% per $50 in cart (max 7.5% at 3 tiers)
+    spendingDiscount = Math.min(spendingTiers * 2.5, 7.5);
+  }
   
   // Get saved discount from previous purchases (NEW FEATURE)
   const savedDiscount = userProfile.saved_discount_percentage || 0;
@@ -167,7 +173,7 @@ const ReferralSection = ({
           <li>• {language === 'en' ? 'First referral signup: 10% discount' : 'Primer registro de referido: 10% descuento'}</li>
           <li>• {language === 'en' ? 'Each additional referral: 2.5% discount' : 'Cada referido adicional: 2.5% descuento'}</li>
           <li>• {language === 'en' ? 'Personal spending: Based on current cart amount (max $150)' : 'Gastos personales: Basado en el monto actual del carrito (máx $150)'}</li>
-          <li>• {language === 'en' ? 'Standard: 2.5% per $50 | Referred: 6.5% per $50 | Referrers: 5% per $50' : 'Estándar: 2.5% por $50 | Referidos: 6.5% por $50 | Referidores: 5% por $50'}</li>
+          <li>• {language === 'en' ? 'Standard: 2.5% per $50 (max 7.5%) | Referred: 6.5% per $50 (max 19.5%) | Referrers: 5% per $50 (max 15%)' : 'Estándar: 2.5% por $50 (máx 7.5%) | Referidos: 6.5% por $50 (máx 19.5%) | Referidores: 5% por $50 (máx 15%)'}</li>
           <li>• {language === 'en' ? '💰 NEW: Unused discounts are saved for future purchases!' : '💰 NUEVO: ¡Los descuentos no utilizados se guardan para futuras compras!'}</li>
           <li>• {language === 'en' ? 'Free shipping at $100 for everyone' : 'Envío gratis a $100 para todos'}</li>
         </ul>
