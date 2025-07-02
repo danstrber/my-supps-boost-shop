@@ -173,6 +173,15 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      update_user_post_auth: {
+        Args: {
+          user_auth_id: string
+          user_name?: string
+          user_country?: string
+          referral_code?: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

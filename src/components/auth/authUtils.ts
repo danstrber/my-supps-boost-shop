@@ -11,6 +11,11 @@ export const handleEmailAuth = async (
 ) => {
   console.log('handleEmailAuth called:', { mode, email, name, referralCode, country });
   
+  // Store data for post-auth processing
+  if (name) localStorage.setItem('pending_name', name);
+  if (country) localStorage.setItem('pending_country', country);
+  if (referralCode) localStorage.setItem('pending_referral', referralCode);
+  
   if (mode === 'signup') {
     return await signUp(email, password, name, referralCode, country);
   } else {
