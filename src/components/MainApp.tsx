@@ -27,31 +27,9 @@ const MainApp = () => {
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart, clearCart } = useCart();
   const { orderSuccessModal, showOrderSuccess, closeOrderSuccess } = useOrderSuccess();
 
-  // Calculate user discount
-  const [userDiscount, setUserDiscount] = useState(0);
-
-  useEffect(() => {
-    const calculateDiscount = () => {
-      if (isAuthenticated && userProfile) {
-        const cartValue = Object.entries(cart).reduce((total, [productId, quantity]) => {
-          const product = products.find(p => p.id === productId);
-          return total + (product ? product.price * quantity : 0);
-        }, 0);
-        
-        const discount = userProfile ? Math.min(
-          (userProfile.referred_by ? 
-            Math.floor(userProfile.total_spending / 50) * 6 : 
-            Math.floor(userProfile.referred_spending / 50) * 2
-          ), 30
-        ) : 0;
-        setUserDiscount(discount);
-      } else {
-        setUserDiscount(0);
-      }
-    };
-
-    calculateDiscount();
-  }, [isAuthenticated, userProfile, cart]);
+  // Use discount from auth context
+  const { userDiscount: authUserDiscount } = useAuth();
+  const userDiscount = authUserDiscount;
 
   const handleLanguageChange = (lang: 'en' | 'es') => {
     setLanguage(lang);

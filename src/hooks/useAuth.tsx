@@ -69,12 +69,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const isAuthenticated = !!userProfile;
   
-  const userDiscount = userProfile ? Math.min(
-    (userProfile.referred_by ? 
-      Math.floor(userProfile.total_spending / 50) * 6 : 
-      Math.floor(userProfile.referred_spending / 50) * 2
-    ), 30
-  ) : 0;
+  // Calculate user discount based on referral system rules
+  const userDiscount = userProfile ? (() => {
+    let discount = 0;
+    
+    // Base discount for having referrals (10% + 4% per additional referral, max 25%)
+    if (userProfile.referred_by) {
+      // User was referred - gets spending discount (6% per $50 spent)
+      discount = Math.floor((userProfile.total_spending || 0) / 50) * 6;
+    } else {
+      // User is a referrer - gets referral discount (2% per $50 of referred spending)
+      discount = Math.floor((userProfile.referred_spending || 0) / 50) * 2;
+    }
+    
+    return Math.min(discount, 30); // Cap at 30%
+  })() : 0;
 
   useEffect(() => {
     console.log('Auth useEffect starting...');
