@@ -29,7 +29,7 @@ const CartModal = ({
   cart,
   products,
   onUpdateCart,
-  userDiscount,
+  userDiscount: providedDiscount,
   isAuthenticated,
   userProfile,
   onPageChange,
@@ -46,6 +46,25 @@ const CartModal = ({
     .filter(Boolean) as Array<{ product: Product; quantity: number }>;
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+  
+  // Calculate discount based on cart subtotal, not historical spending
+  const calculateCartDiscount = (cartSubtotal: number, profile: UserProfile | null) => {
+    if (!profile) return 0;
+    
+    // First referral bonus: 10%
+    const firstReferralBonus = profile.referred_by ? 10 : 0;
+    
+    // Spending discount based on cart amount (rounded up to nearest $50)
+    const spendingTiers = Math.ceil(cartSubtotal / 50);
+    const spendingDiscount = profile.referred_by 
+      ? Math.min(spendingTiers * 6.5, 19.5) // Referred users: 6.5% per $50, max at $150 cart (3 tiers)
+      : spendingTiers * 2.5; // Standard users: 2.5% per $50
+    
+    // Cap total at 32%
+    return Math.min(firstReferralBonus + spendingDiscount, 32);
+  };
+  
+  const userDiscount = isAuthenticated ? calculateCartDiscount(subtotal, userProfile) : 0;
   const discountAmount = (subtotal * userDiscount) / 100;
   const subtotalAfterDiscount = subtotal - discountAmount;
   

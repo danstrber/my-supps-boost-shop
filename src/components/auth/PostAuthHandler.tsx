@@ -20,12 +20,17 @@ const PostAuthHandler = () => {
             console.log('Updating user post-auth with:', { pendingName, pendingCountry, pendingReferral });
             
             // Call the post-auth update function
-            await supabase.rpc('update_user_post_auth', {
+            const { error } = await supabase.rpc('update_user_post_auth', {
               user_auth_id: user.id,
               user_name: pendingName,
               user_country: pendingCountry,
               referral_code: pendingReferral
             });
+
+            if (error) {
+              console.error('Error in update_user_post_auth:', error);
+              throw error;
+            }
 
             console.log('User post-auth update successful');
 

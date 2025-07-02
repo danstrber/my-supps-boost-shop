@@ -85,6 +85,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // NEW: First time referral bonus = 10%
     const firstReferralBonus = userProfile.referred_by ? 10 : 0;
     
+    // For spending calculation, we use the CART SUBTOTAL as the spending amount to check for discount
+    // This is what the user is currently spending, not their historical total_spending
+    const currentSpending = userProfile.total_spending || 0;
+    
     // Spending discount based on user type - ROUNDING UP RULE
     // NEW: Referrers get 5% per $50 of referred spending (max at $150 total discounts)
     const referredSpendingDiscount = isReferrer
@@ -93,10 +97,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     // NEW RULE: Standard users get 2.5% per $50, Referred users get 6.5% per $50 (max at $150), Referrers get 5% per $50
     const spendingDiscount = isReferrer
-      ? Math.floor(Math.ceil(userProfile.total_spending || 0) / 50) * 5  // Referrers: 5% per $50 spent personally (rounded up)
+      ? Math.floor(Math.ceil(currentSpending / 50)) * 5  // Referrers: 5% per $50 spent personally (rounded up)
       : userProfile.referred_by 
-        ? Math.min(Math.floor(Math.ceil(userProfile.total_spending || 0) / 50) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (rounded up) MAX AT $150
-        : Math.floor(Math.ceil(userProfile.total_spending || 0) / 50) * 2.5; // Standard users: 2.5% per $50 (rounded up)
+        ? Math.min(Math.floor(Math.ceil(currentSpending / 50)) * 6.5, Math.floor(150 / 50) * 6.5)  // Referred users: 6.5% per $50 (rounded up) MAX AT $150
+        : Math.floor(Math.ceil(currentSpending / 50)) * 2.5; // Standard users: 2.5% per $50 (rounded up)
     
     // ALL discounts STACK but cap at 32%
     const totalDiscount = Math.min(referralDiscount + spendingDiscount + referredSpendingDiscount + firstReferralBonus, 32);
@@ -108,6 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       referredSpendingDiscount,
       firstReferralBonus,
       totalDiscount,
+      currentSpending,
       userProfile: { 
         referred_by: userProfile.referred_by,
         total_spending: userProfile.total_spending,

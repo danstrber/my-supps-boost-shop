@@ -78,23 +78,26 @@ const Account = ({
     try {
       console.log('Updating profile with:', formData);
       
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('users')
         .update({
           name: formData.name,
           country: formData.country
         })
-        .eq('id', userProfile.id);
+        .eq('id', userProfile.id)
+        .select();
 
       if (error) {
         console.error('Error updating profile:', error);
         toast({
           title: "Error",
-          description: "Failed to update profile",
+          description: `Failed to update profile: ${error.message}`,
           variant: "destructive",
         });
         return;
       }
+
+      console.log('Profile update successful:', data);
 
       toast({
         title: "Success",
@@ -105,15 +108,6 @@ const Account = ({
       // Refresh the profile to get updated data and force re-render
       await refreshProfile();
       
-      // Force formData to update with the fresh profile data from the refresh
-      setTimeout(() => {
-        if (userProfile) {
-          setFormData({
-            name: userProfile.name || '',
-            country: userProfile.country || ''
-          });
-        }
-      }, 100);
     } catch (error) {
       console.error('Exception updating profile:', error);
       toast({
