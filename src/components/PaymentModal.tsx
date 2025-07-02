@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -308,6 +307,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         onClose();
         onOrderSuccess();
         
+        // Set order details for success modal
         setOrderDetails({
           orderId,
           total: finalTotal,
@@ -315,10 +315,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           paymentMethod: 'Bitcoin (BTC)'
         });
         
+        // Show success modal after a short delay
         setTimeout(() => {
           setShowSuccessModal(true);
-        }, 500);
+        }, 300);
         
+        // Reset form state
         setStep(1);
         setError(null);
         setTxId('');

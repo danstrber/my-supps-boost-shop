@@ -132,8 +132,8 @@ const CartModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle className="flex items-center justify-between">
               Your Cart ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})
               <Button
@@ -151,7 +151,8 @@ const CartModal = ({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 max-h-60 overflow-y-auto">
+          {/* Scrollable cart items section */}
+          <div className="flex-1 overflow-y-auto min-h-0 space-y-3 py-2">
             {cartItems.map(({ product, quantity }) => (
               <CartItem
                 key={product.id}
@@ -163,39 +164,42 @@ const CartModal = ({
             ))}
           </div>
 
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
-            <div className="flex justify-between">
-              <span>Subtotal:</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            {userDiscount > 0 && (
-              <div className="flex justify-between text-green-600">
-                <span>Total Discount ({userDiscount.toFixed(1)}%):</span>
-                <span>-${discountAmount.toFixed(2)}</span>
+          {/* Fixed summary and checkout section at bottom */}
+          <div className="flex-shrink-0 space-y-4 pt-4 border-t">
+            <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+              <div className="flex justify-between">
+                <span>Subtotal:</span>
+                <span>${subtotal.toFixed(2)}</span>
               </div>
-            )}
-            <div className="flex justify-between">
-              <span>Shipping:</span>
-              <span>{shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`}</span>
-            </div>
-            {amountNeededForFreeShipping > 0 && (
-              <div className="text-blue-600 text-sm text-center p-2 bg-blue-50 rounded">
-                Add ${amountNeededForFreeShipping.toFixed(2)} more for free shipping!
+              {userDiscount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Total Discount ({userDiscount.toFixed(1)}%):</span>
+                  <span>-${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span>Shipping:</span>
+                <span>{shippingFee === 0 ? 'FREE' : `$${shippingFee.toFixed(2)}`}</span>
               </div>
-            )}
-            <div className="flex justify-between font-semibold text-lg border-t pt-2">
-              <span>Total:</span>
-              <span className="text-green-600">${finalTotal.toFixed(2)}</span>
+              {amountNeededForFreeShipping > 0 && (
+                <div className="text-blue-600 text-sm text-center p-2 bg-blue-50 rounded">
+                  Add ${amountNeededForFreeShipping.toFixed(2)} more for free shipping!
+                </div>
+              )}
+              <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                <span>Total:</span>
+                <span className="text-green-600">${finalTotal.toFixed(2)}</span>
+              </div>
             </div>
-          </div>
 
-          <Button 
-            onClick={handleCheckout}
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-            size="lg"
-          >
-            {isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
-          </Button>
+            <Button 
+              onClick={handleCheckout}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              size="lg"
+            >
+              {isAuthenticated ? 'Proceed to Checkout' : 'Sign In to Checkout'}
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
