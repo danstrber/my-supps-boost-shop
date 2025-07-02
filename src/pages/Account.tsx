@@ -93,6 +93,7 @@ const Account = ({
       });
 
       setEditMode(false);
+      // Refresh the profile to get updated data
       await refreshProfile();
     } catch (error) {
       console.error('Exception updating profile:', error);
