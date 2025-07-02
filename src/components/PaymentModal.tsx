@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -378,6 +377,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const handleClose = () => {
+    // Don't close if success modal is showing
+    if (showSuccessModal) return;
+    
     setStep(1);
     setError(null);
     setTxId('');
@@ -386,12 +388,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   };
 
   const handleSuccessModalClose = () => {
+    console.log('🔄 Closing success modal...');
     setShowSuccessModal(false);
     setOrderDetails(null);
     onClose();
   };
 
-  if (!isOpen && !showSuccessModal) return null;
+  if (showSuccessModal && orderDetails) {
+    return (
+      <OrderSuccessModal
+        isOpen={true}
+        onClose={handleSuccessModalClose}
+        orderDetails={orderDetails}
+        language="en"
+      />
+    );
+  }
+
+  if (!isOpen) return null;
 
   return (
     <>

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -60,6 +59,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
       country: 'Country',
       continue: 'Continue to Payment',
       countryNote: 'Country matches your profile and cannot be changed here.',
+      phoneNote: '⚠️ Please include your country code (e.g., +1 for US, +44 for UK)',
     },
     es: {
       title: 'Información de Envío',
@@ -74,6 +74,7 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
       country: 'País',
       continue: 'Continuar al Pago',
       countryNote: 'El país coincide con tu perfil y no se puede cambiar aquí.',
+      phoneNote: '⚠️ Por favor incluye tu código de país (ej: +1 para US, +44 para UK)',
     },
   };
 
@@ -164,9 +165,10 @@ const ShippingForm: React.FC<ShippingFormProps> = ({ onSubmit, isLoading, langua
                       name="phone"
                       type="tel"
                       autoComplete="tel"
-                      placeholder={labels.phone}
+                      placeholder={language === 'en' ? "+1 234 567 8900" : "+1 234 567 8900"}
                     />
                   </FormControl>
+                  <p className="text-sm text-orange-600 mt-1 font-medium">{labels.phoneNote}</p>
                   <FormMessage />
                 </FormItem>
               )}
