@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -297,6 +298,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
           await sendOrderEmailFormspree(orderData);
           console.log('✅ Order processed successfully');
 
+          // Fix: Include all required Order properties
           await addOrder({
             order_id: orderId,
             customer_email: orderData.customerEmail,
@@ -312,7 +314,15 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             status: 'pending',
             user_id: userProfile?.auth_id || userProfile?.id || 'guest',
             created_at: new Date().toISOString(),
-            verification_status: 'verified'
+            verification_status: 'verified',
+            // Add missing required properties
+            phone: shippingData?.phone || 'Default Phone',
+            shipping_address: formattedAddress,
+            order_date: new Date().toLocaleString(),
+            // Optional properties
+            tx_id: txId,
+            bitcoin_amount: btcAmount.toString(),
+            verification_details: verificationResult.details
           });
           
         } catch (emailError) {
