@@ -51,6 +51,16 @@ const Account = ({
   });
   const { toast } = useToast();
 
+  // Update formData when userProfile changes
+  React.useEffect(() => {
+    if (userProfile) {
+      setFormData({
+        name: userProfile.name || '',
+        country: userProfile.country || ''
+      });
+    }
+  }, [userProfile]);
+
   const filteredCountries = countries.filter(countryName =>
     countryName.toLowerCase().includes(countrySearch.toLowerCase())
   );
