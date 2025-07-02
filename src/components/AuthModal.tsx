@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -399,6 +400,19 @@ const AuthModal = ({
               : (language === 'en' ? 'Create your account to get started.' : 'Crea tu cuenta para comenzar.')}
           </DialogDescription>
         </DialogHeader>
+        
+        {/* Country requirement notice */}
+        <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg mb-4">
+          <p className="text-blue-700 text-sm">
+            <strong>
+              {language === 'en' ? 'Note:' : 'Nota:'}
+            </strong>{' '}
+            {language === 'en' 
+              ? 'Country selection and Terms acceptance are required for all sign-in methods (including Google and Phantom).'
+              : 'La selección de país y aceptación de términos son requeridos para todos los métodos de inicio de sesión (incluyendo Google y Phantom).'}
+          </p>
+        </div>
+
         <AuthForm
           mode={mode}
           email={email}

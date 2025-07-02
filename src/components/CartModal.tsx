@@ -158,7 +158,7 @@ const CartModal = ({
                 product={product}
                 quantity={quantity}
                 onUpdateCart={onUpdateCart}
-                userDiscount={userDiscount}
+                userDiscount={0} // Don't show discount on individual items
               />
             ))}
           </div>
@@ -170,7 +170,7 @@ const CartModal = ({
             </div>
             {userDiscount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Discount ({userDiscount.toFixed(1)}%):</span>
+                <span>Total Discount ({userDiscount.toFixed(1)}%):</span>
                 <span>-${discountAmount.toFixed(2)}</span>
               </div>
             )}
