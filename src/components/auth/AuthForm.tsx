@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -206,30 +205,28 @@ const AuthForm = ({
           </div>
         )}
 
-        {mode === 'signup' && (
-          <div className="flex items-start space-x-2">
-            <Checkbox
-              id="terms-checkbox"
-              checked={acceptedTerms}
-              onCheckedChange={onTermsChange}
-              className="mt-1"
-            />
-            <Label htmlFor="terms-checkbox" className="text-sm text-gray-600 leading-5">
-              {language === 'en' ? 'I agree to the ' : 'Acepto los '}
-              <button
-                type="button"
-                onClick={onTermsClick}
-                className="text-blue-600 hover:text-blue-500 underline"
-              >
-                {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
-              </button>
-            </Label>
-          </div>
-        )}
+        <div className="flex items-start space-x-2">
+          <Checkbox
+            id="terms-checkbox"
+            checked={acceptedTerms}
+            onCheckedChange={onTermsChange}
+            className="mt-1"
+          />
+          <Label htmlFor="terms-checkbox" className="text-sm text-gray-600 leading-5">
+            {language === 'en' ? 'I agree to the ' : 'Acepto los '}
+            <button
+              type="button"
+              onClick={onTermsClick}
+              className="text-blue-600 hover:text-blue-500 underline"
+            >
+              {language === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
+            </button>
+          </Label>
+        </div>
 
         <Button 
           type="submit" 
-          disabled={loading || !country || (mode === 'signup' && (!acceptedTerms || !name))} 
+          disabled={loading || !country || !acceptedTerms || (mode === 'signup' && !name)} 
           className="w-full"
         >
           {loading 
@@ -255,7 +252,7 @@ const AuthForm = ({
       <div className="space-y-3">
         <GoogleSignInButton 
           onClick={onGoogleSignIn} 
-          disabled={loading || !country}
+          disabled={loading || !country || !acceptedTerms}
           language={language}
           mode={mode}
         />
@@ -263,7 +260,7 @@ const AuthForm = ({
         <Button
           type="button"
           onClick={onPhantomConnect}
-          disabled={loading || !country}
+          disabled={loading || !country || !acceptedTerms}
           variant="outline"
           className="w-full flex items-center justify-center space-x-2"
         >
@@ -274,11 +271,14 @@ const AuthForm = ({
         </Button>
       </div>
 
-      {!country && (
+      {(!country || !acceptedTerms) && (
         <p className="text-sm text-red-600 text-center">
-          {language === 'en' 
-            ? 'Please select your country to continue' 
-            : 'Por favor selecciona tu país para continuar'}
+          {!country && !acceptedTerms 
+            ? (language === 'en' ? 'Please select your country and accept terms to continue' : 'Por favor selecciona tu país y acepta los términos para continuar')
+            : !country 
+              ? (language === 'en' ? 'Please select your country to continue' : 'Por favor selecciona tu país para continuar')
+              : (language === 'en' ? 'Please accept the Terms of Service to continue' : 'Por favor acepta los Términos de Servicio para continuar')
+          }
         </p>
       )}
 

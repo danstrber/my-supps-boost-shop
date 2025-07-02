@@ -218,6 +218,18 @@ const AuthModal = ({
       return;
     }
 
+    // For signup mode, also require terms acceptance for Google auth
+    if (mode === 'signup' && !acceptedTerms) {
+      toast({
+        title: language === 'en' ? "Terms required" : "Términos requeridos",
+        description: language === 'en' 
+          ? "Please accept the Terms of Service to continue with Google sign-up."
+          : "Por favor acepta los Términos de Servicio para continuar con el registro de Google.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const finalReferralCode = referralCode || referralCodeInput || null;

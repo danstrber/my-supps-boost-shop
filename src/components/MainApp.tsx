@@ -11,6 +11,7 @@ import Sidebar from '@/components/Sidebar';
 import StaticPage from '@/components/StaticPage';
 import Account from '@/pages/Account';
 import Index from '@/pages/Index';
+import TermsOfService from '@/components/TermsOfService';
 import { products } from '@/lib/products';
 
 const MainApp = () => {
@@ -22,6 +23,7 @@ const MainApp = () => {
     mode: 'login'
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
 
   const { isAuthenticated, userProfile, handleAuthAction } = useAuth();
   const { cart, cartItemCount, handleAddToCart, handleUpdateCart, clearCart } = useCart();
@@ -166,6 +168,12 @@ const MainApp = () => {
         onClose={handleCloseAuthModal}
         initialMode={authModalState.mode}
         language={language}
+        onTermsClick={() => setIsTermsOpen(true)}
+      />
+
+      <TermsOfService
+        isOpen={isTermsOpen}
+        onClose={() => setIsTermsOpen(false)}
       />
 
       {orderSuccessModal.isOpen && orderSuccessModal.orderDetails && (
