@@ -64,7 +64,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Other masculinizing effects'
     ],
-    inStock: true,
+    inStock: false,
     labTested: true
   },
   {
@@ -182,7 +182,7 @@ export const products: Product[] = [
       'Same side effects as men',
       'No virilization concerns'
     ],
-    inStock: true,
+    inStock: false,
     labTested: true
   },
   {
@@ -220,7 +220,7 @@ export const products: Product[] = [
       'Risk of multiple pregnancies',
       'Significant hormonal disruption'
     ],
-    inStock: true
+    inStock: false
   },
   {
     id: 'aromasin',
@@ -258,7 +258,7 @@ export const products: Product[] = [
       'Bone health monitoring required',
       'Not for bodybuilding use in women'
     ],
-    inStock: true
+    inStock: false
   },
   {
     id: 'clomid',
@@ -296,7 +296,7 @@ export const products: Product[] = [
       'Multiple pregnancy risk',
       'Mood and emotional changes'
     ],
-    inStock: true
+    inStock: false
   },
   {
     id: 'accutane',
