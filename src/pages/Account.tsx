@@ -180,7 +180,7 @@ const Account = ({
                           <SelectTrigger id="profile-country">
                             <SelectValue placeholder="Select your country" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="z-50 bg-white">
                             <div className="p-2">
                               <Input
                                 id="profile-country-search"
