@@ -8,11 +8,35 @@
     <meta name="description" content="Premium Performance Enhancement - Science-backed supplements for muscle building, strength gains, and athletic performance." />
     <meta name="author" content="MySupps" />
     
-    <!-- Security redirect to HTTPS -->
+    <!-- Enhanced HTTPS redirect with debugging -->
     <script>
-      if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
-        location.replace('https:' + window.location.href.substring(window.location.protocol.length));
-      }
+      (function() {
+        console.log('Current protocol:', location.protocol);
+        console.log('Current hostname:', location.hostname);
+        console.log('Current URL:', window.location.href);
+        
+        // Enhanced HTTPS redirect
+        if (location.protocol !== 'https:' && 
+            location.hostname !== 'localhost' && 
+            location.hostname !== '127.0.0.1' &&
+            location.hostname !== '' &&
+            !location.hostname.includes('localhost')) {
+          
+          console.log('Redirecting to HTTPS...');
+          const httpsUrl = 'https://' + location.hostname + location.pathname + location.search + location.hash;
+          console.log('Redirecting to:', httpsUrl);
+          
+          // Try multiple redirect methods for better compatibility
+          try {
+            window.location.replace(httpsUrl);
+          } catch (e) {
+            console.log('Replace failed, trying assign:', e);
+            window.location.assign(httpsUrl);
+          }
+        } else {
+          console.log('HTTPS redirect not needed or blocked (local development)');
+        }
+      })();
     </script>
     
     <!-- Updated Favicon -->
