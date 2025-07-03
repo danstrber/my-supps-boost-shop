@@ -1,4 +1,3 @@
-
 import accutaneImage from '@/assets/accutane.png';
 
 export interface Product {
@@ -269,8 +268,8 @@ export const products: Product[] = [
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
     specifications: {
-      dosePerCapsule: '25mg',
-      capsulesPerBottle: '40 capsules',
+      dosePerCapsule: '50mg',
+      capsulesPerBottle: '30 tablets',
       potencyLevel: 'Beginner'
     },
     whatToExpected: [
