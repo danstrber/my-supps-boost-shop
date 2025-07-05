@@ -188,7 +188,7 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
-    price: 40,
+    price: 45,
     image: '/lovable-uploads/0f656d9e-afeb-45b0-8785-80029343c306.png',
     category: 'pct',
     description: 'Selective estrogen receptor modulator for PCT and natural testosterone support without estrogenic side effects.',
@@ -220,7 +220,7 @@ export const products: Product[] = [
       'Risk of multiple pregnancies',
       'Significant hormonal disruption'
     ],
-    inStock: false
+    inStock: true
   },
   {
     id: 'aromasin',
