@@ -523,6 +523,38 @@ export const translations = {
     menstrualCycleDisruption: 'Posible interrupción del ciclo menstrual',
     voiceChanges: 'Cambios de voz en dosis excesivas',
     importantNotice: 'Aviso Importante',
-    researchPurposesOnly: 'Este producto está destinado únicamente para fines de investigación. Consulte con un profesional de la salud antes de usar. No para consumo humano. Use bajo su propio riesgo y responsabilidad.'
+    researchPurposesOnly: 'Este producto está destinado únicamente para fines de investigación. Consulte con un profesional de la salud antes de usar. No para consumo humano. Use bajo su propio riesgo y responsabilidad.',
+    
+    // Additional product translations
+    rapidMuscleMass: 'Aumentos rápidos de masa muscular (5-10 lbs en 2-3 semanas)',
+    significantStrengthGains: 'Aumentos significativos de fuerza (20-30% de aumento)',
+    enhancedMuscleHardness: 'Dureza muscular mejorada y vascularidad',
+    improvedRecovery: 'Recuperación mejorada entre entrenamientos',
+    mayAffectLiver: 'Puede afectar la función hepática (hepatotóxico)',
+    bloodPressureElevation: 'Posible elevación de presión arterial',
+    cholesterolImpact: 'Puede impactar los niveles de colesterol',
+    lethargyFatigue: 'Puede causar letargo y fatiga',
+    decreasedAppetite: 'Puede disminuir el apetito',
+    hairThinning: 'Posible adelgazamiento del cabello (si está predispuesto)',
+    notRecommendedWomen: 'NO recomendado para mujeres',
+    virilizationSymptoms: 'Puede causar síntomas de virilización',
+    voiceChangesIrreversible: 'Cambios de voz (potencialmente irreversibles)',
+    increasedBodyHair: 'Aumento del vello corporal',
+    masculinizingEffects: 'Otros efectos masculinizantes',
+    
+    // Letrozole specific translations
+    completeEstrogenSuppression: 'Supresión completa de estrógeno (95%+ reducción)',
+    enhancedDefinition: 'Definición muscular mejorada y dureza',
+    eliminateWaterRetention: 'Eliminación de retención de agua',
+    preventGynecomastia: 'Prevención de ginecomastia',
+    severeJointPain: 'Dolor articular severo y rigidez',
+    boneDensityReduction: 'Reducción significativa de densidad ósea (largo plazo)',
+    moodChangesDepression: 'Cambios de humor y depresión',
+    severelyCholesterol: 'Puede impactar severamente el colesterol',
+    extremeFatigue: 'Fatiga extrema y debilidad',
+    breastCancerTreatment: 'Usado en tratamiento de cáncer de mama',
+    completeEstrogenDepletion: 'Causa depleción completa de estrógeno',
+    boneBealthRisks: 'Riesgos severos para la salud ósea',
+    notRecommendedBodybuilding: 'No recomendado para uso en fisicoculturismo'
   }
 };

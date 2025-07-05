@@ -148,13 +148,13 @@ export const products: Product[] = [
   {
     id: 'clenbuterol',
     name: 'Clenbuterol',
-    price: 35,
-    image: '/lovable-uploads/455afa37-6ab8-4e0f-8579-c2fdbf12e2ba.png',
+    price: 40,
+    image: '/lovable-uploads/b7c315ff-19a0-4e63-86b9-79c6dd31b20c.png',
     category: 'fat-burners',
     description: 'Powerful thermogenic fat burner for cutting cycles with muscle-preserving properties.',
     specifications: {
-      dosePerCapsule: '40mcg',
-      capsulesPerBottle: '50 capsules',
+      dosePerCapsule: '60mcg',
+      capsulesPerBottle: '50 tablets',
       potencyLevel: 'Advanced'
     },
     whatToExpected: [
@@ -225,13 +225,13 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 25,
-    image: '/lovable-uploads/b4e1e935-17bb-42b9-a59c-c6c0fdf1f07a.png',
+    price: 35,
+    image: '/lovable-uploads/ca4cfeff-6c54-4cac-9d78-8514882ca7c9.png',
     category: 'pct',
     description: 'Aromatase inhibitor for estrogen control and hormonal balance during and after cycles.',
     specifications: {
       dosePerCapsule: '25mg',
-      capsulesPerBottle: '10 capsules',
+      capsulesPerBottle: '25 tablets',
       potencyLevel: 'Advanced'
     },
     whatToExpected: [
@@ -295,6 +295,44 @@ export const products: Product[] = [
       'May cause ovarian hyperstimulation',
       'Multiple pregnancy risk',
       'Mood and emotional changes'
+    ],
+    inStock: false
+  },
+  {
+    id: 'letrozole',
+    name: 'Letrozole (Femara)',
+    price: 25,
+    image: '/lovable-uploads/7e18d7a8-812a-4591-9098-be4949986cab.png',
+    category: 'pct',
+    description: 'Highly potent aromatase inhibitor for complete estrogen suppression and PCT support.',
+    specifications: {
+      dosePerCapsule: '2.5mg',
+      capsulesPerBottle: '25 tablets',
+      potencyLevel: 'Advanced'
+    },
+    whatToExpected: [
+      'Complete estrogen suppression (95%+ reduction)',
+      'Enhanced muscle definition and hardness',
+      'Elimination of water retention',
+      'Prevention of gynecomastia'
+    ],
+    cycleInfo: {
+      length: 'As needed during cycle',
+      dosage: '0.5-2.5mg every other day',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Severe joint pain and stiffness',
+      'Significant bone density reduction (long-term)',
+      'Mood changes and depression',
+      'May severely impact cholesterol',
+      'Extreme fatigue and weakness'
+    ],
+    womenEffects: [
+      'Used in breast cancer treatment',
+      'Causes complete estrogen depletion',
+      'Severe bone health risks',
+      'Not recommended for bodybuilding use'
     ],
     inStock: false
   },
