@@ -264,7 +264,7 @@ export const products: Product[] = [
     id: 'clomid',
     name: 'Clomid (Clomiphene)',
     price: 35,
-    image: '/lovable-uploads/4f0a7a5d-014a-4619-8fac-4c6427878eec.png',
+    image: '/lovable-uploads/b886abd5-d412-496a-b232-91477606b894.png',
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
     specifications: {
@@ -302,7 +302,7 @@ export const products: Product[] = [
     id: 'letrozole',
     name: 'Letrozole (Femara)',
     price: 25,
-    image: '/lovable-uploads/7e18d7a8-812a-4591-9098-be4949986cab.png',
+    image: '/lovable-uploads/b028f377-424f-4815-8dc0-9f52f6507861.png',
     category: 'pct',
     description: 'Highly potent aromatase inhibitor for complete estrogen suppression and PCT support.',
     specifications: {
