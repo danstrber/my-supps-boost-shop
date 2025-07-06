@@ -334,7 +334,8 @@ export const products: Product[] = [
       'Severe bone health risks',
       'Not recommended for bodybuilding use'
     ],
-    inStock: false
+    inStock: false,
+    labTested: true
   },
   {
     id: 'testosterone-enanthate',
@@ -344,7 +345,7 @@ export const products: Product[] = [
     category: 'injectable-steroids',
     description: 'Long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
     specifications: {
-      dosePerCapsule: '200mg/mL',
+      dosePerCapsule: '300mg/mL',
       capsulesPerBottle: '10mL vial',
       potencyLevel: 'Intermediate'
     },

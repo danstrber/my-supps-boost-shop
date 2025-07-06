@@ -37,6 +37,26 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
               <h4 className="font-semibold text-purple-800 mb-2">Clenbuterol Lab Testing</h4>
               <p className="text-gray-700 text-sm">Third-party verification and quality assurance</p>
             </div>
+            
+            <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+              <img 
+                src="/lovable-uploads/6577b0a1-edaf-4c9f-9a40-7c5955455545.png" 
+                alt="Exemestane Lab Test"
+                className="w-full rounded-lg mb-3"
+              />
+              <h4 className="font-semibold text-green-800 mb-2">Exemestane 25mg Lab Analysis</h4>
+              <p className="text-gray-700 text-sm">Purity verification: 25.49mg - 27.16mg per capsule</p>
+            </div>
+            
+            <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
+              <img 
+                src="/lovable-uploads/f9bfd7ea-09fe-4f15-a7ef-f1e56dd7fb7c.png" 
+                alt="Testosterone Enanthate Lab Test"
+                className="w-full rounded-lg mb-3"
+              />
+              <h4 className="font-semibold text-orange-800 mb-2">Testosterone Enanthate 300mg/ml</h4>
+              <p className="text-gray-700 text-sm">Lab verified concentration: 307.40mg/ml</p>
+            </div>
           </div>
         </div>
       </div>
