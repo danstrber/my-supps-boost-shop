@@ -65,8 +65,8 @@ const DeliveryPage = ({ language }: DeliveryPageProps) => {
               <p>
                 <strong>{language === 'en' ? 'USA Domestic:' : 'Nacional EE.UU.:'}</strong> 
                 {language === 'en' 
-                  ? ' $7.50 - Free shipping on orders over $100'
-                  : ' $7.50 - Envío gratis en pedidos superiores a $100'}
+                  ? ' $12.50 - Free shipping on orders over $100'
+                  : ' $12.50 - Envío gratis en pedidos superiores a $100'}
               </p>
               <p>
                 <strong>{language === 'en' ? 'International:' : 'Internacional:'}</strong> 

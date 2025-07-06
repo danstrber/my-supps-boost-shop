@@ -11,8 +11,8 @@ export const getShippingCost = (country: string, orderTotal: number): number => 
     return 0;
   }
   
-  // US shipping: $10, International: $18.50
-  return isUS ? 10 : 18.5;
+  // US shipping: $12.50, International: $18.50
+  return isUS ? 12.5 : 18.5;
 };
 
 export const isUSCountry = (country: string): boolean => {
