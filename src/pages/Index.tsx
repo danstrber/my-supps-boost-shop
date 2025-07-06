@@ -201,6 +201,13 @@ const Index = ({
             {t.oralSteroids}
           </Button>
           <Button
+            onClick={() => handleCategoryClick('injectable-steroids')}
+            variant={selectedCategory === 'injectable-steroids' ? 'default' : 'outline'}
+            className={`rounded-full ${selectedCategory === 'injectable-steroids' ? 'bg-green-600 text-white' : 'border-green-500 text-green-600 hover:bg-green-50'}`}
+          >
+            {t.injectableSteroids}
+          </Button>
+          <Button
             onClick={() => handleCategoryClick('sarms')}
             variant={selectedCategory === 'sarms' ? 'default' : 'outline'}
             className={`rounded-full ${selectedCategory === 'sarms' ? 'bg-green-600 text-white' : 'border-green-500 text-green-600 hover:bg-green-50'}`}
