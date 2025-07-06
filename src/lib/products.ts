@@ -337,6 +337,46 @@ export const products: Product[] = [
     inStock: false
   },
   {
+    id: 'testosterone-enanthate',
+    name: 'Testosterone Enanthate',
+    price: 35,
+    image: '/lovable-uploads/a0651ae0-232a-4fc2-aad2-c2ca3e91a84d.png',
+    category: 'injectable-steroids',
+    description: 'Long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
+    specifications: {
+      dosePerCapsule: '200mg/mL',
+      capsulesPerBottle: '10mL vial',
+      potencyLevel: 'Intermediate'
+    },
+    whatToExpected: [
+      'Increased muscle mass and strength',
+      'Enhanced recovery and performance',
+      'Improved libido and energy levels',
+      'Better mood and well-being'
+    ],
+    cycleInfo: {
+      length: '10-16 weeks',
+      dosage: '250-500mg weekly',
+      pctRequired: true
+    },
+    sideEffects: [
+      'Possible estrogen-related side effects',
+      'May cause acne and oily skin',
+      'Hair loss (if predisposed)',
+      'Testicular shutdown during cycle',
+      'Possible mood changes'
+    ],
+    womenEffects: [
+      'NOT recommended for women',
+      'May cause severe virilization',
+      'Voice changes (potentially permanent)',
+      'Increased body hair growth',
+      'Masculine physical changes'
+    ],
+    inStock: false,
+    labTested: true
+  },
+  {
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
     price: 30,
