@@ -301,7 +301,7 @@ export const products: Product[] = [
   {
     id: 'letrozole',
     name: 'Letrozole (Femara)',
-    price: 25,
+    price: 30,
     image: '/lovable-uploads/b028f377-424f-4815-8dc0-9f52f6507861.png',
     category: 'pct',
     description: 'Highly potent aromatase inhibitor for complete estrogen suppression and PCT support.',
