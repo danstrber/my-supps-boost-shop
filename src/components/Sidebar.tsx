@@ -26,6 +26,7 @@ const Sidebar = ({
   const categories = [
     { id: 'all', nameEn: 'All Products', nameEs: 'Todos los Productos' },
     { id: 'oral-steroids', nameEn: 'Oral Steroids', nameEs: 'Esteroides Orales' },
+    { id: 'injectable-steroids', nameEn: 'Injectable Steroids', nameEs: 'Esteroides Inyectables' },
     { id: 'sarms', nameEn: 'SARMs', nameEs: 'SARMs' },
     { id: 'fat-burners', nameEn: 'Fat Burners', nameEs: 'Quemadores' },
     { id: 'pct', nameEn: 'PCT', nameEs: 'PCT' },
