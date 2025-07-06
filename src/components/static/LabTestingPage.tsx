@@ -38,16 +38,6 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
               <p className="text-gray-700 text-sm">Third-party verification and quality assurance</p>
             </div>
             
-            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
-              <img 
-                src="/lovable-uploads/addf5a97-b174-4315-bde7-4eacf68e2f20.png" 
-                alt="Clenbuterol 40MCG Lab Test"
-                className="w-full rounded-lg mb-3"
-              />
-              <h4 className="font-semibold text-red-800 mb-2">Clenbuterol 40MCG Verification</h4>
-              <p className="text-gray-700 text-sm">Lab verified: 40.87 mg/g concentration</p>
-            </div>
-            
             <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
               <img 
                 src="/lovable-uploads/6577b0a1-edaf-4c9f-9a40-7c5955455545.png" 
