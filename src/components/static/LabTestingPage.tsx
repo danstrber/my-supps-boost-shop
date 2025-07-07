@@ -51,11 +51,11 @@ const LabTestingPage = ({ language }: LabTestingPageProps) => {
             <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg">
               <img 
                 src="/lovable-uploads/f9bfd7ea-09fe-4f15-a7ef-f1e56dd7fb7c.png" 
-                alt="Testosterone Enanthate Lab Test"
+                alt="Testosterone Cypionate Lab Test"
                 className="w-full rounded-lg mb-3"
               />
-              <h4 className="font-semibold text-orange-800 mb-2">Testosterone Enanthate 300mg/ml</h4>
-              <p className="text-gray-700 text-sm">Lab verified concentration: 307.40mg/ml</p>
+              <h4 className="font-semibold text-orange-800 mb-2">Testosterone Cypionate 250mg/ml</h4>
+              <p className="text-gray-700 text-sm">Lab verified concentration: 252.80mg/ml</p>
             </div>
           </div>
         </div>

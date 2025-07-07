@@ -338,14 +338,14 @@ export const products: Product[] = [
     labTested: true
   },
   {
-    id: 'testosterone-enanthate',
-    name: 'Testosterone Enanthate',
+    id: 'testosterone-cypionate',
+    name: 'Testosterone Cypionate',
     price: 35,
     image: '/lovable-uploads/a0651ae0-232a-4fc2-aad2-c2ca3e91a84d.png',
     category: 'injectable-steroids',
     description: 'Long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
     specifications: {
-      dosePerCapsule: '300mg/mL',
+      dosePerCapsule: '250mg/mL',
       capsulesPerBottle: '10mL vial',
       potencyLevel: 'Intermediate'
     },
