@@ -28,6 +28,9 @@ const ProductDetailModal = ({
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product.variants ? product.variants[0] : null
   );
+  
+  // Debug logging
+  console.log('ProductDetailModal - Product:', product.name, 'Has variants:', !!product.variants, 'Variants count:', product.variants?.length);
   const t = translations[language];
 
   // Get current product data (either base product or selected variant)
