@@ -32,6 +32,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   const [step, setStep] = useState(1);
   const [txId, setTxId] = useState('');
   const [btcAmount, setBtcAmount] = useState(0);
+  const [btcPrice, setBtcPrice] = useState(0);
+  const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,33 +103,45 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     return finalTotal;
   };
 
-  // Update Bitcoin amount whenever cart or discount changes
+  const fetchCryptoPrice = async () => {
+    try {
+      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+      const data = await response.json();
+      const price = data.bitcoin.usd;
+      setBtcPrice(price);
+      setLastPriceUpdate(new Date());
+      return { btc: { currentPrice: price } };
+    } catch (error) {
+      console.error('Failed to fetch crypto price, using fallback');
+      const fallbackPrice = 50000;
+      setBtcPrice(fallbackPrice);
+      return { btc: { currentPrice: fallbackPrice }};
+    }
+  };
+
+  // Update Bitcoin amount and price continuously
   React.useEffect(() => {
     if (step >= 2) {
-      const updateBitcoinAmount = async () => {
+      const updateBitcoinData = async () => {
         try {
           const totalUSD = calculateTotalUSD();
           const { btc: { currentPrice } } = await fetchCryptoPrice();
           const newBtcAmount = totalUSD / currentPrice;
           setBtcAmount(newBtcAmount);
         } catch (error) {
-          console.error('Failed to update Bitcoin amount:', error);
+          console.error('Failed to update Bitcoin data:', error);
         }
       };
-      updateBitcoinAmount();
+      
+      // Initial update
+      updateBitcoinData();
+      
+      // Update every 30 seconds for live pricing
+      const interval = setInterval(updateBitcoinData, 30000);
+      
+      return () => clearInterval(interval);
     }
   }, [cart, userDiscount, step, products]);
-
-  const fetchCryptoPrice = async () => {
-    try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-      const data = await response.json();
-      return { btc: { currentPrice: data.bitcoin.usd } };
-    } catch (error) {
-      console.error('Failed to fetch crypto price, using fallback');
-      return { btc: { currentPrice: 50000 }};
-    }
-  };
 
   // Enhanced Bitcoin verification with security improvements
   const verifyBitcoinTransaction = async (txId: string, expectedUSD: number) => {
@@ -621,6 +635,20 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
                       <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-4 break-all">{btcAmount.toFixed(8)} BTC</p>
                       <p className="text-sm text-gray-600 mb-2">To address:</p>
                       <p className="font-mono text-xs sm:text-sm bg-gray-100 p-3 rounded border break-all">{myAddress}</p>
+                      <div className="mt-3 pt-3 border-t border-orange-200">
+                        <p className="text-xs text-gray-500">
+                          BTC Price: ${btcPrice.toLocaleString()} 
+                          {lastPriceUpdate && (
+                            <span className="ml-2">
+                              (Updated: {lastPriceUpdate.toLocaleTimeString()})
+                            </span>
+                          )}
+                        </p>
+                        <div className="flex items-center justify-center mt-1">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                          <span className="text-xs text-green-600">Live pricing - updates every 30s</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="text-center">
