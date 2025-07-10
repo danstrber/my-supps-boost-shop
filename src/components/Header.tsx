@@ -207,13 +207,13 @@ const Header = ({
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg">
+        <div className="block lg:hidden bg-white border-b border-gray-200 shadow-lg absolute top-full left-0 right-0 z-40">
           <div className="px-4 py-4 space-y-3">
             {/* Navigation links */}
             <div className="space-y-2">
               <button
                 onClick={handleHomeClick}
-                className={`block w-full text-left py-2 px-3 rounded-lg font-medium transition-colors ${
+                className={`block w-full text-left py-3 px-3 rounded-lg font-medium transition-colors ${
                   currentPage === 'home' 
                     ? 'text-green-600 bg-green-50' 
                     : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
@@ -223,7 +223,7 @@ const Header = ({
               </button>
               <button
                 onClick={() => handlePageChange('about')}
-                className={`block w-full text-left py-2 px-3 rounded-lg font-medium transition-colors ${
+                className={`block w-full text-left py-3 px-3 rounded-lg font-medium transition-colors ${
                   currentPage === 'about' 
                     ? 'text-green-600 bg-green-50' 
                     : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
@@ -233,7 +233,7 @@ const Header = ({
               </button>
               <button
                 onClick={() => handlePageChange('contact')}
-                className={`block w-full text-left py-2 px-3 rounded-lg font-medium transition-colors ${
+                className={`block w-full text-left py-3 px-3 rounded-lg font-medium transition-colors ${
                   currentPage === 'contact' 
                     ? 'text-green-600 bg-green-50' 
                     : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
@@ -243,7 +243,7 @@ const Header = ({
               </button>
               <button
                 onClick={() => handlePageChange('delivery')}
-                className={`block w-full text-left py-2 px-3 rounded-lg font-medium transition-colors ${
+                className={`block w-full text-left py-3 px-3 rounded-lg font-medium transition-colors ${
                   currentPage === 'delivery' 
                     ? 'text-green-600 bg-green-50' 
                     : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
@@ -253,7 +253,7 @@ const Header = ({
               </button>
               <button
                 onClick={() => handlePageChange('payment')}
-                className={`block w-full text-left py-2 px-3 rounded-lg font-medium transition-colors ${
+                className={`block w-full text-left py-3 px-3 rounded-lg font-medium transition-colors ${
                   currentPage === 'payment' 
                     ? 'text-green-600 bg-green-50' 
                     : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
@@ -263,7 +263,7 @@ const Header = ({
               </button>
               <button
                 onClick={() => handlePageChange('labtesting')}
-                className={`block w-full text-left py-2 px-3 rounded-lg font-medium transition-colors ${
+                className={`block w-full text-left py-3 px-3 rounded-lg font-medium transition-colors ${
                   currentPage === 'labtesting' 
                     ? 'text-green-600 bg-green-50' 
                     : 'text-gray-700 hover:text-green-600 hover:bg-gray-50'
@@ -274,7 +274,7 @@ const Header = ({
             </div>
 
             {/* Language switcher on mobile */}
-            <div className="pt-2 border-t border-gray-100 lg:hidden">
+            <div className="pt-3 border-t border-gray-100">
               <LanguageSwitcher 
                 currentLanguage={language} 
                 onLanguageChange={onLanguageChange} 
@@ -282,14 +282,14 @@ const Header = ({
             </div>
 
             {/* Account/Auth buttons on mobile */}
-            <div className="pt-2 border-t border-gray-100 space-y-2">
+            <div className="pt-3 border-t border-gray-100 space-y-2">
               {isAuthenticated ? (
                 <>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => handlePageChange('account')}
-                    className="w-full flex items-center justify-center space-x-2 p-3"
+                    className="w-full flex items-center justify-center space-x-2 py-3"
                   >
                     <User className="h-4 w-4" />
                     <span>{t.account}</span>
@@ -301,14 +301,14 @@ const Header = ({
                       onAuthAction('logout');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 p-3"
+                    className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 py-3"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     {t.logout || 'Logout'}
                   </Button>
                 </>
               ) : (
-                <div className="space-y-2 lg:hidden">
+                <div className="space-y-2">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -316,7 +316,7 @@ const Header = ({
                       onAuthAction('login');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full p-3"
+                    className="w-full py-3"
                   >
                     {t.login}
                   </Button>
@@ -326,7 +326,7 @@ const Header = ({
                       onAuthAction('signup');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white p-3"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
                   >
                     {t.signup}
                   </Button>
