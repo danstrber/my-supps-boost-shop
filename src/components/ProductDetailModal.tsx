@@ -166,19 +166,19 @@ const ProductDetailModal = ({
                     <span className="font-medium text-blue-700 block mb-1">
                       {language === 'en' ? 'Dose per capsule:' : 'Dosis por cápsula:'}
                     </span>
-                    <p className="text-blue-600 font-bold text-lg">{currentSpecs.dosePerCapsule}</p>
+                    <p className="text-blue-600 font-bold text-lg">{currentSpecs?.dosePerCapsule || product.specifications.dosePerCapsule}</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 border border-blue-100">
                     <span className="font-medium text-blue-700 block mb-1">
                       {language === 'en' ? 'Capsules per bottle:' : 'Cápsulas por frasco:'}
                     </span>
-                    <p className="text-blue-600 font-bold text-lg">{currentSpecs.capsulesPerBottle}</p>
+                    <p className="text-blue-600 font-bold text-lg">{currentSpecs?.capsulesPerBottle || product.specifications.capsulesPerBottle}</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 border border-blue-100 col-span-2">
                     <span className="font-medium text-blue-700 block mb-1">
                       {language === 'en' ? 'Potency level:' : 'Nivel de potencia:'}
                     </span>
-                    <p className="text-blue-600 font-bold text-lg">{currentSpecs.potencyLevel}</p>
+                    <p className="text-blue-600 font-bold text-lg">{currentSpecs?.potencyLevel || product.specifications.potencyLevel}</p>
                   </div>
                 </div>
               </div>

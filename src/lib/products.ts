@@ -486,7 +486,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Masculine physical changes'
     ],
-    inStock: true,
+    inStock: false,
     labTested: true
   },
   {
