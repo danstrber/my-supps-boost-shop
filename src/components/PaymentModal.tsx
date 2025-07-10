@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import PaymentTimer from './payment/PaymentTimer';
@@ -67,12 +68,14 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     return null;
   };
 
+  // FIXED: Use the exact same calculation logic as CartModal
   const calculateTotalUSD = () => {
     if (!products || !Array.isArray(products)) {
       console.error('Products not loaded');
       return 0;
     }
     
+    // Calculate subtotal
     let subtotal = 0;
     Object.entries(cart).forEach(([productId, quantity]) => {
       if (quantity > 0) {
@@ -84,17 +87,21 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       }
     });
     
-    // Calculate shipping based on subtotal (before discount)
+    // Use the userDiscount percentage that's passed from CartModal (already calculated there)
+    const discountAmount = (subtotal * userDiscount) / 100;
+    const subtotalAfterDiscount = subtotal - discountAmount;
+    
+    // Calculate shipping based on ORIGINAL subtotal (before discount)
     const userCountry = userProfile?.country || 'USA';
     const isUS = userCountry === 'USA' || userCountry === 'United States';
     const freeShippingThreshold = isUS ? 100 : 130;
     const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
     
-    console.log(`💰 Bitcoin calculation: Subtotal: $${subtotal}, Discount: $${userDiscount}, Shipping: $${shippingFee}, Country: ${userCountry}`);
-    const total = subtotal - userDiscount + shippingFee;
-    console.log(`💰 Bitcoin final total: $${total}`);
+    const finalTotal = subtotalAfterDiscount + shippingFee;
     
-    return total;
+    console.log(`💰 Bitcoin calculation: Subtotal: $${subtotal}, Discount %: ${userDiscount}%, Discount Amount: $${discountAmount}, Shipping: $${shippingFee}, Final Total: $${finalTotal}`);
+    
+    return finalTotal;
   };
 
   const fetchCryptoPrice = async () => {
@@ -299,7 +306,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
       const orderId = generateOrderId();
       
-      // Calculate proper shipping based on cart subtotal
+      // Calculate proper values using the same logic as cart
       let subtotal = 0;
       Object.entries(cart).forEach(([productId, quantity]) => {
         if (quantity > 0) {
@@ -310,14 +317,12 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         }
       });
       
+      const discountAmount = (subtotal * userDiscount) / 100;
       const userCountry = userProfile?.country || 'USA';
       const isUS = userCountry === 'USA' || userCountry === 'United States';
       const freeShippingThreshold = isUS ? 100 : 130;
       const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
-      
-      const originalTotal = subtotal;
-      const discountAmount = userDiscount;
-      const finalTotal = originalTotal - discountAmount + shippingFee;
+      const finalTotal = subtotal - discountAmount + shippingFee;
 
       const orderItems = Object.entries(cart).map(([id, qty]) => {
         const p = findProductOrVariant(id) || { name: 'Unknown', price: 0 };
@@ -339,7 +344,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         customerEmail: shippingData?.email || userProfile?.email || 'guest@example.com',
         customerName: shippingData ? `${shippingData.firstName} ${shippingData.lastName}` : 'Guest User',
         items: orderItems,
-        originalTotal,
+        originalTotal: subtotal,
         discountAmount,
         shippingFee,
         finalTotal,
@@ -365,7 +370,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             customer_email: orderData.customerEmail,
             customer_name: orderData.customerName,
             items: orderItems,
-            original_total: originalTotal,
+            original_total: subtotal,
             discount_amount: discountAmount,
             shipping_fee: shippingFee,
             final_total: finalTotal,
