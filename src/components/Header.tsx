@@ -207,7 +207,7 @@ const Header = ({
 
       {/* Mobile menu */}
       {isMobileMenuOpen && (
-        <div className="block lg:hidden bg-white border-b border-gray-200 shadow-lg absolute top-full left-0 right-0 z-40">
+        <div className="lg:hidden bg-white border-b border-gray-200 shadow-lg fixed top-16 left-0 right-0 z-50 max-h-screen overflow-y-auto">
           <div className="px-4 py-4 space-y-3">
             {/* Navigation links */}
             <div className="space-y-2">
