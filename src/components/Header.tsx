@@ -45,12 +45,11 @@ const Header = ({
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-30 shadow-sm">
+    <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50 shadow-sm">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Left section */}
-          <div className="flex items-center space-x-2 md:space-x-4">
-            
+          {/* Left section - Logo */}
+          <div className="flex items-center">
             <button
               onClick={handleHomeClick}
               className="flex items-center hover:opacity-80 transition-opacity"
@@ -128,24 +127,16 @@ const Header = ({
           </nav>
 
           {/* Right section */}
-          <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-gray-100 order-first"
-            >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-
-            <div className="hidden sm:block">
+          <div className="flex items-center space-x-2">
+            {/* Language switcher - hidden on mobile */}
+            <div className="hidden lg:block">
               <LanguageSwitcher 
                 currentLanguage={language} 
                 onLanguageChange={onLanguageChange} 
               />
             </div>
             
+            {/* Cart button */}
             <Button
               variant="outline"
               size="sm"
@@ -160,16 +151,17 @@ const Header = ({
               )}
             </Button>
 
+            {/* Auth buttons - hidden on mobile */}
             {isAuthenticated ? (
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="hidden lg:flex items-center space-x-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => onPageChange('account')}
-                  className="hidden sm:flex items-center space-x-2 p-2 px-3 hover:bg-gray-100"
+                  className="flex items-center space-x-2 p-2 px-3 hover:bg-gray-100"
                 >
                   <User className="h-4 w-4" />
-                  <span className="hidden lg:inline">{t.account}</span>
+                  <span>{t.account}</span>
                 </Button>
                 <Button
                   variant="ghost"
@@ -181,24 +173,34 @@ const Header = ({
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="hidden lg:flex items-center space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onAuthAction('login')}
-                  className="hidden md:block text-sm"
+                  className="text-sm"
                 >
                   {t.login}
                 </Button>
                 <Button
                   size="sm"
                   onClick={() => onAuthAction('signup')}
-                  className="bg-green-600 hover:bg-green-700 text-white text-sm px-2 md:px-4"
+                  className="bg-green-600 hover:bg-green-700 text-white text-sm px-4"
                 >
                   {t.signup}
                 </Button>
               </div>
             )}
+
+            {/* Mobile menu button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-gray-100 ml-2"
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
       </div>
@@ -287,7 +289,7 @@ const Header = ({
                     variant="outline"
                     size="sm"
                     onClick={() => handlePageChange('account')}
-                    className="w-full flex items-center justify-center space-x-2 p-3 sm:hidden"
+                    className="w-full flex items-center justify-center space-x-2 p-3"
                   >
                     <User className="h-4 w-4" />
                     <span>{t.account}</span>
