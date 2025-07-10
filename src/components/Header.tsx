@@ -49,8 +49,8 @@ const Header = ({
     <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-30 shadow-sm">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Left section */}
-          <div className="flex items-center space-x-2 md:space-x-4">
+          {/* Left section - Logo */}
+          <div className="flex items-center">
             <button
               onClick={handleHomeClick}
               className="flex items-center hover:opacity-80 transition-opacity"
@@ -189,7 +189,7 @@ const Header = ({
             )}
           </div>
 
-          {/* Mobile menu button and cart */}
+          {/* Mobile section - Cart and Menu button */}
           <div className="lg:hidden flex items-center space-x-2">
             <Button
               variant="outline"
@@ -217,80 +217,82 @@ const Header = ({
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu overlay */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-16 bg-white z-40 overflow-y-auto">
-          <div className="px-4 py-6 space-y-6">
+        <div className="lg:hidden fixed inset-0 top-16 bg-white z-50 overflow-y-auto">
+          <div className="px-4 py-6 space-y-6 min-h-full">
             {/* Navigation Links */}
-            <nav className="space-y-4">
+            <div className="space-y-4">
               <button
                 onClick={handleHomeClick}
-                className={`block w-full text-left font-medium text-lg py-2 ${
+                className={`block w-full text-left font-medium text-lg py-3 px-2 rounded-md transition-colors ${
                   currentPage === 'home' 
-                    ? 'text-green-600' 
-                    : 'text-gray-700'
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {t.home}
               </button>
               <button
                 onClick={() => handlePageChange('about')}
-                className={`block w-full text-left font-medium text-lg py-2 ${
+                className={`block w-full text-left font-medium text-lg py-3 px-2 rounded-md transition-colors ${
                   currentPage === 'about' 
-                    ? 'text-green-600' 
-                    : 'text-gray-700'
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {t.about}
               </button>
               <button
                 onClick={() => handlePageChange('contact')}
-                className={`block w-full text-left font-medium text-lg py-2 ${
+                className={`block w-full text-left font-medium text-lg py-3 px-2 rounded-md transition-colors ${
                   currentPage === 'contact' 
-                    ? 'text-green-600' 
-                    : 'text-gray-700'
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {t.contact}
               </button>
               <button
                 onClick={() => handlePageChange('delivery')}
-                className={`block w-full text-left font-medium text-lg py-2 ${
+                className={`block w-full text-left font-medium text-lg py-3 px-2 rounded-md transition-colors ${
                   currentPage === 'delivery' 
-                    ? 'text-green-600' 
-                    : 'text-gray-700'
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {t.delivery}
               </button>
               <button
                 onClick={() => handlePageChange('payment')}
-                className={`block w-full text-left font-medium text-lg py-2 ${
+                className={`block w-full text-left font-medium text-lg py-3 px-2 rounded-md transition-colors ${
                   currentPage === 'payment' 
-                    ? 'text-green-600' 
-                    : 'text-gray-700'
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {t.payment}
               </button>
               <button
                 onClick={() => handlePageChange('labtesting')}
-                className={`block w-full text-left font-medium text-lg py-2 ${
+                className={`block w-full text-left font-medium text-lg py-3 px-2 rounded-md transition-colors ${
                   currentPage === 'labtesting' 
-                    ? 'text-green-600' 
-                    : 'text-gray-700'
+                    ? 'text-green-600 bg-green-50' 
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {t.labTesting}
               </button>
-            </nav>
+            </div>
 
             {/* Language Switcher */}
             <div className="border-t pt-6">
-              <LanguageSwitcher 
-                currentLanguage={language} 
-                onLanguageChange={onLanguageChange} 
-              />
+              <div className="flex justify-center">
+                <LanguageSwitcher 
+                  currentLanguage={language} 
+                  onLanguageChange={onLanguageChange} 
+                />
+              </div>
             </div>
 
             {/* Auth Section */}
@@ -300,15 +302,15 @@ const Header = ({
                   <Button
                     variant="outline"
                     onClick={() => handlePageChange('account')}
-                    className="w-full flex items-center justify-center space-x-2 py-3"
+                    className="w-full flex items-center justify-center space-x-2 py-3 text-lg"
                   >
-                    <User className="h-4 w-4" />
+                    <User className="h-5 w-5" />
                     <span>{t.account}</span>
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={() => handleAuthAction('logout')}
-                    className="w-full py-3 text-red-600 hover:text-red-700"
+                    className="w-full py-3 text-lg text-red-600 hover:text-red-700 hover:bg-red-50"
                   >
                     {t.logout || 'Logout'}
                   </Button>
@@ -318,13 +320,13 @@ const Header = ({
                   <Button
                     variant="outline"
                     onClick={() => handleAuthAction('login')}
-                    className="w-full py-3"
+                    className="w-full py-3 text-lg"
                   >
                     {t.login}
                   </Button>
                   <Button
                     onClick={() => handleAuthAction('signup')}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg"
                   >
                     {t.signup}
                   </Button>
