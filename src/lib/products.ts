@@ -138,7 +138,7 @@ export const products: Product[] = [
         id: 'rad-140-20mg-50',
         name: '20mg - 50 Capsules',
         price: 35,
-        image: '/lovable-uploads/addf5a97-b174-4315-bde7-4eacf68e2f20.png',
+        image: '/lovable-uploads/e4d9b18a-77ea-4f9e-ab56-3dba782245d2.png',
         specifications: {
           dosePerCapsule: '20mg',
           capsulesPerBottle: '50 capsules',
@@ -150,7 +150,7 @@ export const products: Product[] = [
         id: 'rad-140-10mg-30',
         name: '10mg - 30 Capsules',
         price: 18,
-        image: '/lovable-uploads/b4e1e935-17bb-42b9-a59c-c6c0fdf1f07a.png',
+        image: '/lovable-uploads/d91fd34a-b6a3-4180-ad44-c618bb015454.png',
         specifications: {
           dosePerCapsule: '10mg',
           capsulesPerBottle: '30 capsules',
@@ -215,7 +215,7 @@ export const products: Product[] = [
         id: 'mk-677-20mg-50',
         name: '20mg - 50 Capsules',
         price: 32,
-        image: '/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png',
+        image: '/lovable-uploads/52043d65-b1dd-4c5a-bb05-28b7b073ff55.png',
         specifications: {
           dosePerCapsule: '20mg',
           capsulesPerBottle: '50 capsules',
@@ -227,7 +227,7 @@ export const products: Product[] = [
         id: 'mk-677-10mg-30',
         name: '10mg - 30 Capsules',
         price: 18,
-        image: '/lovable-uploads/784cf1c3-343a-4324-97cc-305a4c3366d5.png',
+        image: '/lovable-uploads/2822acc1-bfb7-4916-8971-d96a026381c9.png',
         specifications: {
           dosePerCapsule: '10mg',
           capsulesPerBottle: '30 capsules',
@@ -473,7 +473,7 @@ export const products: Product[] = [
     id: 'testosterone-enanthate',
     name: 'Testosterone Enanthate',
     price: 35,
-    image: '/lovable-uploads/2f754df1-d4d5-4097-b8bf-ebbba6ba2f15.png',
+    image: '/lovable-uploads/205636c1-c011-4e8c-aab7-22c44c3a3c7d.png',
     category: 'injectable-steroids',
     description: 'Popular long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
     specifications: {
