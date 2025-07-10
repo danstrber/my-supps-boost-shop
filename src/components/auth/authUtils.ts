@@ -20,7 +20,10 @@ export const handleEmailAuth = async (
     console.log('Calling signUp with country:', country);
     return await signUp(email, password, name, referralCode, country);
   } else {
-    return await signIn(email, password);
+    console.log('Starting signin process...', { email });
+    const result = await signIn(email, password);
+    console.log('Signin result:', result);
+    return result;
   }
 };
 
