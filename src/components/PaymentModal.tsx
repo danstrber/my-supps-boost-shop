@@ -68,7 +68,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     return null;
   };
 
-  // FIXED: Use the exact same calculation logic as CartModal
+  // Calculate BTC amount and update when cart/discount changes
   const calculateTotalUSD = () => {
     if (!products || !Array.isArray(products)) {
       console.error('Products not loaded');
@@ -82,7 +82,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         const product = findProductOrVariant(productId);
         if (product) {
           subtotal += quantity * (product.price || 0);
-          console.log(`🛒 Product: ${product.name}, Price: $${product.price}, Quantity: ${quantity}`);
         }
       }
     });
@@ -99,10 +98,25 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     
     const finalTotal = subtotalAfterDiscount + shippingFee;
     
-    console.log(`💰 Bitcoin calculation: Subtotal: $${subtotal}, Discount %: ${userDiscount}%, Discount Amount: $${discountAmount}, Shipping: $${shippingFee}, Final Total: $${finalTotal}`);
-    
     return finalTotal;
   };
+
+  // Update Bitcoin amount whenever cart or discount changes
+  React.useEffect(() => {
+    if (step >= 2) {
+      const updateBitcoinAmount = async () => {
+        try {
+          const totalUSD = calculateTotalUSD();
+          const { btc: { currentPrice } } = await fetchCryptoPrice();
+          const newBtcAmount = totalUSD / currentPrice;
+          setBtcAmount(newBtcAmount);
+        } catch (error) {
+          console.error('Failed to update Bitcoin amount:', error);
+        }
+      };
+      updateBitcoinAmount();
+    }
+  }, [cart, userDiscount, step, products]);
 
   const fetchCryptoPrice = async () => {
     try {
