@@ -42,12 +42,48 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
 
+  // Helper function to find product or variant by ID
+  const findProductOrVariant = (productId: string) => {
+    // First try to find main product
+    let product = products.find(p => p.id === productId);
+    if (product) return product;
+    
+    // If not found, search in variants
+    for (const mainProduct of products) {
+      if (mainProduct.variants) {
+        const variant = mainProduct.variants.find(v => v.id === productId);
+        if (variant) {
+          return {
+            ...mainProduct,
+            id: variant.id,
+            name: `${mainProduct.name} - ${variant.name}`,
+            price: variant.price,
+            image: variant.image || mainProduct.image,
+            specifications: variant.specifications || mainProduct.specifications
+          };
+        }
+      }
+    }
+    return null;
+  };
+
   const calculateTotalUSD = () => {
     if (!products || !Array.isArray(products)) {
       console.error('Products not loaded');
       return 0;
     }
-    return products.reduce((total, p) => total + (cart[p.id] || 0) * (p.price || 0), 0) - userDiscount + 7.5;
+    
+    let total = 0;
+    Object.entries(cart).forEach(([productId, quantity]) => {
+      if (quantity > 0) {
+        const product = findProductOrVariant(productId);
+        if (product) {
+          total += quantity * (product.price || 0);
+        }
+      }
+    });
+    
+    return total - userDiscount + 7.5;
   };
 
   const fetchCryptoPrice = async () => {
