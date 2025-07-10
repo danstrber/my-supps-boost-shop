@@ -123,8 +123,8 @@ export const products: Product[] = [
     featured: true,
     variants: [
       {
-        id: 'rad-140-10mg',
-        name: '10mg - 50 Capsules',
+        id: 'rad-140-10mg-50',
+        name: '10mg - 50 Capsules (Standard)',
         price: 25,
         image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
         specifications: {
@@ -135,16 +135,26 @@ export const products: Product[] = [
         inStock: true
       },
       {
-        id: 'rad-140-20mg',
+        id: 'rad-140-20mg-50',
         name: '20mg - 50 Capsules',
-        price: 100,
-        originalPrice: 110,
-        saveAmount: 10,
-        image: '/lovable-uploads/4489ebbc-f4e6-457d-9811-070bde867b0e.png',
+        price: 35,
+        image: '/lovable-uploads/addf5a97-b174-4315-bde7-4eacf68e2f20.png',
         specifications: {
           dosePerCapsule: '20mg',
           capsulesPerBottle: '50 capsules',
           potencyLevel: 'Advanced'
+        },
+        inStock: true
+      },
+      {
+        id: 'rad-140-10mg-30',
+        name: '10mg - 30 Capsules',
+        price: 18,
+        image: '/lovable-uploads/b4e1e935-17bb-42b9-a59c-c6c0fdf1f07a.png',
+        specifications: {
+          dosePerCapsule: '10mg',
+          capsulesPerBottle: '30 capsules',
+          potencyLevel: 'Intermediate'
         },
         inStock: true
       }
@@ -190,8 +200,8 @@ export const products: Product[] = [
     featured: true,
     variants: [
       {
-        id: 'mk-677-10mg',
-        name: '10mg - 50 Capsules',
+        id: 'mk-677-10mg-50',
+        name: '10mg - 50 Capsules (Standard)',
         price: 25,
         image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
         specifications: {
@@ -202,16 +212,26 @@ export const products: Product[] = [
         inStock: true
       },
       {
-        id: 'mk-677-20mg',
+        id: 'mk-677-20mg-50',
         name: '20mg - 50 Capsules',
-        price: 80,
-        originalPrice: 90,
-        saveAmount: 10,
-        image: '/lovable-uploads/784cf1c3-343a-4324-97cc-305a4c3366d5.png',
+        price: 32,
+        image: '/lovable-uploads/c9fe7da9-5ea7-4596-bcb7-cfddb8e23e93.png',
         specifications: {
           dosePerCapsule: '20mg',
           capsulesPerBottle: '50 capsules',
           potencyLevel: 'Intermediate'
+        },
+        inStock: true
+      },
+      {
+        id: 'mk-677-10mg-30',
+        name: '10mg - 30 Capsules',
+        price: 18,
+        image: '/lovable-uploads/784cf1c3-343a-4324-97cc-305a4c3366d5.png',
+        specifications: {
+          dosePerCapsule: '10mg',
+          capsulesPerBottle: '30 capsules',
+          potencyLevel: 'Beginner'
         },
         inStock: true
       }

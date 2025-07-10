@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, X, Star, Sparkles, Shield, AlertTriangle, Clock, Users } from 'lucide-react';
+import { ShoppingCart, X, Star, Sparkles, Shield, AlertTriangle, Clock, Users, Target } from 'lucide-react';
 import { Product, ProductVariant } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
@@ -21,7 +21,8 @@ const ProductDetailModal = ({
   isOpen,
   onClose,
   onAddToCart,
-  language
+  language,
+  userDiscount
 }: ProductDetailModalProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageModalOpen, setImageModalOpen] = useState(false);
@@ -116,37 +117,69 @@ const ProductDetailModal = ({
                 </div>
               )}
 
-              {/* Product Variants Selection */}
-              {product.variants && (
-                <div className="bg-gradient-to-br from-yellow-50 via-white to-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg">
-                  <h3 className="font-bold text-yellow-800 mb-4 text-xl">
-                    {language === 'en' ? 'Select Strength' : 'Seleccionar Fuerza'}
+              {/* Product Variants Selection - PROMINENT */}
+              {product.variants && product.variants.length > 1 && (
+                <div className="mb-8 p-6 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl border-3 border-primary/30 shadow-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <Badge variant="secondary" className="bg-primary text-primary-foreground border-primary/30 px-3 py-1 text-sm animate-pulse">
+                      <Sparkles className="w-4 h-4 mr-1" />
+                      {language === 'en' ? 'CHOOSE STRENGTH FIRST' : 'ELIGE FUERZA PRIMERO'}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground font-medium">
+                      {language === 'en' ? 'Select before adding to cart' : 'Selecciona antes de agregar'}
+                    </span>
+                  </div>
+                  <h3 className="font-bold text-foreground mb-4 text-xl flex items-center">
+                    <Target className="w-5 h-5 mr-2 text-primary" />
+                    {language === 'en' ? 'Available Strengths' : 'Fuerzas Disponibles'}
                   </h3>
-                  <div className="space-y-3">
-                    {product.variants.map((variant) => (
+                  <div className="grid grid-cols-1 gap-4">
+                    {product.variants.map((variant, index) => (
                       <button
                         key={variant.id}
                         onClick={() => setSelectedVariant(variant)}
-                        className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                        className={`p-5 rounded-xl border-2 transition-all duration-300 text-left hover:shadow-lg ${
                           selectedVariant?.id === variant.id
-                            ? 'border-blue-500 bg-blue-50 shadow-md'
-                            : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-25'
+                            ? 'border-primary bg-primary/10 ring-2 ring-primary/30 shadow-lg transform scale-[1.02]'
+                            : 'border-border bg-card hover:border-primary/50 hover:bg-muted/50'
                         }`}
                       >
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <h4 className="font-semibold text-gray-800">{variant.name}</h4>
-                            <p className="text-sm text-gray-600">{variant.specifications.dosePerCapsule} • {variant.specifications.capsulesPerBottle}</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-14 h-14 rounded-lg bg-muted flex items-center justify-center overflow-hidden border-2 border-primary/20">
+                              {variant.image ? (
+                                <img src={variant.image} alt={variant.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                                  <span className="text-primary text-sm font-bold">
+                                    {variant.specifications?.dosePerCapsule || variant.name.split(' ')[0]}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-foreground text-lg">{variant.name}</h4>
+                              <p className="text-sm text-muted-foreground">
+                                {variant.specifications.dosePerCapsule} per capsule • {variant.specifications.capsulesPerBottle}
+                              </p>
+                              {index === 0 && (
+                                <Badge variant="outline" className="mt-1 text-xs border-green-500 text-green-700">
+                                  Most Popular
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-center gap-2">
-                              {variant.originalPrice && (
-                                <span className="text-sm text-gray-400 line-through">${variant.originalPrice}</span>
-                              )}
-                              <span className="text-lg font-bold text-green-600">${variant.price}</span>
-                            </div>
+                            <p className="text-xl font-bold text-foreground">
+                              ${((variant.price * (100 - userDiscount)) / 100).toFixed(2)}
+                            </p>
+                            {userDiscount > 0 && (
+                              <p className="text-sm text-muted-foreground line-through">
+                                ${variant.price}
+                              </p>
+                            )}
                             {variant.saveAmount && (
-                              <Badge className="bg-red-500 text-white text-xs">
+                              <Badge className="bg-red-500 text-white text-xs mt-1">
                                 Save ${variant.saveAmount}
                               </Badge>
                             )}
