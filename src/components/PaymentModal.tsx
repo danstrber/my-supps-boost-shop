@@ -293,7 +293,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       const finalTotal = originalTotal - discountAmount + shippingFee;
 
       const orderItems = Object.entries(cart).map(([id, qty]) => {
-        const p = products.find(p => p.id === id) || { name: 'Unknown', price: 0 };
+        const p = findProductOrVariant(id) || { name: 'Unknown', price: 0 };
         return { 
           id, 
           name: p.name, 
