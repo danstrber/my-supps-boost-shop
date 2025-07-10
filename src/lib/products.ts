@@ -1,5 +1,20 @@
 import accutaneImage from '@/assets/accutane.png';
 
+export interface ProductVariant {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  specifications: {
+    dosePerCapsule: string;
+    capsulesPerBottle: string;
+    potencyLevel: string;
+  };
+  inStock?: boolean;
+  saveAmount?: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -23,6 +38,7 @@ export interface Product {
   inStock?: boolean;
   featured?: boolean;
   labTested?: boolean;
+  variants?: ProductVariant[];
 }
 
 export const products: Product[] = [
@@ -70,13 +86,13 @@ export const products: Product[] = [
   {
     id: 'rad-140',
     name: 'RAD-140 (Testolone)',
-    price: 55,
-    image: '/lovable-uploads/cd558275-4c3b-4625-b9b5-52790802195c.png',
+    price: 25,
+    image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
     category: 'sarms',
     description: 'Highly selective androgen receptor modulator for lean muscle growth with fewer side effects than traditional steroids.',
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: '50 capsules',
+      capsulesPerBottle: '30 capsules',
       potencyLevel: 'Intermediate'
     },
     whatToExpected: [
@@ -104,18 +120,46 @@ export const products: Product[] = [
       'Voice changes at excessive doses'
     ],
     inStock: true,
-    featured: true
+    featured: true,
+    variants: [
+      {
+        id: 'rad-140-10mg',
+        name: '10mg - 30 Capsules',
+        price: 25,
+        image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
+        specifications: {
+          dosePerCapsule: '10mg',
+          capsulesPerBottle: '30 capsules',
+          potencyLevel: 'Intermediate'
+        },
+        inStock: true
+      },
+      {
+        id: 'rad-140-20mg',
+        name: '20mg - 50 Capsules',
+        price: 100,
+        originalPrice: 110,
+        saveAmount: 10,
+        image: '/lovable-uploads/4489ebbc-f4e6-457d-9811-070bde867b0e.png',
+        specifications: {
+          dosePerCapsule: '20mg',
+          capsulesPerBottle: '50 capsules',
+          potencyLevel: 'Advanced'
+        },
+        inStock: true
+      }
+    ]
   },
   {
     id: 'mk-677',
     name: 'MK-677 (Ibutamoren)',
-    price: 45,
-    image: '/lovable-uploads/2ce4fc44-88d8-4db2-8bff-c02b79b18bd8.png',
+    price: 25,
+    image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
     category: 'growth',
     description: 'Growth hormone secretagogue promoting natural GH production for enhanced recovery and anti-aging benefits.',
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: '50 capsules',
+      capsulesPerBottle: '30 capsules',
       potencyLevel: 'Beginner'
     },
     whatToExpected: [
@@ -143,7 +187,35 @@ export const products: Product[] = [
       'Monitor for excessive water retention'
     ],
     inStock: true,
-    featured: true
+    featured: true,
+    variants: [
+      {
+        id: 'mk-677-10mg',
+        name: '10mg - 30 Capsules',
+        price: 25,
+        image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
+        specifications: {
+          dosePerCapsule: '10mg',
+          capsulesPerBottle: '30 capsules',
+          potencyLevel: 'Beginner'
+        },
+        inStock: true
+      },
+      {
+        id: 'mk-677-20mg',
+        name: '20mg - 50 Capsules',
+        price: 80,
+        originalPrice: 90,
+        saveAmount: 10,
+        image: '/lovable-uploads/784cf1c3-343a-4324-97cc-305a4c3366d5.png',
+        specifications: {
+          dosePerCapsule: '20mg',
+          capsulesPerBottle: '50 capsules',
+          potencyLevel: 'Intermediate'
+        },
+        inStock: true
+      }
+    ]
   },
   {
     id: 'clenbuterol',
@@ -375,6 +447,46 @@ export const products: Product[] = [
       'Masculine physical changes'
     ],
     inStock: false,
+    labTested: true
+  },
+  {
+    id: 'testosterone-enanthate',
+    name: 'Testosterone Enanthate',
+    price: 35,
+    image: '/lovable-uploads/2f754df1-d4d5-4097-b8bf-ebbba6ba2f15.png',
+    category: 'injectable-steroids',
+    description: 'Popular long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
+    specifications: {
+      dosePerCapsule: '250mg/mL',
+      capsulesPerBottle: '10mL vial',
+      potencyLevel: 'Intermediate'
+    },
+    whatToExpected: [
+      'Increased muscle mass and strength',
+      'Enhanced recovery and performance',
+      'Improved libido and energy levels',
+      'Better mood and well-being'
+    ],
+    cycleInfo: {
+      length: '10-16 weeks',
+      dosage: '250-500mg weekly',
+      pctRequired: true
+    },
+    sideEffects: [
+      'Possible estrogen-related side effects',
+      'May cause acne and oily skin',
+      'Hair loss (if predisposed)',
+      'Testicular shutdown during cycle',
+      'Possible mood changes'
+    ],
+    womenEffects: [
+      'NOT recommended for women',
+      'May cause severe virilization',
+      'Voice changes (potentially permanent)',
+      'Increased body hair growth',
+      'Masculine physical changes'
+    ],
+    inStock: true,
     labTested: true
   },
   {

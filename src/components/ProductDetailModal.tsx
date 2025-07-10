@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, X, Star, Sparkles, Shield, AlertTriangle, Clock, Users } from 'lucide-react';
-import { Product } from '@/lib/products';
+import { Product, ProductVariant } from '@/lib/products';
 import { translations } from '@/lib/translations';
 
 interface ProductDetailModalProps {
@@ -25,12 +25,34 @@ const ProductDetailModal = ({
 }: ProductDetailModalProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    product.variants ? product.variants[0] : null
+  );
   const t = translations[language];
 
-  const images = [product.image].filter(Boolean);
+  // Get current product data (either base product or selected variant)
+  const currentProduct = selectedVariant || product;
+  const currentImage = selectedVariant?.image || product.image;
+  const currentPrice = selectedVariant?.price || product.price;
+  const currentSpecs = selectedVariant?.specifications || product.specifications;
+
+  const images = [currentImage].filter(Boolean);
 
   const handleAddToCart = () => {
-    onAddToCart(product);
+    if (selectedVariant) {
+      // Create a product object with variant data for cart
+      const variantProduct = {
+        ...product,
+        id: selectedVariant.id,
+        price: selectedVariant.price,
+        image: selectedVariant.image,
+        specifications: selectedVariant.specifications,
+        inStock: selectedVariant.inStock
+      };
+      onAddToCart(variantProduct);
+    } else {
+      onAddToCart(product);
+    }
     onClose();
   };
 
@@ -79,15 +101,57 @@ const ProductDetailModal = ({
                 </p>
               </div>
               
-              {product.image && (
+              {currentImage && (
                 <div className="relative group">
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-200 to-green-200 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
                   <img
-                    src={product.image}
+                    src={currentImage}
                     alt={product.name}
                     className="relative w-full h-80 object-cover rounded-lg border-2 border-white shadow-lg cursor-pointer transform transition-transform duration-300 hover:scale-105"
                     onClick={() => openImageModal(0)}
                   />
+                </div>
+              )}
+
+              {/* Product Variants Selection */}
+              {product.variants && (
+                <div className="bg-gradient-to-br from-yellow-50 via-white to-yellow-50 border-2 border-yellow-200 rounded-xl p-6 shadow-lg">
+                  <h3 className="font-bold text-yellow-800 mb-4 text-xl">
+                    {language === 'en' ? 'Select Strength' : 'Seleccionar Fuerza'}
+                  </h3>
+                  <div className="space-y-3">
+                    {product.variants.map((variant) => (
+                      <button
+                        key={variant.id}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                          selectedVariant?.id === variant.id
+                            ? 'border-blue-500 bg-blue-50 shadow-md'
+                            : 'border-gray-200 bg-white hover:border-blue-300 hover:bg-blue-25'
+                        }`}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="font-semibold text-gray-800">{variant.name}</h4>
+                            <p className="text-sm text-gray-600">{variant.specifications.dosePerCapsule} • {variant.specifications.capsulesPerBottle}</p>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center gap-2">
+                              {variant.originalPrice && (
+                                <span className="text-sm text-gray-400 line-through">${variant.originalPrice}</span>
+                              )}
+                              <span className="text-lg font-bold text-green-600">${variant.price}</span>
+                            </div>
+                            {variant.saveAmount && (
+                              <Badge className="bg-red-500 text-white text-xs">
+                                Save ${variant.saveAmount}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -102,19 +166,19 @@ const ProductDetailModal = ({
                     <span className="font-medium text-blue-700 block mb-1">
                       {language === 'en' ? 'Dose per capsule:' : 'Dosis por cápsula:'}
                     </span>
-                    <p className="text-blue-600 font-bold text-lg">{product.specifications.dosePerCapsule}</p>
+                    <p className="text-blue-600 font-bold text-lg">{currentSpecs.dosePerCapsule}</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 border border-blue-100">
                     <span className="font-medium text-blue-700 block mb-1">
                       {language === 'en' ? 'Capsules per bottle:' : 'Cápsulas por frasco:'}
                     </span>
-                    <p className="text-blue-600 font-bold text-lg">{product.specifications.capsulesPerBottle}</p>
+                    <p className="text-blue-600 font-bold text-lg">{currentSpecs.capsulesPerBottle}</p>
                   </div>
                   <div className="bg-white rounded-lg p-3 border border-blue-100 col-span-2">
                     <span className="font-medium text-blue-700 block mb-1">
                       {language === 'en' ? 'Potency level:' : 'Nivel de potencia:'}
                     </span>
-                    <p className="text-blue-600 font-bold text-lg">{product.specifications.potencyLevel}</p>
+                    <p className="text-blue-600 font-bold text-lg">{currentSpecs.potencyLevel}</p>
                   </div>
                 </div>
               </div>
@@ -154,16 +218,28 @@ const ProductDetailModal = ({
 
               {/* Price and Add to Cart */}
               <div className="bg-gradient-to-br from-green-50 via-white to-green-50 border-2 border-green-300 rounded-xl p-6 text-center shadow-lg">
-                <span className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent block mb-4">
-                  ${product.price.toFixed(2)}
-                </span>
+                <div className="mb-4">
+                  {selectedVariant?.originalPrice && (
+                    <span className="text-2xl text-gray-400 line-through block">
+                      ${selectedVariant.originalPrice.toFixed(2)}
+                    </span>
+                  )}
+                  <span className="text-5xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent block">
+                    ${currentPrice.toFixed(2)}
+                  </span>
+                  {selectedVariant?.saveAmount && (
+                    <Badge className="bg-red-500 text-white text-sm mt-2">
+                      Save ${selectedVariant.saveAmount}
+                    </Badge>
+                  )}
+                </div>
                 <Button
                   onClick={handleAddToCart}
-                  disabled={product.inStock === false}
+                  disabled={selectedVariant ? selectedVariant.inStock === false : product.inStock === false}
                   className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white text-lg py-4 rounded-xl shadow-lg transform transition-all duration-200 hover:scale-105"
                 >
                   <ShoppingCart className="h-5 w-5 mr-2" />
-                  {product.inStock === false
+                  {(selectedVariant ? selectedVariant.inStock === false : product.inStock === false)
                     ? t.outOfStock
                     : t.addToCart
                   }
