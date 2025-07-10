@@ -134,7 +134,7 @@ const Header = ({
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2 hover:bg-gray-100"
+              className="lg:hidden p-2 hover:bg-gray-100 order-first"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -272,7 +272,7 @@ const Header = ({
             </div>
 
             {/* Language switcher on mobile */}
-            <div className="pt-2 border-t border-gray-100 sm:hidden">
+            <div className="pt-2 border-t border-gray-100 lg:hidden">
               <LanguageSwitcher 
                 currentLanguage={language} 
                 onLanguageChange={onLanguageChange} 
@@ -306,7 +306,7 @@ const Header = ({
                   </Button>
                 </>
               ) : (
-                <div className="space-y-2 md:hidden">
+                <div className="space-y-2 lg:hidden">
                   <Button
                     variant="ghost"
                     size="sm"
