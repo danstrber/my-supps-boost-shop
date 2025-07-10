@@ -37,10 +37,36 @@ const CartModal = ({
 }: CartModalProps) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
+  // Helper function to find product or variant by ID
+  const findProductOrVariant = (productId: string) => {
+    // First try to find main product
+    let product = products.find(p => p.id === productId);
+    if (product) return product;
+    
+    // If not found, search in variants
+    for (const mainProduct of products) {
+      if (mainProduct.variants) {
+        const variant = mainProduct.variants.find(v => v.id === productId);
+        if (variant) {
+          // Return variant as a product-like object with variant properties
+          return {
+            ...mainProduct,
+            id: variant.id,
+            name: `${mainProduct.name} - ${variant.name}`,
+            price: variant.price,
+            image: variant.image || mainProduct.image,
+            specifications: variant.specifications || mainProduct.specifications
+          };
+        }
+      }
+    }
+    return null;
+  };
+
   const cartItems = Object.entries(cart)
     .filter(([_, quantity]) => quantity > 0)
     .map(([productId, quantity]) => {
-      const product = products.find(p => p.id === productId);
+      const product = findProductOrVariant(productId);
       return product ? { product, quantity } : null;
     })
     .filter(Boolean) as Array<{ product: Product; quantity: number }>;
