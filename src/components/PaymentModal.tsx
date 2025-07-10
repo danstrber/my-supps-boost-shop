@@ -79,6 +79,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         const product = findProductOrVariant(productId);
         if (product) {
           subtotal += quantity * (product.price || 0);
+          console.log(`🛒 Product: ${product.name}, Price: $${product.price}, Quantity: ${quantity}`);
         }
       }
     });
@@ -89,7 +90,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     const freeShippingThreshold = isUS ? 100 : 130;
     const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
     
-    return subtotal - userDiscount + shippingFee;
+    console.log(`💰 Bitcoin calculation: Subtotal: $${subtotal}, Discount: $${userDiscount}, Shipping: $${shippingFee}, Country: ${userCountry}`);
+    const total = subtotal - userDiscount + shippingFee;
+    console.log(`💰 Bitcoin final total: $${total}`);
+    
+    return total;
   };
 
   const fetchCryptoPrice = async () => {
