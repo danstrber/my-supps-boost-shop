@@ -73,17 +73,23 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       return 0;
     }
     
-    let total = 0;
+    let subtotal = 0;
     Object.entries(cart).forEach(([productId, quantity]) => {
       if (quantity > 0) {
         const product = findProductOrVariant(productId);
         if (product) {
-          total += quantity * (product.price || 0);
+          subtotal += quantity * (product.price || 0);
         }
       }
     });
     
-    return total - userDiscount + 7.5;
+    // Calculate shipping based on subtotal (before discount)
+    const userCountry = userProfile?.country || 'USA';
+    const isUS = userCountry === 'USA' || userCountry === 'United States';
+    const freeShippingThreshold = isUS ? 100 : 130;
+    const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
+    
+    return subtotal - userDiscount + shippingFee;
   };
 
   const fetchCryptoPrice = async () => {
@@ -287,9 +293,25 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
       console.log('🔍 Verification result:', verificationResult);
 
       const orderId = generateOrderId();
-      const originalTotal = calculateTotalUSD() - 7.5;
+      
+      // Calculate proper shipping based on cart subtotal
+      let subtotal = 0;
+      Object.entries(cart).forEach(([productId, quantity]) => {
+        if (quantity > 0) {
+          const product = findProductOrVariant(productId);
+          if (product) {
+            subtotal += quantity * (product.price || 0);
+          }
+        }
+      });
+      
+      const userCountry = userProfile?.country || 'USA';
+      const isUS = userCountry === 'USA' || userCountry === 'United States';
+      const freeShippingThreshold = isUS ? 100 : 130;
+      const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
+      
+      const originalTotal = subtotal;
       const discountAmount = userDiscount;
-      const shippingFee = 7.5;
       const finalTotal = originalTotal - discountAmount + shippingFee;
 
       const orderItems = Object.entries(cart).map(([id, qty]) => {
@@ -430,16 +452,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     onClose();
   };
 
-  if (showSuccessModal && orderDetails) {
-    return (
-      <OrderSuccessModal
-        isOpen={true}
-        onClose={handleSuccessModalClose}
-        orderDetails={orderDetails}
-        language="en"
-      />
-    );
-  }
 
   if (!isOpen) return null;
 
