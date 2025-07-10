@@ -86,13 +86,13 @@ export const products: Product[] = [
   {
     id: 'rad-140',
     name: 'RAD-140 (Testolone)',
-    price: 25,
+    price: 55,
     image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
     category: 'sarms',
     description: 'Highly selective androgen receptor modulator for lean muscle growth with fewer side effects than traditional steroids.',
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: '30 capsules',
+      capsulesPerBottle: '50 capsules',
       potencyLevel: 'Intermediate'
     },
     whatToExpected: [
@@ -125,7 +125,7 @@ export const products: Product[] = [
       {
         id: 'rad-140-10mg-50',
         name: '10mg - 50 Capsules (Standard)',
-        price: 25,
+        price: 55,
         image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -137,7 +137,7 @@ export const products: Product[] = [
       {
         id: 'rad-140-20mg-50',
         name: '20mg - 50 Capsules',
-        price: 35,
+        price: 100,
         image: '/lovable-uploads/e4d9b18a-77ea-4f9e-ab56-3dba782245d2.png',
         specifications: {
           dosePerCapsule: '20mg',
@@ -149,7 +149,7 @@ export const products: Product[] = [
       {
         id: 'rad-140-10mg-30',
         name: '10mg - 30 Capsules',
-        price: 18,
+        price: 30,
         image: '/lovable-uploads/d91fd34a-b6a3-4180-ad44-c618bb015454.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -163,13 +163,13 @@ export const products: Product[] = [
   {
     id: 'mk-677',
     name: 'MK-677 (Ibutamoren)',
-    price: 25,
+    price: 45,
     image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
     category: 'growth',
     description: 'Growth hormone secretagogue promoting natural GH production for enhanced recovery and anti-aging benefits.',
     specifications: {
       dosePerCapsule: '10mg',
-      capsulesPerBottle: '30 capsules',
+      capsulesPerBottle: '50 capsules',
       potencyLevel: 'Beginner'
     },
     whatToExpected: [
@@ -202,7 +202,7 @@ export const products: Product[] = [
       {
         id: 'mk-677-10mg-50',
         name: '10mg - 50 Capsules (Standard)',
-        price: 25,
+        price: 45,
         image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -214,7 +214,7 @@ export const products: Product[] = [
       {
         id: 'mk-677-20mg-50',
         name: '20mg - 50 Capsules',
-        price: 32,
+        price: 80,
         image: '/lovable-uploads/52043d65-b1dd-4c5a-bb05-28b7b073ff55.png',
         specifications: {
           dosePerCapsule: '20mg',
@@ -226,7 +226,7 @@ export const products: Product[] = [
       {
         id: 'mk-677-10mg-30',
         name: '10mg - 30 Capsules',
-        price: 18,
+        price: 25,
         image: '/lovable-uploads/2822acc1-bfb7-4916-8971-d96a026381c9.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -433,7 +433,7 @@ export const products: Product[] = [
     id: 'testosterone-cypionate',
     name: 'Testosterone Cypionate',
     price: 35,
-    image: '/lovable-uploads/a0651ae0-232a-4fc2-aad2-c2ca3e91a84d.png',
+    image: '/lovable-uploads/327cd7ef-8b6e-4717-9290-167c23353c70.png',
     category: 'injectable-steroids',
     description: 'Long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
     specifications: {
@@ -506,8 +506,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Masculine physical changes'
     ],
-    inStock: false,
-    labTested: true
+    inStock: false
   },
   {
     id: 'accutane',
