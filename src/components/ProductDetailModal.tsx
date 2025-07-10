@@ -188,6 +188,30 @@ const ProductDetailModal = ({
                       </button>
                     ))}
                   </div>
+                  
+                  {/* Price and Add to Cart Section */}
+                  {selectedVariant && (
+                    <div className="mt-6 p-4 bg-white border-2 border-primary/30 rounded-lg shadow-md">
+                      <div className="flex items-center justify-between">
+                        <div className="text-center">
+                          <p className="text-3xl font-bold text-primary">
+                            ${((selectedVariant.price * (100 - userDiscount)) / 100).toFixed(2)}
+                          </p>
+                          {userDiscount > 0 && (
+                            <p className="text-lg text-muted-foreground line-through">
+                              ${selectedVariant.price}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          onClick={handleAddToCart}
+                          className="px-8 py-3 text-lg font-semibold bg-primary hover:bg-primary/90 text-white rounded-lg transition-all duration-200 hover:scale-105"
+                        >
+                          Add to Cart
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

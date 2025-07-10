@@ -18,13 +18,16 @@ export const useCart = () => {
         // Ensure all values are valid numbers and products exist
         const validCart: Record<string, number> = {};
         Object.entries(parsedCart).forEach(([key, value]) => {
-          // Check if product exists in the products array
-          const productExists = products.find(p => p.id === key);
-          if (productExists && typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
-            validCart[key] = Math.max(1, Math.floor(value)); // Ensure positive integers
-          } else if (!productExists) {
-            console.warn(`Removing invalid product ${key} from cart - product no longer exists`);
-          }
+        // Check if product or variant exists
+        const productExists = products.find(p => 
+          p.id === key || 
+          (p.variants && p.variants.some(v => v.id === key))
+        );
+        if (productExists && typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
+          validCart[key] = Math.max(1, Math.floor(value)); // Ensure positive integers
+        } else if (!productExists) {
+          console.warn(`Removing invalid product ${key} from cart - product no longer exists`);
+        }
         });
         console.log('📦 Loading cart from localStorage:', { savedCart, parsedCart, validCart });
         setCart(validCart);
@@ -74,7 +77,10 @@ export const useCart = () => {
       // Clean up any invalid entries while we're at it
       const cleanCart: Record<string, number> = {};
       Object.entries(newCart).forEach(([key, value]) => {
-        const productExists = products.find(p => p.id === key);
+        const productExists = products.find(p => 
+          p.id === key || 
+          (p.variants && p.variants.some(v => v.id === key))
+        );
         if (productExists && typeof value === 'number' && value > 0 && !isNaN(value) && isFinite(value)) {
           cleanCart[key] = Math.floor(value);
         }
