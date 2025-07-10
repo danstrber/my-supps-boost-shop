@@ -94,6 +94,16 @@ const ProductGrid = ({
                 </div>
               )}
 
+              {/* Multiple Strengths Available Tag */}
+              {product.variants && product.variants.length > 1 && (
+                <div className="absolute top-14 right-3 z-10">
+                  <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-3 py-2 rounded-full font-bold shadow-lg flex items-center animate-bounce">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    {language === 'en' ? `${product.variants.length} Strengths` : `${product.variants.length} Dosis`}
+                  </span>
+                </div>
+              )}
+
               <div className="relative mb-4 mt-8">
                 {product.image ? (
                   <div className="relative group/image">

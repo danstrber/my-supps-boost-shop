@@ -124,12 +124,12 @@ export const products: Product[] = [
     variants: [
       {
         id: 'rad-140-10mg',
-        name: '10mg - 30 Capsules',
+        name: '10mg - 50 Capsules',
         price: 25,
         image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
         specifications: {
           dosePerCapsule: '10mg',
-          capsulesPerBottle: '30 capsules',
+          capsulesPerBottle: '50 capsules',
           potencyLevel: 'Intermediate'
         },
         inStock: true
@@ -191,12 +191,12 @@ export const products: Product[] = [
     variants: [
       {
         id: 'mk-677-10mg',
-        name: '10mg - 30 Capsules',
+        name: '10mg - 50 Capsules',
         price: 25,
         image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
         specifications: {
           dosePerCapsule: '10mg',
-          capsulesPerBottle: '30 capsules',
+          capsulesPerBottle: '50 capsules',
           potencyLevel: 'Beginner'
         },
         inStock: true
