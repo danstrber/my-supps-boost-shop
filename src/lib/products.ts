@@ -1,3 +1,4 @@
+
 import accutaneImage from '@/assets/accutane.png';
 
 export interface ProductVariant {
@@ -506,7 +507,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Masculine physical changes'
     ],
-    inStock: true
+    inStock: false
   },
   {
     id: 'accutane',
@@ -545,6 +546,46 @@ export const products: Product[] = [
       'May cause severe birth defects',
       'Monthly pregnancy tests required',
       'Same side effects as men'
+    ],
+    inStock: true
+  },
+  {
+    id: 'tretinoin',
+    name: 'Tretinoin Cream',
+    price: 20,
+    image: '/lovable-uploads/bac5a63b-e051-461e-8a6c-f87e42b10ad6.png',
+    category: 'support',
+    description: 'Topical retinoid cream for acne treatment and anti-aging. Highly effective for preventing acne breakouts and improving skin texture.',
+    specifications: {
+      dosePerCapsule: '0.05%',
+      capsulesPerBottle: '30g tube',
+      potencyLevel: 'Beginner'
+    },
+    whatToExpected: [
+      'Significant acne reduction and prevention',
+      'Improved skin texture and smoothness',
+      'Reduced appearance of fine lines',
+      'Enhanced skin cell turnover',
+      'Prevention of clogged pores',
+      'Anti-aging benefits'
+    ],
+    cycleInfo: {
+      length: 'Continuous use as needed',
+      dosage: 'Apply thin layer once daily at night',
+      pctRequired: false
+    },
+    sideEffects: [
+      'Initial skin irritation and redness',
+      'Increased sun sensitivity',
+      'Skin dryness and peeling',
+      'Possible temporary worsening of acne',
+      'Burning or stinging sensation'
+    ],
+    womenEffects: [
+      'NOT recommended during pregnancy',
+      'May cause birth defects if used during pregnancy',
+      'Safe for breastfeeding mothers',
+      'Same benefits and side effects as men'
     ],
     inStock: true
   }
