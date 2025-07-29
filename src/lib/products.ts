@@ -80,7 +80,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Other masculinizing effects'
     ],
-    inStock: false,
+    inStock: true,
     labTested: true
   },
   {
@@ -274,7 +274,7 @@ export const products: Product[] = [
       'Same side effects as men',
       'No virilization concerns'
     ],
-    inStock: false,
+    inStock: true,
     labTested: true
   },
   {
@@ -350,7 +350,7 @@ export const products: Product[] = [
       'Bone health monitoring required',
       'Not for bodybuilding use in women'
     ],
-    inStock: false
+    inStock: true
   },
   {
     id: 'clomid',
@@ -388,7 +388,7 @@ export const products: Product[] = [
       'Multiple pregnancy risk',
       'Mood and emotional changes'
     ],
-    inStock: false
+    inStock: true
   },
   {
     id: 'letrozole',
@@ -426,7 +426,7 @@ export const products: Product[] = [
       'Severe bone health risks',
       'Not recommended for bodybuilding use'
     ],
-    inStock: false,
+    inStock: true,
     labTested: true
   },
   {
@@ -466,7 +466,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Masculine physical changes'
     ],
-    inStock: false,
+    inStock: true,
     labTested: true
   },
   {
@@ -506,7 +506,7 @@ export const products: Product[] = [
       'Increased body hair growth',
       'Masculine physical changes'
     ],
-    inStock: false
+    inStock: true
   },
   {
     id: 'accutane',
