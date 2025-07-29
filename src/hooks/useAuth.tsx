@@ -49,8 +49,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const profile = await fetchUserProfile(user.id);
+        console.log('Setting new profile in refreshProfile:', profile);
         setUserProfile(profile);
       } else {
+        console.log('No user found, setting profile to null');
         setUserProfile(null);
       }
     } catch (error) {
@@ -187,10 +189,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           try {
             if (session?.user) {
               console.log('Auth change - fetching profile for:', session.user.id);
-              const profile = await fetchUserProfile(session.user.id);
-              if (!cleanup) {
-                setUserProfile(profile);
-              }
+              // Add a small delay to ensure database has been updated
+              setTimeout(async () => {
+                if (!cleanup) {
+                  const profile = await fetchUserProfile(session.user.id);
+                  if (!cleanup) {
+                    console.log('Setting profile from auth change:', profile);
+                    setUserProfile(profile);
+                  }
+                }
+              }, 1000);
             } else {
               console.log('Auth change - no user, clearing profile');
               if (!cleanup) {

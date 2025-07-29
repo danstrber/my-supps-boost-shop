@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,6 +45,7 @@ const Account = ({
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
+  const [updating, setUpdating] = useState(false);
   const [formData, setFormData] = useState({
     name: userProfile?.name || '',
     country: userProfile?.country || ''
@@ -53,6 +55,7 @@ const Account = ({
   // Update formData when userProfile changes
   React.useEffect(() => {
     if (userProfile) {
+      console.log('Updating form data with user profile:', userProfile);
       setFormData({
         name: userProfile.name || '',
         country: userProfile.country || ''
@@ -73,18 +76,31 @@ const Account = ({
   };
 
   const handleSaveProfile = async () => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.auth_id) {
+      console.error('No user profile or auth_id found');
+      toast({
+        title: "Error",
+        description: "User profile not found. Please try refreshing the page.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUpdating(true);
 
     try {
-      console.log('Updating profile with:', formData);
+      console.log('Updating profile with auth_id:', userProfile.auth_id);
+      console.log('Form data:', formData);
       
+      // Update using auth_id instead of id for better reliability
       const { data, error } = await supabase
         .from('users')
         .update({
           name: formData.name,
-          country: formData.country
+          country: formData.country,
+          updated_at: new Date().toISOString()
         })
-        .eq('id', userProfile.id)
+        .eq('auth_id', userProfile.auth_id)
         .select();
 
       if (error) {
@@ -105,8 +121,19 @@ const Account = ({
       });
 
       setEditMode(false);
-      // Refresh the profile to get updated data and force re-render
+      
+      // Force refresh the profile to get updated data
       await refreshProfile();
+      
+      // Small delay to ensure state is updated, then update form data again
+      setTimeout(() => {
+        if (userProfile) {
+          setFormData({
+            name: formData.name,
+            country: formData.country
+          });
+        }
+      }, 500);
       
     } catch (error) {
       console.error('Exception updating profile:', error);
@@ -115,7 +142,21 @@ const Account = ({
         description: "An unexpected error occurred",
         variant: "destructive",
       });
+    } finally {
+      setUpdating(false);
     }
+  };
+
+  const handleCancelEdit = () => {
+    // Reset form data to current profile values
+    if (userProfile) {
+      setFormData({
+        name: userProfile.name || '',
+        country: userProfile.country || ''
+      });
+    }
+    setEditMode(false);
+    setCountrySearch('');
   };
 
   if (!authState || !userProfile) {
@@ -169,13 +210,18 @@ const Account = ({
                           value={formData.name}
                           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                           placeholder="Enter your name"
+                          disabled={updating}
                         />
                       </div>
                       <div>
                         <Label htmlFor="profile-country">Country</Label>
                         <Select 
                           value={formData.country} 
-                          onValueChange={(value) => setFormData(prev => ({ ...prev, country: value }))}
+                          onValueChange={(value) => {
+                            console.log('Country selected:', value);
+                            setFormData(prev => ({ ...prev, country: value }));
+                          }}
+                          disabled={updating}
                         >
                           <SelectTrigger id="profile-country">
                             <SelectValue placeholder="Select your country" />
@@ -201,8 +247,19 @@ const Account = ({
                         </Select>
                       </div>
                       <div className="flex space-x-2">
-                        <Button onClick={handleSaveProfile}>Save Changes</Button>
-                        <Button variant="outline" onClick={() => setEditMode(false)}>Cancel</Button>
+                        <Button 
+                          onClick={handleSaveProfile}
+                          disabled={updating}
+                        >
+                          {updating ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          onClick={handleCancelEdit}
+                          disabled={updating}
+                        >
+                          Cancel
+                        </Button>
                       </div>
                     </div>
                   ) : (
@@ -228,11 +285,13 @@ const Account = ({
                         </div>
                       </div>
                       <Button onClick={() => {
+                        console.log('Starting edit mode with profile:', userProfile);
                         setFormData({
                           name: userProfile.name || '',
                           country: userProfile.country || ''
                         });
                         setEditMode(true);
+                        setCountrySearch('');
                       }}>
                         Edit Profile
                       </Button>
