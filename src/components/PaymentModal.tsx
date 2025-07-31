@@ -1,735 +1,282 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import PaymentTimer from './payment/PaymentTimer';
-import ShippingForm, { ShippingFormData } from './payment/ShippingForm';
-import BitcoinTutorial from './payment/BitcoinTutorial';
-import OrderSuccessModal from './OrderSuccessModal';
-import { EnhancedBitcoinVerificationService } from '@/lib/bitcoinVerificationImproved';
-import { useOrderHistory } from '@/hooks/useOrderHistory';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useCart } from '@/hooks/useCart';
+import { useOrderSuccess from '@/hooks/useOrderSuccess';
+import { translations } from '@/lib/translations';
+import { ShippingForm } from './payment/ShippingForm';
+import { OrderSummary } from './payment/OrderSummary';
+import { PaymentMethodInfo } from './payment/PaymentMethodInfo';
+import { BitcoinTutorial } from './payment/BitcoinTutorial';
+import { PaymentTimer } from './payment/PaymentTimer';
+import { verifyBitcoinTransaction } from '@/lib/bitcoinVerificationImproved';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  cart: Record<string, number>;
-  products: any[];
-  userDiscount: number;
-  userProfile: any;
-  onOrderSuccess: () => void;
+  language: 'en' | 'es';
 }
 
-const PaymentModal: React.FC<PaymentModalProps> = ({
-  isOpen,
-  onClose,
-  cart,
-  products,
-  userDiscount,
-  userProfile,
-  onOrderSuccess,
-}) => {
-  const { toast } = useToast();
-  const { addOrder } = useOrderHistory();
-  const [step, setStep] = useState(1);
+export const PaymentModal = ({ isOpen, onClose, language }: PaymentModalProps) => {
+  const { t } = translations[language];
+  const { userProfile } = useAuth();
+  const { cartItems, clearCart, subtotal } = useCart();
+  const { showOrderSuccess } = useOrderSuccess();
+
   const [txId, setTxId] = useState('');
-  const [btcAmount, setBtcAmount] = useState(0);
-  const [btcPrice, setBtcPrice] = useState(0);
-  const [lastPriceUpdate, setLastPriceUpdate] = useState<Date | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [orderDetails, setOrderDetails] = useState<any>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'telegram'>('bitcoin');
-  const [shippingData, setShippingData] = useState<any>(null);
-  const [usedTxIds] = useState(new Set<string>()); // Track used transaction IDs
+  const [shippingInfo, setShippingInfo] = useState({
+    fullName: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: '',
+  });
+  const [shippingCost, setShippingCost] = useState(0);
+  const [bitcoinAddress, setBitcoinAddress] = useState('');
+  const [bitcoinAmount, setBitcoinAmount] = useState('');
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [finalTotal, setFinalTotal] = useState(0);
 
-  const myAddress = '3Arg9L1LwJjXd7fN7P3huZSYw42SfRFsBR';
+  const { toast } = useToast();
 
-  // Helper function to find product or variant by ID
-  const findProductOrVariant = (productId: string) => {
-    // First try to find main product
-    let product = products.find(p => p.id === productId);
-    if (product) return product;
-    
-    // If not found, search in variants
-    for (const mainProduct of products) {
-      if (mainProduct.variants) {
-        const variant = mainProduct.variants.find(v => v.id === productId);
-        if (variant) {
-          return {
-            ...mainProduct,
-            id: variant.id,
-            name: `${mainProduct.name} - ${variant.name}`,
-            price: variant.price,
-            image: variant.image || mainProduct.image,
-            specifications: variant.specifications || mainProduct.specifications
-          };
-        }
-      }
-    }
-    return null;
-  };
+  useEffect(() => {
+    const calculateTotals = () => {
+      const calculatedShippingCost = shippingInfo.country === 'US' ? 10 : 25;
+      setShippingCost(calculatedShippingCost);
 
-  // Calculate BTC amount and update when cart/discount changes
-  const calculateTotalUSD = () => {
-    if (!products || !Array.isArray(products)) {
-      console.error('Products not loaded');
-      return 0;
-    }
-    
-    // Calculate subtotal
-    let subtotal = 0;
-    Object.entries(cart).forEach(([productId, quantity]) => {
-      if (quantity > 0) {
-        const product = findProductOrVariant(productId);
-        if (product) {
-          subtotal += quantity * (product.price || 0);
-        }
-      }
-    });
-    
-    // Use the userDiscount percentage that's passed from CartModal (already calculated there)
-    const discountAmount = (subtotal * userDiscount) / 100;
-    const subtotalAfterDiscount = subtotal - discountAmount;
-    
-    // Calculate shipping based on ORIGINAL subtotal (before discount)
-    const userCountry = userProfile?.country || 'USA';
-    const isUS = userCountry === 'USA' || userCountry === 'United States';
-    const freeShippingThreshold = isUS ? 100 : 130;
-    const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
-    
-    const finalTotal = subtotalAfterDiscount + shippingFee;
-    
-    return finalTotal;
-  };
+      // Fetch discount from local storage
+      const storedDiscount = localStorage.getItem('discountAmount');
+      const parsedDiscount = storedDiscount ? parseFloat(storedDiscount) : 0;
+      setDiscountAmount(parsedDiscount);
 
-  const fetchCryptoPrice = async () => {
-    try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-      const data = await response.json();
-      const price = data.bitcoin.usd;
-      setBtcPrice(price);
-      setLastPriceUpdate(new Date());
-      return { btc: { currentPrice: price } };
-    } catch (error) {
-      console.error('Failed to fetch crypto price, using fallback');
-      const fallbackPrice = 50000;
-      setBtcPrice(fallbackPrice);
-      return { btc: { currentPrice: fallbackPrice }};
-    }
-  };
+      const calculatedFinalTotal = Math.max(0, subtotal - parsedDiscount + calculatedShippingCost);
+      setFinalTotal(calculatedFinalTotal);
+    };
 
-  // Update Bitcoin amount and price continuously
-  React.useEffect(() => {
-    if (step >= 2) {
-      const updateBitcoinData = async () => {
-        try {
-          const totalUSD = calculateTotalUSD();
-          const { btc: { currentPrice } } = await fetchCryptoPrice();
-          const newBtcAmount = totalUSD / currentPrice;
-          setBtcAmount(newBtcAmount);
-        } catch (error) {
-          console.error('Failed to update Bitcoin data:', error);
-        }
-      };
-      
-      // Initial update
-      updateBitcoinData();
-      
-      // Update every 30 seconds for live pricing
-      const interval = setInterval(updateBitcoinData, 30000);
-      
-      return () => clearInterval(interval);
-    }
-  }, [cart, userDiscount, step, products]);
+    calculateTotals();
+  }, [subtotal, shippingInfo, discountAmount]);
 
-  // Enhanced Bitcoin verification with security improvements
-  const verifyBitcoinTransaction = async (txId: string, expectedUSD: number) => {
-    console.log('🔍 Verifying Bitcoin transaction with enhanced security...', {
-      txId,
-      expectedUSD,
-      tolerance: '$10'
-    });
-
-    // Security: Check for transaction replay attacks
-    if (usedTxIds.has(txId)) {
-      return {
-        isValid: false,
-        error: 'Transaction ID has already been used. Possible replay attack detected.',
-        details: 'Security: Transaction replay prevented'
-      };
-    }
-
-    // Security: Basic format validation
-    if (!/^[a-fA-F0-9]{64}$/.test(txId) && txId !== 'ihatebigger123') {
-      return {
-        isValid: false,
-        error: 'Invalid transaction ID format',
-        details: 'Security: Invalid format rejected'
-      };
-    }
-
-    try {
-      const { btc: { currentPrice } } = await fetchCryptoPrice();
-      const expectedBTC = expectedUSD / currentPrice;
-
-      // Use enhanced verification service
-      const verificationResult = await EnhancedBitcoinVerificationService.verifyTransactionEnhanced(
-        txId,
-        myAddress,
-        expectedBTC,
-        0.00001 // 0.00001 BTC tolerance
-      );
-
-      if (verificationResult.isValid) {
-        // Mark transaction as used to prevent replay
-        usedTxIds.add(txId);
-        console.log('✅ Transaction verified and marked as used');
-      }
-
-      return verificationResult;
-
-    } catch (error: any) {
-      console.error('❌ Bitcoin verification failed:', error);
-      return {
-        isValid: false,
-        error: `Verification failed: ${error.message}`,
-        details: 'Transaction verification error'
-      };
-    }
-  };
-
-  const generateOrderId = () => {
-    const timestamp = Date.now();
-    const random = Math.floor(Math.random() * 1000);
-    return `ORD-${timestamp}-${random}`;
-  };
-
-  const sendOrderEmailFormspree = async (orderData: any) => {
-    console.log('📧 Sending order collection email via Formspree to both endpoints...');
-    try {
-      const itemsFormatted = orderData.items.map((item: any) => 
-        `${item.name} - ${item.quantity} bottle${item.quantity > 1 ? 's' : ''} × $${item.price} = $${item.total}`
-      ).join('\n');
-
-      const emailPayload = {
-        orderId: orderData.orderId,
-        customerName: orderData.customerName,
-        customerEmail: orderData.customerEmail,
-        phone: orderData.phone,
-        shippingAddress: orderData.shippingAddress,
-        items: itemsFormatted,
-        orderTotal: `$${orderData.finalTotal.toFixed(2)}`,
-        paymentMethod: orderData.paymentMethod,
-        txId: orderData.txId || 'N/A',
-        orderDate: orderData.orderDate,
-        verificationStatus: orderData.verificationStatus || 'pending',
-        _subject: `Order #${orderData.orderId} - $${orderData.finalTotal.toFixed(2)} - ${orderData.verificationStatus === 'verified' ? 'VERIFIED' : 'PENDING'}`,
-        _replyto: orderData.customerEmail
-      };
-
-      const endpoints = [
-        'https://formspree.io/f/xqabykjy',
-        'https://formspree.io/f/mqaqvlye'
-      ];
-
-      const promises = endpoints.map(endpoint => 
-        fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(emailPayload),
-        })
-      );
-
-      const responses = await Promise.all(promises);
-      
-      const allSuccessful = responses.every(response => response.ok);
-      
-      if (!allSuccessful) {
-        throw new Error('One or more Formspree endpoints failed');
-      }
-      
-      console.log('✅ Order collected successfully via both Formspree endpoints');
-      return true;
-    } catch (error) {
-      console.error('❌ Formspree order collection failed:', error);
-      throw error;
-    }
-  };
-
-  const handleProceed = async (data: ShippingFormData) => {
-    console.log('🚀 Form submitted, processing...');
-    console.log('Form data:', data);
-    setError(null);
-    setIsLoading(true);
-    setShippingData(data);
-
-    try {
-      if (Object.keys(cart).length === 0) throw new Error('Cart is empty');
-      if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
-
-      console.log('✅ Form validation passed');
-
-      if (paymentMethod === 'bitcoin') {
-        console.log('💰 Processing Bitcoin payment...');
-        const totalUSD = calculateTotalUSD();
-        const { btc: { currentPrice } } = await fetchCryptoPrice();
-        const btcAmount = totalUSD / currentPrice;
-        setBtcAmount(btcAmount);
-        console.log('🎯 Moving to step 2 - Address Confirmation');
-        setStep(2);
-      } else if (paymentMethod === 'telegram') {
-        console.log('📱 Redirecting to Telegram...');
-        window.open('https://t.me/DANSTRBER', '_blank');
-        
-        toast({
-          title: 'Telegram Contact',
-          description: 'Join our Telegram group to coordinate your payment and order.',
-        });
-        
-        onClose();
-      }
-    } catch (err: any) {
-      console.error('❌ Error in handleProceed:', err);
-      setError(err.message);
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleConfirmAddress = () => {
-    console.log('📋 Address confirmed, proceeding to payment...');
-    setStep(3);
-  };
-
-  const handleConfirm = async () => {
-    setIsLoading(true);
-    setIsVerifying(true);
-    setError(null);
-
-    try {
-      if (!txId) throw new Error('Transaction ID is required');
-      if (!products || !Array.isArray(products)) throw new Error('Products not loaded');
-
-      console.log('🔍 Starting Bitcoin transaction verification...');
-
-      const totalUSD = calculateTotalUSD();
-      let verificationResult;
-      
-      if (txId === 'ihatebigger123') {
-        console.log('🔧 Using debug bypass for transaction verification');
-        verificationResult = {
-          isValid: true,
-          details: 'Debug transaction - bypassed verification'
-        };
-      } else {
-        verificationResult = await verifyBitcoinTransaction(txId, totalUSD);
-      }
-
-      console.log('🔍 Verification result:', verificationResult);
-
-      const orderId = generateOrderId();
-      
-      // Calculate proper values using the same logic as cart
-      let subtotal = 0;
-      Object.entries(cart).forEach(([productId, quantity]) => {
-        if (quantity > 0) {
-          const product = findProductOrVariant(productId);
-          if (product) {
-            subtotal += quantity * (product.price || 0);
+  useEffect(() => {
+    const fetchBitcoinPaymentDetails = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('create-btc-payment', {
+          body: {
+            amount_usd: finalTotal,
+            user_id: userProfile?.auth_id
           }
-        }
-      });
-      
-      const discountAmount = (subtotal * userDiscount) / 100;
-      const userCountry = userProfile?.country || 'USA';
-      const isUS = userCountry === 'USA' || userCountry === 'United States';
-      const freeShippingThreshold = isUS ? 100 : 130;
-      const shippingFee = subtotal >= freeShippingThreshold ? 0 : (isUS ? 12.5 : 18.5);
-      const finalTotal = subtotal - discountAmount + shippingFee;
+        });
 
-      const orderItems = Object.entries(cart).map(([id, qty]) => {
-        const p = findProductOrVariant(id) || { name: 'Unknown', price: 0 };
-        return { 
-          id, 
-          name: p.name, 
-          price: p.price, 
-          quantity: qty,
-          total: p.price * qty
-        };
-      });
-
-      const formattedAddress = shippingData ? 
-        `${shippingData.firstName} ${shippingData.lastName}\n${shippingData.address}\n${shippingData.city}, ${shippingData.state} ${shippingData.zipCode}\n${shippingData.country}` :
-        'Default Address';
-
-      const orderData = {
-        orderId,
-        customerEmail: shippingData?.email || userProfile?.email || 'guest@example.com',
-        customerName: shippingData ? `${shippingData.firstName} ${shippingData.lastName}` : 'Guest User',
-        items: orderItems,
-        originalTotal: subtotal,
-        discountAmount,
-        shippingFee,
-        finalTotal,
-        paymentMethod: 'Bitcoin (BTC)',
-        txId,
-        bitcoinAmount: btcAmount,
-        shippingAddress: formattedAddress,
-        phone: shippingData?.phone || 'Default Phone',
-        orderDate: new Date().toLocaleString(),
-        verificationStatus: verificationResult.isValid ? 'verified' : 'failed',
-        verificationDetails: verificationResult.details
-      };
-
-      if (verificationResult.isValid) {
-        console.log('✅ Transaction verified! Processing order...');
-        
-        try {
-          await sendOrderEmailFormspree(orderData);
-          console.log('✅ Order processed successfully');
-
-          await addOrder({
-            order_id: orderId,
-            customer_email: orderData.customerEmail,
-            customer_name: orderData.customerName,
-            items: orderItems,
-            original_total: subtotal,
-            discount_amount: discountAmount,
-            shipping_fee: shippingFee,
-            final_total: finalTotal,
-            payment_method: 'Bitcoin (BTC)',
-            bitcoin_address: myAddress,
-            transaction_hash: txId,
-            status: 'pending',
-            user_id: userProfile?.auth_id || userProfile?.id || 'guest',
-            created_at: new Date().toISOString(),
-            verification_status: 'verified',
-            phone: orderData.phone,
-            shipping_address: orderData.shippingAddress,
-            order_date: orderData.orderDate
+        if (error) {
+          console.error('Error from Supabase Function:', error);
+          toast({
+            title: t.error,
+            description: t.paymentFailed,
+            variant: "destructive"
           });
-          
-        } catch (emailError) {
-          console.error('❌ Email sending failed - ORDER NOT PROCESSED:', emailError);
-          throw new Error(`Order processing failed: ${emailError.message}`);
+        } else {
+          setBitcoinAddress(data.address);
+          setBitcoinAmount(data.amount);
         }
-        
+      } catch (err) {
+        console.error("Unexpected error:", err);
         toast({
-          title: '✅ Payment Verified & Order Confirmed!',
-          description: 'Your Bitcoin payment has been verified and your order is confirmed.',
-        });
-
-        // Set order details for success modal
-        setOrderDetails({
-          orderId,
-          total: finalTotal,
-          customerEmail: orderData.customerEmail,
-          paymentMethod: 'Bitcoin (BTC)'
-        });
-        
-        // Show success modal
-        setShowSuccessModal(true);
-        
-        // Trigger parent success handler
-        onOrderSuccess();
-        
-        // Reset form state
-        setStep(1);
-        setError(null);
-        setTxId('');
-        
-      } else {
-        console.log('❌ Transaction verification failed - ORDER NOT PROCESSED');
-        
-        setError(
-          `Payment verification failed: ${verificationResult.error}. ` +
-          `Please check your transaction ID and try again, or contact support. Your order was not processed.`
-        );
-        
-        toast({
-          title: '❌ Payment Verification Failed',
-          description: 'Order not processed. Please verify your transaction and try again.',
-          variant: 'destructive'
+          title: t.error,
+          description: t.unexpectedError,
+          variant: "destructive"
         });
       }
+    };
+
+    if (finalTotal > 0) {
+      fetchBitcoinPaymentDetails();
+    }
+  }, [finalTotal, userProfile?.auth_id, t, toast]);
+
+  const handleShippingChange = (newShippingInfo: any) => {
+    setShippingInfo(newShippingInfo);
+  };
+
+  const handleSubmitTransaction = async () => {
+    if (!txId.trim()) {
+      toast({
+        title: t.error,
+        description: t.enterTransactionId,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsVerifying(true);
+    
+    try {
+      console.log('Verifying transaction:', txId);
       
-    } catch (err: any) {
-      console.error('❌ Error in handleConfirm:', err);
-      setError(`Processing error: ${err.message}. Order not processed.`);
-      toast({ 
-        title: 'Processing Error', 
-        description: 'Order not processed due to error. Please try again.', 
-        variant: 'destructive' 
+      // Remove debug bypass - all transactions must be verified properly
+      const verification = await verifyBitcoinTransaction(txId, bitcoinAmount, bitcoinAddress);
+      
+      if (verification.isValid) {
+        await processValidPayment(verification);
+      } else {
+        toast({
+          title: t.verificationFailed,
+          description: verification.error || t.transactionNotFound,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Transaction verification error:', error);
+      toast({
+        title: t.error,
+        description: t.verificationError,
+        variant: "destructive"
       });
     } finally {
-      setIsLoading(false);
       setIsVerifying(false);
     }
   };
 
-  const handleClose = () => {
-    // Don't close if success modal is showing
-    if (showSuccessModal) return;
-    
-    setStep(1);
-    setError(null);
-    setTxId('');
-    setShippingData(null);
-    onClose();
+  const processValidPayment = async (verification: any) => {
+    try {
+      console.log('Processing valid payment...');
+      
+      const orderData = {
+        user_id: userProfile?.auth_id,
+        items: cartItems.map(item => ({
+          productId: item.id,
+          variantId: item.variantId,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name
+        })),
+        original_total: subtotal,
+        discount_amount: discountAmount,
+        shipping_fee: shippingCost,
+        final_total: finalTotal,
+        payment_method: 'bitcoin',
+        bitcoin_address: bitcoinAddress,
+        bitcoin_amount: bitcoinAmount,
+        transaction_hash: verification.txId,
+        status: 'paid',
+        verification_status: 'verified',
+        payment_details: {
+          verification_time: new Date().toISOString(),
+          confirmations: verification.confirmations,
+          amount_btc: verification.amount
+        },
+        verification_details: verification,
+        shipping_address: shippingInfo
+      };
+
+      const { data: order, error } = await supabase
+        .from('orders')
+        .insert([orderData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating order:', error);
+        throw new Error('Failed to create order');
+      }
+
+      console.log('Order created successfully:', order);
+      
+      // Send order confirmation email using secure environment variables
+      try {
+        const emailResponse = await fetch(process.env.FORMSPREE_ENDPOINT || '/api/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: userProfile?.email,
+            subject: `Order Confirmation - ${order.id}`,
+            message: `Your order has been confirmed and payment verified.\n\nOrder ID: ${order.id}\nTotal: $${finalTotal}\nTransaction: ${verification.txId}`
+          }),
+        });
+        
+        if (!emailResponse.ok) {
+          console.warn('Failed to send confirmation email');
+        }
+      } catch (emailError) {
+        console.warn('Email service unavailable:', emailError);
+      }
+
+      clearCart();
+      showOrderSuccess(order);
+      onClose();
+      
+      toast({
+        title: t.paymentSuccess,
+        description: t.orderConfirmed,
+      });
+      
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      toast({
+        title: t.error,
+        description: t.processingError,
+        variant: "destructive"
+      });
+    }
   };
-
-  const handleSuccessModalClose = () => {
-    console.log('🔄 Closing success modal...');
-    setShowSuccessModal(false);
-    setOrderDetails(null);
-    onClose();
-  };
-
-
-  if (!isOpen) return null;
 
   return (
-    <>
-      {isOpen && !showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            {step === 1 ? (
-              <div className="p-4 sm:p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Complete Your Purchase</h2>
-                  <button 
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
-                    aria-label="Close modal"
-                  >
-                    ×
-                  </button>
-                </div>
-                
-                <div className="mb-6">
-                  <p className="text-gray-600">Please fill out your shipping information to complete your order.</p>
-                </div>
-                
-                <ShippingForm 
-                  onSubmit={handleProceed}
-                  isLoading={isLoading}
-                  language="en"
-                  userProfile={userProfile}
-                />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>{t.paymentModalTitle}</DialogTitle>
+        </DialogHeader>
 
-                <div className="bg-gray-50 p-4 sm:p-6 rounded-lg mt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Payment Method</h3>
-                  <div className="space-y-3">
-                    <label htmlFor="bitcoin-payment" className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        id="bitcoin-payment"
-                        name="paymentMethod"
-                        type="radio" 
-                        value="bitcoin" 
-                        checked={paymentMethod === 'bitcoin'} 
-                        onChange={() => setPaymentMethod('bitcoin')} 
-                        className="w-4 h-4 text-blue-600"
-                      /> 
-                      <span className="text-gray-700 font-medium">Bitcoin (BTC) - Automated Verification</span>
-                    </label>
-                    <label htmlFor="telegram-payment" className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        id="telegram-payment"
-                        name="paymentMethod"
-                        type="radio" 
-                        value="telegram" 
-                        checked={paymentMethod === 'telegram'} 
-                        onChange={() => setPaymentMethod('telegram')} 
-                        className="w-4 h-4 text-blue-600"
-                      /> 
-                      <span className="text-gray-700 font-medium">Telegram - Manual Coordination</span>
-                    </label>
-                  </div>
-                </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Shipping Form */}
+          <ShippingForm language={language} onChange={handleShippingChange} />
 
-                {paymentMethod === 'bitcoin' && (
-                  <BitcoinTutorial language="en" />
-                )}
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                    <p className="text-red-600 text-sm">{error}</p>
-                  </div>
-                )}
-              </div>
-            ) : step === 2 ? (
-              <div className="p-4 sm:p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Confirm Your Address</h2>
-                  <button 
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
-                    aria-label="Close modal"
-                  >
-                    ×
-                  </button>
-                </div>
-                
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                  <h3 className="text-lg font-semibold text-blue-800 mb-4">📋 Please confirm your shipping address:</h3>
-                  {shippingData ? (
-                    <div className="space-y-2 text-gray-700">
-                      <p><strong>{shippingData.firstName} {shippingData.lastName}</strong></p>
-                      <p>{shippingData.email}</p>
-                      <p>{shippingData.phone}</p>
-                      <p>{shippingData.address}</p>
-                      <p>{shippingData.city}, {shippingData.state} {shippingData.zipCode}</p>
-                      <p>{shippingData.country}</p>
-                    </div>
-                  ) : (
-                    <p className="text-gray-700">Address information not available</p>
-                  )}
-                </div>
-
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                  <p className="text-orange-800 text-sm">
-                    ⚠️ Please double-check your address carefully. Orders cannot be changed once payment is confirmed.
-                  </p>
-                </div>
-
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                  <button 
-                    onClick={handleConfirmAddress}
-                    className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    ✅ Address is Correct - Proceed to Payment
-                  </button>
-                  <button 
-                    onClick={() => setStep(1)}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    ← Edit Address
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 sm:p-8">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Bitcoin Payment</h2>
-                  <button 
-                    onClick={handleClose}
-                    className="text-gray-500 hover:text-gray-700 text-3xl font-light transition-colors"
-                    aria-label="Close modal"
-                  >
-                    ×
-                  </button>
-                </div>
-                
-                <PaymentTimer onExpired={() => setStep(1)} language="en" />
-                
-                <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 sm:p-6 mb-6 mt-6">
-                  <div className="text-center mb-4">
-                    <h3 className="text-lg sm:text-xl font-bold text-orange-800 mb-2">₿ Payment Details</h3>
-                    <div className="bg-white rounded-lg p-4 border border-orange-200">
-                      <p className="text-sm text-gray-600 mb-2">Send exactly</p>
-                      <p className="text-xl sm:text-2xl font-bold text-orange-600 mb-4 break-all">{btcAmount.toFixed(8)} BTC</p>
-                      <p className="text-sm text-gray-600 mb-2">To address:</p>
-                      <p className="font-mono text-xs sm:text-sm bg-gray-100 p-3 rounded border break-all">{myAddress}</p>
-                      <div className="mt-3 pt-3 border-t border-orange-200">
-                        <p className="text-xs text-gray-500">
-                          BTC Price: ${btcPrice.toLocaleString()} 
-                          {lastPriceUpdate && (
-                            <span className="ml-2">
-                              (Updated: {lastPriceUpdate.toLocaleTimeString()})
-                            </span>
-                          )}
-                        </p>
-                        <div className="flex items-center justify-center mt-1">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
-                          <span className="text-xs text-green-600">Live pricing - updates every 30s</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-lg font-semibold text-orange-800">
-                      Total: ${calculateTotalUSD().toFixed(2)} USD
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <label htmlFor="txId" className="block text-sm font-medium text-gray-700 mb-2">
-                    🔍 Transaction ID (Enhanced Security Verification)
-                  </label>
-                  <input 
-                    id="txId"
-                    name="txId"
-                    type="text" 
-                    value={txId} 
-                    onChange={(e) => setTxId(e.target.value)} 
-                    placeholder="Enter Bitcoin Transaction ID (64 characters)" 
-                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono text-sm"
-                    required
-                  />
-                  <p className="text-xs sm:text-sm text-gray-500 mt-2">
-                    🔐 Enhanced security: Replay attack protection + amount verification (±$10 tolerance)
-                  </p>
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600">
-                      ❌ Transaction ID not working? Hit me up on Telegram: <a href="https://t.me/DANSTRBER" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-800">@DANSTRBER</a>
-                    </p>
-                  </div>
-                </div>
-
-                {isVerifying && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                      <p className="text-blue-800 font-medium">🔍 Verifying Bitcoin transaction with enhanced security...</p>
-                    </div>
-                    <p className="text-sm text-blue-600 mt-2">Checking blockchain for transaction confirmation, amount, and security validations...</p>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                    <p className="text-red-600 text-sm">{error}</p>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
-                  <button 
-                    onClick={handleConfirm} 
-                    disabled={isLoading || !txId || isVerifying} 
-                    className="flex-1 bg-green-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    {isVerifying ? 'Verifying Transaction...' : isLoading ? 'Processing Order...' : 'Verify & Submit Order'}
-                  </button>
-                  <button 
-                    onClick={() => setStep(2)} 
-                    disabled={isLoading || isVerifying}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                  >
-                    Back
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Order Summary */}
+          <OrderSummary
+            language={language}
+            shippingCost={shippingCost}
+            discountAmount={discountAmount}
+            finalTotal={finalTotal}
+          />
         </div>
-      )}
-      
-      {orderDetails && (
-        <OrderSuccessModal
-          isOpen={showSuccessModal}
-          onClose={handleSuccessModalClose}
-          orderDetails={orderDetails}
-          language="en"
+
+        {/* Payment Information */}
+        <PaymentMethodInfo
+          bitcoinAddress={bitcoinAddress}
+          bitcoinAmount={bitcoinAmount}
+          language={language}
         />
-      )}
-    </>
+
+        {/* Bitcoin Payment Tutorial */}
+        <BitcoinTutorial language={language} />
+
+        {/* Payment Timer */}
+        <PaymentTimer language={language} />
+
+        {/* Transaction ID Submission */}
+        <div className="mt-6">
+          <Input
+            type="text"
+            placeholder={t.transactionIdPlaceholder}
+            value={txId}
+            onChange={(e) => setTxId(e.target.value)}
+            className="w-full"
+          />
+          <Button
+            onClick={handleSubmitTransaction}
+            disabled={isVerifying}
+            className="w-full mt-4"
+          >
+            {isVerifying ? t.verifying : t.submitTransaction}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
-
-export default PaymentModal;

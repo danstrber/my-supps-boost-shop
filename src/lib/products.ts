@@ -1,4 +1,3 @@
-
 import accutaneImage from '@/assets/accutane.png';
 
 export interface ProductVariant {
@@ -46,7 +45,7 @@ export const products: Product[] = [
   {
     id: 'superdrol',
     name: 'Superdrol (Methasterone)',
-    price: 55,
+    price: 50,
     image: '/lovable-uploads/14261a69-7ff7-4bed-890d-882e8294932f.png',
     category: 'oral-steroids',
     description: 'Powerful oral anabolic compound for serious muscle building and strength gains. Known for its exceptional ability to build lean muscle mass rapidly.',
@@ -87,7 +86,7 @@ export const products: Product[] = [
   {
     id: 'rad-140',
     name: 'RAD-140 (Testolone)',
-    price: 55,
+    price: 50,
     image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
     category: 'sarms',
     description: 'Highly selective androgen receptor modulator for lean muscle growth with fewer side effects than traditional steroids.',
@@ -126,7 +125,7 @@ export const products: Product[] = [
       {
         id: 'rad-140-10mg-50',
         name: '10mg - 50 Capsules (Standard)',
-        price: 55,
+        price: 50,
         image: '/lovable-uploads/9ef9882b-55bd-4218-9d0e-21ae9c7d72f6.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -138,7 +137,7 @@ export const products: Product[] = [
       {
         id: 'rad-140-20mg-50',
         name: '20mg - 50 Capsules',
-        price: 100,
+        price: 95,
         image: '/lovable-uploads/e4d9b18a-77ea-4f9e-ab56-3dba782245d2.png',
         specifications: {
           dosePerCapsule: '20mg',
@@ -150,7 +149,7 @@ export const products: Product[] = [
       {
         id: 'rad-140-10mg-30',
         name: '10mg - 30 Capsules',
-        price: 30,
+        price: 25,
         image: '/lovable-uploads/d91fd34a-b6a3-4180-ad44-c618bb015454.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -164,7 +163,7 @@ export const products: Product[] = [
   {
     id: 'mk-677',
     name: 'MK-677 (Ibutamoren)',
-    price: 45,
+    price: 40,
     image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
     category: 'growth',
     description: 'Growth hormone secretagogue promoting natural GH production for enhanced recovery and anti-aging benefits.',
@@ -203,7 +202,7 @@ export const products: Product[] = [
       {
         id: 'mk-677-10mg-50',
         name: '10mg - 50 Capsules (Standard)',
-        price: 45,
+        price: 40,
         image: '/lovable-uploads/7dd6d68f-1f2e-4b5e-8d14-185c1e0ac68b.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -215,7 +214,7 @@ export const products: Product[] = [
       {
         id: 'mk-677-20mg-50',
         name: '20mg - 50 Capsules',
-        price: 80,
+        price: 75,
         image: '/lovable-uploads/52043d65-b1dd-4c5a-bb05-28b7b073ff55.png',
         specifications: {
           dosePerCapsule: '20mg',
@@ -227,7 +226,7 @@ export const products: Product[] = [
       {
         id: 'mk-677-10mg-30',
         name: '10mg - 30 Capsules',
-        price: 25,
+        price: 20,
         image: '/lovable-uploads/2822acc1-bfb7-4916-8971-d96a026381c9.png',
         specifications: {
           dosePerCapsule: '10mg',
@@ -241,7 +240,7 @@ export const products: Product[] = [
   {
     id: 'clenbuterol',
     name: 'Clenbuterol',
-    price: 40,
+    price: 35,
     image: '/lovable-uploads/b7c315ff-19a0-4e63-86b9-79c6dd31b20c.png',
     category: 'fat-burners',
     description: 'Powerful thermogenic fat burner for cutting cycles with muscle-preserving properties.',
@@ -281,7 +280,7 @@ export const products: Product[] = [
   {
     id: 'enclomiphene',
     name: 'Enclomiphene Citrate',
-    price: 45,
+    price: 40,
     image: '/lovable-uploads/0f656d9e-afeb-45b0-8785-80029343c306.png',
     category: 'pct',
     description: 'Selective estrogen receptor modulator for PCT and natural testosterone support without estrogenic side effects.',
@@ -318,7 +317,7 @@ export const products: Product[] = [
   {
     id: 'aromasin',
     name: 'Aromasin (Exemestane)',
-    price: 35,
+    price: 30,
     image: '/lovable-uploads/ca4cfeff-6c54-4cac-9d78-8514882ca7c9.png',
     category: 'pct',
     description: 'Aromatase inhibitor for estrogen control and hormonal balance during and after cycles.',
@@ -356,7 +355,7 @@ export const products: Product[] = [
   {
     id: 'clomid',
     name: 'Clomid (Clomiphene)',
-    price: 35,
+    price: 30,
     image: '/lovable-uploads/b886abd5-d412-496a-b232-91477606b894.png',
     category: 'pct',
     description: 'Post cycle therapy compound for testosterone recovery and fertility restoration.',
@@ -394,7 +393,7 @@ export const products: Product[] = [
   {
     id: 'letrozole',
     name: 'Letrozole (Femara)',
-    price: 30,
+    price: 25,
     image: '/lovable-uploads/b028f377-424f-4815-8dc0-9f52f6507861.png',
     category: 'pct',
     description: 'Highly potent aromatase inhibitor for complete estrogen suppression and PCT support.',
@@ -433,7 +432,7 @@ export const products: Product[] = [
   {
     id: 'testosterone-cypionate',
     name: 'Testosterone Cypionate',
-    price: 35,
+    price: 30,
     image: '/lovable-uploads/327cd7ef-8b6e-4717-9290-167c23353c70.png',
     category: 'injectable-steroids',
     description: 'Long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
@@ -473,7 +472,7 @@ export const products: Product[] = [
   {
     id: 'testosterone-enanthate',
     name: 'Testosterone Enanthate',
-    price: 35,
+    price: 30,
     image: '/lovable-uploads/205636c1-c011-4e8c-aab7-22c44c3a3c7d.png',
     category: 'injectable-steroids',
     description: 'Popular long-acting testosterone ester for hormone replacement therapy and muscle building cycles.',
@@ -512,7 +511,7 @@ export const products: Product[] = [
   {
     id: 'accutane',
     name: 'Accutane (Isotretinoin)',
-    price: 30,
+    price: 25,
     image: '/lovable-uploads/bac5a63b-e051-461e-8a6c-f87e42b10ad6.png',
     category: 'support',
     description: 'Powerful acne treatment medication for severe acne and skin conditions. Highly effective for hormonal acne often experienced during cycles.',
@@ -552,7 +551,7 @@ export const products: Product[] = [
   {
     id: 'tretinoin',
     name: 'Tretinoin Cream',
-    price: 20,
+    price: 15,
     image: '/lovable-uploads/bac5a63b-e051-461e-8a6c-f87e42b10ad6.png',
     category: 'support',
     description: 'Topical retinoid cream for acne treatment and anti-aging. Highly effective for preventing acne breakouts and improving skin texture.',

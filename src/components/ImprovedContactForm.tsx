@@ -33,7 +33,14 @@ const ImprovedContactForm = ({ language }: ImprovedContactFormProps) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
+      // Use secure environment variable for Formspree endpoint
+      const formspreeEndpoint = process.env.FORMSPREE_CONTACT_ENDPOINT;
+      
+      if (!formspreeEndpoint) {
+        throw new Error('Contact form endpoint not configured');
+      }
+
+      const response = await fetch(formspreeEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,11 +78,12 @@ const ImprovedContactForm = ({ language }: ImprovedContactFormProps) => {
         throw new Error('Form submission failed');
       }
     } catch (error) {
+      console.error('Contact form error:', error);
       toast({
         title: language === 'en' ? 'Error' : 'Error',
         description: language === 'en' 
-          ? 'There was an error sending your message. Please try again.' 
-          : 'Hubo un error al enviar su mensaje. Por favor intente de nuevo.',
+          ? 'There was an error sending your message. Please try again or contact us directly.' 
+          : 'Hubo un error al enviar su mensaje. Por favor intente de nuevo o contáctenos directamente.',
         variant: 'destructive',
         duration: 5000,
       });
