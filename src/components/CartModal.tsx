@@ -7,7 +7,7 @@ import { Product } from '@/lib/products';
 import { UserProfile } from '@/lib/auth';
 import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
-import PaymentModal from '@/components/PaymentModal';
+import { PaymentModal } from '@/components/PaymentModal';
 import { getShippingCost, getFreeShippingThreshold } from '@/lib/shipping';
 
 interface CartModalProps {
@@ -271,11 +271,7 @@ const CartModal = ({
         <PaymentModal
           isOpen={isPaymentModalOpen}
           onClose={handlePaymentModalClose}
-          cart={cart}
-          products={products}
-          userDiscount={userDiscount}
-          userProfile={userProfile}
-          onOrderSuccess={handleOrderSuccessWrapper}
+          language="en"
         />
       )}
     </>
