@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
-import { useOrderSuccess from '@/hooks/useOrderSuccess';
+import { useOrderSuccess } from '@/hooks/useOrderSuccess';
 import { translations } from '@/lib/translations';
 import { ShippingForm } from './payment/ShippingForm';
 import { OrderSummary } from './payment/OrderSummary';
@@ -117,7 +117,7 @@ export const PaymentModal = ({ isOpen, onClose, language }: PaymentModalProps) =
     try {
       console.log('Verifying transaction:', txId);
       
-      // Remove debug bypass - all transactions must be verified properly
+      // All transactions must be verified properly
       const verification = await verifyBitcoinTransaction(txId, bitcoinAmount, bitcoinAddress);
       
       if (verification.isValid) {
@@ -186,22 +186,25 @@ export const PaymentModal = ({ isOpen, onClose, language }: PaymentModalProps) =
 
       console.log('Order created successfully:', order);
       
-      // Send order confirmation email using secure environment variables
+      // Send order confirmation email using environment variables
       try {
-        const emailResponse = await fetch(process.env.FORMSPREE_ENDPOINT || '/api/send-email', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            to: userProfile?.email,
-            subject: `Order Confirmation - ${order.id}`,
-            message: `Your order has been confirmed and payment verified.\n\nOrder ID: ${order.id}\nTotal: $${finalTotal}\nTransaction: ${verification.txId}`
-          }),
-        });
-        
-        if (!emailResponse.ok) {
-          console.warn('Failed to send confirmation email');
+        const emailEndpoint = process.env.REACT_APP_FORMSPREE_ENDPOINT;
+        if (emailEndpoint) {
+          const emailResponse = await fetch(emailEndpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: userProfile?.email,
+              subject: `Order Confirmation - ${order.id}`,
+              message: `Your order has been confirmed and payment verified.\n\nOrder ID: ${order.id}\nTotal: $${finalTotal}\nTransaction: ${verification.txId}`
+            }),
+          });
+          
+          if (!emailResponse.ok) {
+            console.warn('Failed to send confirmation email');
+          }
         }
       } catch (emailError) {
         console.warn('Email service unavailable:', emailError);
